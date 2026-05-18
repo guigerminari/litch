@@ -3,11 +3,11 @@ import type { Character, InventoryItem, ItemDefinition } from "../../shared/type
 import { INVENTORY_CAPACITY } from "../content";
 
 export function inventoryUsed(character: Character) {
-  return character.inventory.reduce((total, item) => total + item.quantity, 0);
+  return character.inventory.length; // 1 slot per unique stack entry
 }
 
 export function hasCapacity(character: Character, quantity = 1) {
-  return inventoryUsed(character) + quantity <= INVENTORY_CAPACITY;
+  return character.inventory.length + quantity <= INVENTORY_CAPACITY;
 }
 
 export function findInventoryItem(character: Character, instanceId: string) {
@@ -24,21 +24,23 @@ export function addItem(
   itemCatalog: Record<string, ItemDefinition>,
   quantity = 1
 ): InventoryItem {
-  if (!hasCapacity(character, quantity)) {
-    throw new Error("Inventário cheio.");
-  }
-
   const definition = itemCatalog[itemId];
   if (!definition) {
     throw new Error("Item inválido.");
   }
 
+  // Stackable items: merge into existing stack (no new slot needed)
   if (definition.kind === "potion" || definition.kind === "material") {
     const stack = character.inventory.find((item) => item.itemId === itemId);
     if (stack) {
       stack.quantity += quantity;
       return stack;
     }
+  }
+
+  // Need a new slot — check capacity now
+  if (!hasCapacity(character, 1)) {
+    throw new Error("Inventário cheio.");
   }
 
   const item = { instanceId: randomUUID(), itemId, quantity };

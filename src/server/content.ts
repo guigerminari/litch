@@ -20,7 +20,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 1,
     price: 30,
     stats: { strength: 2 },
-    description: "+2 FORÇA"
+    description: "+2 FOR"
   },
   iron_sword: {
     id: "iron_sword",
@@ -30,7 +30,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 2,
     price: 90,
     stats: { strength: 6 },
-    description: "+6 FORÇA"
+    description: "+6 FOR"
   },
   leather_armor: {
     id: "leather_armor",
@@ -40,7 +40,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 1,
     price: 45,
     stats: { defense: 2, constitution: 1 },
-    description: "+2 DEFESA, +1 CONSTITUIÇÃO"
+    description: "+2 DEF, +1 CON"
   },
   iron_armor: {
     id: "iron_armor",
@@ -50,7 +50,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 3,
     price: 110,
     stats: { defense: 6 },
-    description: "+6 DEFESA"
+    description: "+6 DEF"
   },
   novice_amulet: {
     id: "novice_amulet",
@@ -60,7 +60,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 1,
     price: 70,
     stats: { agility: 2, constitution: 1 },
-    description: "+2 AGILIDADE, +1 CONSTITUIÇÃO"
+    description: "+2 AGI, +1 CON"
   },
   hunter_charm: {
     id: "hunter_charm",
@@ -70,7 +70,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 4,
     price: 160,
     stats: { agility: 5, strength: 2 },
-    description: "+5 AGILIDADE, +2 FORÇA"
+    description: "+5 AGI, +2 FOR"
   },
   ember_blade: {
     id: "ember_blade",
@@ -80,7 +80,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 6,
     price: 360,
     stats: { strength: 15, agility: 3 },
-    description: "+15 FORÇA, +3 AGILIDADE"
+    description: "+15 FOR, +3 AGI"
   },
   guardian_mail: {
     id: "guardian_mail",
@@ -90,7 +90,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 6,
     price: 330,
     stats: { defense: 14, constitution: 4 },
-    description: "+14 DEFESA, +4 CONSTITUIÇÃO"
+    description: "+14 DEF, +4 CON"
   },
   moon_amulet: {
     id: "moon_amulet",
@@ -100,7 +100,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     minLevel: 8,
     price: 420,
     stats: { agility: 8, constitution: 3, strength: 3 },
-    description: "+8 AGILIDADE, +3 CONSTITUIÇÃO, +3 FORÇA"
+    description: "+8 AGI, +3 CON, +3 FOR"
   },
   health_potion: {
     id: "health_potion",
@@ -267,23 +267,25 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
 
 export const TALENTS: TalentDefinition[] = [
   { id: "off_power_1", category: "offensive", name: "Golpe firme", description: "+4% dano", maxRank: 3, costPerRank: 1 },
-  { id: "off_strength_1", category: "offensive", name: "Braço treinado", description: "+2 FORÇA por rank", maxRank: 3, costPerRank: 1, requires: "off_power_1" },
+  { id: "off_strength_1", category: "offensive", name: "Braço treinado", description: "+2 FOR por rank", maxRank: 3, costPerRank: 1, requires: "off_power_1" },
   { id: "off_crit_1", category: "offensive", name: "Instinto letal", description: "+2% crítico por rank", maxRank: 3, costPerRank: 1, requires: "off_strength_1" },
-  { id: "off_agility_1", category: "offensive", name: "Ataque fluido", description: "+2 AGILIDADE por rank", maxRank: 3, costPerRank: 2, requires: "off_crit_1" },
+  { id: "off_agility_1", category: "offensive", name: "Ataque fluido", description: "+2 AGI por rank", maxRank: 3, costPerRank: 2, requires: "off_crit_1" },
   { id: "off_crit_damage_1", category: "offensive", name: "Corte profundo", description: "+15% dano crítico por rank", maxRank: 3, costPerRank: 2, requires: "off_agility_1" },
   { id: "off_power_2", category: "offensive", name: "Executor", description: "+7% dano por rank", maxRank: 3, costPerRank: 3, requires: "off_crit_damage_1" },
   { id: "def_vitality_1", category: "defensive", name: "Fôlego de aço", description: "+5% vida", maxRank: 3, costPerRank: 1 },
-  { id: "def_constitution_1", category: "defensive", name: "Corpo resiliente", description: "+2 CONSTITUIÇÃO por rank", maxRank: 3, costPerRank: 1, requires: "def_vitality_1" },
-  { id: "def_armor_1", category: "defensive", name: "Postura de guarda", description: "+2 DEFESA por rank", maxRank: 4, costPerRank: 1, requires: "def_constitution_1" },
+  { id: "def_constitution_1", category: "defensive", name: "Corpo resiliente", description: "+2 CON por rank", maxRank: 3, costPerRank: 1, requires: "def_vitality_1" },
+  { id: "def_armor_1", category: "defensive", name: "Postura de guarda", description: "+2 DEF por rank", maxRank: 4, costPerRank: 1, requires: "def_constitution_1" },
   { id: "def_dodge_1", category: "defensive", name: "Passo evasivo", description: "+2% esquiva por rank", maxRank: 3, costPerRank: 2, requires: "def_armor_1" },
-  { id: "def_agility_1", category: "defensive", name: "Reflexos calmos", description: "+2 AGILIDADE por rank", maxRank: 3, costPerRank: 2, requires: "def_dodge_1" },
+  { id: "def_agility_1", category: "defensive", name: "Reflexos calmos", description: "+2 AGI por rank", maxRank: 3, costPerRank: 2, requires: "def_dodge_1" },
   { id: "def_vitality_2", category: "defensive", name: "Muralha viva", description: "+8% vida por rank", maxRank: 3, costPerRank: 3, requires: "def_agility_1" },
   { id: "util_xp_1", category: "utility", name: "Aprendizado rápido", description: "+5% XP por rank", maxRank: 4, costPerRank: 1 },
   { id: "util_gold_1", category: "utility", name: "Olho mercante", description: "+5% gold por rank", maxRank: 4, costPerRank: 1, requires: "util_xp_1" },
   { id: "util_drop_1", category: "utility", name: "Mãos sortudas", description: "+4% drop por rank", maxRank: 4, costPerRank: 2, requires: "util_gold_1" },
   { id: "util_energy_1", category: "utility", name: "Ritmo de marcha", description: "+1 energia máxima por rank", maxRank: 4, costPerRank: 2, requires: "util_drop_1" },
   { id: "util_xp_2", category: "utility", name: "Memória arcana", description: "+8% XP por rank", maxRank: 3, costPerRank: 3, requires: "util_energy_1" },
-  { id: "util_drop_2", category: "utility", name: "Destino generoso", description: "+8% drop por rank", maxRank: 3, costPerRank: 3, requires: "util_xp_2" }
+  { id: "util_drop_2", category: "utility", name: "Destino generoso", description: "+8% drop por rank", maxRank: 3, costPerRank: 3, requires: "util_xp_2" },
+  { id: "regen_hp_1", category: "utility", name: "Regeneração vital", description: "+3% regen de vida por rank", maxRank: 3, costPerRank: 2, requires: "util_drop_2" },
+  { id: "regen_energy_1", category: "utility", name: "Regeneração de energia", description: "+3% regen de energia por rank", maxRank: 3, costPerRank: 2, requires: "regen_hp_1" }
 ];
 
 export const DIAMOND_PACKAGES: GameShopPackage[] = [

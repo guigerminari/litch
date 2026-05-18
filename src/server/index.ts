@@ -6,10 +6,12 @@ import type {
   BattleActionPayload,
   Character,
   ClanBenefitBuyPayload,
+  ClanChatSendPayload,
   ClanCreatePayload,
   ClanDonatePayload,
   ClanJoinPayload,
   CraftPayload,
+  CurrencyExchangePayload,
   DungeonStartPayload,
   EquipPayload,
   GameState,
@@ -18,6 +20,7 @@ import type {
   MarketBuyPayload,
   MarketCreatePayload,
   Player,
+  PrivateSendPayload,
   QuestClaimPayload,
   QuestView,
   RegisterPayload,
@@ -151,11 +154,24 @@ function serializeGameState(playerId: string): GameState {
   const activeBattle = character.activeBattleId ? store.battles.get(character.activeBattleId) ?? null : null;
   const availableRecipes = getAvailableCraftingRecipes(character.cityId);
   const clan = character.clanId ? store.clans.get(character.clanId) ?? null : null;
+  const derived = deriveStats(character, ITEM_CATALOG);
+  const regenHpAmount = Math.ceil(derived.maxHp * (0.10 + derived.hpRegenBonusPercent));
+  const regenEnergyAmount = Math.ceil(derived.maxEnergy * (0.10 + derived.energyRegenBonusPercent));
+  const clanChatMessages = character.clanId ? (store.clanChatMessages.get(character.clanId) ?? []) : [];
+  const privateMessages = store.allPrivateMessages.filter(
+    (msg) => msg.fromPlayerId === playerId || msg.toPlayerId === playerId
+  );
+  const onlinePlayers = Array.from(store.socketsByPlayer.keys())
+    .map((pid) => {
+      const ch = store.characters.get(pid);
+      return ch ? { playerId: pid, name: ch.name } : null;
+    })
+    .filter((entry): entry is { playerId: string; name: string } => entry !== null);
 
   return {
     player,
     character,
-    derived: deriveStats(character, ITEM_CATALOG),
+    derived,
     inventoryUsed: inventoryUsed(character),
     inventoryCapacity: INVENTORY_CAPACITY,
     cities: CITIES,
@@ -176,7 +192,13 @@ function serializeGameState(playerId: string): GameState {
     availableCraftingRecipes: availableRecipes,
     rankings: buildRankings(),
     onlineCount: store.socketsByPlayer.size,
-    arenaQueueSize: store.arenaQueue.length
+    arenaQueueSize: store.arenaQueue.length,
+    nextRegenAt: store.nextRegenAt,
+    regenHpAmount,
+    regenEnergyAmount,
+    clanChatMessages,
+    privateMessages,
+    onlinePlayers
   };
 }
 
@@ -824,9 +846,6 @@ io.on("connection", (socket: AuthedSocket) => {
       if (!available) {
         throw new Error("Este comerciante não vende o item aqui.");
       }
-      if (character.level < item.minLevel) {
-        throw new Error(`Nível ${item.minLevel} necessário.`);
-      }
       if (character.gold < item.price) {
         throw new Error("Ouro insuficiente.");
       }
@@ -1228,7 +1247,9 @@ io.on("connection", (socket: AuthedSocket) => {
 
       const price = Math.max(1, Math.floor(payload.price));
       const currency: "gold" | "diamonds" = payload.currency === "diamonds" ? "diamonds" : "gold";
-      const quantity = 1;
+      const itemDef = ITEM_CATALOG[inventoryItem.itemId];
+      const maxQuantity = itemDef?.slot ? 1 : inventoryItem.quantity;
+      const quantity = Math.max(1, Math.min(maxQuantity, Math.floor(payload.quantity ?? 1)));
       const listingItem = { instanceId: randomUUID(), itemId: inventoryItem.itemId, quantity };
       removeItem(character, inventoryItem.instanceId, quantity);
       const listing = {
@@ -1265,7 +1286,7 @@ io.on("connection", (socket: AuthedSocket) => {
       if (listing.currency === "diamonds" && buyer.diamonds < listing.price) {
         throw new Error("Diamantes insuficientes.");
       }
-      if (!hasCapacity(buyer, listing.item.quantity)) {
+      if (!hasCapacity(buyer, 1)) {
         throw new Error("Inventário cheio.");
       }
 
@@ -1335,6 +1356,91 @@ io.on("connection", (socket: AuthedSocket) => {
     }
   });
 
+  socket.on("clan:chat:send", (payload: ClanChatSendPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      if (!character.clanId) throw new Error("Você não pertence a um clã.");
+      const player = currentPlayer(playerId);
+      const normalized = String(payload.text ?? "").trim().replace(/\s+/g, " ").slice(0, 240);
+      if (!normalized) return;
+
+      const msgs = store.clanChatMessages.get(character.clanId) ?? [];
+      msgs.unshift({
+        id: randomUUID(),
+        playerId,
+        author: player.username,
+        text: normalized,
+        createdAt: Date.now()
+      });
+      store.clanChatMessages.set(character.clanId, msgs.slice(0, 50));
+
+      // Emit to all online clan members
+      const clan = store.clans.get(character.clanId);
+      if (clan) emitMany(clan.memberPlayerIds);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("private:send", (payload: PrivateSendPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const player = currentPlayer(playerId);
+      const normalized = String(payload.text ?? "").trim().replace(/\s+/g, " ").slice(0, 240);
+      if (!normalized) return;
+
+      const targetName = String(payload.targetPlayerName ?? "").trim();
+      const targetPlayer = Array.from(store.players.values()).find(
+        (p) => p.username.toLowerCase() === targetName.toLowerCase()
+      );
+      if (!targetPlayer) throw new Error("Jogador não encontrado.");
+      if (targetPlayer.id === playerId) throw new Error("Você não pode enviar mensagem para si mesmo.");
+
+      const targetCharacter = store.characters.get(targetPlayer.id);
+      const toName = targetCharacter?.name ?? targetPlayer.username;
+
+      const msg = {
+        id: randomUUID(),
+        fromPlayerId: playerId,
+        fromName: player.username,
+        toPlayerId: targetPlayer.id,
+        toName,
+        text: normalized,
+        createdAt: Date.now()
+      };
+      store.allPrivateMessages = [msg, ...store.allPrivateMessages].slice(0, 500);
+
+      emitMany([playerId, targetPlayer.id]);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("currency:exchange", (payload: CurrencyExchangePayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      const amount = Math.max(1, Math.floor(payload.amount ?? 1));
+
+      if (payload.direction === "diamondsToGold") {
+        if (character.diamonds < amount) throw new Error("Diamantes insuficientes.");
+        character.diamonds -= amount;
+        character.gold += amount * 1000;
+      } else {
+        const goldCost = amount * 1200;
+        if (character.gold < goldCost) throw new Error("Ouro insuficiente. Custo: " + goldCost + " ouro.");
+        character.gold -= goldCost;
+        character.diamonds += amount;
+      }
+      normalizeVitals(character);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
   socket.on("quest:claim", (payload: QuestClaimPayload) => {
     try {
       const playerId = requirePlayer(socket);
@@ -1365,3 +1471,22 @@ io.on("connection", (socket: AuthedSocket) => {
 httpServer.listen(PORT, () => {
   console.log(`Litch realtime server running on http://127.0.0.1:${PORT}`);
 });
+
+// Regen tick: every 2 real minutes restore 10% HP and Energy
+const REGEN_INTERVAL_MS = 2 * 60 * 1000;
+store.nextRegenAt = Date.now() + REGEN_INTERVAL_MS;
+
+setInterval(() => {
+  store.nextRegenAt = Date.now() + REGEN_INTERVAL_MS;
+  for (const [playerId, character] of store.characters) {
+    const activeBattle = character.activeBattleId ? store.battles.get(character.activeBattleId) : null;
+    if (activeBattle?.status === "active") continue;
+    const stats = deriveStats(character, ITEM_CATALOG);
+    const hpRegen = Math.ceil(stats.maxHp * (0.10 + stats.hpRegenBonusPercent));
+    const energyRegen = Math.ceil(stats.maxEnergy * (0.10 + stats.energyRegenBonusPercent));
+    character.currentHp = Math.min(stats.maxHp, (character.currentHp ?? 0) + hpRegen);
+    character.currentEnergy = Math.min(stats.maxEnergy, (character.currentEnergy ?? 0) + energyRegen);
+    character.lastRegenAt = Date.now();
+  }
+  broadcastWorldState();
+}, REGEN_INTERVAL_MS);

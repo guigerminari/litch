@@ -66,6 +66,8 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
     xpBonusPercent: (talentRanks.util_xp_1 ?? 0) * 0.05 + (talentRanks.util_xp_2 ?? 0) * 0.08 + (clanRanks.clan_xp_1 ?? 0) * 0.02,
     goldBonusPercent: (talentRanks.util_gold_1 ?? 0) * 0.05 + (clanRanks.clan_gold_1 ?? 0) * 0.02,
     dropBonusPercent: (talentRanks.util_drop_1 ?? 0) * 0.04 + (talentRanks.util_drop_2 ?? 0) * 0.08 + (clanRanks.clan_drop_1 ?? 0) * 0.015,
+    hpRegenBonusPercent: (talentRanks.regen_hp_1 ?? 0) * 0.03,
+    energyRegenBonusPercent: (talentRanks.regen_energy_1 ?? 0) * 0.03,
     availableTalentPoints: getTotalTalentPoints(character.level) - spentTalentPoints,
     spentTalentPoints
   };

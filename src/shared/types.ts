@@ -71,6 +71,7 @@ export interface Character {
   questProgress: QuestProgress;
   talentAllocations: Record<string, number>;
   clanId: string | null;
+  lastRegenAt?: number;
   clanBenefitAllocations: Record<string, number>;
   arenaWins: number;
   arenaLosses: number;
@@ -98,6 +99,8 @@ export interface Player {
 
 export interface DerivedStats {
   maxHp: number;
+  hpRegenBonusPercent: number;
+  energyRegenBonusPercent: number;
   maxEnergy: number;
   totalStrength: number;
   defense: number;
@@ -192,6 +195,16 @@ export interface ChatMessage {
   id: string;
   playerId: string;
   author: string;
+  text: string;
+  createdAt: number;
+}
+
+export interface PrivateMessage {
+  id: string;
+  fromPlayerId: string;
+  fromName: string;
+  toPlayerId: string;
+  toName: string;
   text: string;
   createdAt: number;
 }
@@ -333,6 +346,12 @@ export interface GameState {
   };
   onlineCount: number;
   arenaQueueSize: number;
+  nextRegenAt: number;
+  regenHpAmount: number;
+  regenEnergyAmount: number;
+  clanChatMessages: ChatMessage[];
+  privateMessages: PrivateMessage[];
+  onlinePlayers: Array<{ playerId: string; name: string }>;
 }
 
 export interface ServerError {
@@ -389,6 +408,7 @@ export interface MarketCreatePayload {
   instanceId: string;
   price: number;
   currency: Currency;
+  quantity?: number;
 }
 
 export interface MarketBuyPayload {
@@ -397,6 +417,20 @@ export interface MarketBuyPayload {
 
 export interface QuestClaimPayload {
   questId: string;
+}
+
+export interface CurrencyExchangePayload {
+  direction: "diamondsToGold" | "goldToDiamonds";
+  amount: number;
+}
+
+export interface ClanChatSendPayload {
+  text: string;
+}
+
+export interface PrivateSendPayload {
+  targetPlayerName: string;
+  text: string;
 }
 
 export interface CraftPayload {

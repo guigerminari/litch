@@ -1,5 +1,6 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import {
+  ArrowLeftRight,
   Backpack,
   Castle,
   Coins,
@@ -8,9 +9,11 @@ import {
   Gem,
   Hammer,
   Heart,
+  Lock,
   MapPinned,
   MessageCircle,
   ScrollText,
+  Send,
   Star,
   Shield,
   ShoppingBag,
@@ -25,8 +28,12 @@ import type {
   AttributeKey,
   Attributes,
   BattleParticipant,
+  Currency,
   GameState,
   ItemDefinition,
+  ItemKind,
+  MarketListing,
+  PrivateMessage,
   ClanBenefitCategory,
   TalentCategory,
   QuestView
@@ -72,6 +79,24 @@ const viewLabels: Record<View, string> = {
 
 const attributes: AttributeKey[] = ["strength", "constitution", "agility"];
 
+const ITEM_KIND_LABELS: Record<ItemKind, string> = {
+  weapon: "Arma",
+  armor: "Armadura",
+  amulet: "Amuleto",
+  potion: "Poção",
+  material: "Material",
+  scroll: "Pergaminho"
+};
+
+const ITEM_KIND_EMOJI: Record<ItemKind, string> = {
+  weapon: "⚔️",
+  armor: "🛡️",
+  amulet: "📿",
+  potion: "🧪",
+  material: "📦",
+  scroll: "📜"
+};
+
 export function App() {
   const [game, setGame] = useState<GameState | null>(null);
   const [username, setUsername] = useState("");
@@ -80,6 +105,8 @@ export function App() {
   const [connected, setConnected] = useState(socket.connected);
   const [showDetails, setShowDetails] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showExchange, setShowExchange] = useState(false);
+  const [regenMs, setRegenMs] = useState(0);
 
   useEffect(() => {
     const resume = () => {
@@ -128,6 +155,14 @@ export function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!game) return;
+    const update = () => setRegenMs(Math.max(0, game.nextRegenAt - Date.now()));
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, [game?.nextRegenAt]);
+
   const register = (event: FormEvent) => {
     event.preventDefault();
     socket.emit("auth:register", { username });
@@ -165,8 +200,10 @@ export function App() {
       <Header
         game={game}
         connected={connected}
+        regenMs={regenMs}
         onDetails={() => setShowDetails(true)}
         onGameShop={() => setView("gameShop")}
+        onExchange={() => setShowExchange(true)}
       />
       <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
         <section className="city-stage">
@@ -177,6 +214,7 @@ export function App() {
       <BottomNav game={game} view={view} setView={setView} />
       {!game.activeBattle && <FloatingChat game={game} open={showChat} setOpen={setShowChat} />}
       {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
+      {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
       {error && <Toast message={error} />}
     </main>
   );
@@ -185,18 +223,26 @@ export function App() {
 function Header({
   game,
   connected,
+  regenMs,
   onDetails,
-  onGameShop
+  onGameShop,
+  onExchange
 }: {
   game: GameState;
   connected: boolean;
+  regenMs: number;
   onDetails: () => void;
   onGameShop: () => void;
+  onExchange: () => void;
 }) {
   const nextXp = game.character.level * 120;
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
   const hpProgress = Math.min(100, Math.round((game.character.currentHp / game.derived.maxHp) * 100));
   const energyProgress = Math.min(100, Math.round((game.character.currentEnergy / game.derived.maxEnergy) * 100));
+  const regenSecs = Math.ceil(regenMs / 1000);
+  const regenMins = Math.floor(regenSecs / 60);
+  const regenSecsRemainder = regenSecs % 60;
+  const timerLabel = `${regenMins}:${String(regenSecsRemainder).padStart(2, "0")}`;
 
   return (
     <header className="topbar">
@@ -220,12 +266,18 @@ function Header({
           label="Vida"
           value={`${game.character.currentHp}/${game.derived.maxHp}`}
           progress={hpProgress}
+          regenAmount={game.regenHpAmount}
+          timerLabel={timerLabel}
+          atMax={game.character.currentHp >= game.derived.maxHp}
         />
         <ResourceBar
           className="energy"
           label="Energia"
           value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
           progress={energyProgress}
+          regenAmount={game.regenEnergyAmount}
+          timerLabel={timerLabel}
+          atMax={game.character.currentEnergy >= game.derived.maxEnergy}
         />
         <ResourceBar
           className="xp"
@@ -235,11 +287,15 @@ function Header({
         />
       </div>
       <div className="top-economy">
-        <StatPill icon={<Coins size={17} />} label="Ouro" value={game.character.gold} />
+        <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
+          <Coins size={17} />
+          <small>Ouro</small>
+          <strong>{formatCurrency(game.character.gold)}</strong>
+        </button>
         <button className="stat-pill stat-action" onClick={onGameShop} title="Loja do Jogo">
           <Gem size={17} />
           <small>Diamantes</small>
-          <strong>{game.character.diamonds}</strong>
+          <strong>{formatCurrency(game.character.diamonds)}</strong>
         </button>
         <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Offline"}</span>
       </div>
@@ -251,12 +307,18 @@ function ResourceBar({
   className,
   label,
   value,
-  progress
+  progress,
+  regenAmount,
+  timerLabel,
+  atMax
 }: {
   className: string;
   label: string;
   value: string;
   progress: number;
+  regenAmount?: number;
+  timerLabel?: string;
+  atMax?: boolean;
 }) {
   return (
     <div className={`resource-bar ${className}`}>
@@ -267,19 +329,30 @@ function ResourceBar({
       <i>
         <b style={{ width: `${progress}%` }} />
       </i>
+      {regenAmount !== undefined && timerLabel && !atMax && (
+        <small className="regen-hint">♻️ +{regenAmount} em {timerLabel}</small>
+      )}
+      {regenAmount !== undefined && timerLabel && atMax && (
+        <small className="regen-hint regen-full">Máximo atingido</small>
+      )}
     </div>
   );
 }
 
 function BottomNav({ game, view, setView }: { game: GameState; view: View; setView: (view: View) => void }) {
   const locked = Boolean(game.activeBattle);
+  const completedMissions = countClaimable(game.quests.daily) + countClaimable(game.quests.fixed);
+  const myListings = game.marketplaceListings.filter((l) => l.sellerPlayerId === game.player.id).length;
+
   const items = [
-    { view: "city" as View, label: "Cidade", icon: <Castle size={20} />, disabled: locked },
-    { view: "hunt" as View, label: "Caça", icon: <Swords size={20} />, disabled: locked },
-    { view: "arena" as View, label: "Arena", icon: <Shield size={20} />, disabled: locked },
-    { view: "inventory" as View, label: "Inventário", icon: <Backpack size={20} />, disabled: false },
-    { view: "market" as View, label: "Mercado", icon: <ShoppingBag size={20} />, disabled: locked },
-    { view: "missions" as View, label: "Missões", icon: <ScrollText size={20} />, disabled: locked }
+    { view: "city" as View, label: "Cidade", icon: <Castle size={20} />, disabled: locked, badge: null },
+    { view: "hunt" as View, label: "Caça", icon: <Swords size={20} />, disabled: locked, badge: null },
+    { view: "arena" as View, label: "Arena", icon: <Shield size={20} />, disabled: locked, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
+    { view: "inventory" as View, label: "Inventário", icon: <Backpack size={20} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
+    { view: "market" as View, label: "Mercado", icon: <ShoppingBag size={20} />, disabled: locked, badge: myListings > 0 ? myListings : null },
+    { view: "missions" as View, label: "Missões", icon: <ScrollText size={20} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
+    { view: "clan" as View, label: "Clã", icon: <Users size={20} />, disabled: locked, badge: null },
+    { view: "travel" as View, label: "Viajar", icon: <MapPinned size={20} />, disabled: locked, badge: null }
   ];
 
   return (
@@ -294,6 +367,9 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
           onClick={() => setView(item.view)}
         >
           {item.icon}
+          {item.badge !== null && item.badge !== undefined && (
+            <span className="bottom-badge">{item.badge}</span>
+          )}
         </button>
       ))}
     </nav>
@@ -357,45 +433,55 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         <h3>Poções</h3>
         <div className="potion-actions">
           <button
-            className="ghost-button"
+            className="ghost-button potion-btn"
             disabled={locked || !healthPotion || game.character.currentHp >= game.derived.maxHp}
             onClick={() => healthPotion && socket.emit("inventory:use", { instanceId: healthPotion.instanceId })}
           >
-            Vida {healthPotion ? `x${healthPotion.quantity}` : "x0"}
+            <Heart size={14} /> Vida {healthPotion ? `x${healthPotion.quantity}` : "x0"}
           </button>
           <button
-            className="ghost-button"
+            className="ghost-button potion-btn"
             disabled={locked || !energyPotion || game.character.currentEnergy >= game.derived.maxEnergy}
             onClick={() => energyPotion && socket.emit("inventory:use", { instanceId: energyPotion.instanceId })}
           >
-            Energia {energyPotion ? `x${energyPotion.quantity}` : "x0"}
+            <Zap size={14} /> Energia {energyPotion ? `x${energyPotion.quantity}` : "x0"}
           </button>
         </div>
       </section>
 
       <section className="compact-section">
         <h3>Equipamentos</h3>
-        {(["weapon", "armor", "amulet"] as const).map((slot) => {
-          const instanceId = game.character.equipment[slot];
-          const inventoryItem = instanceId ? game.character.inventory.find((item) => item.instanceId === instanceId) : null;
-          const definition = inventoryItem ? game.itemCatalog[inventoryItem.itemId] : null;
-          return (
-            <div className="equipment-line" key={slot}>
-              <span>{EQUIPMENT_LABEL[slot]}</span>
-              <strong>{definition?.name ?? "Vazio"}</strong>
-            </div>
-          );
-        })}
+        <div className="equipment-visual">
+          {(["weapon", "armor", "amulet"] as const).map((slot) => {
+            const instanceId = game.character.equipment[slot];
+            const inventoryItem = instanceId ? game.character.inventory.find((item) => item.instanceId === instanceId) : null;
+            const definition = inventoryItem ? game.itemCatalog[inventoryItem.itemId] : null;
+            const slotEmoji = { weapon: "⚔️", armor: "🛡️", amulet: "📿" };
+            return (
+              <div className={`equip-slot${definition ? " has-item" : ""}`} key={slot}>
+                <span className="equip-emoji">{slotEmoji[slot]}</span>
+                <div className="equip-info">
+                  <small>{EQUIPMENT_LABEL[slot]}</small>
+                  <strong>{definition?.name ?? "—"}</strong>
+                  {definition && <span className="equip-desc">{definition.description}</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
 
       <section className="compact-section">
         <h3>Atributos</h3>
-        {attributes.map((attribute) => (
-          <div className="attribute-line" key={attribute}>
-            <span>{ATTRIBUTE_LABEL[attribute]}</span>
-            <strong>{game.character.attributes[attribute]}</strong>
-          </div>
-        ))}
+        {attributes.map((attribute) => {
+          const attrIcon = { strength: <Swords size={13} />, constitution: <Heart size={13} />, agility: <Zap size={13} /> };
+          return (
+            <div className="attribute-line" key={attribute}>
+              <span className="attr-label">{attrIcon[attribute]} {ATTRIBUTE_LABEL[attribute]}</span>
+              <strong>{game.character.attributes[attribute]}</strong>
+            </div>
+          );
+        })}
         <div className="reset-actions">
           <button className="ghost-button" disabled={locked} onClick={() => socket.emit("attribute:reset", { method: "diamonds" })}>
             Reset 20 diamantes
@@ -507,67 +593,59 @@ function GamePane({ game, view, setView }: { game: GameState; view: View; setVie
   return <CityOverview game={game} setView={setView} />;
 }
 
+type CityOption = { view: View; icon: React.ReactNode; title: string; value: string };
+
+function CityOptionCard({ option, setView }: { option: CityOption; setView: (v: View) => void }) {
+  return (
+    <button className="option-card" onClick={() => setView(option.view)}>
+      <span>{option.icon}</span>
+      <strong>{option.title}</strong>
+      <small>{option.value}</small>
+    </button>
+  );
+}
+
+function CityGroup({ title, options, setView }: { title: string; options: CityOption[]; setView: (v: View) => void }) {
+  if (options.length === 0) return null;
+  return (
+    <div className="city-group">
+      <h3 className="city-group-title">{title}</h3>
+      <div className="overview-grid">
+        {options.map((o) => <CityOptionCard key={o.view} option={o} setView={setView} />)}
+      </div>
+    </div>
+  );
+}
+
 function CityOverview({ game, setView }: { game: GameState; setView: (view: View) => void }) {
-  const options: Array<{ view: View; icon: React.ReactNode; title: string; value: string }> = [
-    { view: "hunt" as View, icon: <Swords size={24} />, title: "Caçar", value: `${game.cityMonsters.length} monstros` },
-    { view: "arena" as View, icon: <Shield size={24} />, title: "Arena", value: `${game.arenaQueueSize} na fila` },
-    { view: "armorer" as View, icon: <Gavel size={24} />, title: "Armeiro", value: `${game.currentCity.armorerItemIds.length} itens` },
-    {
-      view: "apothecary" as View,
-      icon: <FlaskConical size={24} />,
-      title: "Boticário",
-      value: `${game.currentCity.apothecaryItemIds.length} poções`
-    },
-    {
-      view: "missions" as View,
-      icon: <ScrollText size={24} />,
-      title: "Missões",
-      value: `${countClaimable(game.quests.daily) + countClaimable(game.quests.fixed)} prontas`
-    },
-    { view: "travel" as View, icon: <MapPinned size={24} />, title: "Viajar", value: `${game.cities.length} cidades` },
-    { view: "market" as View, icon: <ShoppingBag size={24} />, title: "Mercado", value: `${game.marketplaceListings.length} ofertas` },
-    { view: "rankings" as View, icon: <Trophy size={24} />, title: "Ranking", value: "Nível e Arena" },
-    {
-      view: "clan" as View,
-      icon: <Users size={24} />,
-      title: "Clã",
-      value: game.clan ? game.clan.name : "Criar ou entrar"
-    }
+  const combatOptions: CityOption[] = [
+    { view: "hunt", icon: <Swords size={24} />, title: "Caçar", value: `${game.cityMonsters.length} monstros` },
+    { view: "arena", icon: <Shield size={24} />, title: "Arena", value: `${game.arenaQueueSize} na fila` },
   ];
-  if (game.currentCity.blacksmithRecipeIds?.length) {
-    options.push({
-      view: "blacksmith",
-      icon: <Hammer size={24} />,
-      title: "Ferreiro",
-      value: game.currentCity.npcs.blacksmith ?? "Receitas"
-    });
-  }
-  if (game.currentCity.alchemistRecipeIds?.length) {
-    options.push({
-      view: "alchemist",
-      icon: <FlaskConical size={24} />,
-      title: "Alquimista",
-      value: game.currentCity.npcs.alchemist ?? "Receitas"
-    });
-  }
   if (game.currentCity.dungeonMonsterIds?.length) {
-    options.push({
-      view: "dungeon",
-      icon: <Star size={24} />,
-      title: "Masmorra",
-      value: `${game.currentCity.dungeonMonsterIds.length} desafios`
-    });
+    combatOptions.push({ view: "dungeon", icon: <Star size={24} />, title: "Masmorra", value: `${game.currentCity.dungeonMonsterIds.length} desafios` });
   }
 
+  const actionOptions: CityOption[] = [
+    { view: "rankings", icon: <Trophy size={24} />, title: "Ranking", value: "Nível e Arena" },
+  ];
+  if (game.currentCity.blacksmithRecipeIds?.length) {
+    actionOptions.push({ view: "blacksmith", icon: <Hammer size={24} />, title: "Ferreiro", value: game.currentCity.npcs.blacksmith ?? "Receitas" });
+  }
+  if (game.currentCity.alchemistRecipeIds?.length) {
+    actionOptions.push({ view: "alchemist", icon: <FlaskConical size={24} />, title: "Alquimista", value: game.currentCity.npcs.alchemist ?? "Receitas" });
+  }
+
+  const inhabitantOptions: CityOption[] = [
+    { view: "armorer", icon: <Gavel size={24} />, title: "Armeiro", value: `${game.currentCity.armorerItemIds.length} itens` },
+    { view: "apothecary", icon: <FlaskConical size={24} />, title: "Boticário", value: `${game.currentCity.apothecaryItemIds.length} poções` },
+  ];
+
   return (
-    <section className="content-panel overview-grid">
-      {options.map((option) => (
-        <button className="option-card" key={option.view} onClick={() => setView(option.view)}>
-          <span>{option.icon}</span>
-          <strong>{option.title}</strong>
-          <small>{option.value}</small>
-        </button>
-      ))}
+    <section className="content-panel city-overview">
+      <CityGroup title="Combate" options={combatOptions} setView={setView} />
+      <CityGroup title="Ações" options={actionOptions} setView={setView} />
+      <CityGroup title="Habitantes" options={inhabitantOptions} setView={setView} />
     </section>
   );
 }
@@ -583,11 +661,18 @@ function MissionsPanel({ game }: { game: GameState }) {
 }
 
 function QuestSection({ title, quests }: { title: string; quests: QuestView[] }) {
+  const sorted = [...quests].sort((a, b) => {
+    // Priority: claimable (completed & !claimed) → highest % → claimed
+    const aPri = a.completed && !a.claimed ? 0 : a.claimed ? 2 : 1;
+    const bPri = b.completed && !b.claimed ? 0 : b.claimed ? 2 : 1;
+    if (aPri !== bPri) return aPri - bPri;
+    return b.progress / b.target - a.progress / a.target;
+  });
   return (
     <section className="quest-section">
       <h3>{title}</h3>
       <div className="quest-list">
-        {quests.map((quest) => {
+        {sorted.map((quest) => {
           const progress = Math.min(100, Math.round((quest.progress / quest.target) * 100));
           return (
             <article className={quest.claimed ? "quest-row claimed" : "quest-row"} key={quest.id}>
@@ -605,8 +690,8 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
               </div>
               <div className="quest-reward">
                 {quest.reward.experience ? <span>{quest.reward.experience} XP</span> : null}
-                {quest.reward.gold ? <span>{quest.reward.gold} ouro</span> : null}
-                {quest.reward.diamonds ? <span>{quest.reward.diamonds} diamantes</span> : null}
+                {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={12} /></span> : null}
+                {quest.reward.diamonds ? <span>{quest.reward.diamonds} <Gem size={12} /></span> : null}
               </div>
               <button
                 className="primary-button"
@@ -659,7 +744,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
                     {game.itemCatalog[ingredient.itemId].name}: {countInventoryItem(game, ingredient.itemId)}/{ingredient.quantity}
                   </small>
                 ))}
-                <small>{recipe.goldCost} ouro</small>
+                <small>{recipe.goldCost} <Coins size={12} /></small>
               </div>
               <button className="primary-button" disabled={!canCraft} onClick={() => socket.emit("craft:create", { recipeId: recipe.id })}>
                 Criar
@@ -753,6 +838,7 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
           Usar pergaminho
         </button>
       </div>
+      <div className="talent-categories">
       {categories.map((category) => (
         <section className="talent-tree" key={category.id}>
           <h3>{category.title}</h3>
@@ -787,6 +873,7 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
           </div>
         </section>
       ))}
+      </div>
     </div>
   );
 }
@@ -926,8 +1013,9 @@ function ClanBenefitTree({ game, leader }: { game: GameState; leader: boolean })
                       <strong>{benefit.name}</strong>
                       <span>{benefit.description}</span>
                       <small>
-                        {benefit.costPerRank.gold} ouro
-                        {benefit.costPerRank.diamonds ? `, ${benefit.costPerRank.diamonds} diamantes` : ""}
+                        {benefit.costPerRank.gold} <Coins size={10} />
+                        {benefit.costPerRank.diamonds ? (` + ${benefit.costPerRank.diamonds} `)  : null} 
+                        {benefit.costPerRank.diamonds ? <Gem size={10} /> : null}
                       </small>
                     </div>
                     <b>
@@ -1023,12 +1111,16 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
       <div className="shop-grid">
         {itemIds.map((itemId) => {
           const item = game.itemCatalog[itemId];
+          const meetsLevel = game.character.level >= item.minLevel;
+          const canAfford = game.character.gold >= item.price;
+          const disabled = shop === "armorer" ? !canAfford : (!canAfford || !meetsLevel);
+          const label = `Comprar ${formatCurrency(item.price)} ouro`;
           return (
             <ItemCard
               key={item.id}
               item={item}
-              actionLabel={`Comprar ${item.price} ouro`}
-              disabled={game.character.gold < item.price || game.character.level < item.minLevel}
+              actionLabel={label}
+              disabled={disabled}
               onAction={() => socket.emit("shop:buy", { itemId: item.id })}
             />
           );
@@ -1064,21 +1156,37 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
 }
 
 function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBattle?: () => void }) {
+  const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null);
   const battleLocked = game.activeBattle?.status === "active";
-  const equipmentItems = game.character.inventory.filter((item) => {
-    const definition = game.itemCatalog[item.itemId];
-    return definition.slot;
+
+  // Build flat slot list: unequipped equipment (1 slot each) + stackable items (1 slot per unique itemId)
+  const equipmentItems = game.character.inventory.filter((inv) => {
+    const def = game.itemCatalog[inv.itemId];
+    return def?.slot && !isItemEquipped(game, inv.instanceId);
   });
-  const groupedItems = Object.values(
-    game.character.inventory
-      .filter((item) => !game.itemCatalog[item.itemId].slot)
-      .reduce<Record<string, { instanceId: string; itemId: string; quantity: number }>>((groups, item) => {
-        groups[item.itemId] ??= { instanceId: item.instanceId, itemId: item.itemId, quantity: 0 };
-        groups[item.itemId].quantity += item.quantity;
-        return groups;
-      }, {})
-  );
-  const visibleItems = [...equipmentItems, ...groupedItems];
+  const stackableMap = game.character.inventory
+    .filter((inv) => !game.itemCatalog[inv.itemId]?.slot)
+    .reduce<Record<string, { instanceId: string; itemId: string; quantity: number }>>((acc, inv) => {
+      if (!acc[inv.itemId]) acc[inv.itemId] = { instanceId: inv.instanceId, itemId: inv.itemId, quantity: 0 };
+      acc[inv.itemId].quantity += inv.quantity;
+      return acc;
+    }, {});
+  const filledSlots = [...equipmentItems, ...Object.values(stackableMap)];
+
+  // Pad to exactly 40 slots (5 columns × 8 rows)
+  const TOTAL_SLOTS = 40;
+  const slots: Array<{ instanceId: string; itemId: string; quantity: number } | null> = [
+    ...filledSlots,
+    ...Array(Math.max(0, TOTAL_SLOTS - filledSlots.length)).fill(null),
+  ];
+
+  const selectedEntry = selectedInstanceId ? filledSlots.find((s) => s.instanceId === selectedInstanceId) ?? null : null;
+  const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
+  const selectedEquipped = selectedEntry ? isItemEquipped(game, selectedEntry.instanceId) : false;
+
+  const kindEmoji: Record<string, string> = {
+    weapon: "⚔️", armor: "🛡️", amulet: "📿", potion: "🧪", scroll: "📜", material: "📦",
+  };
 
   return (
     <section className="content-panel">
@@ -1088,35 +1196,71 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
           Voltar à batalha
         </button>
       )}
-      <div className="inventory-list">
-        {visibleItems.map((inventoryItem) => {
-          const item = game.itemCatalog[inventoryItem.itemId];
-          const equipped = isItemEquipped(game, inventoryItem.instanceId);
-          const consumable = item.kind === "potion";
+      <div className="inventory-grid">
+        {slots.map((slot, index) => {
+          if (!slot) {
+            return <div key={`empty-${index}`} className="inv-slot empty" />;
+          }
+          const item = game.itemCatalog[slot.itemId];
+          const equipped = isItemEquipped(game, slot.instanceId);
+          const selected = selectedInstanceId === slot.instanceId;
           return (
-            <article className={equipped ? "inventory-row equipped" : "inventory-row"} key={inventoryItem.instanceId}>
-              <div>
-                <strong>{item.name}</strong>
-                <span>{item.description}</span>
-              </div>
-              <small>{inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : item.kind}</small>
-              <button
-                className="ghost-button"
-                disabled={
-                  consumable
-                    ? battleLocked
-                    : !item.slot || equipped || game.character.level < item.minLevel || battleLocked
-                }
-                onClick={() =>
-                  socket.emit(consumable ? "inventory:use" : "inventory:equip", { instanceId: inventoryItem.instanceId })
-                }
-              >
-                {consumable ? (battleLocked ? "Em batalha" : "Usar") : equipped ? "Equipado" : "Equipar"}
-              </button>
-            </article>
+            <button
+              key={slot.instanceId}
+              className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""}`}
+              title={item.name}
+              onClick={() => setSelectedInstanceId(selected ? null : slot.instanceId)}
+            >
+              <span className="slot-icon">{kindEmoji[item.kind] ?? "📦"}</span>
+              {slot.quantity > 1 && <span className="slot-qty">x{slot.quantity}</span>}
+            </button>
           );
         })}
       </div>
+
+      {selectedEntry && selectedItem && (
+        <div className="inv-action-bar">
+          <div className="inv-action-info">
+            <strong>{selectedItem.name}</strong>
+            <span>{selectedItem.description}</span>
+            {selectedItem.slot && game.character.level < selectedItem.minLevel && (
+              <small className="level-warn">⚠️ Nível {selectedItem.minLevel} necessário para equipar</small>
+            )}
+          </div>
+          <div className="inv-action-buttons">
+            {selectedItem.kind === "potion" && (
+              <button
+                className="primary-button"
+                disabled={battleLocked}
+                onClick={() => {
+                  socket.emit("inventory:use", { instanceId: selectedEntry.instanceId });
+                  setSelectedInstanceId(null);
+                }}
+              >
+                Usar
+              </button>
+            )}
+            {selectedItem.slot && !selectedEquipped && (
+              <button
+                className="primary-button"
+                disabled={game.character.level < selectedItem.minLevel || battleLocked}
+                onClick={() => {
+                  socket.emit("inventory:equip", { instanceId: selectedEntry.instanceId });
+                  setSelectedInstanceId(null);
+                }}
+              >
+                Equipar
+              </button>
+            )}
+            {selectedEquipped && (
+              <span className="equipped-label">Equipado</span>
+            )}
+            <button className="ghost-button" onClick={() => setSelectedInstanceId(null)}>
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -1141,7 +1285,8 @@ function TravelPanel({ game }: { game: GameState }) {
                 disabled={current || locked}
                 onClick={() => socket.emit("city:travel", { cityId: city.id })}
               >
-                {current ? "Atual" : `Viajar ${city.travelCost} ouro`}
+                {current ? "Atual" : `Viajar ${city.travelCost} `}
+                {!current && <Coins size={17} />}
               </button>
             </article>
           );
@@ -1155,96 +1300,374 @@ function MarketPanel({ game }: { game: GameState }) {
   const tradableItems = game.character.inventory.filter((item) => !isItemEquipped(game, item.instanceId));
   const [instanceId, setInstanceId] = useState(tradableItems[0]?.instanceId ?? "");
   const [price, setPrice] = useState(25);
-  const [currency, setCurrency] = useState<"gold" | "diamonds">("gold");
-  const goldListings = game.marketplaceListings.filter((listing) => listing.currency === "gold");
-  const diamondListings = game.marketplaceListings.filter((listing) => listing.currency === "diamonds");
+  const [quantity, setQuantity] = useState(1);
+  const [currency, setCurrency] = useState<Currency>("gold");
+  const [currencyFilter, setCurrencyFilter] = useState<"all" | Currency>("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | ItemKind>("all");
+  const [sortBy, setSortBy] = useState<"date-desc" | "date-asc" | "price-desc" | "price-asc">("date-desc");
+  const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
+  const selectedInventoryItem = tradableItems.find((item) => item.instanceId === instanceId) ?? null;
+  const selectedItemDef = selectedInventoryItem ? game.itemCatalog[selectedInventoryItem.itemId] : null;
+  const maxQuantity = selectedInventoryItem ? Math.max(1, selectedInventoryItem.quantity) : 1;
+  const myListings = game.marketplaceListings.filter((listing) => listing.sellerPlayerId === game.player.id);
+  const purchaseListings = game.marketplaceListings
+    .filter((listing) => listing.sellerPlayerId !== game.player.id)
+    .filter((listing) => currencyFilter === "all" || listing.currency === currencyFilter)
+    .filter((listing) => {
+      if (typeFilter === "all") {
+        return true;
+      }
+      return game.itemCatalog[listing.item.itemId]?.kind === typeFilter;
+    })
+    .sort((left, right) => {
+      if (sortBy === "price-asc") {
+        return left.price - right.price || right.createdAt - left.createdAt;
+      }
+      if (sortBy === "price-desc") {
+        return right.price - left.price || right.createdAt - left.createdAt;
+      }
+      if (sortBy === "date-asc") {
+        return left.createdAt - right.createdAt;
+      }
+      return right.createdAt - left.createdAt;
+    });
 
   useEffect(() => {
-    if (!instanceId && tradableItems[0]) {
+    if (!tradableItems.some((item) => item.instanceId === instanceId)) {
+      setInstanceId(tradableItems[0]?.instanceId ?? "");
+    } else if (!instanceId && tradableItems[0]) {
       setInstanceId(tradableItems[0].instanceId);
     }
   }, [instanceId, tradableItems]);
+
+  useEffect(() => {
+    if (!selectedInventoryItem) {
+      if (quantity !== 1) {
+        setQuantity(1);
+      }
+      return;
+    }
+    const nextMax = selectedItemDef?.slot ? 1 : maxQuantity;
+    if (quantity > nextMax) {
+      setQuantity(nextMax);
+    } else if (quantity < 1) {
+      setQuantity(1);
+    }
+  }, [maxQuantity, quantity, selectedInventoryItem, selectedItemDef]);
 
   const createListing = (event: FormEvent) => {
     event.preventDefault();
     if (!instanceId) {
       return;
     }
-    socket.emit("market:create", { instanceId, price, currency });
+    socket.emit("market:create", {
+      instanceId,
+      price,
+      currency,
+      quantity: selectedItemDef?.slot ? 1 : Math.max(1, Math.min(maxQuantity, quantity))
+    });
   };
 
   return (
     <section className="content-panel market-panel">
       <PanelTitle icon={<ShoppingBag size={20} />} title="Mercado de Trocas" />
-      <form className="market-form" onSubmit={createListing}>
-        <select value={instanceId} onChange={(event) => setInstanceId(event.target.value)}>
-          {tradableItems.map((inventoryItem) => {
-            const item = game.itemCatalog[inventoryItem.itemId];
-            return (
-              <option value={inventoryItem.instanceId} key={inventoryItem.instanceId}>
-                {item.name} {inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : ""}
-              </option>
-            );
-          })}
-        </select>
-        <input
-          type="number"
-          min={1}
-          value={price}
-          onChange={(event) => setPrice(Number(event.target.value))}
-          aria-label="Preço"
-        />
-        <select value={currency} onChange={(event) => setCurrency(event.target.value as "gold" | "diamonds")}>
-          <option value="gold">Ouro</option>
-          <option value="diamonds">Diamantes</option>
-        </select>
-        <button className="primary-button" disabled={!instanceId}>
-          Ofertar
-        </button>
-      </form>
-      <MarketListingGroup title="Por ouro" listings={goldListings} game={game} />
-      <MarketListingGroup title="Por diamantes" listings={diamondListings} game={game} />
+      <div className="market-layout">
+        <section className="market-block">
+          <div className="market-block-head">
+            <div>
+              <h3>Gerenciar vendas</h3>
+              <p className="muted">Crie lotes dos itens agrupáveis e acompanhe suas ofertas abertas.</p>
+            </div>
+          </div>
+          <form className="market-form" onSubmit={createListing}>
+            <select value={instanceId} onChange={(event) => setInstanceId(event.target.value)}>
+              {tradableItems.length === 0 && <option value="">Nenhum item disponível</option>}
+              {tradableItems.map((inventoryItem) => {
+                const item = game.itemCatalog[inventoryItem.itemId];
+                return (
+                  <option value={inventoryItem.instanceId} key={inventoryItem.instanceId}>
+                    {item.name} {inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : ""}
+                  </option>
+                );
+              })}
+            </select>
+            <input
+              type="number"
+              min={1}
+              max={selectedItemDef?.slot ? 1 : maxQuantity}
+              value={selectedItemDef?.slot ? 1 : quantity}
+              disabled={!selectedInventoryItem || Boolean(selectedItemDef?.slot)}
+              onChange={(event) => setQuantity(Number(event.target.value))}
+              aria-label="Quantidade do lote"
+            />
+            <input
+              type="number"
+              min={1}
+              value={price}
+              onChange={(event) => setPrice(Number(event.target.value))}
+              aria-label="Preço"
+            />
+            <select value={currency} onChange={(event) => setCurrency(event.target.value as Currency)}>
+              <option value="gold">Ouro</option>
+              <option value="diamonds">Diamantes</option>
+            </select>
+            <button className="primary-button" disabled={!instanceId}>
+              Ofertar lote
+            </button>
+          </form>
+          <div className="market-form-hint">
+            {selectedInventoryItem && selectedItemDef ? (
+              <span>
+                {selectedItemDef.slot
+                  ? "Equipamentos só podem ser vendidos unidade por unidade."
+                  : `Disponível para lote: até x${selectedInventoryItem.quantity}.`}
+              </span>
+            ) : (
+              <span>Nenhum item disponível para anunciar.</span>
+            )}
+          </div>
+          <section className="market-group">
+            <h3>Minhas ofertas</h3>
+            <div className="market-list">
+              {myListings.length === 0 && <p className="empty-state">Você ainda não colocou nada à venda.</p>}
+              {myListings.map((listing) => (
+                <MarketListingCard
+                  key={listing.id}
+                  game={game}
+                  listing={listing}
+                  actionLabel="Cancelar"
+                  metaLabel="Sua oferta"
+                  onAction={() => socket.emit("market:cancel", { listingId: listing.id })}
+                />
+              ))}
+            </div>
+          </section>
+        </section>
+
+        <section className="market-block">
+          <div className="market-block-head market-block-head-wrap">
+            <div>
+              <h3>Itens disponíveis para compra</h3>
+              <p className="muted">Cada oferta é comprada inteira, exatamente na quantidade anunciada.</p>
+            </div>
+            <div className="market-toolbar">
+              <div className="market-currency-filters" role="tablist" aria-label="Filtro de moeda">
+                <button
+                  type="button"
+                  className={`market-filter-btn${currencyFilter === "all" ? " active" : ""}`}
+                  onClick={() => setCurrencyFilter("all")}
+                  aria-pressed={currencyFilter === "all"}
+                >
+                  <ShoppingBag size={16} /> Todos
+                </button>
+                <button
+                  type="button"
+                  className={`market-filter-btn${currencyFilter === "gold" ? " active" : ""}`}
+                  onClick={() => setCurrencyFilter("gold")}
+                  aria-pressed={currencyFilter === "gold"}
+                >
+                  <Coins size={16} /> Coin
+                </button>
+                <button
+                  type="button"
+                  className={`market-filter-btn${currencyFilter === "diamonds" ? " active" : ""}`}
+                  onClick={() => setCurrencyFilter("diamonds")}
+                  aria-pressed={currencyFilter === "diamonds"}
+                >
+                  <Gem size={16} /> Diamante
+                </button>
+              </div>
+              <div className="market-selects">
+                <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value as "all" | ItemKind)}>
+                  <option value="all">Todos os tipos</option>
+                  {Object.entries(ITEM_KIND_LABELS).map(([kind, label]) => (
+                    <option key={kind} value={kind}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <select value={sortBy} onChange={(event) => setSortBy(event.target.value as typeof sortBy)}>
+                  <option value="date-desc">Mais recentes</option>
+                  <option value="date-asc">Mais antigas</option>
+                  <option value="price-asc">Menor valor</option>
+                  <option value="price-desc">Maior valor</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="market-list">
+            {purchaseListings.length === 0 && <p className="empty-state">Nenhuma oferta encontrada com esse filtro.</p>}
+            <div className="market-grid">
+              {purchaseListings.map((listing) => (
+                <button
+                  key={listing.id}
+                  className="market-grid-item"
+                  onClick={() => setSelectedListing(listing)}
+                  title={game.itemCatalog[listing.item.itemId].name}
+                >
+                  <div className="market-grid-icon">
+                    <span>{ITEM_KIND_EMOJI[game.itemCatalog[listing.item.itemId].kind] ?? "📦"}</span>
+                    {listing.item.quantity > 1 && <span className="market-grid-qty">x{listing.item.quantity}</span>}
+                  </div>
+                  <div className="market-grid-name">{game.itemCatalog[listing.item.itemId].name}</div>
+                  <div className="market-grid-price">
+                    {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={12} /> : <Gem size={12} />}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          {selectedListing && (
+            <MarketListingModal
+              listing={selectedListing}
+              game={game}
+              onClose={() => setSelectedListing(null)}
+              onBuy={() => {
+                socket.emit("market:buy", { listingId: selectedListing.id });
+                setSelectedListing(null);
+              }}
+            />
+          )}
+        </section>
+      </div>
     </section>
   );
 }
 
-function MarketListingGroup({
-  title,
-  listings,
-  game
+function MarketListingCard({
+  listing,
+  game,
+  actionLabel,
+  metaLabel,
+  onAction
 }: {
-  title: string;
-  listings: GameState["marketplaceListings"];
+  listing: MarketListing;
   game: GameState;
+  actionLabel: string;
+  metaLabel: string;
+  onAction: () => void;
 }) {
+  const item = game.itemCatalog[listing.item.itemId];
   return (
-    <section className="market-group">
-      <h3>{title}</h3>
-      <div className="market-list">
-        {listings.length === 0 && <p className="empty-state">Nenhuma oferta aberta.</p>}
-        {listings.map((listing) => {
-          const item = game.itemCatalog[listing.item.itemId];
-          const mine = listing.sellerPlayerId === game.player.id;
-          return (
-            <article className="market-row" key={listing.id}>
-              <div>
-                <strong>{item.name}</strong>
-                <span>{listing.sellerName}</span>
-              </div>
-              <b>
-                {listing.price} {listing.currency === "gold" ? "ouro" : "diamantes"}
-              </b>
-              <button
-                className="ghost-button"
-                onClick={() => socket.emit(mine ? "market:cancel" : "market:buy", { listingId: listing.id })}
-              >
-                {mine ? "Cancelar" : "Comprar"}
-              </button>
-            </article>
-          );
-        })}
+    <article className="market-card">
+      <div className="market-item-box">
+        <span className="market-item-emoji">{ITEM_KIND_EMOJI[item.kind] ?? "📦"}</span>
+        {listing.item.quantity > 1 && <span className="market-item-qty">x{listing.item.quantity}</span>}
       </div>
-    </section>
+      <div className="market-card-body">
+        <strong>{item.name}</strong>
+        <span className="market-card-meta">{metaLabel}</span>
+      </div>
+      <div className="market-card-side">
+        <div className="market-card-price">
+          {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={14} /> : <Gem size={14} />}
+        </div>
+        <button className="icon-button" title={actionLabel} onClick={onAction}>
+          <X size={16} />
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function MarketListingModal({
+  listing,
+  game,
+  onClose,
+  onBuy
+}: {
+  listing: MarketListing;
+  game: GameState;
+  onClose: () => void;
+  onBuy: () => void;
+}) {
+  const item = game.itemCatalog[listing.item.itemId];
+  const canBuy = 
+    (listing.currency === "gold" ? game.character.gold >= listing.price : game.character.diamonds >= listing.price) &&
+    game.inventoryUsed < game.inventoryCapacity;
+  return (
+    <div className="drawer-backdrop" role="presentation" onClick={onClose}>
+      <div className="market-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={20} />
+        </button>
+        <div className="market-modal-icon">
+          <span className="market-modal-emoji">{ITEM_KIND_EMOJI[item.kind] ?? "📦"}</span>
+          {listing.item.quantity > 1 && <span className="market-modal-qty">x{listing.item.quantity}</span>}
+        </div>
+        <div className="market-modal-content">
+          <h2>{item.name}</h2>
+          <small className="market-modal-type">{ITEM_KIND_LABELS[item.kind]}</small>
+          <p className="market-modal-desc">{item.description}</p>
+          
+          <div className="market-modal-details">
+            <div>
+              <span>Vendedor</span>
+              <strong>{listing.sellerName}</strong>
+            </div>
+            <div>
+              <span>Data da oferta</span>
+              <strong>{formatListingDate(listing.createdAt)}</strong>
+            </div>
+            <div>
+              <span>Quantidade no lote</span>
+              <strong>x{listing.item.quantity}</strong>
+            </div>
+          </div>
+
+          {item.slot && (
+            <div className="market-modal-stats">
+              <h4>Bônus</h4>
+              <div className="stat-list">
+                {item.stats.strength && <div><span>Força</span> <strong>+{item.stats.strength}</strong></div>}
+                {item.stats.constitution && <div><span>Constituição</span> <strong>+{item.stats.constitution}</strong></div>}
+                {item.stats.agility && <div><span>Agilidade</span> <strong>+{item.stats.agility}</strong></div>}
+                {item.stats.defense && <div><span>Defesa</span> <strong>+{item.stats.defense}</strong></div>}
+              </div>
+            </div>
+          )}
+
+          {item.stats.healPercent && (
+            <div className="market-modal-stats">
+              <h4>Efeito</h4>
+              <p>Restaura {item.stats.healPercent * 100}% da vida ao usar</p>
+            </div>
+          )}
+
+          {item.stats.energyPercent && (
+            <div className="market-modal-stats">
+              <h4>Efeito</h4>
+              <p>Restaura {item.stats.energyPercent * 100}% da energia ao usar</p>
+            </div>
+          )}
+
+          {item.minLevel > 1 && (
+            <div className={item.minLevel > game.character.level ? "market-modal-requirement unmet" : "market-modal-requirement"}>
+              Nível mínimo: {item.minLevel} {item.minLevel > game.character.level && "(não alcançado)"}
+            </div>
+          )}
+
+          <div className="market-modal-footer">
+            <div className="market-modal-price">
+              <strong>Preço total:</strong>
+              <b className="price-amount">
+                {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={16} /> : <Gem size={16} />}
+              </b>
+            </div>
+            <button
+              className="primary-button"
+              disabled={!canBuy}
+              onClick={onBuy}
+            >
+              {!canBuy && listing.currency === "gold" && game.character.gold < listing.price ? "Ouro insuficiente" : ""}
+              {!canBuy && listing.currency === "diamonds" && game.character.diamonds < listing.price ? "Diamantes insuficientes" : ""}
+              {!canBuy && game.inventoryUsed >= game.inventoryCapacity ? "Inventário cheio" : ""}
+              {canBuy ? "Comprar lote" : ""}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1340,40 +1763,247 @@ function FloatingChat({
   setOpen: (open: boolean) => void;
 }) {
   const [message, setMessage] = useState("");
+  const [tab, setTab] = useState<"global" | "clan" | "private">("global");
+  const [privateTarget, setPrivateTarget] = useState<{ playerId: string; name: string } | null>(null);
+  const [pmTarget, setPmTarget] = useState("");
+  const feedRef = useRef<HTMLDivElement>(null);
 
-  const send = (event: FormEvent) => {
+  const hasClan = Boolean(game.clan);
+
+  const sendGlobal = (event: FormEvent) => {
     event.preventDefault();
+    if (!message.trim()) return;
     socket.emit("chat:send", message);
     setMessage("");
   };
+
+  const sendClan = (event: FormEvent) => {
+    event.preventDefault();
+    if (!message.trim()) return;
+    socket.emit("clan:chat:send", { text: message });
+    setMessage("");
+  };
+
+  const sendPrivate = (event: FormEvent) => {
+    event.preventDefault();
+    if (!message.trim() || !privateTarget) return;
+    socket.emit("private:send", { targetPlayerName: privateTarget.name, text: message });
+    setMessage("");
+  };
+
+  const privateConversation: PrivateMessage[] = privateTarget
+    ? game.privateMessages.filter(
+        (msg) =>
+          (msg.fromPlayerId === privateTarget.playerId && msg.toPlayerId === game.player.id) ||
+          (msg.toPlayerId === privateTarget.playerId && msg.fromPlayerId === game.player.id)
+      )
+    : [];
+
+  const unreadPrivate = game.privateMessages.filter((msg) => msg.toPlayerId === game.player.id).length;
 
   return (
     <>
       <button className="floating-chat-button" title="Chat" onClick={() => setOpen(!open)}>
         <MessageCircle size={22} />
-        {game.chatMessages.length > 0 && <span>{Math.min(99, game.chatMessages.length)}</span>}
+        {!open && unreadPrivate > 0 && <span>{Math.min(99, unreadPrivate)}</span>}
       </button>
       {open && (
         <aside className="side-panel chat-panel floating-chat-panel">
-          <PanelTitle icon={<MessageCircle size={20} />} title="Chat" />
-          <div className="chat-feed">
-            {game.chatMessages.length === 0 && <p className="empty-state">Chat vazio.</p>}
-            {game.chatMessages.map((chat) => (
-              <article className="chat-message" key={chat.id}>
-                <strong>{chat.author}</strong>
-                <span>{chat.text}</span>
-              </article>
-            ))}
-          </div>
-          <form className="chat-form" onSubmit={send}>
-            <input value={message} onChange={(event) => setMessage(event.target.value)} maxLength={240} placeholder="Mensagem" />
-            <button className="icon-submit" title="Enviar">
-              <MessageCircle size={18} />
+          <div className="chat-tabs">
+            <button className={tab === "global" ? "chat-tab active" : "chat-tab"} onClick={() => setTab("global")}>
+              Global
             </button>
-          </form>
+            {hasClan && (
+              <button className={tab === "clan" ? "chat-tab active" : "chat-tab"} onClick={() => setTab("clan")}>
+                <Users size={13} /> Clã
+              </button>
+            )}
+            <button
+              className={tab === "private" ? "chat-tab active" : "chat-tab"}
+              onClick={() => setTab("private")}
+            >
+              <Lock size={13} /> Privado
+              {unreadPrivate > 0 && <span className="tab-badge">{Math.min(99, unreadPrivate)}</span>}
+            </button>
+          </div>
+
+          {tab === "global" && (
+            <>
+              <div className="chat-feed" ref={feedRef}>
+                {game.chatMessages.length === 0 && <p className="empty-state">Chat vazio.</p>}
+                {game.chatMessages.map((chat) => (
+                  <article className="chat-message" key={chat.id}>
+                    <strong>{chat.author}</strong>
+                    <span>{chat.text}</span>
+                  </article>
+                ))}
+              </div>
+              <form className="chat-form" onSubmit={sendGlobal}>
+                <input value={message} onChange={(e) => setMessage(e.target.value)} maxLength={240} placeholder="Mensagem global" />
+                <button className="icon-submit" title="Enviar"><Send size={16} /></button>
+              </form>
+            </>
+          )}
+
+          {tab === "clan" && hasClan && (
+            <>
+              <div className="chat-feed">
+                {game.clanChatMessages.length === 0 && <p className="empty-state">Chat do clã vazio.</p>}
+                {game.clanChatMessages.map((chat) => (
+                  <article className="chat-message" key={chat.id}>
+                    <strong>{chat.author}</strong>
+                    <span>{chat.text}</span>
+                  </article>
+                ))}
+              </div>
+              <form className="chat-form" onSubmit={sendClan}>
+                <input value={message} onChange={(e) => setMessage(e.target.value)} maxLength={240} placeholder="Mensagem do clã" />
+                <button className="icon-submit" title="Enviar"><Send size={16} /></button>
+              </form>
+            </>
+          )}
+
+          {tab === "private" && (
+            <>
+              {!privateTarget ? (
+                <div className="private-chat-home">
+                  <p className="muted" style={{ margin: "0 0 8px", fontSize: "0.85rem" }}>Selecione um jogador online:</p>
+                  <div className="online-player-list">
+                    {game.onlinePlayers
+                      .filter((p) => p.playerId !== game.player.id)
+                      .map((p) => (
+                        <button key={p.playerId} className="ghost-button" onClick={() => setPrivateTarget(p)}>
+                          <User size={14} /> {p.name}
+                        </button>
+                      ))}
+                    {game.onlinePlayers.filter((p) => p.playerId !== game.player.id).length === 0 && (
+                      <p className="empty-state">Nenhum jogador online.</p>
+                    )}
+                  </div>
+                  {game.privateMessages.length > 0 && (
+                    <>
+                      <p className="muted" style={{ margin: "8px 0", fontSize: "0.85rem" }}>Mensagens recentes:</p>
+                      <div className="chat-feed" style={{ maxHeight: 180 }}>
+                        {game.privateMessages.slice(0, 10).map((msg) => {
+                          const isFrom = msg.fromPlayerId === game.player.id;
+                          return (
+                            <article className="chat-message private-message" key={msg.id}>
+                              <strong style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}>
+                                {isFrom ? `Você → ${msg.toName}` : `${msg.fromName} → Você`}
+                              </strong>
+                              <span>{msg.text}</span>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <div className="private-chat-header">
+                    <button className="ghost-button" style={{ padding: "4px 8px", fontSize: "0.82rem" }} onClick={() => setPrivateTarget(null)}>
+                      ← Voltar
+                    </button>
+                    <strong>{privateTarget.name}</strong>
+                  </div>
+                  <div className="chat-feed">
+                    {privateConversation.length === 0 && <p className="empty-state">Nenhuma mensagem ainda.</p>}
+                    {privateConversation.map((msg) => {
+                      const isFrom = msg.fromPlayerId === game.player.id;
+                      return (
+                        <article className={`chat-message private-message ${isFrom ? "sent" : "received"}`} key={msg.id}>
+                          <strong style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}>
+                            {isFrom ? "Você" : msg.fromName}
+                          </strong>
+                          <span>{msg.text}</span>
+                        </article>
+                      );
+                    })}
+                  </div>
+                  <form className="chat-form" onSubmit={sendPrivate}>
+                    <input value={message} onChange={(e) => setMessage(e.target.value)} maxLength={240} placeholder={`Mensagem para ${privateTarget.name}`} />
+                    <button className="icon-submit" title="Enviar"><Send size={16} /></button>
+                  </form>
+                </>
+              )}
+            </>
+          )}
         </aside>
       )}
     </>
+  );
+}
+
+function CurrencyExchangeModal({ game, onClose }: { game: GameState; onClose: () => void }) {
+  const [dToGAmount, setDToGAmount] = useState(1);
+  const [gToDAmount, setGToDAmount] = useState(1);
+
+  const doExchange = (direction: "diamondsToGold" | "goldToDiamonds", amount: number) => {
+    socket.emit("currency:exchange", { direction, amount });
+  };
+
+  return (
+    <div className="drawer-backdrop" role="presentation" onClick={onClose}>
+      <div className="exchange-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <div className="exchange-header">
+          <ArrowLeftRight size={20} />
+          <h2>Trocar Moedas</h2>
+          <button className="close-button" style={{ position: "static" }} onClick={onClose}><X size={18} /></button>
+        </div>
+        <div className="exchange-body">
+          <section className="exchange-row">
+            <div>
+              <strong><Gem size={18} style={{ color: "var(--cyan)" }} /> → <Coins size={18} style={{ color: "var(--gold)" }} /></strong>
+              <small>1 <Gem size={18} style={{ color: "var(--cyan)" }} /> = 1.000 <Coins size={18} style={{ color: "var(--gold)" }} /></small>
+            </div>
+            <div className="exchange-controls">
+              <input
+                type="number" min={1} max={game.character.diamonds}
+                value={dToGAmount}
+                onChange={(e) => setDToGAmount(Math.max(1, Number(e.target.value)))}
+              />
+              <span className="exchange-arrow">=</span>
+              <strong className="exchange-result">{(dToGAmount * 1000).toLocaleString()} <Coins size={18} style={{ color: "var(--gold)" }} /></strong>
+              <button
+                className="primary-button"
+                disabled={game.character.diamonds < dToGAmount}
+                onClick={() => doExchange("diamondsToGold", dToGAmount)}
+              >
+                Trocar
+              </button>
+            </div>
+            <small className="muted">Saldo: {game.character.diamonds} diamantes</small>
+          </section>
+
+          <hr className="exchange-divider" />
+
+          <section className="exchange-row">
+            <div>
+              <strong><Coins size={18} style={{ color: "var(--gold)" }} /> → <Gem size={18} style={{ color: "var(--cyan)" }} /></strong>
+              <small>1.200 <Coins size={18} style={{ color: "var(--gold)" }} /> = 1 <Gem size={18} style={{ color: "var(--cyan)" }} /></small>
+            </div>
+            <div className="exchange-controls">
+              <strong className="exchange-result">{(gToDAmount * 1200).toLocaleString()} <Coins size={18} style={{ color: "var(--gold)" }} /></strong>
+              <span className="exchange-arrow">=</span>
+              <input
+                type="number" min={1}
+                value={gToDAmount}
+                onChange={(e) => setGToDAmount(Math.max(1, Number(e.target.value)))}
+              />
+              <button
+                className="primary-button"
+                disabled={game.character.gold < gToDAmount * 1200}
+                onClick={() => doExchange("goldToDiamonds", gToDAmount)}
+              >
+                Trocar
+              </button>
+            </div>
+            <small className="muted">Saldo: {game.character.gold.toLocaleString()} ouro</small>
+          </section>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1467,4 +2097,32 @@ function countClaimable(quests: QuestView[]) {
 
 function formatPercent(value: number) {
   return `${Math.round(value * 100)}%`;
+}
+
+function formatListingDate(value: number) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(value);
+}
+
+function formatCurrency(n: number): string {
+  if (n < 9999) return n.toString();
+  const tiers: Array<[number, string]> = [
+    [1e18, "qui"],
+    [1e15, "qua"],
+    [1e12, "tri"],
+    [1e9, "bi"],
+    [1e6, "mi"],
+    [1e3, "k"],
+  ];
+  for (const [threshold, suffix] of tiers) {
+    if (n >= threshold) {
+      const val = n / threshold;
+      return val.toFixed(3).replace(/\,?0+$/, "") + suffix;
+    }
+  }
+  return String(n);
 }

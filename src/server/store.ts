@@ -1,4 +1,4 @@
-import type { BattleState, Character, ChatMessage, Clan, MarketListing, Player } from "../shared/types";
+import type { BattleState, Character, ChatMessage, Clan, MarketListing, Player, PrivateMessage } from "../shared/types";
 
 export interface GameStore {
   players: Map<string, Player>;
@@ -8,9 +8,12 @@ export interface GameStore {
   clans: Map<string, Clan>;
   marketplace: Map<string, MarketListing>;
   chatMessages: ChatMessage[];
+  clanChatMessages: Map<string, ChatMessage[]>;
+  allPrivateMessages: PrivateMessage[];
   arenaQueue: string[];
   arenaRecordedBattleIds: Set<string>;
   socketsByPlayer: Map<string, Set<string>>;
+  nextRegenAt: number;
 }
 
 export const store: GameStore = {
@@ -21,7 +24,10 @@ export const store: GameStore = {
   clans: new Map(),
   marketplace: new Map(),
   chatMessages: [],
+  clanChatMessages: new Map(),
+  allPrivateMessages: [],
   arenaQueue: [],
   arenaRecordedBattleIds: new Set(),
-  socketsByPlayer: new Map()
+  socketsByPlayer: new Map(),
+  nextRegenAt: Date.now() + 2 * 60 * 1000
 };
