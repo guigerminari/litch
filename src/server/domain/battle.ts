@@ -182,6 +182,30 @@ export function takeBattleTurn(
   battle.updatedAt = Date.now();
 }
 
+export function takeAutoPveTurn(battle: BattleState, character: Character) {
+  if (battle.mode !== "pve" && battle.mode !== "dungeon") {
+    throw new Error("Batalha automatica esta disponivel apenas no PvE.");
+  }
+  if ((character.pveAutoUntil ?? 0) <= Date.now()) {
+    throw new Error("O beneficio de batalha PvE automatica expirou.");
+  }
+
+  const participant = battle.participants.find((entry) => entry.ownerPlayerId === character.playerId);
+  if (!participant) {
+    throw new Error("Voce nao participa desta batalha.");
+  }
+
+  let turns = 0;
+  while (battle.status === "active" && battle.turnParticipantId === participant.id && turns < 80) {
+    takeBattleTurn(battle, character, "attack");
+    turns += 1;
+  }
+
+  if (battle.status === "active" && turns >= 80) {
+    battle.log.unshift(entry("Batalha automatica pausada para evitar um combate infinito."));
+  }
+}
+
 export function fleeBattle(battle: BattleState, character: Character) {
   if (battle.status !== "active") {
     throw new Error("A batalha já terminou.");

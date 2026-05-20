@@ -36,12 +36,16 @@ import type {
 import {
   CITIES,
   CLAN_BENEFITS,
+  CLAN_SUPER_BENEFITS,
+  COUNTRIES,
   CRAFTING_RECIPES,
   DIAMOND_PACKAGES,
-  INVENTORY_CAPACITY,
+  HUNTING_LOCATIONS,
   ITEM_CATALOG,
   MONSTERS,
+  SHIP_TICKET_ID,
   STARTING_CITY_ID,
+  TRAIN_TICKET_ID,
   TALENTS
 } from "./content";
 import {
@@ -50,15 +54,25 @@ import {
   createPvpBattle,
   fleeBattle,
   syncCharacterVitalsFromBattle,
-  takeBattleTurn
+  takeBattleTurn,
+  takeAutoPveTurn
 } from "./domain/battle";
-import { addItem, findInventoryItem, hasCapacity, inventoryUsed, isEquipped, removeItem } from "./domain/inventory";
+import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, removeItem } from "./domain/inventory";
 import { deriveStats, grantExperience } from "./domain/stats";
 import { store } from "./store";
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
 const POTION_MISSION_TARGETS = [5, 50, 100, 200];
+const CLAN_BASE_MEMBER_CAPACITY = 20;
+const CLAN_CREATE_MIN_LEVEL = 15;
+const CLAN_CREATE_DIAMOND_COST = 10;
+const CLAN_BENEFIT_RESET_DIAMOND_COST = 1000;
+const CLAN_BENEFIT_RESET_REFUND_RATE = 0.8;
+const CLAN_DEFAULT_ICON = "shield";
+const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle", "trophy"]);
+const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
+const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const ENHANCEMENT_GOLD_STEP = 10000;
 const ENHANCEMENT_CHANCE_STEP = 5;
 const ENHANCEMENT_MIN_CHANCE = 5;
@@ -121,7 +135,9 @@ function createCharacter(player: Player): Character {
     clanBenefitAllocations: {},
     arenaWins: 0,
     arenaLosses: 0,
-    dungeonClears: 0
+    dungeonClears: 0,
+    pveAutoUntil: 0,
+    royalSealUntil: 0
   };
 
   addItem(character, "training_sword", ITEM_CATALOG, 1);
@@ -146,6 +162,8 @@ function currentCharacter(playerId: string) {
   character.arenaWins ??= 0;
   character.arenaLosses ??= 0;
   character.dungeonClears ??= 0;
+  character.pveAutoUntil ??= 0;
+  character.royalSealUntil ??= 0;
   ensureQuestProgress(character);
   return character;
 }
@@ -164,6 +182,10 @@ function serializeGameState(playerId: string): GameState {
   ensureQuestProgress(character);
   normalizeVitals(character);
   const currentCity = CITIES.find((city) => city.id === character.cityId) ?? CITIES[0];
+  const currentCountry = COUNTRIES.find((country) => country.id === currentCity.countryId) ?? COUNTRIES[0];
+  const cityHuntLocations = (currentCity.huntLocationIds ?? [])
+    .map((id) => HUNTING_LOCATIONS[id])
+    .filter(Boolean);
   const activeBattle = character.activeBattleId ? store.battles.get(character.activeBattleId) ?? null : null;
   const availableRecipes = getAvailableCraftingRecipes(character.cityId);
   const clan = character.clanId ? store.clans.get(character.clanId) ?? null : null;
@@ -186,10 +208,18 @@ function serializeGameState(playerId: string): GameState {
     character,
     derived,
     inventoryUsed: inventoryUsed(character),
-    inventoryCapacity: INVENTORY_CAPACITY,
+    inventoryCapacity: getInventoryCapacity(character),
     cities: CITIES,
+    countries: COUNTRIES,
     currentCity,
-    cityMonsters: Array.from(new Set([...(currentCity.huntMonsterIds ?? []), ...(currentCity.dungeonMonsterIds ?? [])]))
+    currentCountry,
+    cityHuntLocations,
+    cityMonsters: Array.from(
+      new Set([
+        ...cityHuntLocations.flatMap((location) => location.monsterIds),
+        ...(currentCity.dungeonMonsterIds ?? [])
+      ])
+    )
       .map((id) => MONSTERS[id])
       .filter(Boolean),
     itemCatalog: ITEM_CATALOG,
@@ -199,7 +229,8 @@ function serializeGameState(playerId: string): GameState {
     quests: buildQuests(character),
     talents: TALENTS,
     clanBenefits: CLAN_BENEFITS,
-    clan,
+    clanSuperBenefits: CLAN_SUPER_BENEFITS,
+    clan: clan ? decorateClan(clan) : null,
     clanDirectory: buildClanDirectory(),
     diamondPackages: DIAMOND_PACKAGES,
     availableCraftingRecipes: availableRecipes,
@@ -485,17 +516,50 @@ function buildRankings() {
   };
 }
 
+function getClanLevel(clan: { benefitAllocations: Record<string, number> }) {
+  return Object.values(clan.benefitAllocations ?? {}).reduce((total, rank) => total + rank, 0);
+}
+
+function getClanMemberCapacity(clan: { benefitAllocations: Record<string, number> }) {
+  const ranks = clan.benefitAllocations ?? {};
+  return (
+    CLAN_BASE_MEMBER_CAPACITY +
+    (ranks.clan_members_1 ?? 0) * 2 +
+    (ranks.clan_members_2 ?? 0) * 3 +
+    (ranks.clan_members_3 ?? 0) * 5
+  );
+}
+
+function normalizeClanIcon(icon?: string) {
+  return icon && CLAN_ALLOWED_ICONS.has(icon) ? icon : CLAN_DEFAULT_ICON;
+}
+
+function decorateClan<T extends { benefitAllocations: Record<string, number> }>(clan: T) {
+  return {
+    ...clan,
+    icon: normalizeClanIcon((clan as { icon?: string }).icon),
+    level: getClanLevel(clan),
+    memberCapacity: getClanMemberCapacity(clan)
+  };
+}
+
 function buildClanDirectory() {
   return Array.from(store.clans.values())
-    .map((clan) => ({
-      id: clan.id,
-      name: clan.name,
-      leaderName: currentPlayer(clan.leaderPlayerId).username,
-      memberCount: clan.memberPlayerIds.length,
-      gold: clan.gold,
-      diamonds: clan.diamonds
-    }))
-    .sort((a, b) => b.memberCount - a.memberCount || b.gold + b.diamonds * 100 - (a.gold + a.diamonds * 100));
+    .map((clan) => {
+      const clanView = decorateClan(clan);
+      return {
+        id: clan.id,
+        name: clan.name,
+        icon: clanView.icon,
+        leaderName: currentPlayer(clan.leaderPlayerId).username,
+        memberCount: clan.memberPlayerIds.length,
+        memberCapacity: clanView.memberCapacity,
+        level: clanView.level,
+        gold: clan.gold,
+        diamonds: clan.diamonds
+      };
+    })
+    .sort((a, b) => b.level - a.level || b.memberCount - a.memberCount || b.gold + b.diamonds * 100 - (a.gold + a.diamonds * 100));
 }
 
 function syncClanBenefits(character: Character) {
@@ -517,9 +581,15 @@ function syncClanMembers(clanId: string) {
   }
 }
 
-function createClan(character: Character, name: string) {
+function createClan(character: Character, name: string, icon?: string) {
   if (character.clanId) {
     throw new Error("Você já participa de um clã.");
+  }
+  if (character.level < CLAN_CREATE_MIN_LEVEL) {
+    throw new Error(`Voce precisa estar no nivel ${CLAN_CREATE_MIN_LEVEL} para criar um cla.`);
+  }
+  if (character.diamonds < CLAN_CREATE_DIAMOND_COST) {
+    throw new Error(`Criar um cla custa ${CLAN_CREATE_DIAMOND_COST} diamantes.`);
   }
   const normalized = name.trim().replace(/\s+/g, " ").slice(0, 28);
   if (normalized.length < 3) {
@@ -533,14 +603,18 @@ function createClan(character: Character, name: string) {
   const clan = {
     id: randomUUID(),
     name: normalized,
+    icon: normalizeClanIcon(icon),
     leaderPlayerId: character.playerId,
     memberPlayerIds: [character.playerId],
+    level: 0,
+    memberCapacity: CLAN_BASE_MEMBER_CAPACITY,
     gold: 0,
     diamonds: 0,
     benefitAllocations: {},
     createdAt: Date.now()
   };
   store.clans.set(clan.id, clan);
+  character.diamonds -= CLAN_CREATE_DIAMOND_COST;
   character.clanId = clan.id;
   syncClanBenefits(character);
 }
@@ -552,6 +626,9 @@ function joinClan(character: Character, clanId: string) {
   const clan = store.clans.get(clanId);
   if (!clan) {
     throw new Error("Clã não encontrado.");
+  }
+  if (clan.memberPlayerIds.length >= getClanMemberCapacity(clan)) {
+    throw new Error("Este clã atingiu o limite de membros.");
   }
   clan.memberPlayerIds.push(character.playerId);
   character.clanId = clan.id;
@@ -605,6 +682,39 @@ function buyClanBenefit(character: Character, benefitId: string) {
   clan.gold -= benefit.costPerRank.gold;
   clan.diamonds -= benefit.costPerRank.diamonds;
   clan.benefitAllocations[benefit.id] = rank + 1;
+  clan.level = getClanLevel(clan);
+  clan.memberCapacity = getClanMemberCapacity(clan);
+  syncClanMembers(clan.id);
+}
+
+function resetClanBenefits(character: Character) {
+  const clan = character.clanId ? store.clans.get(character.clanId) : null;
+  if (!clan) {
+    throw new Error("Voce nao participa de um cla.");
+  }
+  if (clan.leaderPlayerId !== character.playerId) {
+    throw new Error("Apenas o lider pode resetar os beneficios.");
+  }
+  if (character.diamonds < CLAN_BENEFIT_RESET_DIAMOND_COST) {
+    throw new Error(`Resetar beneficios custa ${CLAN_BENEFIT_RESET_DIAMOND_COST} diamantes.`);
+  }
+
+  const spent = CLAN_BENEFITS.reduce(
+    (total, benefit) => {
+      const rank = clan.benefitAllocations[benefit.id] ?? 0;
+      total.gold += benefit.costPerRank.gold * rank;
+      total.diamonds += benefit.costPerRank.diamonds * rank;
+      return total;
+    },
+    { gold: 0, diamonds: 0 }
+  );
+
+  character.diamonds -= CLAN_BENEFIT_RESET_DIAMOND_COST;
+  clan.gold += Math.floor(spent.gold * CLAN_BENEFIT_RESET_REFUND_RATE);
+  clan.diamonds += Math.floor(spent.diamonds * CLAN_BENEFIT_RESET_REFUND_RATE);
+  clan.benefitAllocations = {};
+  clan.level = 0;
+  clan.memberCapacity = CLAN_BASE_MEMBER_CAPACITY;
   syncClanMembers(clan.id);
 }
 
@@ -614,6 +724,25 @@ function buyDiamondPackage(character: Character, packageId: string) {
     throw new Error("Pacote não encontrado.");
   }
   character.diamonds += pack.diamonds;
+  if (pack.id === ROYAL_FRIEND_PACKAGE_ID) {
+    grantPackageStack(character, TRAIN_TICKET_ID, 100);
+    grantPackageStack(character, SHIP_TICKET_ID, 30);
+    const baseUntil = Math.max(Date.now(), character.pveAutoUntil ?? 0, character.royalSealUntil ?? 0);
+    character.pveAutoUntil = baseUntil + ROYAL_FRIEND_DURATION_MS;
+    character.royalSealUntil = baseUntil + ROYAL_FRIEND_DURATION_MS;
+  }
+}
+
+function grantPackageStack(character: Character, itemId: string, quantity: number) {
+  if (!ITEM_CATALOG[itemId]) {
+    throw new Error("Item de pacote invalido.");
+  }
+  const stack = character.inventory.find((item) => item.itemId === itemId);
+  if (stack) {
+    stack.quantity += quantity;
+    return;
+  }
+  character.inventory.push({ instanceId: randomUUID(), itemId, quantity });
 }
 
 function recordArenaResult(battleId: string) {
@@ -655,6 +784,18 @@ function removeItemByItemId(character: Character, itemId: string, quantity: numb
   if (remaining > 0) {
     throw new Error("Ingredientes insuficientes.");
   }
+}
+
+function getCityHuntMonsterIds(cityId: string) {
+  const city = CITIES.find((entry) => entry.id === cityId);
+  if (!city) {
+    return [];
+  }
+  const fromLocations = (city.huntLocationIds ?? [])
+    .map((locationId) => HUNTING_LOCATIONS[locationId])
+    .filter(Boolean)
+    .flatMap((location) => location.monsterIds);
+  return Array.from(new Set([...fromLocations, ...(city.huntMonsterIds ?? [])]));
 }
 
 type EnhancementRequirement = {
@@ -943,15 +1084,28 @@ io.on("connection", (socket: AuthedSocket) => {
       if (!city) {
         throw new Error("Cidade inválida.");
       }
-      if (character.level < city.minLevel) {
-        throw new Error(`Nível ${city.minLevel} necessário para viajar até ${city.name}.`);
+      if (city.id === character.cityId) {
+        emitState(playerId);
+        return;
       }
-      if (character.gold < city.travelCost) {
-        throw new Error("Ouro insuficiente para a viagem.");
+      const currentCity = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
+      const sameCountry = currentCity.countryId === city.countryId;
+      const destinationCountry = COUNTRIES.find((country) => country.id === city.countryId);
+      const destinationCity = sameCountry
+        ? city
+        : CITIES.find((entry) => entry.id === destinationCountry?.portCityId) ?? city;
+      const ticketId = sameCountry ? TRAIN_TICKET_ID : SHIP_TICKET_ID;
+      const ticketName = ITEM_CATALOG[ticketId]?.name ?? ticketId;
+
+      if (character.level < destinationCity.minLevel) {
+        throw new Error(`Nível ${destinationCity.minLevel} necessário para viajar até ${destinationCity.name}.`);
+      }
+      if (countItem(character, ticketId) < 1) {
+        throw new Error(`Você precisa de 1 ${ticketName}.`);
       }
 
-      character.gold -= city.travelCost;
-      character.cityId = city.id;
+      removeItemByItemId(character, ticketId, 1);
+      character.cityId = destinationCity.id;
       leaveArenaQueue(playerId);
       emitState(playerId);
     } catch (error) {
@@ -970,7 +1124,13 @@ io.on("connection", (socket: AuthedSocket) => {
         throw new Error("Item inválido.");
       }
 
-      const available = [...city.armorerItemIds, ...city.apothecaryItemIds].includes(item.id);
+      const requestedShop = payload.shop ?? "apothecary";
+      const available =
+        requestedShop === "armorer"
+          ? city.armorerItemIds.includes(item.id)
+          : requestedShop === "apothecary"
+            ? city.apothecaryItemIds.includes(item.id) && item.kind !== "scroll" && item.kind !== "ticket"
+            : Boolean(city.isPort && city.moneyChangerItemIds?.includes(item.id) && (item.kind === "scroll" || item.kind === "ticket"));
       if (!available) {
         throw new Error("Este comerciante não vende o item aqui.");
       }
@@ -1167,7 +1327,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
-      createClan(character, payload.name);
+      createClan(character, payload.name, payload.icon);
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
@@ -1210,6 +1370,18 @@ io.on("connection", (socket: AuthedSocket) => {
     }
   });
 
+  socket.on("clan:benefit:reset", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      resetClanBenefits(character);
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
   socket.on("hunt:start", (payload: HuntStartPayload) => {
     try {
       const playerId = requirePlayer(socket);
@@ -1218,8 +1390,8 @@ io.on("connection", (socket: AuthedSocket) => {
       ensureNotInBattle(character);
       normalizeVitals(character);
 
-      const city = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
-      if (!city.huntMonsterIds.includes(payload.monsterId)) {
+      const cityMonsterIds = getCityHuntMonsterIds(character.cityId);
+      if (!cityMonsterIds.includes(payload.monsterId)) {
         throw new Error("Este monstro não aparece nesta cidade.");
       }
 
@@ -1325,7 +1497,11 @@ io.on("connection", (socket: AuthedSocket) => {
       const wasActive = battle.status === "active";
       const potionUsed = payload.instanceId ? findInventoryItem(character, payload.instanceId) : null;
       const potionDefinition = potionUsed ? ITEM_CATALOG[potionUsed.itemId] : null;
-      takeBattleTurn(battle, character, payload.action, payload.instanceId);
+      if (payload.action === "auto") {
+        takeAutoPveTurn(battle, character);
+      } else {
+        takeBattleTurn(battle, character, payload.action, payload.instanceId);
+      }
       if (payload.action === "usePotion" && potionDefinition?.stats.healPercent) {
         character.questProgress.healthPotionsUsed += 1;
       }

@@ -4,6 +4,9 @@ import {
   Backpack,
   Castle,
   Coins,
+  Crown,
+  ChevronDown,
+  ChevronRight,
   FlaskConical,
   Gavel,
   Gem,
@@ -52,6 +55,7 @@ type View =
   | "arena"
   | "armorer"
   | "apothecary"
+  | "moneyChanger"
   | "travel"
   | "inventory"
   | "market"
@@ -69,6 +73,7 @@ const viewLabels: Record<View, string> = {
   arena: "Arena",
   armorer: "Armeiro",
   apothecary: "Boticário",
+  moneyChanger: "Cambista",
   travel: "Viajar",
   inventory: "Inventário",
   market: "Mercado",
@@ -82,6 +87,7 @@ const viewLabels: Record<View, string> = {
 };
 
 const attributes: AttributeKey[] = ["strength", "constitution", "agility"];
+const CLAN_CREST_OPTIONS = ["shield", "swords", "star", "gem", "castle", "trophy"] as const;
 
 const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   weapon: "Arma",
@@ -90,6 +96,7 @@ const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   potion: "Poção",
   material: "Material",
   scroll: "Pergaminho",
+  ticket: "Ticket",
   misc: "Diverso"
 };
 
@@ -100,6 +107,7 @@ const ITEM_KIND_EMOJI: Record<ItemKind, string> = {
   potion: "🧪",
   material: "📦",
   scroll: "📜",
+  ticket: "Ticket",
   misc: "✦"
 };
 
@@ -131,6 +139,8 @@ const ENHANCEMENT_ITEMS = {
   midran: "material_midran",
   creationStone: "misc_stone_craft"
 } as const;
+const TRAIN_TICKET_ID = "ticket_train";
+const SHIP_TICKET_ID = "ticket_ship";
 const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
   strength: "Forca",
   constitution: "Constituicao",
@@ -237,8 +247,10 @@ export function App() {
     );
   }
 
+  const gameShellClass = `game-shell country-${game.currentCountry.id} city-${game.currentCity.id}`;
+
   return (
-    <main className="game-shell">
+    <main className={gameShellClass}>
       <Header
         game={game}
         connected={connected}
@@ -250,7 +262,7 @@ export function App() {
       />
       <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
         <section className="city-stage">
-          {!game.activeBattle && <CityHero game={game} view={view} setView={setView} />}
+          {!game.activeBattle && view === "city" && <CityHero game={game} view={view} setView={setView} />}
           <GamePane game={game} view={view} setView={setView} />
         </section>
       </div>
@@ -288,6 +300,7 @@ function Header({
   const regenMins = Math.floor(regenSecs / 60);
   const regenSecsRemainder = regenSecs % 60;
   const timerLabel = `${regenMins}:${String(regenSecsRemainder).padStart(2, "0")}`;
+  const royalSealActive = isRoyalSealActive(game);
 
   return (
     <header className="topbar">
@@ -299,8 +312,9 @@ function Header({
         </div>
       </div>
       <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
-        <span>
+        <span className="character-chip-avatar">
           <User size={20} />
+          {royalSealActive && <i className="royal-seal-mini"><Crown size={10} /></i>}
         </span>
         <strong>{game.character.name}</strong>
         <small>Nv {game.character.level} - {game.currentCity.name}</small>
@@ -441,6 +455,8 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
   const pendingTotal = pending.strength + pending.constitution + pending.agility;
   const healthPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.healPercent);
   const energyPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.energyPercent);
+  const royalSealActive = isRoyalSealActive(game);
+  const autoPveActive = isAutoPveActive(game);
   const changePending = (key: AttributeKey, delta: number) => {
     setPending((current) => {
       const nextValue = Math.max(0, current[key] + delta);
@@ -459,9 +475,11 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
     <aside className="side-panel character-panel">
       <div className="avatar-ring">
         <User size={42} />
+        {royalSealActive && <span className="royal-seal"><Crown size={15} /> Selo do Rei</span>}
       </div>
       <h2>{game.character.name}</h2>
       <p className="muted">{game.currentCity.name}</p>
+      {autoPveActive && <p className="royal-status"><Crown size={14} /> Amigo do Rei ativo</p>}
 
       <div className="stat-grid">
         <Metric icon={<Heart size={18} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
@@ -584,7 +602,9 @@ function CityHero({ game, view, setView }: { game: GameState; view: View; setVie
       <div className="city-copy">
         <span className="eyebrow">{viewLabels[view]}</span>
         <h1>{game.currentCity.name}</h1>
+        <strong className="city-country">{game.currentCountry.name}</strong>
         <p>{game.currentCity.description}</p>
+        <small className="city-inhabitants">{game.currentCity.inhabitants.slice(0, 4).join(" • ")}</small>
       </div>
     </header>
   );
@@ -609,6 +629,9 @@ function GamePane({ game, view, setView }: { game: GameState; view: View; setVie
   }
   if (view === "apothecary") {
     return <ShopPanel game={game} shop="apothecary" />;
+  }
+  if (view === "moneyChanger") {
+    return <ShopPanel game={game} shop="moneyChanger" />;
   }
   if (view === "travel") {
     return <TravelPanel game={game} />;
@@ -670,7 +693,7 @@ function CityGroup({ title, options, setView }: { title: string; options: CityOp
 
 function CityOverview({ game, setView }: { game: GameState; setView: (view: View) => void }) {
   const combatOptions: CityOption[] = [
-    { view: "hunt", icon: <Swords size={24} />, title: "Caçar", value: `${game.cityMonsters.length} monstros` },
+    { view: "hunt", icon: <Swords size={24} />, title: "Caçar", value: `${game.cityHuntLocations.length} locais` },
     { view: "arena", icon: <Shield size={24} />, title: "Arena", value: `${game.arenaQueueSize} na fila` },
   ];
   if (game.currentCity.dungeonMonsterIds?.length) {
@@ -691,6 +714,14 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
 
   if (game.currentCity.alchemistRecipeIds?.length) {
     inhabitantOptions.push({ view: "alchemist", icon: <FlaskConical size={24} />, title: "Alquimista", value: game.currentCity.npcs.alchemist ?? "Receitas" });
+  }
+  if (game.currentCity.npcs.moneyChanger) {
+    inhabitantOptions.push({
+      view: "moneyChanger",
+      icon: <Coins size={24} />,
+      title: "Cambista",
+      value: `${game.currentCity.moneyChangerItemIds?.length ?? 0} itens`
+    });
   }
 
   return (
@@ -713,6 +744,19 @@ function MissionsPanel({ game }: { game: GameState }) {
 }
 
 function QuestSection({ title, quests }: { title: string; quests: QuestView[] }) {
+  const sectionComplete = quests.length > 0 && quests.every((quest) => quest.claimed);
+  const claimable = countClaimable(quests);
+  const completed = quests.filter((quest) => quest.completed || quest.claimed).length;
+  const [collapsed, setCollapsed] = useState(sectionComplete);
+
+  useEffect(() => {
+    if (sectionComplete) {
+      setCollapsed(true);
+    } else {
+      setCollapsed(false);
+    }
+  }, [sectionComplete]);
+
   const sorted = [...quests].sort((a, b) => {
     // Priority: claimable (completed & !claimed) → highest % → claimed
     const aPri = a.completed && !a.claimed ? 0 : a.claimed ? 2 : 1;
@@ -722,24 +766,22 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
   });
   return (
     <section className="quest-section">
-      <h3>{title}</h3>
-      <div className="quest-list">
+      <button className="quest-section-header" type="button" onClick={() => setCollapsed((current) => !current)}>
+        {collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+        <h3>{title}</h3>
+        <span>{completed}/{quests.length}</span>
+        {claimable > 0 && <b>{claimable}</b>}
+      </button>
+      {!collapsed && <div className="quest-list">
         {sorted.map((quest) => {
           const progress = Math.min(100, Math.round((quest.progress / quest.target) * 100));
           return (
             <article className={quest.claimed ? "quest-row claimed" : "quest-row"} key={quest.id}>
-              <div className="quest-main">
+              <div className="quest-info-line">
+                <div className="quest-main">
                 <strong>{quest.title}</strong>
                 <span>{quest.description}</span>
-                <div className="quest-progress">
-                  <i>
-                    <b style={{ width: `${progress}%` }} />
-                  </i>
-                  <small>
-                    {quest.progress}/{quest.target}
-                  </small>
                 </div>
-              </div>
               <div className="quest-reward">
                 {quest.reward.experience ? <span>{quest.reward.experience} XP</span> : null}
                 {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={12} style={{ color: "var(--gold)" }} /></span> : null}
@@ -752,10 +794,19 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
               >
                 {quest.claimed ? "Resgatada" : "Resgatar"}
               </button>
+              </div>
+              <div className="quest-progress">
+                <i>
+                  <b style={{ width: `${progress}%` }} />
+                </i>
+                <small>
+                  {quest.progress}/{quest.target}
+                </small>
+              </div>
             </article>
           );
         })}
-      </div>
+      </div>}
     </section>
   );
 }
@@ -1071,17 +1122,20 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
 }
 
 function GameShopPanel({ game }: { game: GameState }) {
+  const packages = [...game.diamondPackages].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+
   return (
     <section className="content-panel">
       <PanelTitle icon={<Gem size={20} style={{ color: "var(--cyan)" }} />} title="Loja do Jogo" />
       <div className="shop-grid">
-        {game.diamondPackages.map((pack) => (
-          <article className="item-card" key={pack.id}>
+        {packages.map((pack) => (
+          <article className={pack.featured ? "item-card diamond-pack featured-pack" : "item-card diamond-pack"} key={pack.id}>
             <div>
               <strong>{pack.name}</strong>
               <span>
                 {pack.diamonds} diamantes {pack.bonusLabel ? `- ${pack.bonusLabel}` : ""}
               </span>
+              {pack.description && <small>{pack.description}</small>}
             </div>
             <small>{pack.priceLabel}</small>
             <button className="primary-button" onClick={() => socket.emit("game:buyDiamonds", { packageId: pack.id })}>
@@ -1094,15 +1148,46 @@ function GameShopPanel({ game }: { game: GameState }) {
   );
 }
 
+function getClanCrestIcon(icon?: string, size = 18) {
+  switch (icon) {
+    case "swords":
+      return <Swords size={size} />;
+    case "star":
+      return <Star size={size} />;
+    case "gem":
+      return <Gem size={size} />;
+    case "castle":
+      return <Castle size={size} />;
+    case "trophy":
+      return <Trophy size={size} />;
+    case "shield":
+    default:
+      return <Shield size={size} />;
+  }
+}
+
+function getClanCrestLabel(icon: string) {
+  const labels: Record<string, string> = {
+    shield: "Escudo",
+    swords: "Espadas",
+    star: "Estrela",
+    gem: "Gema",
+    castle: "Castelo",
+    trophy: "TrofÃ©u"
+  };
+  return labels[icon] ?? "Escudo";
+}
+
 function ClanPanel({ game }: { game: GameState }) {
   const [name, setName] = useState("");
+  const [crestIcon, setCrestIcon] = useState<(typeof CLAN_CREST_OPTIONS)[number]>("shield");
   const [gold, setGold] = useState(0);
   const [diamonds, setDiamonds] = useState(0);
   const clan = game.clan;
 
   const createClan = (event: FormEvent) => {
     event.preventDefault();
-    socket.emit("clan:create", { name });
+    socket.emit("clan:create", { name, icon: crestIcon });
     setName("");
   };
 
@@ -1114,26 +1199,43 @@ function ClanPanel({ game }: { game: GameState }) {
   };
 
   if (!clan) {
+    const canCreateClan = game.character.level >= 15 && game.character.diamonds >= 10 && name.trim().length >= 3;
+
     return (
       <section className="content-panel clan-panel">
         <PanelTitle icon={<Users size={20} />} title="Clã" />
-        <form className="market-form" onSubmit={createClan}>
+        <form className="market-form clan-create-form" onSubmit={createClan}>
           <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome do clã" maxLength={28} />
-          <button className="primary-button" disabled={name.trim().length < 3}>
+          <div className="crest-picker" aria-label="Brasao do cla">
+            {CLAN_CREST_OPTIONS.map((icon) => (
+              <button
+                type="button"
+                className={crestIcon === icon ? "crest-option selected" : "crest-option"}
+                key={icon}
+                title={getClanCrestLabel(icon)}
+                onClick={() => setCrestIcon(icon)}
+              >
+                {getClanCrestIcon(icon)}
+              </button>
+            ))}
+          </div>
+          <button className="primary-button" disabled={!canCreateClan}>
             Criar clã
           </button>
         </form>
+        <p className="market-form-hint">Requer nivel 15 e custa 10 diamantes. O lider escolhe o brasao ao criar.</p>
         <section className="market-group">
           <h3>Clãs abertos</h3>
           <div className="market-list">
             {game.clanDirectory.length === 0 && <p className="empty-state">Nenhum clã criado.</p>}
             {game.clanDirectory.map((entry) => (
-              <article className="market-row" key={entry.id}>
+              <article className="market-row clan-directory-row" key={entry.id}>
+                <span className="clan-directory-crest">{getClanCrestIcon(entry.icon)}</span>
                 <div>
                   <strong>{entry.name}</strong>
-                  <span>Líder: {entry.leaderName}</span>
+                  <span>Líder: {entry.leaderName} - Nv {entry.level}</span>
                 </div>
-                <b>{entry.memberCount} membros</b>
+                <b>{entry.memberCount}/{entry.memberCapacity}</b>
                 <button className="ghost-button" onClick={() => socket.emit("clan:join", { clanId: entry.id })}>
                   Entrar
                 </button>
@@ -1149,9 +1251,10 @@ function ClanPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel clan-panel">
-      <PanelTitle icon={<Users size={20} />} title={clan.name} />
+      <PanelTitle icon={getClanCrestIcon(clan.icon, 20)} title={clan.name} />
       <div className="clan-summary">
-        <Metric icon={<Users size={18} />} label="Membros" value={clan.memberPlayerIds.length} />
+        <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
+        <Metric icon={<Users size={18} />} label="Membros" value={`${clan.memberPlayerIds.length}/${clan.memberCapacity}`} />
         <Metric icon={<Coins size={18} style={{ color: "var(--gold)" }} />} label="Tesouro" value={clan.gold} />
         <Metric icon={<Gem size={18} style={{ color: "var(--cyan)" }} />} label="Diamantes" value={clan.diamonds} />
         <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : "Clã"} />
@@ -1171,6 +1274,23 @@ function ClanPanel({ game }: { game: GameState }) {
           Doar
         </button>
       </form>
+      <section className="clan-reset-panel">
+        <div>
+          <strong>Resetar benefÃ­cios</strong>
+          <span>Custa 1000 diamantes do lÃ­der e devolve 80% do gold e diamantes gastos para o tesouro do clÃ£.</span>
+        </div>
+        <button
+          className="ghost-button"
+          disabled={!leader || game.character.diamonds < 1000 || clan.level <= 0}
+          onClick={() => {
+            if (window.confirm("Resetar todos os beneficios do cla por 1000 diamantes?")) {
+              socket.emit("clan:benefit:reset");
+            }
+          }}
+        >
+          Resetar
+        </button>
+      </section>
       <ClanBenefitTree game={game} leader={leader} />
     </section>
   );
@@ -1183,13 +1303,29 @@ function ClanBenefitTree({ game, leader }: { game: GameState; leader: boolean })
     { id: "prosperity", title: "Prosperidade" }
   ];
   const clan = game.clan;
+  const [selectedBenefitId, setSelectedBenefitId] = useState(game.clanBenefits[0]?.id ?? "");
+  const selectedBenefit = game.clanBenefits.find((benefit) => benefit.id === selectedBenefitId) ?? game.clanBenefits[0] ?? null;
+  const selectedRank = selectedBenefit && clan ? clan.benefitAllocations[selectedBenefit.id] ?? 0 : 0;
+  const selectedRequiredRank = selectedBenefit?.requires && clan ? clan.benefitAllocations[selectedBenefit.requires] ?? 0 : 1;
+  const selectedLocked = Boolean(selectedBenefit?.requires && selectedRequiredRank <= 0);
+  const selectedMaxed = Boolean(selectedBenefit && selectedRank >= selectedBenefit.maxRank);
+  const selectedAffordable =
+    Boolean(clan && selectedBenefit) &&
+    clan!.gold >= selectedBenefit!.costPerRank.gold &&
+    clan!.diamonds >= selectedBenefit!.costPerRank.diamonds;
+
+  useEffect(() => {
+    if (!game.clanBenefits.some((benefit) => benefit.id === selectedBenefitId)) {
+      setSelectedBenefitId(game.clanBenefits[0]?.id ?? "");
+    }
+  }, [game.clanBenefits, selectedBenefitId]);
 
   return (
     <div className="clan-benefits">
       {categories.map((category) => (
-        <section className="talent-tree" key={category.id}>
+        <section className="talent-tree clan-benefit-section" key={category.id}>
           <h3>{category.title}</h3>
-          <div className="talent-list branching-list">
+          <div className="clan-benefit-tree">
             {game.clanBenefits
               .filter((benefit) => benefit.category === category.id)
               .map((benefit) => {
@@ -1197,47 +1333,272 @@ function ClanBenefitTree({ game, leader }: { game: GameState; leader: boolean })
                 const requiredRank = benefit.requires ? clan?.benefitAllocations[benefit.requires] ?? 0 : 1;
                 const locked = Boolean(benefit.requires && requiredRank <= 0);
                 const maxed = rank >= benefit.maxRank;
-                const affordable =
-                  Boolean(clan) &&
-                  clan!.gold >= benefit.costPerRank.gold &&
-                  clan!.diamonds >= benefit.costPerRank.diamonds;
                 return (
-                  <article className={locked ? "talent-row locked" : "talent-row"} key={benefit.id}>
-                    <div>
-                      <strong>{benefit.name}</strong>
-                      <span>{benefit.description}</span>
-                      <small>
-                        {benefit.costPerRank.gold} <Coins size={10} style={{ color: "var(--gold)" }} />
-                        {benefit.costPerRank.diamonds ? (` + ${benefit.costPerRank.diamonds} `)  : null} 
-                        {benefit.costPerRank.diamonds ? <Gem size={10} style={{ color: "var(--cyan)" }} /> : null}
-                      </small>
-                    </div>
-                    <b>
-                      {rank}/{benefit.maxRank}
-                    </b>
-                    <button
-                      className="primary-button"
-                      disabled={!leader || locked || maxed || !affordable}
-                      onClick={() => socket.emit("clan:benefit:buy", { benefitId: benefit.id })}
-                    >
-                      Comprar
-                    </button>
-                  </article>
+                  <button
+                    className={`clan-benefit-node${locked ? " locked" : ""}${maxed ? " maxed" : ""}${selectedBenefit?.id === benefit.id ? " selected" : ""}`}
+                    key={benefit.id}
+                    title={benefit.name}
+                    onClick={() => setSelectedBenefitId(benefit.id)}
+                  >
+                    {getClanBenefitIcon(benefit)}
+                    <b>{rank}/{benefit.maxRank}</b>
+                  </button>
                 );
               })}
           </div>
         </section>
       ))}
+      <ClanSuperBenefits game={game} />
+      {selectedBenefit && (
+        <section className="clan-benefit-detail">
+          <div className="clan-benefit-detail-icon">
+            {getClanBenefitIcon(selectedBenefit)}
+          </div>
+          <div>
+            <h3>{selectedBenefit.name}</h3>
+            <p>{selectedBenefit.description}</p>
+            <div className="clan-benefit-meta">
+              <span>Rank {selectedRank}/{selectedBenefit.maxRank}</span>
+              <span>
+                {selectedBenefit.costPerRank.gold} <Coins size={12} style={{ color: "var(--gold)" }} />
+                {selectedBenefit.costPerRank.diamonds ? ` + ${selectedBenefit.costPerRank.diamonds} ` : null}
+                {selectedBenefit.costPerRank.diamonds ? <Gem size={12} style={{ color: "var(--cyan)" }} /> : null}
+              </span>
+              {selectedBenefit.requires && <span>{selectedLocked ? "Requer benefício anterior" : "Ramo liberado"}</span>}
+            </div>
+          </div>
+          <button
+            className="primary-button"
+            disabled={!leader || selectedLocked || selectedMaxed || !selectedAffordable}
+            onClick={() => socket.emit("clan:benefit:buy", { benefitId: selectedBenefit.id })}
+          >
+            {!leader ? "Somente lider" : selectedMaxed ? "Máximo" : "Comprar"}
+          </button>
+        </section>
+      )}
+      <ClanBonusSummary game={game} />
     </div>
   );
 }
 
+function isClanCategoryComplete(game: GameState, category: ClanBenefitCategory) {
+  const ranks = game.clan?.benefitAllocations ?? {};
+  const benefits = game.clanBenefits.filter((benefit) => benefit.category === category);
+  return benefits.length > 0 && benefits.every((benefit) => (ranks[benefit.id] ?? 0) >= benefit.maxRank);
+}
+
+function ClanSuperBenefits({ game }: { game: GameState }) {
+  return (
+    <section className="clan-super-benefits">
+      <div className="clan-super-title">
+        <Crown size={18} />
+        <h3>Super-beneficios</h3>
+      </div>
+      <div className="clan-super-grid">
+        {game.clanSuperBenefits.map((benefit) => {
+          const active = isClanCategoryComplete(game, benefit.category);
+          return (
+            <article className={active ? "clan-super-card active" : "clan-super-card"} key={benefit.id}>
+              <span>{getClanBenefitIcon(benefit)}</span>
+              <div>
+                <strong>{benefit.name}</strong>
+                <small>{benefit.description}</small>
+              </div>
+              <b>{active ? "Ativo" : "Bloqueado"}</b>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function getClanBonusSummary(game: GameState) {
+  const ranks = game.clan?.benefitAllocations ?? {};
+  const combatSuperActive = isClanCategoryComplete(game, "combat");
+  const defenseSuperActive = isClanCategoryComplete(game, "defense");
+  const prosperitySuperActive = isClanCategoryComplete(game, "prosperity");
+  const bonuses = [
+    {
+      id: "damage",
+      label: "Dano",
+      value:
+        (ranks.clan_damage_1 ?? 0) * 1 +
+        (ranks.clan_damage_2 ?? 0) * 1.5 +
+        (ranks.clan_damage_3 ?? 0) * 1 +
+        (ranks.clan_damage_4 ?? 0) * 1.5 +
+        (combatSuperActive ? 10 : 0),
+      suffix: "%",
+      icon: <Swords size={15} />
+    },
+    {
+      id: "crit",
+      label: "Critico",
+      value: (ranks.clan_crit_1 ?? 0) * 0.5 + (ranks.clan_crit_2 ?? 0) * 0.5 + (combatSuperActive ? 3 : 0),
+      suffix: "%",
+      icon: <Crosshair size={15} />
+    },
+    {
+      id: "crit-damage",
+      label: "Dano critico",
+      value: combatSuperActive ? 20 : 0,
+      suffix: "%",
+      icon: <Swords size={15} />
+    },
+    {
+      id: "life",
+      label: "Vida",
+      value: (ranks.clan_vitality_1 ?? 0) * 2 + (ranks.clan_vitality_2 ?? 0) * 1.5 + (defenseSuperActive ? 10 : 0),
+      suffix: "%",
+      icon: <Heart size={15} />
+    },
+    {
+      id: "defense",
+      label: "Defesa",
+      value: (ranks.clan_guard_1 ?? 0) + (ranks.clan_guard_2 ?? 0) + (defenseSuperActive ? 5 : 0),
+      suffix: "",
+      icon: <Shield size={15} />
+    },
+    {
+      id: "dodge",
+      label: "Esquiva",
+      value: (ranks.clan_dodge_1 ?? 0) * 0.5 + (ranks.clan_dodge_2 ?? 0) * 0.5 + (defenseSuperActive ? 3 : 0),
+      suffix: "%",
+      icon: <Crosshair size={15} />
+    },
+    {
+      id: "xp",
+      label: "XP",
+      value: (ranks.clan_xp_1 ?? 0) * 2 + (ranks.clan_xp_2 ?? 0) * 2 + (prosperitySuperActive ? 10 : 0),
+      suffix: "%",
+      icon: <Star size={15} />
+    },
+    {
+      id: "gold",
+      label: "Gold",
+      value: (ranks.clan_gold_1 ?? 0) * 2 + (ranks.clan_gold_2 ?? 0) * 1.5 + (prosperitySuperActive ? 10 : 0),
+      suffix: "%",
+      icon: <Coins size={15} />
+    },
+    {
+      id: "drop",
+      label: "Drop",
+      value: (ranks.clan_drop_1 ?? 0) * 1.5 + (ranks.clan_drop_2 ?? 0) * 1 + (prosperitySuperActive ? 5 : 0),
+      suffix: "%",
+      icon: <Gem size={15} />
+    },
+    {
+      id: "energy",
+      label: "Energia",
+      value: (ranks.clan_energy_1 ?? 0) + (ranks.clan_energy_2 ?? 0) + (prosperitySuperActive ? 5 : 0),
+      suffix: "",
+      icon: <Zap size={15} />
+    },
+    {
+      id: "members",
+      label: "Membros",
+      value: (ranks.clan_members_1 ?? 0) * 2 + (ranks.clan_members_2 ?? 0) * 3 + (ranks.clan_members_3 ?? 0) * 5,
+      suffix: "",
+      icon: <Users size={15} />
+    },
+    {
+      id: "inventory",
+      label: "Inventario",
+      value:
+        (ranks.clan_inventory_1 ?? 0) * 2 +
+        (ranks.clan_inventory_2 ?? 0) * 3 +
+        (ranks.clan_inventory_3 ?? 0) * 5 +
+        (prosperitySuperActive ? 10 : 0),
+      suffix: "",
+      icon: <Backpack size={15} />
+    }
+  ];
+
+  return bonuses.filter((bonus) => bonus.value > 0);
+}
+
+function formatClanBonus(value: number, suffix: string) {
+  const normalized = Number.isInteger(value) ? value.toString() : value.toFixed(1).replace(".", ",");
+  return `+${normalized}${suffix}`;
+}
+
+function ClanBonusSummary({ game }: { game: GameState }) {
+  const bonuses = getClanBonusSummary(game);
+
+  return (
+    <section className="clan-bonus-summary">
+      <div>
+        <strong>Total de bonus adquiridos</strong>
+        <span>{bonuses.length ? "Soma dos ranks comprados pelo cla." : "Nenhum beneficio comprado ainda."}</span>
+      </div>
+      {bonuses.length > 0 && (
+        <div className="clan-bonus-list">
+          {bonuses.map((bonus) => (
+            <span className="clan-bonus-chip" key={bonus.id}>
+              {bonus.icon}
+              <b>{bonus.label}</b>
+              {formatClanBonus(bonus.value, bonus.suffix)}
+            </span>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function getClanBenefitIcon(benefit: { id: string; icon?: string }) {
+  const key = benefit.icon ?? benefit.id;
+  if (key.includes("members")) return <Users size={18} />;
+  if (key.includes("inventory")) return <Backpack size={18} />;
+  if (key.includes("damage") || key.includes("strength")) return <Swords size={18} />;
+  if (key.includes("crit") || key.includes("dodge")) return <Crosshair size={18} />;
+  if (key.includes("guard") || key.includes("defense")) return <Shield size={18} />;
+  if (key.includes("vitality") || key.includes("life")) return <Heart size={18} />;
+  if (key.includes("gold")) return <Coins size={18} />;
+  if (key.includes("drop")) return <Gem size={18} />;
+  if (key.includes("energy")) return <Zap size={18} />;
+  return <Star size={18} />;
+}
+
 function HuntPanel({ game }: { game: GameState }) {
+  const [selectedLocationId, setSelectedLocationId] = useState(game.cityHuntLocations[0]?.id ?? "");
+  const selectedLocation =
+    game.cityHuntLocations.find((location) => location.id === selectedLocationId) ?? game.cityHuntLocations[0] ?? null;
+  const monsters = selectedLocation
+    ? (selectedLocation.monsterIds
+        .map((id) => game.cityMonsters.find((monster) => monster.id === id))
+        .filter(Boolean) as GameState["cityMonsters"])
+    : [];
+
+  useEffect(() => {
+    if (!game.cityHuntLocations.some((location) => location.id === selectedLocationId)) {
+      setSelectedLocationId(game.cityHuntLocations[0]?.id ?? "");
+    }
+  }, [game.cityHuntLocations, selectedLocationId]);
+
   return (
     <section className="content-panel">
       <PanelTitle icon={<Swords size={20} />} title="Caçar" />
+      <div className="hunt-location-tabs">
+        {game.cityHuntLocations.map((location) => (
+          <button
+            key={location.id}
+            className={selectedLocation?.id === location.id ? "mini-tab active" : "mini-tab"}
+            onClick={() => setSelectedLocationId(location.id)}
+          >
+            {location.name}
+          </button>
+        ))}
+      </div>
+      {selectedLocation && (
+        <div className="hunt-location-banner">
+          <strong>{selectedLocation.name}</strong>
+          <span>{selectedLocation.description}</span>
+        </div>
+      )}
       <div className="list-grid">
-        {game.cityMonsters.map((monster) => {
+        {monsters.length === 0 && <p className="empty-state">Nenhum local de caça disponível nesta cidade.</p>}
+        {monsters.map((monster) => {
           const blocked = game.character.currentHp <= 0 || game.character.currentEnergy < monster.level;
           return (
             <article className="entity-card monster-card" key={monster.id}>
@@ -1291,16 +1652,25 @@ function ArenaPanel({ game }: { game: GameState }) {
   );
 }
 
-function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothecary" }) {
-  const itemIds = shop === "armorer" ? game.currentCity.armorerItemIds : game.currentCity.apothecaryItemIds;
+function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothecary" | "moneyChanger" }) {
+  const itemIds =
+    shop === "armorer"
+      ? game.currentCity.armorerItemIds
+      : shop === "apothecary"
+        ? game.currentCity.apothecaryItemIds.filter((itemId) => {
+            const item = game.itemCatalog[itemId];
+            return item?.kind !== "scroll" && item?.kind !== "ticket";
+          })
+        : game.currentCity.moneyChangerItemIds ?? [];
   const sortedItemIds = [...itemIds].sort((leftId, rightId) => {
     const left = game.itemCatalog[leftId];
     const right = game.itemCatalog[rightId];
     return (left?.price ?? 0) - (right?.price ?? 0) || (left?.name ?? "").localeCompare(right?.name ?? "");
   });
-  const title = shop === "armorer" ? "Armeiro" : "Boticário";
-  const icon = shop === "armorer" ? <Gavel size={20} /> : <FlaskConical size={20} />;
-  const npcName = shop === "armorer" ? game.currentCity.npcs.armorer : game.currentCity.npcs.apothecary;
+  const title = shop === "armorer" ? "Armeiro" : shop === "apothecary" ? "Boticário" : "Cambista";
+  const icon = shop === "armorer" ? <Gavel size={20} /> : shop === "apothecary" ? <FlaskConical size={20} /> : <Coins size={20} />;
+  const npcName =
+    shop === "armorer" ? game.currentCity.npcs.armorer : shop === "apothecary" ? game.currentCity.npcs.apothecary : game.currentCity.npcs.moneyChanger;
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] : null;
 
@@ -1332,7 +1702,7 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
           item={selectedItem}
           onClose={() => setSelectedItemId(null)}
           onBuy={(quantity) => {
-            socket.emit("shop:buy", { itemId: selectedItem.id, quantity });
+            socket.emit("shop:buy", { itemId: selectedItem.id, quantity, shop });
             setSelectedItemId(null);
           }}
         />
@@ -1474,17 +1844,52 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 }
 
 function TravelPanel({ game }: { game: GameState }) {
+  const currentCountryCities = game.cities.filter((city) => city.countryId === game.currentCountry.id);
+  const trainTickets = countInventoryItem(game, TRAIN_TICKET_ID);
+  const shipTickets = countInventoryItem(game, SHIP_TICKET_ID);
+
   return (
     <section className="content-panel">
       <PanelTitle icon={<MapPinned size={20} />} title="Viajar" />
+      <div className="travel-ticket-summary">
+        <span>{game.itemCatalog[TRAIN_TICKET_ID]?.name ?? "Ticket de Trem"}: <strong>{trainTickets}</strong></span>
+        <span>{game.itemCatalog[SHIP_TICKET_ID]?.name ?? "Ticket de Navio"}: <strong>{shipTickets}</strong></span>
+      </div>
+
+      <h3 className="city-group-title">Países</h3>
       <div className="list-grid">
-        {game.cities.map((city) => {
+        {game.countries.map((country) => {
+          const current = country.id === game.currentCountry.id;
+          const portCity = game.cities.find((city) => city.id === country.portCityId);
+          const locked = !current && (shipTickets <= 0 || !portCity || game.character.level < portCity.minLevel);
+          return (
+            <article className={current ? "entity-card current-city" : "entity-card"} key={country.id}>
+              <div>
+                <strong>{country.name}</strong>
+                <span>Porto: {portCity?.name ?? "indefinido"}</span>
+              </div>
+              <p>{country.description}</p>
+              <button
+                className="primary-button"
+                disabled={current || locked}
+                onClick={() => portCity && socket.emit("city:travel", { cityId: portCity.id })}
+              >
+                {current ? "País atual" : "Usar ticket de navio"}
+              </button>
+            </article>
+          );
+        })}
+      </div>
+
+      <h3 className="city-group-title">Cidades de {game.currentCountry.name}</h3>
+      <div className="list-grid">
+        {currentCountryCities.map((city) => {
           const current = city.id === game.character.cityId;
-          const locked = game.character.level < city.minLevel || game.character.gold < city.travelCost;
+          const locked = !current && (trainTickets <= 0 || game.character.level < city.minLevel);
           return (
             <article className={current ? "entity-card current-city" : "entity-card"} key={city.id}>
               <div>
-                <strong>{city.name}</strong>
+                <strong>{city.name}{city.isPort ? " (Porto)" : ""}</strong>
                 <span>Nível mínimo {city.minLevel}</span>
               </div>
               <p>{city.description}</p>
@@ -1493,8 +1898,7 @@ function TravelPanel({ game }: { game: GameState }) {
                 disabled={current || locked}
                 onClick={() => socket.emit("city:travel", { cityId: city.id })}
               >
-                {current ? "Atual" : `Viajar ${city.travelCost} `}
-                {!current && <Coins size={17} style={{ color: "var(--gold)" }} />}
+                {current ? "Atual" : "Usar ticket de trem"}
               </button>
             </article>
           );
@@ -1888,6 +2292,7 @@ function BattlePanel({ game }: { game: GameState }) {
   const opponent = battle.participants.find((participant) => participant.id !== me?.id);
   const myTurn = battle.turnParticipantId === me?.id;
   const firstPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.healPercent);
+  const autoPveActive = isAutoPveActive(game);
   const rematchMonsterId = getBattleMonsterId(battle);
   const rematchMonster = rematchMonsterId ? game.cityMonsters.find((monster) => monster.id === rematchMonsterId) : null;
   const rematchEnergyCost = rematchMonster ? rematchMonster.level + (battle.mode === "dungeon" ? 1 : 0) : 0;
@@ -1935,6 +2340,15 @@ function BattlePanel({ game }: { game: GameState }) {
             <button className="danger-button" onClick={() => socket.emit("battle:flee")}>
               Fugir
             </button>
+            {(battle.mode === "pve" || battle.mode === "dungeon") && autoPveActive && (
+              <button
+                className="ghost-button royal-auto-button"
+                disabled={!myTurn}
+                onClick={() => socket.emit("battle:action", { battleId: battle.id, action: "auto" })}
+              >
+                <Crown size={14} /> Auto PvE
+              </button>
+            )}
           </>
         ) : (
           <>
@@ -2553,6 +2967,14 @@ function getEnhancementPlanForUi(game: GameState, inventoryItem: InventoryItem, 
 
 function countClaimable(quests: QuestView[]) {
   return quests.filter((quest) => quest.completed && !quest.claimed).length;
+}
+
+function isAutoPveActive(game: GameState) {
+  return (game.character.pveAutoUntil ?? 0) > Date.now();
+}
+
+function isRoyalSealActive(game: GameState) {
+  return (game.character.royalSealUntil ?? 0) > Date.now();
 }
 
 function canReceiveShopItem(game: GameState, item: ItemDefinition) {

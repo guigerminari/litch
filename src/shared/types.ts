@@ -2,7 +2,7 @@ export type AttributeKey = "strength" | "constitution" | "agility";
 
 export type EquipmentSlot = "weapon" | "armor" | "amulet";
 
-export type ItemKind = "weapon" | "armor" | "amulet" | "potion" | "material" | "scroll" | "misc";
+export type ItemKind = "weapon" | "armor" | "amulet" | "potion" | "material" | "scroll" | "ticket" | "misc";
 
 export type BattleMode = "pve" | "pvp" | "dungeon";
 
@@ -81,6 +81,8 @@ export interface Character {
   arenaWins: number;
   arenaLosses: number;
   dungeonClears: number;
+  pveAutoUntil?: number;
+  royalSealUntil?: number;
 }
 
 export interface QuestProgress {
@@ -141,25 +143,46 @@ export interface MonsterDefinition {
   drops: MonsterDrop[];
 }
 
+export interface CountryDefinition {
+  id: string;
+  name: string;
+  description: string;
+  portCityId: string;
+}
+
+export interface HuntingLocationDefinition {
+  id: string;
+  cityId: string;
+  name: string;
+  description: string;
+  monsterIds: string[];
+}
+
 export interface CityDefinition {
   id: string;
+  countryId: string;
   name: string;
   minLevel: number;
   travelCost: number;
   description: string;
+  isPort?: boolean;
+  inhabitants: string[];
   npcs: {
     armorer: string;
     apothecary: string;
     blacksmith?: string;
     alchemist?: string;
+    moneyChanger?: string;
   };
   dungeonMonsterIds?: string[];
   blacksmithRecipeIds?: string[];
   blacksmithEnhancement?: boolean;
   alchemistRecipeIds?: string[];
+  huntLocationIds: string[];
   huntMonsterIds: string[];
   armorerItemIds: string[];
   apothecaryItemIds: string[];
+  moneyChangerItemIds?: string[];
 }
 
 export interface BattleParticipant {
@@ -284,13 +307,25 @@ export interface ClanBenefitDefinition {
   maxRank: number;
   costPerRank: ClanBenefitCost;
   requires?: string;
+  icon?: string;
+}
+
+export interface ClanSuperBenefitDefinition {
+  id: string;
+  category: ClanBenefitCategory;
+  name: string;
+  description: string;
+  icon?: string;
 }
 
 export interface Clan {
   id: string;
   name: string;
+  icon: string;
   leaderPlayerId: string;
   memberPlayerIds: string[];
+  level: number;
+  memberCapacity: number;
   gold: number;
   diamonds: number;
   benefitAllocations: Record<string, number>;
@@ -300,8 +335,11 @@ export interface Clan {
 export interface ClanSummary {
   id: string;
   name: string;
+  icon: string;
   leaderName: string;
   memberCount: number;
+  memberCapacity: number;
+  level: number;
   gold: number;
   diamonds: number;
 }
@@ -312,6 +350,8 @@ export interface GameShopPackage {
   diamonds: number;
   priceLabel: string;
   bonusLabel?: string;
+  description?: string;
+  featured?: boolean;
 }
 
 export interface RankingEntry {
@@ -329,7 +369,10 @@ export interface GameState {
   inventoryUsed: number;
   inventoryCapacity: number;
   cities: CityDefinition[];
+  countries: CountryDefinition[];
   currentCity: CityDefinition;
+  currentCountry: CountryDefinition;
+  cityHuntLocations: HuntingLocationDefinition[];
   cityMonsters: MonsterDefinition[];
   itemCatalog: Record<string, ItemDefinition>;
   activeBattle: BattleState | null;
@@ -341,6 +384,7 @@ export interface GameState {
   };
   talents: TalentDefinition[];
   clanBenefits: ClanBenefitDefinition[];
+  clanSuperBenefits: ClanSuperBenefitDefinition[];
   clan: Clan | null;
   clanDirectory: ClanSummary[];
   diamondPackages: GameShopPackage[];
@@ -384,6 +428,7 @@ export interface TravelPayload {
 export interface ShopBuyPayload {
   itemId: string;
   quantity?: number;
+  shop?: "armorer" | "apothecary" | "moneyChanger";
 }
 
 export interface SellPayload {
@@ -409,7 +454,7 @@ export interface DungeonStartPayload {
 
 export interface BattleActionPayload {
   battleId: string;
-  action: "attack" | "usePotion";
+  action: "attack" | "usePotion" | "auto";
   instanceId?: string;
 }
 
@@ -465,6 +510,7 @@ export interface GameShopPurchasePayload {
 
 export interface ClanCreatePayload {
   name: string;
+  icon?: string;
 }
 
 export interface ClanJoinPayload {

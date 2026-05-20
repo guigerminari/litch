@@ -1,13 +1,30 @@
 import { randomUUID } from "node:crypto";
 import type { Character, InventoryItem, ItemDefinition } from "../../shared/types";
-import { INVENTORY_CAPACITY } from "../content";
+import { CLAN_BENEFITS, INVENTORY_CAPACITY } from "../content";
+
+function isProsperitySuperActive(character: Character) {
+  const clanRanks = character.clanBenefitAllocations ?? {};
+  const benefits = CLAN_BENEFITS.filter((benefit) => benefit.category === "prosperity");
+  return benefits.length > 0 && benefits.every((benefit) => (clanRanks[benefit.id] ?? 0) >= benefit.maxRank);
+}
 
 export function inventoryUsed(character: Character) {
   return character.inventory.length; // 1 slot per unique stack entry
 }
 
+export function getInventoryCapacity(character: Character) {
+  const clanRanks = character.clanBenefitAllocations ?? {};
+  return (
+    INVENTORY_CAPACITY +
+    (clanRanks.clan_inventory_1 ?? 0) * 2 +
+    (clanRanks.clan_inventory_2 ?? 0) * 3 +
+    (clanRanks.clan_inventory_3 ?? 0) * 5 +
+    (isProsperitySuperActive(character) ? 10 : 0)
+  );
+}
+
 export function hasCapacity(character: Character, quantity = 1) {
-  return character.inventory.length + quantity <= INVENTORY_CAPACITY;
+  return character.inventory.length + quantity <= getInventoryCapacity(character);
 }
 
 export function findInventoryItem(character: Character, instanceId: string) {
@@ -30,7 +47,13 @@ export function addItem(
   }
 
   // Stackable items: merge into existing stack (no new slot needed)
-  if (definition.kind === "potion" || definition.kind === "material" || definition.kind === "scroll" || definition.kind === "misc") {
+  if (
+    definition.kind === "potion" ||
+    definition.kind === "material" ||
+    definition.kind === "scroll" ||
+    definition.kind === "ticket" ||
+    definition.kind === "misc"
+  ) {
     const stack = character.inventory.find((item) => item.itemId === itemId);
     if (stack) {
       stack.quantity += quantity;

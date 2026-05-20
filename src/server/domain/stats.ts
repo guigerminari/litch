@@ -1,5 +1,10 @@
 import type { Character, DerivedStats, InventoryItem, ItemDefinition, ItemStats } from "../../shared/types";
-import { TALENTS } from "../content";
+import { CLAN_BENEFITS, TALENTS } from "../content";
+
+function isClanCategoryComplete(allocations: Record<string, number>, category: "combat" | "defense" | "prosperity") {
+  const benefits = CLAN_BENEFITS.filter((benefit) => benefit.category === category);
+  return benefits.length > 0 && benefits.every((benefit) => (allocations[benefit.id] ?? 0) >= benefit.maxRank);
+}
 
 export function getEquippedItems(character: Character, itemCatalog: Record<string, ItemDefinition>) {
   const equippedIds = Object.values(character.equipment).filter(Boolean);
@@ -45,6 +50,7 @@ export function getEffectiveAttributes(character: Character, itemCatalog: Record
   attributes.agility += (talentRanks.off_agility_1 ?? 0) * 2;
   attributes.constitution += (talentRanks.def_constitution_1 ?? 0) * 2;
   attributes.agility += (talentRanks.def_agility_1 ?? 0) * 2;
+  attributes.strength += clanRanks.clan_strength_1 ?? 0;
 
   return attributes;
 }
@@ -53,6 +59,9 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
   const attributes = getEffectiveAttributes(character, itemCatalog);
   const talentRanks = character.talentAllocations ?? {};
   const clanRanks = character.clanBenefitAllocations ?? {};
+  const combatSuperActive = isClanCategoryComplete(clanRanks, "combat");
+  const defenseSuperActive = isClanCategoryComplete(clanRanks, "defense");
+  const prosperitySuperActive = isClanCategoryComplete(clanRanks, "prosperity");
   const equippedDefense = getEquippedItems(character, itemCatalog).reduce(
     (total, item) => total + (getEnhancedItemStats(item.inventoryItem, item.definition).defense ?? 0),
     0
@@ -62,31 +71,70 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
     (talentRanks.off_power_1 ?? 0) * 0.04 +
     (talentRanks.off_power_2 ?? 0) * 0.07 +
     (clanRanks.clan_damage_1 ?? 0) * 0.01 +
-    (clanRanks.clan_damage_2 ?? 0) * 0.015;
+    (clanRanks.clan_damage_2 ?? 0) * 0.015 +
+    (clanRanks.clan_damage_3 ?? 0) * 0.01 +
+    (clanRanks.clan_damage_4 ?? 0) * 0.015 +
+    (combatSuperActive ? 0.1 : 0);
   const maxHpBonusPercent =
     (talentRanks.def_vitality_1 ?? 0) * 0.05 +
     (talentRanks.def_vitality_2 ?? 0) * 0.08 +
-    (clanRanks.clan_vitality_1 ?? 0) * 0.02;
+    (clanRanks.clan_vitality_1 ?? 0) * 0.02 +
+    (clanRanks.clan_vitality_2 ?? 0) * 0.015 +
+    (defenseSuperActive ? 0.1 : 0);
 
   return {
     maxHp: Math.floor((character.level * 50 + 2 * attributes.constitution) * (1 + maxHpBonusPercent)),
-    maxEnergy: 10 + attributes.constitution + character.level + (talentRanks.util_energy_1 ?? 0) + (clanRanks.clan_energy_1 ?? 0),
+    maxEnergy:
+      10 +
+      attributes.constitution +
+      character.level +
+      (talentRanks.util_energy_1 ?? 0) +
+      (clanRanks.clan_energy_1 ?? 0) +
+      (clanRanks.clan_energy_2 ?? 0) +
+      (prosperitySuperActive ? 5 : 0),
     totalStrength: character.level * 10 + attributes.strength,
-    defense: equippedDefense + (talentRanks.def_armor_1 ?? 0) * 2 + (clanRanks.clan_guard_1 ?? 0),
+    defense:
+      equippedDefense +
+      (talentRanks.def_armor_1 ?? 0) * 2 +
+      (clanRanks.clan_guard_1 ?? 0) +
+      (clanRanks.clan_guard_2 ?? 0) +
+      (defenseSuperActive ? 5 : 0),
     agility: attributes.agility,
     criticalChance: Math.min(
       0.6,
-      attributes.agility * 0.01 + (talentRanks.off_crit_1 ?? 0) * 0.02 + (clanRanks.clan_crit_1 ?? 0) * 0.005
+        attributes.agility * 0.01 +
+        (talentRanks.off_crit_1 ?? 0) * 0.02 +
+        (clanRanks.clan_crit_1 ?? 0) * 0.005 +
+        (clanRanks.clan_crit_2 ?? 0) * 0.005 +
+        (combatSuperActive ? 0.03 : 0)
     ),
     dodgeChance: Math.min(
       0.45,
-      attributes.agility * 0.008 + (talentRanks.def_dodge_1 ?? 0) * 0.02 + (clanRanks.clan_dodge_1 ?? 0) * 0.005
+        attributes.agility * 0.008 +
+        (talentRanks.def_dodge_1 ?? 0) * 0.02 +
+        (clanRanks.clan_dodge_1 ?? 0) * 0.005 +
+        (clanRanks.clan_dodge_2 ?? 0) * 0.005 +
+        (defenseSuperActive ? 0.03 : 0)
     ),
     damageBonusPercent,
-    criticalDamageMultiplier: 1.5 + (talentRanks.off_crit_damage_1 ?? 0) * 0.15,
-    xpBonusPercent: (talentRanks.util_xp_1 ?? 0) * 0.05 + (talentRanks.util_xp_2 ?? 0) * 0.08 + (clanRanks.clan_xp_1 ?? 0) * 0.02,
-    goldBonusPercent: (talentRanks.util_gold_1 ?? 0) * 0.05 + (clanRanks.clan_gold_1 ?? 0) * 0.02,
-    dropBonusPercent: (talentRanks.util_drop_1 ?? 0) * 0.04 + (talentRanks.util_drop_2 ?? 0) * 0.08 + (clanRanks.clan_drop_1 ?? 0) * 0.015,
+    criticalDamageMultiplier: 1.5 + (talentRanks.off_crit_damage_1 ?? 0) * 0.15 + (combatSuperActive ? 0.2 : 0),
+    xpBonusPercent:
+      (talentRanks.util_xp_1 ?? 0) * 0.05 +
+      (talentRanks.util_xp_2 ?? 0) * 0.08 +
+      (clanRanks.clan_xp_1 ?? 0) * 0.02 +
+      (clanRanks.clan_xp_2 ?? 0) * 0.02 +
+      (prosperitySuperActive ? 0.1 : 0),
+    goldBonusPercent:
+      (talentRanks.util_gold_1 ?? 0) * 0.05 +
+      (clanRanks.clan_gold_1 ?? 0) * 0.02 +
+      (clanRanks.clan_gold_2 ?? 0) * 0.015 +
+      (prosperitySuperActive ? 0.1 : 0),
+    dropBonusPercent:
+      (talentRanks.util_drop_1 ?? 0) * 0.04 +
+      (talentRanks.util_drop_2 ?? 0) * 0.08 +
+      (clanRanks.clan_drop_1 ?? 0) * 0.015 +
+      (clanRanks.clan_drop_2 ?? 0) * 0.01 +
+      (prosperitySuperActive ? 0.05 : 0),
     hpRegenBonusPercent: (talentRanks.regen_hp_1 ?? 0) * 0.03,
     energyRegenBonusPercent: (talentRanks.regen_energy_1 ?? 0) * 0.03,
     availableTalentPoints: getTotalTalentPoints(character.level) - spentTalentPoints,

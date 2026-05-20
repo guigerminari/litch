@@ -121,8 +121,62 @@ button:disabled {
 }
 
 .game-shell {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   padding: 172px 16px 88px;
+  --city-bg-a: rgba(189, 147, 249, 0.2);
+  --city-bg-b: rgba(139, 233, 253, 0.14);
+  --city-bg-c: rgba(80, 250, 123, 0.08);
+}
+
+.game-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 8%, var(--city-bg-a), transparent 32rem),
+    radial-gradient(circle at 82% 4%, var(--city-bg-b), transparent 30rem),
+    linear-gradient(140deg, var(--bg), var(--city-bg-c));
+}
+
+.game-shell.country-aurevia {
+  --city-bg-a: rgba(189, 147, 249, 0.22);
+  --city-bg-b: rgba(241, 250, 140, 0.12);
+  --city-bg-c: rgba(80, 250, 123, 0.08);
+}
+
+.game-shell.country-valfria {
+  --city-bg-a: rgba(139, 233, 253, 0.2);
+  --city-bg-b: rgba(189, 147, 249, 0.16);
+  --city-bg-c: rgba(68, 71, 90, 0.42);
+}
+
+.game-shell.city-eldoria {
+  --city-bg-a: rgba(80, 250, 123, 0.16);
+  --city-bg-b: rgba(241, 250, 140, 0.13);
+}
+
+.game-shell.city-ravenspire {
+  --city-bg-a: rgba(189, 147, 249, 0.18);
+  --city-bg-b: rgba(255, 121, 198, 0.13);
+}
+
+.game-shell.city-ironhold {
+  --city-bg-a: rgba(255, 184, 108, 0.18);
+  --city-bg-b: rgba(255, 85, 85, 0.13);
+}
+
+.game-shell.city-vila_de_valfria {
+  --city-bg-a: rgba(139, 233, 253, 0.2);
+  --city-bg-b: rgba(248, 248, 242, 0.08);
+}
+
+.game-shell.city-rosindale {
+  --city-bg-a: rgba(255, 121, 198, 0.13);
+  --city-bg-b: rgba(139, 233, 253, 0.17);
 }
 
 .topbar {
@@ -218,6 +272,25 @@ button:disabled {
   border-radius: 50%;
   background: linear-gradient(135deg, var(--purple), var(--pink));
   color: var(--ink);
+}
+
+.character-chip-avatar,
+.avatar-ring {
+  position: relative;
+}
+
+.royal-seal-mini {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(241, 250, 140, 0.75);
+  border-radius: 50%;
+  background: #191a21;
+  color: var(--gold);
 }
 
 .character-chip strong,
@@ -366,6 +439,36 @@ button:disabled {
   color: var(--ink);
   border-radius: 50%;
   background: conic-gradient(from 45deg, var(--purple), var(--pink), var(--cyan), var(--purple));
+}
+
+.royal-seal {
+  position: absolute;
+  right: -58px;
+  bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  border: 1px solid rgba(241, 250, 140, 0.55);
+  border-radius: 999px;
+  background: rgba(25, 26, 33, 0.9);
+  color: var(--gold);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.royal-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  margin: -6px 0 0;
+  padding: 5px 8px;
+  border: 1px solid rgba(241, 250, 140, 0.32);
+  border-radius: 999px;
+  color: var(--gold);
+  background: rgba(241, 250, 140, 0.07);
+  font-size: 0.78rem;
 }
 
 .character-panel h2 {
@@ -591,6 +694,21 @@ button:disabled {
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
+.city-country,
+.city-inhabitants {
+  display: block;
+  margin-top: 6px;
+}
+
+.city-country {
+  color: var(--cyan);
+  font-size: 0.9rem;
+}
+
+.city-inhabitants {
+  color: var(--muted);
+}
+
 .eyebrow {
   display: inline-flex;
   color: var(--gold);
@@ -648,6 +766,45 @@ button:disabled {
 .mini-tab.active {
   border-color: rgba(189, 147, 249, 0.65);
   background: rgba(189, 147, 249, 0.18);
+}
+
+.hunt-location-tabs,
+.travel-ticket-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.hunt-location-banner {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid rgba(139, 233, 253, 0.24);
+  border-radius: 8px;
+  background: rgba(139, 233, 253, 0.07);
+}
+
+.hunt-location-banner span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.travel-ticket-summary span {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 6px 9px;
+  border: 1px solid rgba(241, 250, 140, 0.24);
+  border-radius: 999px;
+  background: rgba(241, 250, 140, 0.07);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.travel-ticket-summary strong {
+  color: var(--gold);
 }
 
 .content-panel {
@@ -943,6 +1100,18 @@ button:disabled {
 
 .shop-grid {
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.diamond-pack.featured-pack {
+  grid-column: 1 / -1;
+  border-color: rgba(241, 250, 140, 0.48);
+  background:
+    linear-gradient(135deg, rgba(241, 250, 140, 0.12), rgba(255, 121, 198, 0.08)),
+    var(--panel-soft);
+}
+
+.diamond-pack.featured-pack strong {
+  color: var(--gold);
 }
 
 .npc-shop-grid {
@@ -1988,6 +2157,11 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.royal-auto-button {
+  border-color: rgba(241, 250, 140, 0.36);
+  color: var(--gold);
+}
+
 .battle-log {
   max-height: 240px;
   overflow: auto;
@@ -2026,6 +2200,43 @@ button:disabled {
   gap: 10px;
 }
 
+.quest-section-header {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.76);
+  color: var(--text);
+  text-align: left;
+}
+
+.quest-section-header h3 {
+  margin: 0;
+  flex: 1;
+}
+
+.quest-section-header span,
+.quest-section-header b {
+  font-size: 0.78rem;
+}
+
+.quest-section-header span {
+  color: var(--muted);
+}
+
+.quest-section-header b {
+  min-width: 20px;
+  height: 20px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--ink);
+}
+
 .quest-list,
 .ranking-list,
 .talent-list {
@@ -2062,7 +2273,14 @@ button:disabled {
 }
 
 .quest-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.quest-info-line {
+  display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
 }
 
 .ranking-row {
@@ -2132,6 +2350,286 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 8px;
+}
+
+.clan-create-form {
+  grid-template-columns: minmax(160px, 1fr) auto auto;
+  align-items: center;
+}
+
+.crest-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.crest-option,
+.clan-directory-crest {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.9);
+  color: var(--text);
+}
+
+.crest-option.selected {
+  border-color: rgba(255, 121, 198, 0.8);
+  color: var(--pink);
+  background: rgba(255, 121, 198, 0.14);
+}
+
+.clan-directory-row {
+  grid-template-columns: auto 1fr auto auto;
+}
+
+.clan-reset-panel,
+.clan-bonus-summary {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(139, 233, 253, 0.24);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.7);
+}
+
+.clan-reset-panel {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.clan-reset-panel div,
+.clan-bonus-summary > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.clan-reset-panel span,
+.clan-bonus-summary span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.clan-bonus-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.clan-bonus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(68, 71, 90, 0.5);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.clan-bonus-chip svg {
+  color: var(--cyan);
+}
+
+.clan-super-benefits {
+  display: grid;
+  gap: 10px;
+}
+
+.clan-super-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gold);
+}
+
+.clan-super-title h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.clan-super-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.clan-super-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.72);
+  opacity: 0.62;
+}
+
+.clan-super-card > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+}
+
+.clan-super-card div {
+  display: grid;
+  gap: 3px;
+}
+
+.clan-super-card small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.clan-super-card b {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.clan-super-card.active {
+  opacity: 1;
+  border-color: rgba(241, 250, 140, 0.5);
+  background: rgba(241, 250, 140, 0.08);
+}
+
+.clan-super-card.active > span,
+.clan-super-card.active b {
+  color: var(--gold);
+}
+
+.clan-benefit-section {
+  overflow: hidden;
+}
+
+.clan-benefit-tree {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  padding: 10px 0 0 14px;
+}
+
+.clan-benefit-tree::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  background: linear-gradient(var(--purple), var(--cyan));
+  opacity: 0.5;
+}
+
+.clan-benefit-node {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.92);
+  color: var(--text);
+}
+
+.clan-benefit-node::before {
+  content: "";
+  position: absolute;
+  left: -13px;
+  top: 50%;
+  width: 13px;
+  height: 2px;
+  background: rgba(139, 233, 253, 0.48);
+}
+
+.clan-benefit-node:nth-child(4n + 2) {
+  transform: translateY(8px);
+}
+
+.clan-benefit-node:nth-child(4n + 3) {
+  transform: translateY(16px);
+}
+
+.clan-benefit-node:nth-child(4n) {
+  transform: translateY(8px);
+}
+
+.clan-benefit-node b {
+  font-size: 0.62rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.clan-benefit-node.locked {
+  opacity: 0.42;
+}
+
+.clan-benefit-node.maxed {
+  border-color: rgba(80, 250, 123, 0.58);
+}
+
+.clan-benefit-node.selected {
+  border-color: rgba(255, 121, 198, 0.78);
+  background: rgba(255, 121, 198, 0.14);
+}
+
+.clan-benefit-detail {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(139, 233, 253, 0.28);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.8);
+}
+
+.clan-benefit-detail-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(139, 233, 253, 0.08);
+  color: var(--cyan);
+}
+
+.clan-benefit-detail h3,
+.clan-benefit-detail p {
+  margin: 0;
+}
+
+.clan-benefit-detail p {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.clan-benefit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.clan-benefit-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .quest-main,
@@ -2650,6 +3148,18 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .clan-create-form,
+  .clan-reset-panel,
+  .clan-directory-row {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .clan-create-form .primary-button,
+  .clan-reset-panel .ghost-button {
+    width: 100%;
+  }
+
   .enhancement-grid {
     grid-template-columns: 1fr;
   }
@@ -2658,6 +3168,21 @@ button:disabled {
   .talent-row {
     grid-template-columns: 1fr;
     justify-items: start;
+  }
+
+  .quest-info-line {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    width: 100%;
+  }
+
+  .clan-benefit-detail {
+    grid-template-columns: 46px minmax(0, 1fr);
+  }
+
+  .clan-benefit-detail .primary-button {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .quest-reward {

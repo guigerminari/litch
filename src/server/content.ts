@@ -1,8 +1,11 @@
 import type {
   CityDefinition,
   ClanBenefitDefinition,
+  ClanSuperBenefitDefinition,
+  CountryDefinition,
   CraftingRecipe,
   GameShopPackage,
+  HuntingLocationDefinition,
   ItemDefinition,
   MonsterDefinition,
   TalentDefinition
@@ -11,7 +14,28 @@ import type {
 export const INVENTORY_CAPACITY = 40;
 export const STARTING_CITY_ID = "eldoria";
 
+export const TRAIN_TICKET_ID = "ticket_train";
+export const SHIP_TICKET_ID = "ticket_ship";
+
 export const ITEM_CATALOG: Record<string, ItemDefinition> = {
+  "ticket_train": {
+    "id": "ticket_train",
+    "name": "Ticket de Trem",
+    "kind": "ticket",
+    "minLevel": 1,
+    "price": 80,
+    "stats": {},
+    "description": "Usado para viajar entre cidades do mesmo pais."
+  },
+  "ticket_ship": {
+    "id": "ticket_ship",
+    "name": "Ticket de Navio",
+    "kind": "ticket",
+    "minLevel": 1,
+    "price": 250,
+    "stats": {},
+    "description": "Usado para viajar entre paises. A chegada sempre acontece na cidade porto."
+  },
   "armor_leather": {
     "id": "armor_leather",
     "name": "Armadura de Couro",
@@ -1364,6 +1388,15 @@ export const TALENTS: TalentDefinition[] = [
 ];
 
 export const DIAMOND_PACKAGES: GameShopPackage[] = [
+  {
+    id: "friend_of_king",
+    name: "Amigo do Rei",
+    diamonds: 200,
+    priceLabel: "R$ 49,90",
+    bonusLabel: "100 tickets de trem, 30 tickets de navio, auto PvE e selo real por 30 dias",
+    description: "Pacote especial com diamantes, tickets e privilegios reais temporarios.",
+    featured: true
+  },
   { id: "diamonds_30", name: "Bolsa pequena", diamonds: 30, priceLabel: "R$ 4,90" },
   { id: "diamonds_80", name: "Bolsa aventureira", diamonds: 80, priceLabel: "R$ 9,90", bonusLabel: "+10 bônus" },
   { id: "diamonds_180", name: "Cofre reluzente", diamonds: 180, priceLabel: "R$ 19,90", bonusLabel: "+40 bônus" },
@@ -1371,32 +1404,101 @@ export const DIAMOND_PACKAGES: GameShopPackage[] = [
 ];
 
 export const CLAN_BENEFITS: ClanBenefitDefinition[] = [
-  { id: "clan_damage_1", category: "combat", name: "Estandarte de guerra", description: "+1% dano por rank", maxRank: 5, costPerRank: { gold: 400, diamonds: 0 } },
-  { id: "clan_crit_1", category: "combat", name: "Juramento preciso", description: "+0,5% crítico por rank", maxRank: 5, costPerRank: { gold: 650, diamonds: 2 }, requires: "clan_damage_1" },
-  { id: "clan_damage_2", category: "combat", name: "Chamado ofensivo", description: "+1,5% dano por rank", maxRank: 4, costPerRank: { gold: 950, diamonds: 4 }, requires: "clan_crit_1" },
-  { id: "clan_vitality_1", category: "defense", name: "Abrigo comum", description: "+2% vida por rank", maxRank: 5, costPerRank: { gold: 420, diamonds: 0 } },
-  { id: "clan_guard_1", category: "defense", name: "Muralha do clã", description: "+1 defesa por rank", maxRank: 5, costPerRank: { gold: 640, diamonds: 2 }, requires: "clan_vitality_1" },
-  { id: "clan_dodge_1", category: "defense", name: "Treino coordenado", description: "+0,5% esquiva por rank", maxRank: 4, costPerRank: { gold: 900, diamonds: 4 }, requires: "clan_guard_1" },
-  { id: "clan_xp_1", category: "prosperity", name: "Biblioteca do clã", description: "+2% XP por rank", maxRank: 5, costPerRank: { gold: 500, diamonds: 0 } },
-  { id: "clan_gold_1", category: "prosperity", name: "Tesouraria comum", description: "+2% gold por rank", maxRank: 5, costPerRank: { gold: 700, diamonds: 2 }, requires: "clan_xp_1" },
-  { id: "clan_drop_1", category: "prosperity", name: "Partilha de espólios", description: "+1,5% drop por rank", maxRank: 4, costPerRank: { gold: 980, diamonds: 4 }, requires: "clan_gold_1" },
-  { id: "clan_energy_1", category: "prosperity", name: "Rotas seguras", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 1200, diamonds: 6 }, requires: "clan_drop_1" }
+  { id: "clan_damage_1", category: "combat", name: "Estandarte de guerra", description: "+1% dano por rank", maxRank: 5, costPerRank: { gold: 40000, diamonds: 10 } },
+  { id: "clan_crit_1", category: "combat", name: "Juramento preciso", description: "+0,5% crítico por rank", maxRank: 5, costPerRank: { gold: 65000, diamonds: 20 }, requires: "clan_damage_1" },
+  { id: "clan_damage_2", category: "combat", name: "Chamado ofensivo", description: "+1,5% dano por rank", maxRank: 4, costPerRank: { gold: 95000, diamonds: 40 }, requires: "clan_crit_1" },
+  { id: "clan_vitality_1", category: "defense", name: "Abrigo comum", description: "+2% vida por rank", maxRank: 5, costPerRank: { gold: 42000, diamonds: 10 } },
+  { id: "clan_guard_1", category: "defense", name: "Muralha do clã", description: "+1 defesa por rank", maxRank: 5, costPerRank: { gold: 64000, diamonds: 20 }, requires: "clan_vitality_1" },
+  { id: "clan_dodge_1", category: "defense", name: "Treino coordenado", description: "+0,5% esquiva por rank", maxRank: 4, costPerRank: { gold: 90000, diamonds: 40 }, requires: "clan_guard_1" },
+  { id: "clan_xp_1", category: "prosperity", name: "Biblioteca do clã", description: "+2% XP por rank", maxRank: 5, costPerRank: { gold: 50000, diamonds: 10 } },
+  { id: "clan_gold_1", category: "prosperity", name: "Tesouraria comum", description: "+2% gold por rank", maxRank: 5, costPerRank: { gold: 70000, diamonds: 20 }, requires: "clan_xp_1" },
+  { id: "clan_drop_1", category: "prosperity", name: "Partilha de espólios", description: "+1,5% drop por rank", maxRank: 4, costPerRank: { gold: 98000, diamonds: 40 }, requires: "clan_gold_1" },
+  { id: "clan_energy_1", category: "prosperity", name: "Rotas seguras", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 120000, diamonds: 60 }, requires: "clan_drop_1", icon: "energy" },
+  { id: "clan_members_1", category: "prosperity", name: "Alojamentos", description: "+2 membros no limite do cla por rank", maxRank: 5, costPerRank: { gold: 145000, diamonds: 70 }, requires: "clan_energy_1", icon: "members" },
+  { id: "clan_inventory_1", category: "prosperity", name: "Deposito compartilhado", description: "+2 espacos de inventario para cada membro por rank", maxRank: 5, costPerRank: { gold: 170000, diamonds: 80 }, requires: "clan_members_1", icon: "inventory" },
+  { id: "clan_xp_2", category: "prosperity", name: "Mapas de campanha", description: "+2% XP por rank", maxRank: 4, costPerRank: { gold: 210000, diamonds: 100 }, requires: "clan_inventory_1", icon: "xp" },
+  { id: "clan_gold_2", category: "prosperity", name: "Contratos mercantes", description: "+1,5% gold por rank", maxRank: 4, costPerRank: { gold: 250000, diamonds: 120 }, requires: "clan_xp_2", icon: "gold" },
+  { id: "clan_drop_2", category: "prosperity", name: "Batedores de tesouro", description: "+1% drop por rank", maxRank: 4, costPerRank: { gold: 300000, diamonds: 140 }, requires: "clan_gold_2", icon: "drop" },
+  { id: "clan_members_2", category: "prosperity", name: "Casas anexas", description: "+3 membros no limite do cla por rank", maxRank: 4, costPerRank: { gold: 360000, diamonds: 160 }, requires: "clan_drop_2", icon: "members" },
+  { id: "clan_inventory_2", category: "prosperity", name: "Armazem maior", description: "+3 espacos de inventario para cada membro por rank", maxRank: 5, costPerRank: { gold: 430000, diamonds: 180 }, requires: "clan_members_2", icon: "inventory" },
+  { id: "clan_energy_2", category: "prosperity", name: "Logistica superior", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 520000, diamonds: 220 }, requires: "clan_inventory_2", icon: "energy" },
+  { id: "clan_members_3", category: "prosperity", name: "Distrito do cla", description: "+5 membros no limite do cla por rank", maxRank: 3, costPerRank: { gold: 650000, diamonds: 280 }, requires: "clan_energy_2", icon: "members" },
+  { id: "clan_inventory_3", category: "prosperity", name: "Cofres expedicionarios", description: "+5 espacos de inventario para cada membro por rank", maxRank: 4, costPerRank: { gold: 780000, diamonds: 340 }, requires: "clan_members_3", icon: "inventory" },
+  { id: "clan_damage_3", category: "combat", name: "Ordem de ataque", description: "+1% dano por rank", maxRank: 5, costPerRank: { gold: 190000, diamonds: 80 }, requires: "clan_damage_2", icon: "damage" },
+  { id: "clan_crit_2", category: "combat", name: "Tatica de flanco", description: "+0,5% critico por rank", maxRank: 4, costPerRank: { gold: 220000, diamonds: 10 }, requires: "clan_damage_3", icon: "crit" },
+  { id: "clan_damage_4", category: "combat", name: "Legiao ofensiva", description: "+1,5% dano por rank", maxRank: 3, costPerRank: { gold: 320000, diamonds: 14 }, requires: "clan_crit_2", icon: "damage" },
+  { id: "clan_guard_2", category: "defense", name: "Escudos jurados", description: "+1 defesa por rank", maxRank: 5, costPerRank: { gold: 155000, diamonds: 6 }, requires: "clan_dodge_1", icon: "defense" },
+  { id: "clan_vitality_2", category: "defense", name: "Enfermaria do cla", description: "+1,5% vida por rank", maxRank: 5, costPerRank: { gold: 190000, diamonds: 8 }, requires: "clan_guard_2", icon: "life" },
+  { id: "clan_dodge_2", category: "defense", name: "Passos de patrulha", description: "+0,5% esquiva por rank", maxRank: 4, costPerRank: { gold: 260000, diamonds: 12 }, requires: "clan_vitality_2", icon: "dodge" }
+];
+
+export const CLAN_SUPER_BENEFITS: ClanSuperBenefitDefinition[] = [
+  {
+    id: "super_combat",
+    category: "combat",
+    name: "Mandato de Guerra",
+    description: "Ativo com todos os ranks de Combate: +10% dano, +3% critico e +20% dano critico.",
+    icon: "damage"
+  },
+  {
+    id: "super_defense",
+    category: "defense",
+    name: "Baluarte do Reino",
+    description: "Ativo com todos os ranks de Defesa: +10% vida, +5 defesa e +3% esquiva.",
+    icon: "defense"
+  },
+  {
+    id: "super_prosperity",
+    category: "prosperity",
+    name: "Guilda Real",
+    description: "Ativo com todos os ranks de Prosperidade: +10% XP, +10% gold, +5% drop, +5 energia e +10 inventario.",
+    icon: "gold"
+  }
+];
+
+export const COUNTRIES: CountryDefinition[] = [
+  {
+    id: "aurevia",
+    name: "Aurevia",
+    description: "Reino de estradas antigas, fortalezas de pedra e bosques seguros.",
+    portCityId: "eldoria"
+  },
+  {
+    id: "valfria",
+    name: "Valfria",
+    description: "Pais frio de montanhas, ruinas espectrais e vilas isoladas.",
+    portCityId: "vila_de_valfria"
+  }
 ];
 
 export const CITIES: CityDefinition[] = [
   {
     "id": "eldoria",
+    "countryId": "aurevia",
     "name": "Eldoria",
     "minLevel": 1,
     "travelCost": 0,
     "description": "Cidade principal, cercada por bosques antigos e estradas seguras.",
+    "isPort": true,
+    "inhabitants": [
+      "Borin Martelo-Firme",
+      "Mira Folha-Clara",
+      "Nara Alambique",
+      "Tomas Mar-Alto"
+    ],
     "npcs": {
       "armorer": "Borin Martelo-Firme",
       "apothecary": "Mira Folha-Clara",
-      "alchemist": "Nara Alambique"
+      "alchemist": "Nara Alambique",
+      "moneyChanger": "Tomas Mar-Alto"
     },
     "alchemistRecipeIds": [
       "brew_major_health"
+    ],
+    "huntLocationIds": [
+      "eldoria_training_fields",
+      "eldoria_old_woods",
+      "eldoria_sunken_ruins"
     ],
     "huntMonsterIds": [
       "training_dummy",
@@ -1446,14 +1548,29 @@ export const CITIES: CityDefinition[] = [
       "energy_potion",
       "oblivion_scroll",
       "memory_scroll"
+    ],
+    "moneyChangerItemIds": [
+      "ticket_train",
+      "ticket_ship",
+      "scroll_enhanced_parchment",
+      "scroll_fraddo_parchment",
+      "oblivion_scroll",
+      "memory_scroll"
     ]
   },
   {
     "id": "ravenspire",
+    "countryId": "aurevia",
     "name": "Ravenspire",
     "minLevel": 3,
     "travelCost": 45,
     "description": "Torres de pedra vigiam trilhas tomadas por saqueadores.",
+    "inhabitants": [
+      "Garrik Aco-Negro",
+      "Selene Vidro-Rubro",
+      "Doran Bigorna",
+      "Capita Havel"
+    ],
     "npcs": {
       "armorer": "Garrik Aco-Negro",
       "apothecary": "Selene Vidro-Rubro",
@@ -1476,6 +1593,11 @@ export const CITIES: CityDefinition[] = [
     "alchemistRecipeIds": [
       "brew_major_health",
       "brew_major_energy"
+    ],
+    "huntLocationIds": [
+      "ravenspire_bandit_road",
+      "ravenspire_damned_lands",
+      "ravenspire_desert_pass"
     ],
     "huntMonsterIds": [
       "road_bandit",
@@ -1547,10 +1669,17 @@ export const CITIES: CityDefinition[] = [
   },
   {
     "id": "ironhold",
+    "countryId": "aurevia",
     "name": "Ironhold",
     "minLevel": 7,
     "travelCost": 130,
     "description": "Uma fortaleza nas montanhas onde o ar pesa como metal.",
+    "inhabitants": [
+      "Helga Forja-Alta",
+      "Orin Cinza-Viva",
+      "Mestre Rurik",
+      "Vigia Mael"
+    ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
       "apothecary": "Orin Cinza-Viva",
@@ -1580,6 +1709,11 @@ export const CITIES: CityDefinition[] = [
       "brew_major_health",
       "brew_major_energy",
       "bind_moon_amulet"
+    ],
+    "huntLocationIds": [
+      "ironhold_ember_mines",
+      "ironhold_beast_caves",
+      "ironhold_giant_valley"
     ],
     "huntMonsterIds": [
       "ember_golem",
@@ -1679,15 +1813,24 @@ export const CITIES: CityDefinition[] = [
   },
   {
     "id": "vila_de_valfria",
+    "countryId": "valfria",
     "name": "Vila de Valfria",
     "minLevel": 15,
     "travelCost": 130,
     "description": "Uma vila pitoresca nas montanhas, conhecida por suas tradicoes antigas.",
+    "isPort": true,
+    "inhabitants": [
+      "Helga Forja-Alta",
+      "Orin Cinza-Viva",
+      "Lia Trilho-Norte",
+      "Caio Cartas"
+    ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
       "apothecary": "Orin Cinza-Viva",
       "blacksmith": "Helga Forja-Alta",
-      "alchemist": "Orin Cinza-Viva"
+      "alchemist": "Orin Cinza-Viva",
+      "moneyChanger": "Caio Cartas"
     },
     "dungeonMonsterIds": [
       "orc_warrior",
@@ -1714,6 +1857,11 @@ export const CITIES: CityDefinition[] = [
       "brew_major_health",
       "brew_major_energy",
       "bind_moon_amulet"
+    ],
+    "huntLocationIds": [
+      "valfria_orc_marsh",
+      "valfria_bone_fields",
+      "valfria_spectral_mire"
     ],
     "huntMonsterIds": [
       "orc_warrior",
@@ -1818,14 +1966,30 @@ export const CITIES: CityDefinition[] = [
       "major_energy_potion",
       "oblivion_scroll",
       "memory_scroll"
+    ],
+    "moneyChangerItemIds": [
+      "ticket_train",
+      "ticket_ship",
+      "scroll_enhanced_parchment",
+      "scroll_fraddo_parchment",
+      "scroll_magic_lands_parchment",
+      "oblivion_scroll",
+      "memory_scroll"
     ]
   },
   {
     "id": "rosindale",
+    "countryId": "valfria",
     "name": "Rosindale",
     "minLevel": 25,
     "travelCost": 130,
     "description": "Uma fortaleza nas montanhas onde o ar pesa como metal.",
+    "inhabitants": [
+      "Helga Forja-Alta",
+      "Orin Cinza-Viva",
+      "Sentinela Rosin",
+      "Archivista Dalen"
+    ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
       "apothecary": "Orin Cinza-Viva",
@@ -1850,6 +2014,10 @@ export const CITIES: CityDefinition[] = [
       "brew_major_health",
       "brew_major_energy",
       "bind_moon_amulet"
+    ],
+    "huntLocationIds": [
+      "rosindale_infected_coast",
+      "rosindale_zombie_quarter"
     ],
     "huntMonsterIds": [
       "zombie_kraken_infected",
@@ -1925,6 +2093,240 @@ export const CITIES: CityDefinition[] = [
     ]
   }
 ];
+
+export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
+  "eldoria_training_fields": {
+    "id": "eldoria_training_fields",
+    "cityId": "eldoria",
+    "name": "Campos de Treino",
+    "description": "Campos vigiados onde iniciantes enfrentam ameacas pequenas.",
+    "monsterIds": [
+      "training_dummy",
+      "forest_rat",
+      "gray_wolf"
+    ]
+  },
+  "eldoria_old_woods": {
+    "id": "eldoria_old_woods",
+    "cityId": "eldoria",
+    "name": "Bosque Antigo",
+    "description": "Trilhas fechadas tomadas por criaturas venenosas e guardioes antigos.",
+    "monsterIds": [
+      "aberr",
+      "anaconda_new",
+      "anubis_guard",
+      "black_mamba_new",
+      "cursed_goblin"
+    ]
+  },
+  "eldoria_sunken_ruins": {
+    "id": "eldoria_sunken_ruins",
+    "cityId": "eldoria",
+    "name": "Ruinas Alagadas",
+    "description": "Pedras afundadas e lama escura onde monstros mais perigosos se escondem.",
+    "monsterIds": [
+      "brown_ooze",
+      "centaur_demon",
+      "clay_golem",
+      "damnation_cyclops",
+      "damnation_elemental"
+    ]
+  },
+  "ravenspire_bandit_road": {
+    "id": "ravenspire_bandit_road",
+    "cityId": "ravenspire",
+    "name": "Estrada dos Saqueadores",
+    "description": "Rotas estreitas patrulhadas por bandidos e bestas agressivas.",
+    "monsterIds": [
+      "road_bandit",
+      "thorn_boar",
+      "damnation_golem",
+      "deathcap"
+    ]
+  },
+  "ravenspire_damned_lands": {
+    "id": "ravenspire_damned_lands",
+    "cityId": "ravenspire",
+    "name": "Terras Danadas",
+    "description": "Planicies retorcidas por magia hostil.",
+    "monsterIds": [
+      "damnation_harpy",
+      "damnation_mummy",
+      "damnation_orc",
+      "damnation_scorpion",
+      "damnation_snake",
+      "damnation_spider",
+      "damnation_troll"
+    ]
+  },
+  "ravenspire_desert_pass": {
+    "id": "ravenspire_desert_pass",
+    "cityId": "ravenspire",
+    "name": "Passagem do Deserto",
+    "description": "Um caminho seco onde gigantes e demonios rondam caravanas.",
+    "monsterIds": [
+      "deep_dwarf",
+      "demon_bareon",
+      "demon_desert_giant",
+      "demon_dragon",
+      "demoniac_elephant",
+      "demoniac_wolf",
+      "desert_giant",
+      "desert_walker",
+      "desert_worm"
+    ]
+  },
+  "ironhold_ember_mines": {
+    "id": "ironhold_ember_mines",
+    "cityId": "ironhold",
+    "name": "Minas de Brasa",
+    "description": "Tuneis quentes guardados por criaturas de pedra e fogo.",
+    "monsterIds": [
+      "ember_golem",
+      "cave_wyvern",
+      "dorrene_orc",
+      "dorrene_snake",
+      "emperor_scorpion",
+      "eye_of_devastation_new"
+    ]
+  },
+  "ironhold_beast_caves": {
+    "id": "ironhold_beast_caves",
+    "cityId": "ironhold",
+    "name": "Cavernas das Feras",
+    "description": "Galerias profundas infestadas de insetos, lagartos e lobos.",
+    "monsterIds": [
+      "giant_ant",
+      "giant_gecko",
+      "giant_leech",
+      "giant_scorpion",
+      "giant_spore",
+      "giant_toad",
+      "grey_rat",
+      "grey_bear",
+      "grey_wolf",
+      "guardian_serpent",
+      "hell_lizard",
+      "hell_salamander",
+      "hell_worm"
+    ]
+  },
+  "ironhold_giant_valley": {
+    "id": "ironhold_giant_valley",
+    "cityId": "ironhold",
+    "name": "Vale dos Gigantes",
+    "description": "Desfiladeiros onde ogros, gigantes e bandidos disputam territorio.",
+    "monsterIds": [
+      "hill_giant_new",
+      "human_bandit",
+      "infernal_serpent",
+      "jelly",
+      "joree_giant",
+      "joree_plant",
+      "joree_walker",
+      "labrat_unseen",
+      "mummy",
+      "ogre_mage",
+      "ogre",
+      "orc_knight",
+      "easter_bunny"
+    ]
+  },
+  "valfria_orc_marsh": {
+    "id": "valfria_orc_marsh",
+    "cityId": "vila_de_valfria",
+    "name": "Brejo dos Orcs",
+    "description": "Charcos frios usados por orcs e aranhas como rota de emboscada.",
+    "monsterIds": [
+      "orc_warrior",
+      "orc",
+      "pulsating_lump",
+      "redback_new",
+      "rock_troll",
+      "salamander_firebrand",
+      "salamander",
+      "sand_elemental",
+      "sand_spider"
+    ]
+  },
+  "valfria_bone_fields": {
+    "id": "valfria_bone_fields",
+    "cityId": "vila_de_valfria",
+    "name": "Campos de Ossos",
+    "description": "Um cemiterio aberto onde esqueletos patrulham a neve.",
+    "monsterIds": [
+      "skeleton_bat",
+      "skeleton_centaur",
+      "skeleton_dragon",
+      "skeleton_naga",
+      "skeleton_quadruped_large_new",
+      "skeleton_quadruped_small",
+      "skeleton_snake",
+      "skeleton_ugly_thing"
+    ]
+  },
+  "valfria_spectral_mire": {
+    "id": "valfria_spectral_mire",
+    "cityId": "vila_de_valfria",
+    "name": "Pantano Espectral",
+    "description": "Neblina luminosa cobre espectros, aranhas e mortos inquietos.",
+    "monsterIds": [
+      "spectral_ant_old",
+      "spectral_bat_old",
+      "spectral_bee_old",
+      "spectral_centaur_old",
+      "spectral_dragon_old",
+      "spectral_fish_old",
+      "spectral_hydra_3_old",
+      "spectral_naga_old",
+      "spectral_quadruped_small_old",
+      "spectral_snake_old",
+      "spectral_spider_old",
+      "spectral_thing",
+      "spectral_worm",
+      "two_headed_ogre",
+      "viper",
+      "wolf_spider_new",
+      "wolf_spider_old",
+      "zombie_crab",
+      "zombie_drake_infected",
+      "zombie_drake",
+      "zombie_hound_infected",
+      "zombie_hound",
+      "zombie_kraken_head"
+    ]
+  },
+  "rosindale_infected_coast": {
+    "id": "rosindale_infected_coast",
+    "cityId": "rosindale",
+    "name": "Costa Infectada",
+    "description": "Rochedos umidos onde mortos do mar chegaram primeiro.",
+    "monsterIds": [
+      "zombie_kraken_infected",
+      "zombie_lizard_infected",
+      "zombie_lizard",
+      "zombie_octopode_infected",
+      "zombie_octopode",
+      "zombie_turtle_infected",
+      "zombie_turtle"
+    ]
+  },
+  "rosindale_zombie_quarter": {
+    "id": "rosindale_zombie_quarter",
+    "cityId": "rosindale",
+    "name": "Bairro dos Mortos",
+    "description": "Ruas vazias ocupadas por mortos-vivos de varias formas.",
+    "monsterIds": [
+      "zombie_ogre_infected",
+      "zombie_ogre",
+      "zombie_rat",
+      "zombie_small",
+      "zombie_toad",
+      "zombie_ugly_thing_infected",
+      "zombie_ugly_thing"
+    ]
+  }
+};
 
 export const MONSTERS: Record<string, MonsterDefinition> = {
   "aberr": {
