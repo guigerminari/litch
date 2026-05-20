@@ -7,6 +7,8 @@ import {
   Crown,
   ChevronDown,
   ChevronRight,
+  Flame,
+  Flag,
   FlaskConical,
   Gavel,
   Gem,
@@ -17,6 +19,7 @@ import {
   MessageCircle,
   ScrollText,
   Send,
+  Skull,
   Star,
   Shield,
   ShoppingBag,
@@ -87,7 +90,7 @@ const viewLabels: Record<View, string> = {
 };
 
 const attributes: AttributeKey[] = ["strength", "constitution", "agility"];
-const CLAN_CREST_OPTIONS = ["shield", "swords", "star", "gem", "castle", "trophy"] as const;
+const CLAN_CREST_OPTIONS = ["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"] as const;
 
 const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   weapon: "Arma",
@@ -1160,6 +1163,14 @@ function getClanCrestIcon(icon?: string, size = 18) {
       return <Castle size={size} />;
     case "trophy":
       return <Trophy size={size} />;
+    case "crown":
+      return <Crown size={size} />;
+    case "flame":
+      return <Flame size={size} />;
+    case "flag":
+      return <Flag size={size} />;
+    case "skull":
+      return <Skull size={size} />;
     case "shield":
     default:
       return <Shield size={size} />;
@@ -1173,7 +1184,11 @@ function getClanCrestLabel(icon: string) {
     star: "Estrela",
     gem: "Gema",
     castle: "Castelo",
-    trophy: "TrofÃ©u"
+    trophy: "Troféu",
+    crown: "Coroa",
+    flame: "Chama",
+    flag: "Bandeira",
+    skull: "Caveira"
   };
   return labels[icon] ?? "Escudo";
 }
@@ -1181,6 +1196,7 @@ function getClanCrestLabel(icon: string) {
 function ClanPanel({ game }: { game: GameState }) {
   const [name, setName] = useState("");
   const [crestIcon, setCrestIcon] = useState<(typeof CLAN_CREST_OPTIONS)[number]>("shield");
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [gold, setGold] = useState(0);
   const [diamonds, setDiamonds] = useState(0);
   const clan = game.clan;
@@ -1189,6 +1205,7 @@ function ClanPanel({ game }: { game: GameState }) {
     event.preventDefault();
     socket.emit("clan:create", { name, icon: crestIcon });
     setName("");
+    setShowCreateForm(false);
   };
 
   const donate = (event: FormEvent) => {
@@ -1199,31 +1216,52 @@ function ClanPanel({ game }: { game: GameState }) {
   };
 
   if (!clan) {
-    const canCreateClan = game.character.level >= 15 && game.character.diamonds >= 10 && name.trim().length >= 3;
+    const levelReq = 15;
+    const diamondCost = 10;
+    const canCreateClan = game.character.level >= levelReq && game.character.diamonds >= diamondCost && name.trim().length >= 3;
+    const levelOk = game.character.level >= levelReq;
+    const diamondsOk = game.character.diamonds >= diamondCost;
 
     return (
       <section className="content-panel clan-panel">
         <PanelTitle icon={<Users size={20} />} title="Clã" />
-        <form className="market-form clan-create-form" onSubmit={createClan}>
-          <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome do clã" maxLength={28} />
-          <div className="crest-picker" aria-label="Brasao do cla">
-            {CLAN_CREST_OPTIONS.map((icon) => (
-              <button
-                type="button"
-                className={crestIcon === icon ? "crest-option selected" : "crest-option"}
-                key={icon}
-                title={getClanCrestLabel(icon)}
-                onClick={() => setCrestIcon(icon)}
-              >
-                {getClanCrestIcon(icon)}
-              </button>
-            ))}
-          </div>
-          <button className="primary-button" disabled={!canCreateClan}>
-            Criar clã
+        <div className="clan-create-section">
+          <button
+            className="primary-button clan-create-button"
+            disabled={!levelOk || !diamondsOk}
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            title={!levelOk || !diamondsOk ? `Requer nível ${levelReq} e ${diamondCost} diamantes` : ""}
+          >
+            <ChevronRight size={16} style={{ transform: showCreateForm ? "rotate(90deg)" : "none", transition: "transform 200ms" }} />
+            Criar novo clã
           </button>
-        </form>
-        <p className="market-form-hint">Requer nivel 15 e custa 10 diamantes. O lider escolhe o brasao ao criar.</p>
+          {!levelOk || !diamondsOk ? (
+            <p className="market-form-hint requirement-hint">
+              ⚠️ Requer nível {levelReq} {!levelOk && `(atual: ${game.character.level})`} e {diamondCost} diamantes {!diamondsOk && `(atual: ${game.character.diamonds})`}
+            </p>
+          ) : null}
+        </div>
+        {showCreateForm && (levelOk && diamondsOk) && (
+          <form className="market-form clan-create-form" onSubmit={createClan}>
+            <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome do clã" maxLength={28} autoFocus />
+            <div className="crest-picker" aria-label="Brasao do cla">
+              {CLAN_CREST_OPTIONS.map((icon) => (
+                <button
+                  type="button"
+                  className={crestIcon === icon ? "crest-option selected" : "crest-option"}
+                  key={icon}
+                  title={getClanCrestLabel(icon)}
+                  onClick={() => setCrestIcon(icon)}
+                >
+                  {getClanCrestIcon(icon)}
+                </button>
+              ))}
+            </div>
+            <button className="primary-button" disabled={!canCreateClan}>
+              Confirmar
+            </button>
+          </form>
+        )}
         <section className="market-group">
           <h3>Clãs abertos</h3>
           <div className="market-list">

@@ -520,13 +520,20 @@ function getClanLevel(clan: { benefitAllocations: Record<string, number> }) {
   return Object.values(clan.benefitAllocations ?? {}).reduce((total, rank) => total + rank, 0);
 }
 
+function isClanCategoryComplete(allocations: Record<string, number>, category: "combat" | "defense" | "prosperity") {
+  const benefits = CLAN_BENEFITS.filter((benefit) => benefit.category === category);
+  return benefits.length > 0 && benefits.every((benefit) => (allocations[benefit.id] ?? 0) >= benefit.maxRank);
+}
+
 function getClanMemberCapacity(clan: { benefitAllocations: Record<string, number> }) {
   const ranks = clan.benefitAllocations ?? {};
+  const prosperitySuperActive = isClanCategoryComplete(ranks, "prosperity");
   return (
     CLAN_BASE_MEMBER_CAPACITY +
     (ranks.clan_members_1 ?? 0) * 2 +
     (ranks.clan_members_2 ?? 0) * 3 +
-    (ranks.clan_members_3 ?? 0) * 5
+    (ranks.clan_members_3 ?? 0) * 5 +
+    (prosperitySuperActive ? 10 : 0)
   );
 }
 

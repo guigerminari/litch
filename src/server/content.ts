@@ -1414,15 +1414,15 @@ export const CLAN_BENEFITS: ClanBenefitDefinition[] = [
   { id: "clan_gold_1", category: "prosperity", name: "Tesouraria comum", description: "+2% gold por rank", maxRank: 5, costPerRank: { gold: 70000, diamonds: 20 }, requires: "clan_xp_1" },
   { id: "clan_drop_1", category: "prosperity", name: "Partilha de espólios", description: "+1,5% drop por rank", maxRank: 4, costPerRank: { gold: 98000, diamonds: 40 }, requires: "clan_gold_1" },
   { id: "clan_energy_1", category: "prosperity", name: "Rotas seguras", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 120000, diamonds: 60 }, requires: "clan_drop_1", icon: "energy" },
-  { id: "clan_members_1", category: "prosperity", name: "Alojamentos", description: "+2 membros no limite do cla por rank", maxRank: 5, costPerRank: { gold: 145000, diamonds: 70 }, requires: "clan_energy_1", icon: "members" },
-  { id: "clan_inventory_1", category: "prosperity", name: "Deposito compartilhado", description: "+2 espacos de inventario para cada membro por rank", maxRank: 5, costPerRank: { gold: 170000, diamonds: 80 }, requires: "clan_members_1", icon: "inventory" },
+  { id: "clan_members_1", category: "prosperity", name: "Alojamentos", description: "+2 membros no limite do cla por rank", maxRank: 15, costPerRank: { gold: 145000, diamonds: 70 }, requires: "clan_energy_1", icon: "members" },
+  { id: "clan_inventory_1", category: "prosperity", name: "Deposito compartilhado", description: "+2 espacos de inventario para cada membro por rank", maxRank: 10, costPerRank: { gold: 170000, diamonds: 80 }, requires: "clan_members_1", icon: "inventory" },
   { id: "clan_xp_2", category: "prosperity", name: "Mapas de campanha", description: "+2% XP por rank", maxRank: 4, costPerRank: { gold: 210000, diamonds: 100 }, requires: "clan_inventory_1", icon: "xp" },
   { id: "clan_gold_2", category: "prosperity", name: "Contratos mercantes", description: "+1,5% gold por rank", maxRank: 4, costPerRank: { gold: 250000, diamonds: 120 }, requires: "clan_xp_2", icon: "gold" },
   { id: "clan_drop_2", category: "prosperity", name: "Batedores de tesouro", description: "+1% drop por rank", maxRank: 4, costPerRank: { gold: 300000, diamonds: 140 }, requires: "clan_gold_2", icon: "drop" },
-  { id: "clan_members_2", category: "prosperity", name: "Casas anexas", description: "+3 membros no limite do cla por rank", maxRank: 4, costPerRank: { gold: 360000, diamonds: 160 }, requires: "clan_drop_2", icon: "members" },
+  { id: "clan_members_2", category: "prosperity", name: "Casas anexas", description: "+3 membros no limite do cla por rank", maxRank: 10, costPerRank: { gold: 360000, diamonds: 160 }, requires: "clan_drop_2", icon: "members" },
   { id: "clan_inventory_2", category: "prosperity", name: "Armazem maior", description: "+3 espacos de inventario para cada membro por rank", maxRank: 5, costPerRank: { gold: 430000, diamonds: 180 }, requires: "clan_members_2", icon: "inventory" },
   { id: "clan_energy_2", category: "prosperity", name: "Logistica superior", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 520000, diamonds: 220 }, requires: "clan_inventory_2", icon: "energy" },
-  { id: "clan_members_3", category: "prosperity", name: "Distrito do cla", description: "+5 membros no limite do cla por rank", maxRank: 3, costPerRank: { gold: 650000, diamonds: 280 }, requires: "clan_energy_2", icon: "members" },
+  { id: "clan_members_3", category: "prosperity", name: "Distrito do cla", description: "+5 membros no limite do cla por rank", maxRank: 4, costPerRank: { gold: 650000, diamonds: 280 }, requires: "clan_energy_2", icon: "members" },
   { id: "clan_inventory_3", category: "prosperity", name: "Cofres expedicionarios", description: "+5 espacos de inventario para cada membro por rank", maxRank: 4, costPerRank: { gold: 780000, diamonds: 340 }, requires: "clan_members_3", icon: "inventory" },
   { id: "clan_damage_3", category: "combat", name: "Ordem de ataque", description: "+1% dano por rank", maxRank: 5, costPerRank: { gold: 190000, diamonds: 80 }, requires: "clan_damage_2", icon: "damage" },
   { id: "clan_crit_2", category: "combat", name: "Tatica de flanco", description: "+0,5% critico por rank", maxRank: 4, costPerRank: { gold: 220000, diamonds: 10 }, requires: "clan_damage_3", icon: "crit" },
@@ -1451,7 +1451,7 @@ export const CLAN_SUPER_BENEFITS: ClanSuperBenefitDefinition[] = [
     id: "super_prosperity",
     category: "prosperity",
     name: "Guilda Real",
-    description: "Ativo com todos os ranks de Prosperidade: +10% XP, +10% gold, +5% drop, +5 energia e +10 inventario.",
+    description: "Ativo com todos os ranks de Prosperidade: +10% XP, +10% gold, +5% drop, +5 energia, +10 inventario e +10 membros no cla.",
     icon: "gold"
   }
 ];
