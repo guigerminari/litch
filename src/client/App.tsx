@@ -20,6 +20,7 @@ import {
   ScrollText,
   Send,
   Skull,
+  Sparkles,
   Star,
   Shield,
   ShoppingBag,
@@ -47,7 +48,8 @@ import type {
   ClanBenefitCategory,
   TalentCategory,
   QuestView,
-  Rarity
+  Rarity,
+  TalentDefinition
 } from "../shared/types";
 import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL } from "../shared/types";
 import cityMap from "./assets/city-map.svg";
@@ -313,7 +315,6 @@ function Header({
         <div>
           <strong>Litch RPG</strong>
           <span>{game.currentCity.name}</span>
-          <small className="topbar-clan-name">{game.clan ? `Clã: ${game.clan.name}` : "Sem clã"}</small>
         </div>
       </div>
       <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
@@ -322,7 +323,12 @@ function Header({
           {royalSealActive && <i className="royal-seal-mini"><Crown size={10} /></i>}
         </span>
         <strong>{game.character.name}</strong>
-        <small>Nv {game.character.level} - {game.currentCity.name}</small>
+        <small>Nv {game.character.level} — {game.currentCity.name}</small>
+        {game.clan && (
+          <small className="character-chip-clan">
+            {getClanCrestIcon(game.clan.icon, 11)} {game.clan.name}
+          </small>
+        )}
       </button>
       <div className="resource-stack">
         <ResourceBar
@@ -483,8 +489,17 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         {royalSealActive && <span className="royal-seal"><Crown size={15} /> Selo do Rei</span>}
       </div>
       <h2>{game.character.name}</h2>
-      <p className="muted">{game.currentCity.name}</p>
+      <p className="muted">Nível {game.character.level} — {game.currentCity.name}</p>
       {autoPveActive && <p className="royal-status"><Crown size={14} /> Amigo do Rei ativo</p>}
+      {game.clan && (
+        <div className="character-clan-info">
+          <span className="character-clan-crest">{getClanCrestIcon(game.clan.icon, 18)}</span>
+          <div>
+            <strong>{game.clan.name}</strong>
+            <small>{game.clan.leaderPlayerId === game.player.id ? "Líder do clã" : "Membro do clã"}</small>
+          </div>
+        </div>
+      )}
 
       <div className="stat-grid">
         <Metric icon={<Heart size={18} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
@@ -1105,6 +1120,13 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
     { id: "defensive", title: "Defensivo" },
     { id: "utility", title: "Útil" }
   ];
+  const [selectedTalentId, setSelectedTalentId] = useState(game.talents[0]?.id ?? "");
+  const selectedTalent = game.talents.find((t) => t.id === selectedTalentId) ?? game.talents[0] ?? null;
+  const selectedRank = selectedTalent ? game.character.talentAllocations[selectedTalent.id] ?? 0 : 0;
+  const selectedRequiredRank = selectedTalent?.requires ? game.character.talentAllocations[selectedTalent.requires] ?? 0 : 1;
+  const selectedLocked = Boolean(selectedTalent?.requires && selectedRequiredRank <= 0);
+  const selectedMaxed = Boolean(selectedTalent && selectedRank >= selectedTalent.maxRank);
+  const canAfford = Boolean(selectedTalent) && game.derived.availableTalentPoints >= selectedTalent!.costPerRank;
 
   return (
     <div className={compact ? "talents-panel compact-talents" : "talents-panel"}>
@@ -1118,41 +1140,58 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
         </button>
       </div>
       <div className="talent-categories">
-      {categories.map((category) => (
-        <section className="talent-tree" key={category.id}>
-          <h3>{category.title}</h3>
-          <div className="talent-list branching-list">
-            {game.talents
-              .filter((talent) => talent.category === category.id)
-              .map((talent) => {
-                const rank = game.character.talentAllocations[talent.id] ?? 0;
-                const requiredRank = talent.requires ? game.character.talentAllocations[talent.requires] ?? 0 : 1;
-                const locked = Boolean(talent.requires && requiredRank <= 0);
-                const maxed = rank >= talent.maxRank;
-                return (
-                  <article className={locked ? "talent-row locked" : "talent-row"} key={talent.id}>
-                    <div>
-                      <strong>{talent.name}</strong>
-                      <span>{talent.description}</span>
-                      {talent.requires && <small>Requer talento anterior</small>}
-                    </div>
-                    <b>
-                      {rank}/{talent.maxRank}
-                    </b>
+        {categories.map((category) => (
+          <section className="talent-tree" key={category.id}>
+            <h3>{category.title}</h3>
+            <div className="clan-benefit-tree">
+              {game.talents
+                .filter((talent) => talent.category === category.id)
+                .map((talent) => {
+                  const rank = game.character.talentAllocations[talent.id] ?? 0;
+                  const requiredRank = talent.requires ? game.character.talentAllocations[talent.requires] ?? 0 : 1;
+                  const locked = Boolean(talent.requires && requiredRank <= 0);
+                  const maxed = rank >= talent.maxRank;
+                  return (
                     <button
-                      className="primary-button"
-                      disabled={locked || maxed || game.derived.availableTalentPoints < talent.costPerRank}
-                      onClick={() => socket.emit("talent:buy", { talentId: talent.id })}
+                      className={`clan-benefit-node${locked ? " locked" : ""}${maxed ? " maxed" : ""}${selectedTalent?.id === talent.id ? " selected" : ""}`}
+                      key={talent.id}
+                      title={talent.name}
+                      onClick={() => setSelectedTalentId(talent.id)}
                     >
-                      {talent.costPerRank} pts
+                      <span style={{ display: "grid", placeItems: "center", fontSize: "0.75rem" }}>{getTalentIcon(talent)}</span>
+                      <b>{rank}/{talent.maxRank}</b>
                     </button>
-                  </article>
-                );
-              })}
-          </div>
-        </section>
-      ))}
+                  );
+                })}
+            </div>
+          </section>
+        ))}
       </div>
+      {selectedTalent && (
+        <section className="clan-benefit-detail">
+          <div className="clan-benefit-detail-icon">
+            {getTalentIcon(selectedTalent)}
+          </div>
+          <div>
+            <h3>{selectedTalent.name}</h3>
+            <p>{selectedTalent.description}</p>
+            <div className="clan-benefit-meta">
+              <span>Rank {selectedRank}/{selectedTalent.maxRank}</span>
+              <span>{selectedTalent.costPerRank} pts</span>
+              {selectedTalent.requires && (
+                <span>{selectedLocked ? "Requer talento anterior" : "Ramo liberado"}</span>
+              )}
+            </div>
+          </div>
+          <button
+            className="primary-button"
+            disabled={selectedLocked || selectedMaxed || !canAfford}
+            onClick={() => socket.emit("talent:buy", { talentId: selectedTalent.id })}
+          >
+            {selectedMaxed ? "Máximo" : `${selectedTalent.costPerRank} pts`}
+          </button>
+        </section>
+      )}
     </div>
   );
 }
@@ -1251,6 +1290,28 @@ function ClanPanel({ game }: { game: GameState }) {
     setDiamonds(0);
   };
 
+  const leader = clan ? clan.leaderPlayerId === game.player.id : false;
+  const clanMembers = clan?.members?.length
+    ? clan.members
+    : (clan?.memberPlayerIds ?? []).map((playerId) => ({ playerId, name: playerId, isLeader: playerId === clan?.leaderPlayerId }));
+
+  useEffect(() => {
+    if (!clan) return;
+    setActiveTab("benefits");
+    setEditName(clan.name);
+    setEditCrestIcon(
+      CLAN_CREST_OPTIONS.includes(clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
+        ? (clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
+        : "shield"
+    );
+  }, [clan?.id, clan?.name, clan?.icon]);
+
+  useEffect(() => {
+    if (activeTab === "admin" && !leader) {
+      setActiveTab("benefits");
+    }
+  }, [activeTab, leader]);
+
   if (!clan) {
     const levelReq = 15;
     const diamondCost = 10;
@@ -1321,27 +1382,6 @@ function ClanPanel({ game }: { game: GameState }) {
     );
   }
 
-  const leader = clan.leaderPlayerId === game.player.id;
-  const clanMembers = clan.members?.length
-    ? clan.members
-    : clan.memberPlayerIds.map((playerId) => ({ playerId, name: playerId, isLeader: playerId === clan.leaderPlayerId }));
-
-  useEffect(() => {
-    setActiveTab("benefits");
-    setEditName(clan.name);
-    setEditCrestIcon(
-      CLAN_CREST_OPTIONS.includes(clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
-        ? (clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
-        : "shield"
-    );
-  }, [clan.id, clan.name, clan.icon]);
-
-  useEffect(() => {
-    if (activeTab === "admin" && !leader) {
-      setActiveTab("benefits");
-    }
-  }, [activeTab, leader]);
-
   const updateClanProfile = (event: FormEvent) => {
     event.preventDefault();
     socket.emit("clan:update", { name: editName, icon: editCrestIcon });
@@ -1374,7 +1414,9 @@ function ClanPanel({ game }: { game: GameState }) {
         </button>
       </form>
 
-      <button className="ghost-button clan-leave-button" onClick={() => socket.emit("clan:leave")}>Sair do clã</button>
+      {!leader && (
+        <button className="ghost-button clan-leave-button" onClick={() => socket.emit("clan:leave")}>Sair do clã</button>
+      )}
 
       <div className="clan-tabs">
         <button type="button" className={activeTab === "benefits" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("benefits")}>Benefícios</button>
@@ -1718,6 +1760,36 @@ function ClanBonusSummary({ game }: { game: GameState }) {
       )}
     </section>
   );
+}
+
+function getTalentIcon(talent: TalentDefinition | null | undefined): React.ReactNode {
+  if (!talent?.icon) return <ScrollText size={18} />;
+  switch (talent.icon) {
+    case "damage":
+      return <Swords size={18} style={{ color: "var(--red)" }} />;
+    case "strength":
+      return <Swords size={18} style={{ color: "var(--gold)" }} />;
+    case "crit":
+      return <Crosshair size={18} style={{ color: "var(--gold)" }} />;
+    case "agility":
+      return <Zap size={18} style={{ color: "var(--cyan)" }} />;
+    case "life":
+      return <Heart size={18} style={{ color: "var(--red)" }} />;
+    case "defense":
+      return <Shield size={18} style={{ color: "var(--purple)" }} />;
+    case "dodge":
+      return <Zap size={18} style={{ color: "var(--cyan)" }} />;
+    case "xp":
+      return <Star size={18} style={{ color: "var(--purple)" }} />;
+    case "gold":
+      return <Coins size={18} style={{ color: "var(--gold)" }} />;
+    case "drop":
+      return <Sparkles size={18} style={{ color: "var(--pink)" }} />;
+    case "energy":
+      return <Zap size={18} style={{ color: "var(--green)" }} />;
+    default:
+      return <ScrollText size={18} />;
+  }
 }
 
 function getClanBenefitIcon(benefit: { id: string; icon?: string }) {

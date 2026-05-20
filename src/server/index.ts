@@ -552,9 +552,10 @@ function normalizeClanName(name: string) {
 function buildClanMembers(clan: { leaderPlayerId: string; memberPlayerIds: string[] }) {
   return clan.memberPlayerIds.map((memberPlayerId) => {
     const memberCharacter = store.characters.get(memberPlayerId);
+    const memberPlayer = store.players.get(memberPlayerId);
     return {
       playerId: memberPlayerId,
-      name: memberCharacter?.name ?? currentPlayer(memberPlayerId).username,
+      name: memberCharacter?.name ?? memberPlayer?.username ?? memberPlayerId,
       isLeader: memberPlayerId === clan.leaderPlayerId
     };
   });
@@ -634,11 +635,13 @@ function buildClanDirectory() {
   return Array.from(store.clans.values())
     .map((clan) => {
       const clanView = decorateClan(clan);
+      const leaderPlayer = store.players.get(clan.leaderPlayerId);
+      const leaderCharacter = store.characters.get(clan.leaderPlayerId);
       return {
         id: clan.id,
         name: clan.name,
         icon: clanView.icon,
-        leaderName: currentPlayer(clan.leaderPlayerId).username,
+        leaderName: leaderCharacter?.name ?? leaderPlayer?.username ?? clan.leaderPlayerId,
         memberCount: clan.memberPlayerIds.length,
         memberCapacity: clanView.memberCapacity,
         level: clanView.level,
@@ -793,6 +796,10 @@ function leaveClan(character: Character) {
   const clan = character.clanId ? store.clans.get(character.clanId) : null;
   if (!clan) {
     throw new Error("Você não participa de um clã.");
+  }
+
+  if (clan.leaderPlayerId === character.playerId) {
+    throw new Error("O líder não pode sair do clã. Transfira a liderança antes de sair.");
   }
 
   clan.memberPlayerIds = clan.memberPlayerIds.filter((playerId) => playerId !== character.playerId);

@@ -292,6 +292,7 @@ export interface TalentDefinition {
   maxRank: number;
   costPerRank: number;
   requires?: string;
+  icon?: string;
 }
 
 export interface ClanBenefitCost {
