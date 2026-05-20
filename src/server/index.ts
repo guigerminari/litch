@@ -541,6 +541,66 @@ function normalizeClanIcon(icon?: string) {
   return icon && CLAN_ALLOWED_ICONS.has(icon) ? icon : CLAN_DEFAULT_ICON;
 }
 
+function getBattleMonsterId(battle: { participants: Array<{ kind: "player" | "monster"; id: string }> }) {
+  const monster = battle.participants.find((participant) => participant.kind === "monster");
+  return monster ? monster.id.replace("monster:", "") : null;
+}
+
+function applyBattleProgress(character: Character, playerId: string, battle: GameState["activeBattle"], wasActive: boolean) {
+  if (!battle) {
+    return;
+  }
+
+  if ((battle.mode === "pve" || battle.mode === "dungeon") && wasActive && battle.status === "ended") {
+    const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
+    if (winner?.ownerPlayerId === playerId) {
+      character.questProgress.dailyEnemyDefeats += 1;
+      if (battle.mode === "dungeon") {
+        character.dungeonClears += 1;
+      }
+    }
+  }
+
+  if (battle.mode === "pvp" && wasActive && battle.status === "ended") {
+    recordArenaResult(battle.id);
+  }
+}
+
+function takeAutoPveUntilStopped(character: Character, playerId: string, initialBattle: NonNullable<GameState["activeBattle"]>) {
+  let battle = initialBattle;
+  let loops = 0;
+
+  while (loops < 120) {
+    const wasActive = battle.status === "active";
+    takeAutoPveTurn(battle, character);
+    applyBattleProgress(character, playerId, battle, wasActive);
+
+    const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
+    const playerWon = battle.status === "ended" && winner?.ownerPlayerId === playerId;
+    if (!playerWon || (battle.mode !== "pve" && battle.mode !== "dungeon")) {
+      break;
+    }
+
+    const monsterId = getBattleMonsterId(battle);
+    const monster = monsterId ? MONSTERS[monsterId] : null;
+    if (!monster) {
+      break;
+    }
+
+    const energyCost = battle.mode === "dungeon" ? monster.level + 1 : monster.level;
+    if (character.currentHp <= 0 || character.currentEnergy < energyCost) {
+      break;
+    }
+
+    clearEndedBattle(character);
+    character.currentEnergy -= energyCost;
+    const nextBattle = battle.mode === "dungeon" ? createDungeonBattle(character, monster) : createPveBattle(character, monster);
+    store.battles.set(nextBattle.id, nextBattle);
+    battle = nextBattle;
+    loops += 1;
+  }
+}
+
 function decorateClan<T extends { benefitAllocations: Record<string, number> }>(clan: T) {
   return {
     ...clan,
@@ -1505,26 +1565,27 @@ io.on("connection", (socket: AuthedSocket) => {
       const potionUsed = payload.instanceId ? findInventoryItem(character, payload.instanceId) : null;
       const potionDefinition = potionUsed ? ITEM_CATALOG[potionUsed.itemId] : null;
       if (payload.action === "auto") {
-        takeAutoPveTurn(battle, character);
+        if (payload.continueUntilStopped) {
+          takeAutoPveUntilStopped(character, playerId, battle);
+        } else {
+          takeAutoPveTurn(battle, character);
+        }
       } else {
         takeBattleTurn(battle, character, payload.action, payload.instanceId);
       }
       if (payload.action === "usePotion" && potionDefinition?.stats.healPercent) {
         character.questProgress.healthPotionsUsed += 1;
       }
-      if ((battle.mode === "pve" || battle.mode === "dungeon") && wasActive && battle.status === "ended") {
-        const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
-        if (winner?.ownerPlayerId === playerId) {
-          character.questProgress.dailyEnemyDefeats += 1;
-          if (battle.mode === "dungeon") {
-            character.dungeonClears += 1;
-          }
-        }
+      if (payload.action !== "auto" || !payload.continueUntilStopped) {
+        applyBattleProgress(character, playerId, battle, wasActive);
       }
-      if (battle.mode === "pvp" && wasActive && battle.status === "ended") {
-        recordArenaResult(battle.id);
+      const syncBattleId = payload.action === "auto" && payload.continueUntilStopped ? character.activeBattleId ?? battle.id : battle.id;
+      const playerIds = syncBattleVitals(syncBattleId);
+      if (playerIds.length > 0) {
+        emitMany(playerIds);
+      } else {
+        emitState(playerId);
       }
-      emitMany(syncBattleVitals(battle.id));
     } catch (error) {
       handleError(socket, error);
     }

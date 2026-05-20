@@ -2162,6 +2162,22 @@ button:disabled {
   color: var(--gold);
 }
 
+.auto-pve-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(33, 34, 44, 0.72);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.auto-pve-toggle input {
+  accent-color: var(--gold);
+}
+
 .battle-log {
   max-height: 240px;
   overflow: auto;

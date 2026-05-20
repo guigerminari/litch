@@ -456,6 +456,7 @@ export interface BattleActionPayload {
   battleId: string;
   action: "attack" | "usePotion" | "auto";
   instanceId?: string;
+  continueUntilStopped?: boolean;
 }
 
 export interface MarketCreatePayload {

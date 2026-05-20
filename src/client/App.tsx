@@ -2326,6 +2326,7 @@ function MarketListingModal({
 
 function BattlePanel({ game }: { game: GameState }) {
   const battle = game.activeBattle!;
+  const [autoUntilStopped, setAutoUntilStopped] = useState(false);
   const me = battle.participants.find((participant) => participant.ownerPlayerId === game.player.id);
   const opponent = battle.participants.find((participant) => participant.id !== me?.id);
   const myTurn = battle.turnParticipantId === me?.id;
@@ -2339,6 +2340,10 @@ function BattlePanel({ game }: { game: GameState }) {
     game.character.currentHp > 0 &&
     game.character.currentEnergy >= rematchEnergyCost &&
     (battle.mode === "pve" || battle.mode === "dungeon");
+
+  useEffect(() => {
+    setAutoUntilStopped(false);
+  }, [battle.id]);
 
   return (
     <section className="content-panel battle-panel">
@@ -2379,13 +2384,29 @@ function BattlePanel({ game }: { game: GameState }) {
               Fugir
             </button>
             {(battle.mode === "pve" || battle.mode === "dungeon") && autoPveActive && (
-              <button
-                className="ghost-button royal-auto-button"
-                disabled={!myTurn}
-                onClick={() => socket.emit("battle:action", { battleId: battle.id, action: "auto" })}
-              >
-                <Crown size={14} /> Auto PvE
-              </button>
+              <>
+                <label className="auto-pve-toggle">
+                  <input
+                    type="checkbox"
+                    checked={autoUntilStopped}
+                    onChange={(event) => setAutoUntilStopped(event.target.checked)}
+                  />
+                  Continuar até acabar energia ou morrer
+                </label>
+                <button
+                  className="ghost-button royal-auto-button"
+                  disabled={!myTurn}
+                  onClick={() =>
+                    socket.emit("battle:action", {
+                      battleId: battle.id,
+                      action: "auto",
+                      continueUntilStopped: autoUntilStopped
+                    })
+                  }
+                >
+                  <Crown size={14} /> Auto PvE
+                </button>
+              </>
             )}
           </>
         ) : (
