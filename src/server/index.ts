@@ -13,10 +13,12 @@ import type {
   CraftPayload,
   CurrencyExchangePayload,
   DungeonStartPayload,
+  EnhancePayload,
   EquipPayload,
   GameState,
   GameShopPurchasePayload,
   HuntStartPayload,
+  InventoryItem,
   MarketBuyPayload,
   MarketCreatePayload,
   Player,
@@ -57,6 +59,17 @@ import { store } from "./store";
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
 const POTION_MISSION_TARGETS = [5, 50, 100, 200];
+const ENHANCEMENT_GOLD_STEP = 10000;
+const ENHANCEMENT_CHANCE_STEP = 5;
+const ENHANCEMENT_MIN_CHANCE = 5;
+const ENHANCEMENT_CREATION_STONE_BONUS = 3;
+const ENHANCEMENT_ITEMS = {
+  oldStone: "material_old_stone",
+  eranStone: "material_eran_fragment",
+  celena: "material_celena",
+  midran: "material_midran",
+  creationStone: "misc_stone_craft"
+} as const;
 const DAILY_MISSIONS = [
   { id: "daily-defeat-3", title: "Patrulha diária", target: 3, reward: { experience: 90, gold: 45 } },
   { id: "daily-defeat-8", title: "Limpeza das rotas", target: 8, reward: { experience: 220, gold: 110 } },
@@ -644,6 +657,121 @@ function removeItemByItemId(character: Character, itemId: string, quantity: numb
   }
 }
 
+type EnhancementRequirement = {
+  itemId: string;
+  quantity: number;
+};
+
+function getEnhancementBaseChance(nextLevel: number) {
+  return Math.max(ENHANCEMENT_MIN_CHANCE, 100 - (nextLevel - 1) * ENHANCEMENT_CHANCE_STEP);
+}
+
+function getEnhancementRequirements(nextLevel: number, creationStones: number): EnhancementRequirement[] {
+  const requirements: EnhancementRequirement[] = [
+    { itemId: ENHANCEMENT_ITEMS.oldStone, quantity: nextLevel }
+  ];
+
+  if (nextLevel >= 4) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.eranStone, quantity: 1 });
+  }
+  if (nextLevel >= 6) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.celena, quantity: 1 });
+  }
+  if (nextLevel >= 9) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.midran, quantity: 1 });
+  }
+  if (creationStones > 0) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.creationStone, quantity: creationStones });
+  }
+
+  return requirements;
+}
+
+function getEnhancementPlan(item: InventoryItem, requestedCreationStones?: number) {
+  const nextLevel = Math.max(0, item.enhancementLevel ?? 0) + 1;
+  const baseChance = getEnhancementBaseChance(nextLevel);
+  const requested = Math.max(0, Math.floor(requestedCreationStones ?? 0));
+  const usefulCreationStones = Math.max(0, Math.ceil((100 - baseChance) / ENHANCEMENT_CREATION_STONE_BONUS));
+  const creationStones = Math.min(requested, usefulCreationStones);
+  const successChance = Math.min(100, baseChance + creationStones * ENHANCEMENT_CREATION_STONE_BONUS);
+
+  return {
+    nextLevel,
+    goldCost: nextLevel * ENHANCEMENT_GOLD_STEP,
+    baseChance,
+    creationStones,
+    successChance,
+    requirements: getEnhancementRequirements(nextLevel, creationStones)
+  };
+}
+
+function enhanceEquipment(character: Character, payload: EnhancePayload) {
+  const city = CITIES.find((entry) => entry.id === character.cityId);
+  if (!city?.blacksmithEnhancement) {
+    throw new Error("Este ferreiro nao faz aprimoramentos.");
+  }
+
+  const inventoryItem = findInventoryItem(character, payload.instanceId);
+  if (!inventoryItem) {
+    throw new Error("Item nao encontrado.");
+  }
+  const definition = ITEM_CATALOG[inventoryItem.itemId];
+  if (!definition?.slot) {
+    throw new Error("Apenas equipamentos podem ser aprimorados.");
+  }
+
+  const plan = getEnhancementPlan(inventoryItem, payload.creationStones);
+  if (character.gold < plan.goldCost) {
+    throw new Error("Ouro insuficiente para o servico.");
+  }
+  for (const requirement of plan.requirements) {
+    if (countItem(character, requirement.itemId) < requirement.quantity) {
+      throw new Error(`Falta ${ITEM_CATALOG[requirement.itemId]?.name ?? requirement.itemId}.`);
+    }
+  }
+
+  character.gold -= plan.goldCost;
+  for (const requirement of plan.requirements) {
+    removeItemByItemId(character, requirement.itemId, requirement.quantity);
+  }
+
+  const success = Math.random() * 100 < plan.successChance;
+  if (success) {
+    inventoryItem.enhancementLevel = plan.nextLevel;
+  }
+  normalizeVitals(character);
+
+  return {
+    success,
+    itemName: definition.name,
+    nextLevel: plan.nextLevel,
+    successChance: plan.successChance
+  };
+}
+
+function grantInventoryEntry(character: Character, item: InventoryItem) {
+  const definition = ITEM_CATALOG[item.itemId];
+  if (!definition) {
+    throw new Error("Item invalido.");
+  }
+
+  if (!definition.slot) {
+    addItem(character, item.itemId, ITEM_CATALOG, item.quantity);
+    return;
+  }
+
+  if (!hasCapacity(character, 1)) {
+    throw new Error("Inventario cheio.");
+  }
+
+  character.inventory.push({
+    instanceId: randomUUID(),
+    itemId: item.itemId,
+    quantity: 1,
+    enhancementLevel: item.enhancementLevel
+  });
+}
+
 function craftItem(character: Character, recipeId: string) {
   const recipe = CRAFTING_RECIPES[recipeId];
   if (!recipe) {
@@ -969,6 +1097,23 @@ io.on("connection", (socket: AuthedSocket) => {
     }
   });
 
+  socket.on("blacksmith:enhance", (payload: EnhancePayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      const result = enhanceEquipment(character, payload);
+      emitState(playerId);
+      socket.emit("game:error", {
+        message: result.success
+          ? `${result.itemName} aprimorado para +${result.nextLevel}.`
+          : `Aprimoramento falhou (${result.successChance}% de chance).`
+      });
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
   socket.on("talent:buy", (payload: TalentBuyPayload) => {
     try {
       const playerId = requirePlayer(socket);
@@ -1251,7 +1396,12 @@ io.on("connection", (socket: AuthedSocket) => {
       const itemDef = ITEM_CATALOG[inventoryItem.itemId];
       const maxQuantity = itemDef?.slot ? 1 : inventoryItem.quantity;
       const quantity = Math.max(1, Math.min(maxQuantity, Math.floor(payload.quantity ?? 1)));
-      const listingItem = { instanceId: randomUUID(), itemId: inventoryItem.itemId, quantity };
+      const listingItem: InventoryItem = {
+        instanceId: randomUUID(),
+        itemId: inventoryItem.itemId,
+        quantity,
+        enhancementLevel: itemDef?.slot ? inventoryItem.enhancementLevel : undefined
+      };
       removeItem(character, inventoryItem.instanceId, quantity);
       const listing = {
         id: randomUUID(),
@@ -1287,7 +1437,12 @@ io.on("connection", (socket: AuthedSocket) => {
       if (listing.currency === "diamonds" && buyer.diamonds < listing.price) {
         throw new Error("Diamantes insuficientes.");
       }
-      if (!hasCapacity(buyer, 1)) {
+      const listedItem = ITEM_CATALOG[listing.item.itemId];
+      const canReceiveListedItem =
+        listedItem?.slot || !buyer.inventory.some((inventoryItem) => inventoryItem.itemId === listing.item.itemId)
+          ? hasCapacity(buyer, 1)
+          : true;
+      if (!canReceiveListedItem) {
         throw new Error("Inventário cheio.");
       }
 
@@ -1299,7 +1454,7 @@ io.on("connection", (socket: AuthedSocket) => {
         buyer.diamonds -= listing.price;
         seller.diamonds += listing.price;
       }
-      addItem(buyer, listing.item.itemId, ITEM_CATALOG, listing.item.quantity);
+      grantInventoryEntry(buyer, listing.item);
       buyer.questProgress.marketItemsBought += listing.item.quantity;
       seller.questProgress.marketItemsSold += listing.item.quantity;
       store.marketplace.delete(listing.id);
@@ -1322,7 +1477,7 @@ io.on("connection", (socket: AuthedSocket) => {
       if (listing.sellerPlayerId !== playerId) {
         throw new Error("Você só pode cancelar suas próprias ofertas.");
       }
-      addItem(character, listing.item.itemId, ITEM_CATALOG, listing.item.quantity);
+      grantInventoryEntry(character, listing.item);
       store.marketplace.delete(listing.id);
       broadcastWorldState();
     } catch (error) {

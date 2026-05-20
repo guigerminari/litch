@@ -31,8 +31,10 @@ import type {
   BattleParticipant,
   Currency,
   GameState,
+  InventoryItem,
   ItemDefinition,
   ItemKind,
+  ItemStats,
   MarketListing,
   PrivateMessage,
   ClanBenefitCategory,
@@ -116,6 +118,26 @@ const RARITY_COLORS: Record<Rarity, string> = {
   epic: "#8b5cf6",
   legendary: "#ff9102"
 };
+
+const ENHANCEMENT_GOLD_STEP = 10000;
+const ENHANCEMENT_STAT_STEP = 0.2;
+const ENHANCEMENT_CHANCE_STEP = 5;
+const ENHANCEMENT_MIN_CHANCE = 5;
+const ENHANCEMENT_CREATION_STONE_BONUS = 3;
+const ENHANCEMENT_ITEMS = {
+  oldStone: "material_old_stone",
+  eranStone: "material_eran_fragment",
+  celena: "material_celena",
+  midran: "material_midran",
+  creationStone: "misc_stone_craft"
+} as const;
+const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
+  strength: "Forca",
+  constitution: "Constituicao",
+  agility: "Agilidade",
+  defense: "Defesa"
+};
+const EQUIPMENT_STAT_KEYS: Array<keyof typeof EQUIPMENT_STAT_LABELS> = ["strength", "constitution", "agility", "defense"];
 
 export function App() {
   const [game, setGame] = useState<GameState | null>(null);
@@ -360,9 +382,6 @@ function ResourceBar({
       {regenAmount !== undefined && timerLabel && !atMax && (
         <small className="regen-hint">♻️ +{regenAmount} em {timerLabel}</small>
       )}
-      {regenAmount !== undefined && timerLabel && atMax && (
-        <small className="regen-hint regen-full">Máximo atingido</small>
-      )}
     </div>
   );
 }
@@ -488,7 +507,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
             return (
               <div className={`equip-slot${definition ? " has-item" : ""}`} key={slot}>
                 {definition ? (
-                  <ItemVisual item={definition} className="equip-item-visual" />
+                  <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={inventoryItem?.enhancementLevel} />
                 ) : (
                   <span className="equip-emoji">{slotEmoji[slot]}</span>
                 )}
@@ -661,7 +680,7 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   const actionOptions: CityOption[] = [
     
   ];
-  if (game.currentCity.blacksmithRecipeIds?.length) {
+  if (game.currentCity.blacksmithRecipeIds?.length || game.currentCity.blacksmithEnhancement) {
     actionOptions.push({ view: "blacksmith", icon: <Hammer size={24} />, title: "Ferreiro", value: game.currentCity.npcs.blacksmith ?? "Receitas" });
   }
 
@@ -756,6 +775,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
           <span>{npcName}</span>
         </div>
       )}
+      {station === "blacksmith" && game.currentCity.blacksmithEnhancement && <EquipmentEnhancementPanel game={game} />}
       <div className="list-grid">
         {recipes.length === 0 && <p className="empty-state">Nenhuma receita disponível nesta cidade.</p>}
         {recipes.map((recipe) => {
@@ -786,6 +806,143 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
           );
         })}
       </div>
+    </section>
+  );
+}
+
+function EquipmentEnhancementPanel({ game }: { game: GameState }) {
+  const equipmentItems = game.character.inventory.filter((entry) => Boolean(game.itemCatalog[entry.itemId]?.slot));
+  const [selectedInstanceId, setSelectedInstanceId] = useState(equipmentItems[0]?.instanceId ?? "");
+  const [creationStones, setCreationStones] = useState(0);
+  const selectedEntry = equipmentItems.find((entry) => entry.instanceId === selectedInstanceId) ?? null;
+  const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
+  const plan = selectedEntry ? getEnhancementPlanForUi(game, selectedEntry, creationStones) : null;
+  const currentStats = selectedItem && selectedEntry ? getEnhancedItemStats(selectedItem, selectedEntry) : null;
+  const nextStats = selectedItem && selectedEntry && plan
+    ? getEnhancedItemStats(selectedItem, { ...selectedEntry, enhancementLevel: plan.nextLevel })
+    : null;
+  const requirementsMet = Boolean(plan?.requirements.every((requirement) => countInventoryItem(game, requirement.itemId) >= requirement.quantity));
+  const canEnhance = Boolean(selectedEntry && selectedItem && plan && requirementsMet && game.character.gold >= plan.goldCost);
+
+  useEffect(() => {
+    if (!equipmentItems.some((entry) => entry.instanceId === selectedInstanceId)) {
+      setSelectedInstanceId(equipmentItems[0]?.instanceId ?? "");
+    }
+  }, [equipmentItems, selectedInstanceId]);
+
+  useEffect(() => {
+    if (plan && creationStones > plan.maxCreationStones) {
+      setCreationStones(plan.maxCreationStones);
+    }
+  }, [creationStones, plan]);
+
+  if (equipmentItems.length === 0) {
+    return (
+      <section className="enhancement-panel">
+        <div className="enhancement-head">
+          <Hammer size={18} />
+          <div>
+            <strong>Aprimorar equipamento</strong>
+            <span>Nenhum equipamento no inventario.</span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="enhancement-panel">
+      <div className="enhancement-head">
+        <Hammer size={18} />
+        <div>
+          <strong>Aprimorar equipamento</strong>
+          <span>+20% nos atributos por aprimoramento. Falha consome servico e materiais.</span>
+        </div>
+      </div>
+
+      <label className="enhancement-field">
+        <span>Equipamento</span>
+        <select value={selectedInstanceId} onChange={(event) => setSelectedInstanceId(event.target.value)}>
+          {equipmentItems.map((entry) => {
+            const item = game.itemCatalog[entry.itemId];
+            return (
+              <option key={entry.instanceId} value={entry.instanceId}>
+                {formatInventoryItemName(item, entry)}{isItemEquipped(game, entry.instanceId) ? " (equipado)" : ""}
+              </option>
+            );
+          })}
+        </select>
+      </label>
+
+      {selectedEntry && selectedItem && plan && currentStats && nextStats && (
+        <div className="enhancement-grid">
+          <div className="enhancement-item-card">
+            <ItemVisual item={selectedItem} className="enhancement-item-visual" enhancementLevel={selectedEntry.enhancementLevel} />
+            <div>
+              <strong>{formatInventoryItemName(selectedItem, selectedEntry)}</strong>
+              <span>Proximo: +{plan.nextLevel}</span>
+            </div>
+          </div>
+
+          <div className="enhancement-stat-preview">
+            {EQUIPMENT_STAT_KEYS.map((key) => {
+              const current = currentStats[key] ?? 0;
+              const next = nextStats[key] ?? 0;
+              if (current <= 0 && next <= 0) {
+                return null;
+              }
+              return (
+                <div key={key}>
+                  <span>{EQUIPMENT_STAT_LABELS[key]}</span>
+                  <strong>{current} {"->"} {next}</strong>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="enhancement-costs">
+            <small>
+              <Coins size={13} style={{ color: "var(--gold)" }} />
+              {formatCurrency(plan.goldCost)} gold
+            </small>
+            {plan.requirements.map((requirement) => {
+              const owned = countInventoryItem(game, requirement.itemId);
+              const item = game.itemCatalog[requirement.itemId];
+              return (
+                <small className={owned < requirement.quantity ? "missing" : ""} key={requirement.itemId}>
+                  {item?.name ?? requirement.itemId}: {owned}/{requirement.quantity}
+                </small>
+              );
+            })}
+          </div>
+
+          <div className="enhancement-boost">
+            <label>
+              <span>Pedras de Criacao (+{ENHANCEMENT_CREATION_STONE_BONUS}% cada)</span>
+              <input
+                type="number"
+                min={0}
+                max={plan.maxCreationStones}
+                value={creationStones}
+                disabled={plan.maxCreationStones <= 0}
+                onChange={(event) => setCreationStones(Math.max(0, Math.min(plan.maxCreationStones, Number(event.target.value) || 0)))}
+              />
+            </label>
+            <div className="enhancement-chance">
+              <span>Base {plan.baseChance}%</span>
+              <strong>{plan.successChance}%</strong>
+            </div>
+          </div>
+
+          <button
+            className="primary-button"
+            disabled={!canEnhance}
+            onClick={() => socket.emit("blacksmith:enhance", { instanceId: selectedEntry.instanceId, creationStones: plan.creationStones })}
+          >
+            Aprimorar
+          </button>
+        </div>
+      )}
     </section>
   );
 }
@@ -1190,7 +1347,7 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
               return (
                 <div className="sell-row" key={inventoryItem.instanceId}>
                   <span>
-                    {item.name} {inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : ""}
+                    {formatInventoryItemName(item, inventoryItem)} {inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : ""}
                   </span>
                   <button
                     className="ghost-button"
@@ -1229,7 +1386,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 
   // Pad to exactly 40 slots (5 columns × 8 rows)
   const TOTAL_SLOTS = 40;
-  const slots: Array<{ instanceId: string; itemId: string; quantity: number } | null> = [
+  const slots: Array<{ instanceId: string; itemId: string; quantity: number; enhancementLevel?: number } | null> = [
     ...filledSlots,
     ...Array(Math.max(0, TOTAL_SLOTS - filledSlots.length)).fill(null),
   ];
@@ -1259,11 +1416,11 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
             <button
               key={slot.instanceId}
               className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""}`}
-              title={item.name}
+              title={formatInventoryItemName(item, slot)}
               style={{ borderColor: rarityColor }}
               onClick={() => setSelectedInstanceId(selected ? null : slot.instanceId)}
             >
-              <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} />
+              <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} enhancementLevel={slot.enhancementLevel} />
             </button>
           );
         })}
@@ -1272,7 +1429,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
       {selectedEntry && selectedItem && (
         <div className="inv-action-bar">
           <div className="inv-action-info">
-            <strong>{selectedItem.name}</strong>
+            <strong>{formatInventoryItemName(selectedItem, selectedEntry)}</strong>
             <span>{selectedItem.description}</span>
             {selectedItem.slot && game.character.level < selectedItem.minLevel && (
               <small className="level-warn">⚠️ Nível {selectedItem.minLevel} necessário para equipar</small>
@@ -1557,10 +1714,10 @@ function MarketPanel({ game }: { game: GameState }) {
                   key={listing.id}
                   className="shop-item-card market-shop-card"
                   onClick={() => setSelectedListing(listing)}
-                  title={item.name}
+                  title={formatInventoryItemName(item, listing.item)}
                 >
-                  <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity} />
-                  <strong>{item.name}</strong>
+                  <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} />
+                  <strong>{formatInventoryItemName(item, listing.item)}</strong>
                   <span className="shop-card-price">
                     {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={13} style={{ color: "var(--gold)" }} /> : <Gem size={13} style={{ color: "var(--cyan)" }} />}
                   </span>
@@ -1604,9 +1761,9 @@ function MarketListingCard({
   const rarityColor = getEquipmentRarityColor(item);
   return (
     <article className="market-card" style={{ borderColor: rarityColor }}>
-      <ItemVisual item={item} className="market-item-box" quantity={listing.item.quantity} />
+      <ItemVisual item={item} className="market-item-box" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} />
       <div className="market-card-body">
-        <strong>{item.name}</strong>
+        <strong>{formatInventoryItemName(item, listing.item)}</strong>
         <span className="market-card-meta">{metaLabel}</span>
       </div>
       <div className="market-card-side">
@@ -1643,9 +1800,9 @@ function MarketListingModal({
         <button className="close-button" title="Fechar" onClick={onClose}>
           <X size={20} />
         </button>
-        <ItemVisual item={item} className="market-modal-icon" quantity={listing.item.quantity} />
+        <ItemVisual item={item} className="market-modal-icon" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} />
         <div className="market-modal-content">
-          <h2>{item.name}</h2>
+          <h2>{formatInventoryItemName(item, listing.item)}</h2>
           <small className="market-modal-type">{ITEM_KIND_LABELS[item.kind]}</small>
           {item.rarity && (
             <div className={`item-rarity ${item.rarity}`}>
@@ -2096,16 +2253,20 @@ function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; 
 function ItemVisual({
   item,
   className,
-  quantity
+  quantity,
+  enhancementLevel
 }: {
   item: ItemDefinition;
   className?: string;
   quantity?: number;
+  enhancementLevel?: number;
 }) {
   const rarityColor = getEquipmentRarityColor(item);
+  const enhancement = item.slot ? Math.max(0, enhancementLevel ?? 0) : 0;
   return (
     <span className={`asset-frame item-visual ${className ?? ""}`} style={rarityColor ? { borderColor: rarityColor } : undefined}>
       <AssetImage src={item.imageUrl} alt={item.name} fallback={ITEM_KIND_EMOJI[item.kind] ?? "?"} />
+      {enhancement > 0 && <span className="asset-enhancement">+{enhancement}</span>}
       {quantity !== undefined && quantity > 1 && <span className="asset-qty">x{quantity}</span>}
     </span>
   );
@@ -2321,6 +2482,73 @@ function countInventoryItem(game: GameState, itemId: string) {
   return game.character.inventory
     .filter((item) => item.itemId === itemId)
     .reduce((total, item) => total + item.quantity, 0);
+}
+
+function getEnhancementLevel(inventoryItem?: { enhancementLevel?: number } | null) {
+  return Math.max(0, inventoryItem?.enhancementLevel ?? 0);
+}
+
+function formatInventoryItemName(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number } | null) {
+  const enhancement = item.slot ? getEnhancementLevel(inventoryItem) : 0;
+  return enhancement > 0 ? `${item.name} +${enhancement}` : item.name;
+}
+
+function getEnhancedItemStats(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number } | null): ItemStats {
+  const enhancement = item.slot ? getEnhancementLevel(inventoryItem) : 0;
+  if (enhancement <= 0) {
+    return item.stats;
+  }
+
+  const multiplier = 1 + enhancement * ENHANCEMENT_STAT_STEP;
+  return {
+    ...item.stats,
+    strength: item.stats.strength === undefined ? undefined : Math.ceil(item.stats.strength * multiplier),
+    constitution: item.stats.constitution === undefined ? undefined : Math.ceil(item.stats.constitution * multiplier),
+    agility: item.stats.agility === undefined ? undefined : Math.ceil(item.stats.agility * multiplier),
+    defense: item.stats.defense === undefined ? undefined : Math.ceil(item.stats.defense * multiplier)
+  };
+}
+
+function getEnhancementBaseChance(nextLevel: number) {
+  return Math.max(ENHANCEMENT_MIN_CHANCE, 100 - (nextLevel - 1) * ENHANCEMENT_CHANCE_STEP);
+}
+
+function getEnhancementRequirements(nextLevel: number, creationStones: number) {
+  const requirements = [
+    { itemId: ENHANCEMENT_ITEMS.oldStone, quantity: nextLevel }
+  ];
+  if (nextLevel >= 4) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.eranStone, quantity: 1 });
+  }
+  if (nextLevel >= 6) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.celena, quantity: 1 });
+  }
+  if (nextLevel >= 9) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.midran, quantity: 1 });
+  }
+  if (creationStones > 0) {
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.creationStone, quantity: creationStones });
+  }
+  return requirements;
+}
+
+function getEnhancementPlanForUi(game: GameState, inventoryItem: InventoryItem, requestedCreationStones: number) {
+  const nextLevel = getEnhancementLevel(inventoryItem) + 1;
+  const baseChance = getEnhancementBaseChance(nextLevel);
+  const maxUsefulCreationStones = Math.max(0, Math.ceil((100 - baseChance) / ENHANCEMENT_CREATION_STONE_BONUS));
+  const maxCreationStones = Math.min(countInventoryItem(game, ENHANCEMENT_ITEMS.creationStone), maxUsefulCreationStones);
+  const creationStones = Math.max(0, Math.min(maxCreationStones, Math.floor(requestedCreationStones || 0)));
+  const successChance = Math.min(100, baseChance + creationStones * ENHANCEMENT_CREATION_STONE_BONUS);
+
+  return {
+    nextLevel,
+    goldCost: nextLevel * ENHANCEMENT_GOLD_STEP,
+    baseChance,
+    creationStones,
+    maxCreationStones,
+    successChance,
+    requirements: getEnhancementRequirements(nextLevel, creationStones)
+  };
 }
 
 function countClaimable(quests: QuestView[]) {

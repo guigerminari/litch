@@ -299,7 +299,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "material_eran_fragment": {
     "id": "material_eran_fragment",
-    "name": "Fragmento de Eran",
+    "name": "Pedra de Eran",
     "kind": "material",
     "imageUrl": "/assets/items/materials/eran_fragment.png",
     "minLevel": 4,
@@ -1575,6 +1575,7 @@ export const CITIES: CityDefinition[] = [
       "forge_ember_blade",
       "forge_guardian_mail"
     ],
+    "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
       "brew_major_health",
       "brew_major_energy",
@@ -1661,6 +1662,10 @@ export const CITIES: CityDefinition[] = [
       "misc_seed_rustic",
       "misc_serlen",
       "misc_stone_craft",
+      "material_old_stone",
+      "material_eran_fragment",
+      "material_celena",
+      "material_midran",
       "potion_energy",
       "potion_health",
       "potion_mana",
@@ -1704,6 +1709,7 @@ export const CITIES: CityDefinition[] = [
       "forge_ember_blade",
       "forge_guardian_mail"
     ],
+    "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
       "brew_major_health",
       "brew_major_energy",
@@ -1799,6 +1805,10 @@ export const CITIES: CityDefinition[] = [
       "misc_seed_rustic",
       "misc_serlen",
       "misc_stone_craft",
+      "material_old_stone",
+      "material_eran_fragment",
+      "material_celena",
+      "material_midran",
       "potion_energy",
       "potion_health",
       "potion_mana",
@@ -1835,6 +1845,7 @@ export const CITIES: CityDefinition[] = [
       "forge_ember_blade",
       "forge_guardian_mail"
     ],
+    "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
       "brew_major_health",
       "brew_major_energy",
@@ -1898,6 +1909,10 @@ export const CITIES: CityDefinition[] = [
       "misc_seed_rustic",
       "misc_serlen",
       "misc_stone_craft",
+      "material_old_stone",
+      "material_eran_fragment",
+      "material_celena",
+      "material_midran",
       "potion_energy",
       "potion_health",
       "potion_mana",

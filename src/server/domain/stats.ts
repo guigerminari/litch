@@ -1,12 +1,32 @@
-import type { Character, DerivedStats, ItemDefinition } from "../../shared/types";
+import type { Character, DerivedStats, InventoryItem, ItemDefinition, ItemStats } from "../../shared/types";
 import { TALENTS } from "../content";
 
 export function getEquippedItems(character: Character, itemCatalog: Record<string, ItemDefinition>) {
   const equippedIds = Object.values(character.equipment).filter(Boolean);
   return character.inventory
     .filter((item) => equippedIds.includes(item.instanceId))
-    .map((item) => itemCatalog[item.itemId])
-    .filter(Boolean);
+    .map((inventoryItem) => {
+      const definition = itemCatalog[inventoryItem.itemId];
+      return definition ? { inventoryItem, definition } : null;
+    })
+    .filter((entry): entry is { inventoryItem: InventoryItem; definition: ItemDefinition } => entry !== null);
+}
+
+export function getEnhancedItemStats(inventoryItem: InventoryItem, definition: ItemDefinition): ItemStats {
+  const enhancementLevel = Math.max(0, inventoryItem.enhancementLevel ?? 0);
+  if (!definition.slot || enhancementLevel <= 0) {
+    return definition.stats;
+  }
+
+  const multiplier = 1 + enhancementLevel * 0.2;
+  return {
+    ...definition.stats,
+    strength: definition.stats.strength === undefined ? undefined : Math.ceil(definition.stats.strength * multiplier),
+    constitution:
+      definition.stats.constitution === undefined ? undefined : Math.ceil(definition.stats.constitution * multiplier),
+    agility: definition.stats.agility === undefined ? undefined : Math.ceil(definition.stats.agility * multiplier),
+    defense: definition.stats.defense === undefined ? undefined : Math.ceil(definition.stats.defense * multiplier)
+  };
 }
 
 export function getEffectiveAttributes(character: Character, itemCatalog: Record<string, ItemDefinition>) {
@@ -15,9 +35,10 @@ export function getEffectiveAttributes(character: Character, itemCatalog: Record
   const clanRanks = character.clanBenefitAllocations ?? {};
 
   for (const item of getEquippedItems(character, itemCatalog)) {
-    attributes.strength += item.stats.strength ?? 0;
-    attributes.constitution += item.stats.constitution ?? 0;
-    attributes.agility += item.stats.agility ?? 0;
+    const stats = getEnhancedItemStats(item.inventoryItem, item.definition);
+    attributes.strength += stats.strength ?? 0;
+    attributes.constitution += stats.constitution ?? 0;
+    attributes.agility += stats.agility ?? 0;
   }
 
   attributes.strength += (talentRanks.off_strength_1 ?? 0) * 2;
@@ -33,7 +54,7 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
   const talentRanks = character.talentAllocations ?? {};
   const clanRanks = character.clanBenefitAllocations ?? {};
   const equippedDefense = getEquippedItems(character, itemCatalog).reduce(
-    (total, item) => total + (item.stats.defense ?? 0),
+    (total, item) => total + (getEnhancedItemStats(item.inventoryItem, item.definition).defense ?? 0),
     0
   );
   const spentTalentPoints = getSpentTalentPoints(character);

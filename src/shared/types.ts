@@ -48,6 +48,7 @@ export interface InventoryItem {
   instanceId: string;
   itemId: string;
   quantity: number;
+  enhancementLevel?: number;
 }
 
 export interface EquipmentState {
@@ -154,6 +155,7 @@ export interface CityDefinition {
   };
   dungeonMonsterIds?: string[];
   blacksmithRecipeIds?: string[];
+  blacksmithEnhancement?: boolean;
   alchemistRecipeIds?: string[];
   huntMonsterIds: string[];
   armorerItemIds: string[];
@@ -442,6 +444,11 @@ export interface PrivateSendPayload {
 
 export interface CraftPayload {
   recipeId: string;
+}
+
+export interface EnhancePayload {
+  instanceId: string;
+  creationStones?: number;
 }
 
 export interface TalentBuyPayload {
