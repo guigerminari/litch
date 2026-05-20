@@ -846,12 +846,13 @@ io.on("connection", (socket: AuthedSocket) => {
       if (!available) {
         throw new Error("Este comerciante não vende o item aqui.");
       }
-      if (character.gold < item.price) {
+      const quantity = item.slot ? 1 : Math.max(1, Math.min(999, Math.floor(payload.quantity ?? 1)));
+      const totalPrice = item.price * quantity;
+      if (character.gold < totalPrice) {
         throw new Error("Ouro insuficiente.");
       }
-
-      addItem(character, item.id, ITEM_CATALOG, 1);
-      character.gold -= item.price;
+      addItem(character, item.id, ITEM_CATALOG, quantity);
+      character.gold -= totalPrice;
       character.questProgress.shopItemsBought += 1;
       emitState(playerId);
     } catch (error) {

@@ -2,13 +2,15 @@ export type AttributeKey = "strength" | "constitution" | "agility";
 
 export type EquipmentSlot = "weapon" | "armor" | "amulet";
 
-export type ItemKind = "weapon" | "armor" | "amulet" | "potion" | "material" | "scroll";
+export type ItemKind = "weapon" | "armor" | "amulet" | "potion" | "material" | "scroll" | "misc";
 
 export type BattleMode = "pve" | "pvp" | "dungeon";
 
 export type BattleStatus = "active" | "ended";
 
 export type Currency = "gold" | "diamonds";
+
+export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
 
 export type QuestType = "daily" | "fixed";
 
@@ -34,10 +36,12 @@ export interface ItemDefinition {
   name: string;
   kind: ItemKind;
   slot?: EquipmentSlot;
+  imageUrl?: string;
   minLevel: number;
   price: number;
   stats: ItemStats;
-  description: string;
+  description?: string;
+  rarity?: Rarity;
 }
 
 export interface InventoryItem {
@@ -125,6 +129,7 @@ export interface MonsterDefinition {
   id: string;
   cityId: string;
   name: string;
+  imageUrl?: string;
   level: number;
   maxHp: number;
   strength: number;
@@ -160,6 +165,7 @@ export interface BattleParticipant {
   ownerPlayerId: string | null;
   name: string;
   kind: "player" | "monster";
+  imageUrl?: string;
   level: number;
   hp: number;
   maxHp: number;
@@ -375,6 +381,7 @@ export interface TravelPayload {
 
 export interface ShopBuyPayload {
   itemId: string;
+  quantity?: number;
 }
 
 export interface SellPayload {

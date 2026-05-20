@@ -22,7 +22,8 @@ import {
   User,
   Users,
   X,
-  Zap
+  Zap,
+  Crosshair
 } from "lucide-react";
 import type {
   AttributeKey,
@@ -36,7 +37,8 @@ import type {
   PrivateMessage,
   ClanBenefitCategory,
   TalentCategory,
-  QuestView
+  QuestView,
+  Rarity
 } from "../shared/types";
 import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL } from "../shared/types";
 import cityMap from "./assets/city-map.svg";
@@ -85,7 +87,8 @@ const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   amulet: "Amuleto",
   potion: "Poção",
   material: "Material",
-  scroll: "Pergaminho"
+  scroll: "Pergaminho",
+  misc: "Diverso"
 };
 
 const ITEM_KIND_EMOJI: Record<ItemKind, string> = {
@@ -94,7 +97,24 @@ const ITEM_KIND_EMOJI: Record<ItemKind, string> = {
   amulet: "📿",
   potion: "🧪",
   material: "📦",
-  scroll: "📜"
+  scroll: "📜",
+  misc: "✦"
+};
+
+const RARITY_LABELS: Record<Rarity, string> = {
+  common: "Comum",
+  uncommon: "Incomum",
+  rare: "Raro",
+  epic: "Épico",
+  legendary: "Lendário"
+};
+
+const RARITY_COLORS: Record<Rarity, string> = {
+  common: "#9ca3af",
+  uncommon: "#10b981",
+  rare: "#fbff00",
+  epic: "#8b5cf6",
+  legendary: "#ff9102"
 };
 
 export function App() {
@@ -204,6 +224,7 @@ export function App() {
         onDetails={() => setShowDetails(true)}
         onGameShop={() => setView("gameShop")}
         onExchange={() => setShowExchange(true)}
+        onRanking={() => setView("rankings")}
       />
       <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
         <section className="city-stage">
@@ -226,7 +247,8 @@ function Header({
   regenMs,
   onDetails,
   onGameShop,
-  onExchange
+  onExchange,
+  onRanking
 }: {
   game: GameState;
   connected: boolean;
@@ -234,6 +256,7 @@ function Header({
   onDetails: () => void;
   onGameShop: () => void;
   onExchange: () => void;
+  onRanking: () => void;
 }) {
   const nextXp = game.character.level * 120;
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
@@ -263,7 +286,7 @@ function Header({
       <div className="resource-stack">
         <ResourceBar
           className="life"
-          label="Vida"
+          icon={<Heart size={15} style={{ color: "var(--red)" }} />}
           value={`${game.character.currentHp}/${game.derived.maxHp}`}
           progress={hpProgress}
           regenAmount={game.regenHpAmount}
@@ -272,40 +295,45 @@ function Header({
         />
         <ResourceBar
           className="energy"
-          label="Energia"
+          icon={<Zap size={15} style={{ color: "var(--green)" }} />}
           value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
           progress={energyProgress}
           regenAmount={game.regenEnergyAmount}
           timerLabel={timerLabel}
           atMax={game.character.currentEnergy >= game.derived.maxEnergy}
         />
-        <ResourceBar
-          className="xp"
-          label="XP"
-          value={`${game.character.experience}/${nextXp}`}
-          progress={xpProgress}
-        />
       </div>
       <div className="top-economy">
         <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
-          <Coins size={17} />
-          <small>Ouro</small>
+          <Coins size={17} style={{ color: "var(--gold)" }} />
           <strong>{formatCurrency(game.character.gold)}</strong>
         </button>
         <button className="stat-pill stat-action" onClick={onGameShop} title="Loja do Jogo">
-          <Gem size={17} />
-          <small>Diamantes</small>
+          <Gem size={17} style={{ color: "var(--cyan)" }} />
           <strong>{formatCurrency(game.character.diamonds)}</strong>
+        </button>
+        <button
+          className="stat-pill stat-action"
+          title="Ranking"
+          onClick={onRanking}
+        >
+          <Trophy size={17} style={{ color: "var(--gold)" }} />
         </button>
         <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Offline"}</span>
       </div>
+      <ResourceBar
+        className="xp"
+        icon={<Star size={15} style={{ color: "var(--purple)" }} />}
+        value={`${game.character.experience}/${nextXp}`}
+        progress={xpProgress}
+      />
     </header>
   );
 }
 
 function ResourceBar({
   className,
-  label,
+  icon,
   value,
   progress,
   regenAmount,
@@ -313,7 +341,7 @@ function ResourceBar({
   atMax
 }: {
   className: string;
-  label: string;
+  icon: React.ReactNode;
   value: string;
   progress: number;
   regenAmount?: number;
@@ -322,13 +350,13 @@ function ResourceBar({
 }) {
   return (
     <div className={`resource-bar ${className}`}>
-      <div>
-        <span>{label}</span>
+      <div className="resource-bar-main">
+        <span className="resource-icon">{icon}</span>
+        <i>
+          <b style={{ width: `${progress}%` }} />
+        </i>
         <strong>{value}</strong>
       </div>
-      <i>
-        <b style={{ width: `${progress}%` }} />
-      </i>
       {regenAmount !== undefined && timerLabel && !atMax && (
         <small className="regen-hint">♻️ +{regenAmount} em {timerLabel}</small>
       )}
@@ -421,7 +449,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         <Metric icon={<Zap size={18} />} label="Energia" value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`} />
         <Metric icon={<Swords size={18} />} label="FORÇA" value={game.derived.totalStrength} />
         <Metric icon={<Shield size={18} />} label="DEFESA" value={game.derived.defense} />
-        <Metric icon={<User size={18} />} label="AGI" value={game.derived.agility} />
+        <Metric icon={<Crosshair size={18} />} label="AGI" value={game.derived.agility} />
       </div>
 
       <div className="chance-row">
@@ -459,7 +487,11 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
             const slotEmoji = { weapon: "⚔️", armor: "🛡️", amulet: "📿" };
             return (
               <div className={`equip-slot${definition ? " has-item" : ""}`} key={slot}>
-                <span className="equip-emoji">{slotEmoji[slot]}</span>
+                {definition ? (
+                  <ItemVisual item={definition} className="equip-item-visual" />
+                ) : (
+                  <span className="equip-emoji">{slotEmoji[slot]}</span>
+                )}
                 <div className="equip-info">
                   <small>{EQUIPMENT_LABEL[slot]}</small>
                   <strong>{definition?.name ?? "—"}</strong>
@@ -627,19 +659,20 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   }
 
   const actionOptions: CityOption[] = [
-    { view: "rankings", icon: <Trophy size={24} />, title: "Ranking", value: "Nível e Arena" },
+    
   ];
   if (game.currentCity.blacksmithRecipeIds?.length) {
     actionOptions.push({ view: "blacksmith", icon: <Hammer size={24} />, title: "Ferreiro", value: game.currentCity.npcs.blacksmith ?? "Receitas" });
-  }
-  if (game.currentCity.alchemistRecipeIds?.length) {
-    actionOptions.push({ view: "alchemist", icon: <FlaskConical size={24} />, title: "Alquimista", value: game.currentCity.npcs.alchemist ?? "Receitas" });
   }
 
   const inhabitantOptions: CityOption[] = [
     { view: "armorer", icon: <Gavel size={24} />, title: "Armeiro", value: `${game.currentCity.armorerItemIds.length} itens` },
     { view: "apothecary", icon: <FlaskConical size={24} />, title: "Boticário", value: `${game.currentCity.apothecaryItemIds.length} poções` },
   ];
+
+  if (game.currentCity.alchemistRecipeIds?.length) {
+    inhabitantOptions.push({ view: "alchemist", icon: <FlaskConical size={24} />, title: "Alquimista", value: game.currentCity.npcs.alchemist ?? "Receitas" });
+  }
 
   return (
     <section className="content-panel city-overview">
@@ -690,8 +723,8 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
               </div>
               <div className="quest-reward">
                 {quest.reward.experience ? <span>{quest.reward.experience} XP</span> : null}
-                {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={12} /></span> : null}
-                {quest.reward.diamonds ? <span>{quest.reward.diamonds} <Gem size={12} /></span> : null}
+                {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={12} style={{ color: "var(--gold)" }} /></span> : null}
+                {quest.reward.diamonds ? <span>{quest.reward.diamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></span> : null}
               </div>
               <button
                 className="primary-button"
@@ -744,7 +777,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
                     {game.itemCatalog[ingredient.itemId].name}: {countInventoryItem(game, ingredient.itemId)}/{ingredient.quantity}
                   </small>
                 ))}
-                <small>{recipe.goldCost} <Coins size={12} /></small>
+                <small>{recipe.goldCost} <Coins size={12} style={{ color: "var(--gold)" }} /></small>
               </div>
               <button className="primary-button" disabled={!canCraft} onClick={() => socket.emit("craft:create", { recipeId: recipe.id })}>
                 Criar
@@ -771,16 +804,18 @@ function DungeonPanel({ game }: { game: GameState }) {
           const energyCost = monster.level + 1;
           const blocked = game.character.currentHp <= 0 || game.character.currentEnergy < energyCost;
           return (
-            <article className="entity-card" key={monster.id}>
+            <article className="entity-card monster-card" key={monster.id}>
               <div>
                 <strong>{monster.name}</strong>
                 <span>Nível {monster.level}</span>
               </div>
+              <MonsterVisual monster={monster} className="entity-art" />
               <div className="monster-stats">
-                <small>Vida {monster.maxHp}</small>
-                <small>FOR {monster.strength}</small>
-                <small>DEF {monster.defense}</small>
-                <small>Energia {energyCost}</small>
+                <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>
+                <small title="Forca"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
+                <small title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {monster.defense}</small>
+                <small title="Agilidade"><Crosshair size={13} style={{ color: "var(--gold)" }} /> {monster.agility}</small>
+                <small title="Energia"><Zap size={13} style={{ color: "var(--yellow)" }} /> {energyCost}</small>
               </div>
               <button className="primary-button" disabled={blocked} onClick={() => socket.emit("dungeon:start", { monsterId: monster.id })}>
                 Entrar
@@ -881,7 +916,7 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
 function GameShopPanel({ game }: { game: GameState }) {
   return (
     <section className="content-panel">
-      <PanelTitle icon={<Gem size={20} />} title="Loja do Jogo" />
+      <PanelTitle icon={<Gem size={20} style={{ color: "var(--cyan)" }} />} title="Loja do Jogo" />
       <div className="shop-grid">
         {game.diamondPackages.map((pack) => (
           <article className="item-card" key={pack.id}>
@@ -960,12 +995,14 @@ function ClanPanel({ game }: { game: GameState }) {
       <PanelTitle icon={<Users size={20} />} title={clan.name} />
       <div className="clan-summary">
         <Metric icon={<Users size={18} />} label="Membros" value={clan.memberPlayerIds.length} />
-        <Metric icon={<Coins size={18} />} label="Tesouro" value={clan.gold} />
-        <Metric icon={<Gem size={18} />} label="Diamantes" value={clan.diamonds} />
+        <Metric icon={<Coins size={18} style={{ color: "var(--gold)" }} />} label="Tesouro" value={clan.gold} />
+        <Metric icon={<Gem size={18} style={{ color: "var(--cyan)" }} />} label="Diamantes" value={clan.diamonds} />
         <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : "Clã"} />
       </div>
       <form className="market-form" onSubmit={donate}>
+        <Coins width={50} size={18} style={{ color: "var(--gold)" }} />
         <input type="number" min={0} value={gold} onChange={(event) => setGold(Number(event.target.value))} aria-label="Ouro" />
+        <Gem width={50} size={18} style={{ color: "var(--cyan)" }} />
         <input
           type="number"
           min={0}
@@ -1013,9 +1050,9 @@ function ClanBenefitTree({ game, leader }: { game: GameState; leader: boolean })
                       <strong>{benefit.name}</strong>
                       <span>{benefit.description}</span>
                       <small>
-                        {benefit.costPerRank.gold} <Coins size={10} />
+                        {benefit.costPerRank.gold} <Coins size={10} style={{ color: "var(--gold)" }} />
                         {benefit.costPerRank.diamonds ? (` + ${benefit.costPerRank.diamonds} `)  : null} 
-                        {benefit.costPerRank.diamonds ? <Gem size={10} /> : null}
+                        {benefit.costPerRank.diamonds ? <Gem size={10} style={{ color: "var(--cyan)" }} /> : null}
                       </small>
                     </div>
                     <b>
@@ -1046,24 +1083,26 @@ function HuntPanel({ game }: { game: GameState }) {
         {game.cityMonsters.map((monster) => {
           const blocked = game.character.currentHp <= 0 || game.character.currentEnergy < monster.level;
           return (
-            <article className="entity-card" key={monster.id}>
+            <article className="entity-card monster-card" key={monster.id}>
+              <MonsterVisual monster={monster} className="entity-art" />
               <div>
                 <strong>{monster.name}</strong>
                 <span>Nível {monster.level}</span>
               </div>
               <div className="monster-stats">
-                <small>Vida {monster.maxHp}</small>
-                <small>FOR {monster.strength}</small>
-                <small>DEF {monster.defense}</small>
-                <small>XP {monster.experience}</small>
-                <small>Energia {monster.level}</small>
+                <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>
+                <small title="Forca"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
+                <small title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {monster.defense}</small>
+                <small title="Agilidade"><Crosshair size={13} style={{ color: "var(--yellow)" }} /> {monster.agility}</small>
+                <small title="XP"><Star size={13} style={{ color: "var(--gold)" }} /> {monster.experience}</small>
+                
               </div>
               <button
-                className="primary-button"
+                className="atack-button primary-button"
                 disabled={blocked}
                 onClick={() => socket.emit("hunt:start", { monsterId: monster.id })}
               >
-                Enfrentar
+                <Swords size={13} /> Atacar
               </button>
             </article>
           );
@@ -1097,9 +1136,16 @@ function ArenaPanel({ game }: { game: GameState }) {
 
 function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothecary" }) {
   const itemIds = shop === "armorer" ? game.currentCity.armorerItemIds : game.currentCity.apothecaryItemIds;
+  const sortedItemIds = [...itemIds].sort((leftId, rightId) => {
+    const left = game.itemCatalog[leftId];
+    const right = game.itemCatalog[rightId];
+    return (left?.price ?? 0) - (right?.price ?? 0) || (left?.name ?? "").localeCompare(right?.name ?? "");
+  });
   const title = shop === "armorer" ? "Armeiro" : "Boticário";
   const icon = shop === "armorer" ? <Gavel size={20} /> : <FlaskConical size={20} />;
   const npcName = shop === "armorer" ? game.currentCity.npcs.armorer : game.currentCity.npcs.apothecary;
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] : null;
 
   return (
     <section className="content-panel">
@@ -1108,24 +1154,32 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
         <User size={18} />
         <span>{npcName}</span>
       </div>
-      <div className="shop-grid">
-        {itemIds.map((itemId) => {
+      <div className="shop-grid npc-shop-grid">
+        {sortedItemIds.map((itemId) => {
           const item = game.itemCatalog[itemId];
-          const meetsLevel = game.character.level >= item.minLevel;
-          const canAfford = game.character.gold >= item.price;
-          const disabled = shop === "armorer" ? !canAfford : (!canAfford || !meetsLevel);
-          const label = `Comprar ${formatCurrency(item.price)} ouro`;
+          if (!item) {
+            return null;
+          }
           return (
-            <ItemCard
+            <ShopItemCard
               key={item.id}
               item={item}
-              actionLabel={label}
-              disabled={disabled}
-              onAction={() => socket.emit("shop:buy", { itemId: item.id })}
+              onClick={() => setSelectedItemId(item.id)}
             />
           );
         })}
       </div>
+      {selectedItem && (
+        <ShopItemModal
+          game={game}
+          item={selectedItem}
+          onClose={() => setSelectedItemId(null)}
+          onBuy={(quantity) => {
+            socket.emit("shop:buy", { itemId: selectedItem.id, quantity });
+            setSelectedItemId(null);
+          }}
+        />
+      )}
       {shop === "armorer" && (
         <section className="sell-strip">
           <h3>Venda</h3>
@@ -1184,10 +1238,6 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
   const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
   const selectedEquipped = selectedEntry ? isItemEquipped(game, selectedEntry.instanceId) : false;
 
-  const kindEmoji: Record<string, string> = {
-    weapon: "⚔️", armor: "🛡️", amulet: "📿", potion: "🧪", scroll: "📜", material: "📦",
-  };
-
   return (
     <section className="content-panel">
       <PanelTitle icon={<Backpack size={20} />} title="Inventário" />
@@ -1204,15 +1254,16 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
           const item = game.itemCatalog[slot.itemId];
           const equipped = isItemEquipped(game, slot.instanceId);
           const selected = selectedInstanceId === slot.instanceId;
+          const rarityColor = getEquipmentRarityColor(item);
           return (
             <button
               key={slot.instanceId}
               className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""}`}
               title={item.name}
+              style={{ borderColor: rarityColor }}
               onClick={() => setSelectedInstanceId(selected ? null : slot.instanceId)}
             >
-              <span className="slot-icon">{kindEmoji[item.kind] ?? "📦"}</span>
-              {slot.quantity > 1 && <span className="slot-qty">x{slot.quantity}</span>}
+              <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} />
             </button>
           );
         })}
@@ -1286,7 +1337,7 @@ function TravelPanel({ game }: { game: GameState }) {
                 onClick={() => socket.emit("city:travel", { cityId: city.id })}
               >
                 {current ? "Atual" : `Viajar ${city.travelCost} `}
-                {!current && <Coins size={17} />}
+                {!current && <Coins size={17} style={{ color: "var(--gold)" }} />}
               </button>
             </article>
           );
@@ -1466,7 +1517,7 @@ function MarketPanel({ game }: { game: GameState }) {
                   onClick={() => setCurrencyFilter("gold")}
                   aria-pressed={currencyFilter === "gold"}
                 >
-                  <Coins size={16} /> Coin
+                  <Coins size={16} style={{ color: "var(--gold)" }} /> Coin
                 </button>
                 <button
                   type="button"
@@ -1474,7 +1525,7 @@ function MarketPanel({ game }: { game: GameState }) {
                   onClick={() => setCurrencyFilter("diamonds")}
                   aria-pressed={currencyFilter === "diamonds"}
                 >
-                  <Gem size={16} /> Diamante
+                  <Gem size={16} style={{ color: "var(--cyan)" }} /> Diamante
                 </button>
               </div>
               <div className="market-selects">
@@ -1497,23 +1548,25 @@ function MarketPanel({ game }: { game: GameState }) {
           </div>
           <div className="market-list">
             {purchaseListings.length === 0 && <p className="empty-state">Nenhuma oferta encontrada com esse filtro.</p>}
-            <div className="market-grid">
+            <div className="shop-grid npc-shop-grid market-shop-grid">
               {purchaseListings.map((listing) => (
+                (() => {
+                  const item = game.itemCatalog[listing.item.itemId];
+                  return (
                 <button
                   key={listing.id}
-                  className="market-grid-item"
+                  className="shop-item-card market-shop-card"
                   onClick={() => setSelectedListing(listing)}
-                  title={game.itemCatalog[listing.item.itemId].name}
+                  title={item.name}
                 >
-                  <div className="market-grid-icon">
-                    <span>{ITEM_KIND_EMOJI[game.itemCatalog[listing.item.itemId].kind] ?? "📦"}</span>
-                    {listing.item.quantity > 1 && <span className="market-grid-qty">x{listing.item.quantity}</span>}
-                  </div>
-                  <div className="market-grid-name">{game.itemCatalog[listing.item.itemId].name}</div>
-                  <div className="market-grid-price">
-                    {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={12} /> : <Gem size={12} />}
-                  </div>
+                  <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity} />
+                  <strong>{item.name}</strong>
+                  <span className="shop-card-price">
+                    {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={13} style={{ color: "var(--gold)" }} /> : <Gem size={13} style={{ color: "var(--cyan)" }} />}
+                  </span>
                 </button>
+                  );
+                })()
               ))}
             </div>
           </div>
@@ -1548,19 +1601,17 @@ function MarketListingCard({
   onAction: () => void;
 }) {
   const item = game.itemCatalog[listing.item.itemId];
+  const rarityColor = getEquipmentRarityColor(item);
   return (
-    <article className="market-card">
-      <div className="market-item-box">
-        <span className="market-item-emoji">{ITEM_KIND_EMOJI[item.kind] ?? "📦"}</span>
-        {listing.item.quantity > 1 && <span className="market-item-qty">x{listing.item.quantity}</span>}
-      </div>
+    <article className="market-card" style={{ borderColor: rarityColor }}>
+      <ItemVisual item={item} className="market-item-box" quantity={listing.item.quantity} />
       <div className="market-card-body">
         <strong>{item.name}</strong>
         <span className="market-card-meta">{metaLabel}</span>
       </div>
       <div className="market-card-side">
         <div className="market-card-price">
-          {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={14} /> : <Gem size={14} />}
+          {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={14} style={{ color: "var(--gold)" }} /> : <Gem size={14} style={{ color: "var(--cyan)" }} />}
         </div>
         <button className="icon-button" title={actionLabel} onClick={onAction}>
           <X size={16} />
@@ -1582,22 +1633,25 @@ function MarketListingModal({
   onBuy: () => void;
 }) {
   const item = game.itemCatalog[listing.item.itemId];
+  const rarityColor = getEquipmentRarityColor(item);
   const canBuy = 
     (listing.currency === "gold" ? game.character.gold >= listing.price : game.character.diamonds >= listing.price) &&
     game.inventoryUsed < game.inventoryCapacity;
   return (
     <div className="drawer-backdrop" role="presentation" onClick={onClose}>
-      <div className="market-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+      <div className="market-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} style={{ borderColor: rarityColor }}>
         <button className="close-button" title="Fechar" onClick={onClose}>
           <X size={20} />
         </button>
-        <div className="market-modal-icon">
-          <span className="market-modal-emoji">{ITEM_KIND_EMOJI[item.kind] ?? "📦"}</span>
-          {listing.item.quantity > 1 && <span className="market-modal-qty">x{listing.item.quantity}</span>}
-        </div>
+        <ItemVisual item={item} className="market-modal-icon" quantity={listing.item.quantity} />
         <div className="market-modal-content">
           <h2>{item.name}</h2>
           <small className="market-modal-type">{ITEM_KIND_LABELS[item.kind]}</small>
+          {item.rarity && (
+            <div className={`item-rarity ${item.rarity}`}>
+              {RARITY_LABELS[item.rarity]}
+            </div>
+          )}
           <p className="market-modal-desc">{item.description}</p>
           
           <div className="market-modal-details">
@@ -1641,7 +1695,7 @@ function MarketListingModal({
             </div>
           )}
 
-          {item.minLevel > 1 && (
+          {item.slot && item.minLevel > 1 && (
             <div className={item.minLevel > game.character.level ? "market-modal-requirement unmet" : "market-modal-requirement"}>
               Nível mínimo: {item.minLevel} {item.minLevel > game.character.level && "(não alcançado)"}
             </div>
@@ -1651,7 +1705,7 @@ function MarketListingModal({
             <div className="market-modal-price">
               <strong>Preço total:</strong>
               <b className="price-amount">
-                {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={16} /> : <Gem size={16} />}
+                {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={16} style={{ color: "var(--gold)" }} /> : <Gem size={16} style={{ color: "var(--cyan)" }} />}
               </b>
             </div>
             <button
@@ -1677,6 +1731,14 @@ function BattlePanel({ game }: { game: GameState }) {
   const opponent = battle.participants.find((participant) => participant.id !== me?.id);
   const myTurn = battle.turnParticipantId === me?.id;
   const firstPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.healPercent);
+  const rematchMonsterId = getBattleMonsterId(battle);
+  const rematchMonster = rematchMonsterId ? game.cityMonsters.find((monster) => monster.id === rematchMonsterId) : null;
+  const rematchEnergyCost = rematchMonster ? rematchMonster.level + (battle.mode === "dungeon" ? 1 : 0) : 0;
+  const canRematch =
+    Boolean(rematchMonster) &&
+    game.character.currentHp > 0 &&
+    game.character.currentEnergy >= rematchEnergyCost &&
+    (battle.mode === "pve" || battle.mode === "dungeon");
 
   return (
     <section className="content-panel battle-panel">
@@ -1692,11 +1754,11 @@ function BattlePanel({ game }: { game: GameState }) {
         {battle.status === "active" ? (
           <>
             <button
-              className="primary-button"
+              className="primary-button atack-button"
               disabled={!myTurn}
               onClick={() => socket.emit("battle:action", { battleId: battle.id, action: "attack" })}
             >
-              Atacar
+              <Swords size={13} /> Atacar
             </button>
             <button
               className="ghost-button"
@@ -1708,17 +1770,30 @@ function BattlePanel({ game }: { game: GameState }) {
                   instanceId: firstPotion?.instanceId
                 })
               }
+              style={{padding: "3px 12px"}}
             >
-              Usar vida
+              <AssetImage style={{ width: 27 }} src={"assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} /> 
+              <span style={{verticalAlign: "super"}}>Usar poção de vida</span>
             </button>
             <button className="danger-button" onClick={() => socket.emit("battle:flee")}>
               Fugir
             </button>
           </>
         ) : (
-          <button className="primary-button" onClick={() => socket.emit("battle:leave")}>
-            Voltar para a cidade
-          </button>
+          <>
+            {rematchMonsterId && (battle.mode === "pve" || battle.mode === "dungeon") && (
+              <button
+                className="primary-button"
+                disabled={!canRematch}
+                onClick={() => socket.emit(battle.mode === "dungeon" ? "dungeon:start" : "hunt:start", { monsterId: rematchMonsterId })}
+              >
+                Enfrentar novamente
+              </button>
+            )}
+            <button className="ghost-button" onClick={() => socket.emit("battle:leave")}>
+              Voltar para a cidade
+            </button>
+          </>
         )}
       </div>
       <div className="battle-log">
@@ -1734,6 +1809,7 @@ function CombatantCard({ participant, active }: { participant: BattleParticipant
   const hpPercent = Math.max(0, Math.round((participant.hp / participant.maxHp) * 100));
   return (
     <article className={active ? "combatant active" : "combatant"}>
+      <ParticipantVisual participant={participant} className="combatant-art" />
       <div>
         <strong>{participant.name}</strong>
         <span>Nível {participant.level}</span>
@@ -1745,9 +1821,9 @@ function CombatantCard({ participant, active }: { participant: BattleParticipant
         {participant.hp}/{participant.maxHp} vida
       </small>
       <div className="combat-stat-row">
-        <span>FOR {participant.strength}</span>
-        <span>DEF {participant.defense}</span>
-        <span>AGI {participant.agility}</span>
+        <span title="Forca"><Swords size={13} style={{ color: "var(--purple)" }} /> {participant.strength}</span>
+        <span title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {participant.defense}</span>
+        <span title="Agilidade"><Crosshair size={13} style={{ color: "var(--gold)" }} /> {participant.agility}</span>
       </div>
     </article>
   );
@@ -2007,28 +2083,179 @@ function CurrencyExchangeModal({ game, onClose }: { game: GameState; onClose: ()
   );
 }
 
-function ItemCard({
+function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; fallback: React.ReactNode; style?: React.CSSProperties }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return <span className="asset-fallback" aria-hidden="true" style={style}>{fallback}</span>;
+  }
+
+  return <img style={style} src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
+}
+
+function ItemVisual({
   item,
-  actionLabel,
-  disabled,
-  onAction
+  className,
+  quantity
 }: {
   item: ItemDefinition;
-  actionLabel: string;
-  disabled?: boolean;
-  onAction: () => void;
+  className?: string;
+  quantity?: number;
+}) {
+  const rarityColor = getEquipmentRarityColor(item);
+  return (
+    <span className={`asset-frame item-visual ${className ?? ""}`} style={rarityColor ? { borderColor: rarityColor } : undefined}>
+      <AssetImage src={item.imageUrl} alt={item.name} fallback={ITEM_KIND_EMOJI[item.kind] ?? "?"} />
+      {quantity !== undefined && quantity > 1 && <span className="asset-qty">x{quantity}</span>}
+    </span>
+  );
+}
+
+function MonsterVisual({
+  monster,
+  className
+}: {
+  monster: GameState["cityMonsters"][number];
+  className?: string;
 }) {
   return (
-    <article className="item-card">
-      <div>
-        <strong>{item.name}</strong>
-        <span>{item.description}</span>
+    <span className={`asset-frame monster-visual ${className ?? ""}`}>
+      <AssetImage src={monster.imageUrl} alt={monster.name} fallback={monster.name.slice(0, 1)} />
+    </span>
+  );
+}
+
+function ParticipantVisual({ participant, className }: { participant: BattleParticipant; className?: string }) {
+  return (
+    <span className={`asset-frame participant-visual ${className ?? ""}`}>
+      <AssetImage
+        src={participant.imageUrl}
+        alt={participant.name}
+        fallback={participant.kind === "player" ? <User size={28} /> : participant.name.slice(0, 1)}
+      />
+    </span>
+  );
+}
+
+function ShopItemCard({ item, onClick }: { item: ItemDefinition; onClick: () => void }) {
+  return (
+    <button className="shop-item-card" type="button" onClick={onClick} title={item.name}>
+      <ItemVisual item={item} className="shop-card-image" />
+      <strong>{item.name}</strong>
+      <span className="shop-card-price">
+        {formatCurrency(item.price)} <Coins size={13} style={{ color: "var(--gold)" }} />
+      </span>
+    </button>
+  );
+}
+
+function ShopItemModal({
+  game,
+  item,
+  onClose,
+  onBuy
+}: {
+  game: GameState;
+  item: ItemDefinition;
+  onClose: () => void;
+  onBuy: (quantity: number) => void;
+}) {
+  const [quantity, setQuantity] = useState(1);
+  const rarityColor = getEquipmentRarityColor(item);
+  const canChooseQuantity = !item.slot;
+  const purchaseQuantity = canChooseQuantity ? Math.max(1, Math.min(999, Math.floor(quantity || 1))) : 1;
+  const totalPrice = item.price * purchaseQuantity;
+  const blockedReason = getNpcShopBlockedReason(game, item, purchaseQuantity);
+
+  useEffect(() => {
+    setQuantity(1);
+  }, [item.id]);
+
+  return (
+    <div className="drawer-backdrop" role="presentation" onClick={onClose}>
+      <div className="market-modal shop-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()} style={rarityColor ? { borderColor: rarityColor } : undefined}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={20} />
+        </button>
+        <ItemVisual item={item} className="market-modal-icon" />
+        <div className="market-modal-content">
+          <h2>{item.name}</h2>
+          <small className="market-modal-type">{ITEM_KIND_LABELS[item.kind]}</small>
+          {item.rarity && (
+            <div className={`item-rarity ${item.rarity}`}>
+              {RARITY_LABELS[item.rarity]}
+            </div>
+          )}
+          <p className="market-modal-desc">{item.description}</p>
+
+          {item.slot && (
+            <div className="market-modal-stats">
+              <h4>Bonus</h4>
+              <div className="stat-list">
+                {item.stats.strength && <div><span>Forca</span> <strong>+{item.stats.strength}</strong></div>}
+                {item.stats.constitution && <div><span>Constituicao</span> <strong>+{item.stats.constitution}</strong></div>}
+                {item.stats.agility && <div><span>Agilidade</span> <strong>+{item.stats.agility}</strong></div>}
+                {item.stats.defense && <div><span>Defesa</span> <strong>+{item.stats.defense}</strong></div>}
+              </div>
+            </div>
+          )}
+
+          {item.stats.healPercent && (
+            <div className="market-modal-stats">
+              <h4>Efeito</h4>
+              <p>Restaura {item.stats.healPercent * 100}% da vida ao usar</p>
+            </div>
+          )}
+
+          {item.stats.energyPercent && (
+            <div className="market-modal-stats">
+              <h4>Efeito</h4>
+              <p>Restaura {item.stats.energyPercent * 100}% da energia ao usar</p>
+            </div>
+          )}
+
+          {item.slot && item.minLevel > 1 && (
+            <div className={item.minLevel > game.character.level ? "market-modal-requirement unmet" : "market-modal-requirement"}>
+              Nivel minimo: {item.minLevel} {item.minLevel > game.character.level && "(nao alcancado)"}
+            </div>
+          )}
+
+          {canChooseQuantity && (
+            <div className="shop-quantity-control">
+              <span>Quantidade</span>
+              <div>
+                <button type="button" className="icon-button" onClick={() => setQuantity((value) => Math.max(1, value - 1))}>
+                  -
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  max={999}
+                  value={quantity}
+                  onChange={(event) => setQuantity(Math.max(1, Math.min(999, Number(event.target.value) || 1)))}
+                  aria-label="Quantidade"
+                />
+                <button type="button" className="icon-button" onClick={() => setQuantity((value) => Math.min(999, value + 1))}>
+                  +
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="market-modal-footer">
+            <div className="market-modal-price">
+              <strong>{canChooseQuantity ? "Total:" : "Valor:"}</strong>
+              <b className="price-amount">
+                {formatCurrency(totalPrice)} <Coins size={16} style={{ color: "var(--gold)" }} />
+              </b>
+            </div>
+            <button className="primary-button" disabled={Boolean(blockedReason)} onClick={() => onBuy(purchaseQuantity)}>
+              {blockedReason ?? "Comprar"}
+            </button>
+          </div>
+        </div>
       </div>
-      <small>Nível {item.minLevel}</small>
-      <button className="primary-button" disabled={disabled} onClick={onAction}>
-        {actionLabel}
-      </button>
-    </article>
+    </div>
   );
 }
 
@@ -2085,6 +2312,11 @@ function isItemEquipped(game: GameState, instanceId: string) {
   return Object.values(game.character.equipment).includes(instanceId);
 }
 
+function getBattleMonsterId(battle: NonNullable<GameState["activeBattle"]>) {
+  const monster = battle.participants.find((participant) => participant.kind === "monster");
+  return monster?.id.replace("monster:", "") ?? null;
+}
+
 function countInventoryItem(game: GameState, itemId: string) {
   return game.character.inventory
     .filter((item) => item.itemId === itemId)
@@ -2093,6 +2325,40 @@ function countInventoryItem(game: GameState, itemId: string) {
 
 function countClaimable(quests: QuestView[]) {
   return quests.filter((quest) => quest.completed && !quest.claimed).length;
+}
+
+function canReceiveShopItem(game: GameState, item: ItemDefinition) {
+  if (item.slot) {
+    return game.inventoryUsed < game.inventoryCapacity;
+  }
+  const existingStack = game.character.inventory.some((inventoryItem) => inventoryItem.itemId === item.id);
+  return existingStack || game.inventoryUsed < game.inventoryCapacity;
+}
+
+function getNpcShopBlockedReason(game: GameState, item: ItemDefinition, quantity = 1) {
+  if (quantity < 1) {
+    return "Quantidade invalida";
+  }
+  if (game.character.gold < item.price * quantity) {
+    return "Ouro insuficiente";
+  }
+  if (!canReceiveShopItem(game, item)) {
+    return "Inventario cheio";
+  }
+  return null;
+}
+
+function getShopBuyBlockedReason(game: GameState, item: ItemDefinition) {
+  if (item.slot && game.character.level < item.minLevel) {
+    return `NÃ­vel ${item.minLevel} necessÃ¡rio`;
+  }
+  if (game.character.gold < item.price) {
+    return "Ouro insuficiente";
+  }
+  if (!canReceiveShopItem(game, item)) {
+    return "InventÃ¡rio cheio";
+  }
+  return null;
 }
 
 function formatPercent(value: number) {
@@ -2125,4 +2391,10 @@ function formatCurrency(n: number): string {
     }
   }
   return String(n);
+}
+
+function getEquipmentRarityColor(item: ItemDefinition) {
+  if (!item.slot) return undefined;
+  const rarity = item.rarity ?? "common";
+  return RARITY_COLORS[rarity];
 }

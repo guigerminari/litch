@@ -30,7 +30,7 @@ export function addItem(
   }
 
   // Stackable items: merge into existing stack (no new slot needed)
-  if (definition.kind === "potion" || definition.kind === "material") {
+  if (definition.kind === "potion" || definition.kind === "material" || definition.kind === "scroll" || definition.kind === "misc") {
     const stack = character.inventory.find((item) => item.itemId === itemId);
     if (stack) {
       stack.quantity += quantity;

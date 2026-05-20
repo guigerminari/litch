@@ -42,6 +42,7 @@ function monsterParticipant(monster: MonsterDefinition): BattleParticipant {
     ownerPlayerId: null,
     name: monster.name,
     kind: "monster",
+    imageUrl: monster.imageUrl,
     level: monster.level,
     hp: monster.maxHp,
     maxHp: monster.maxHp,

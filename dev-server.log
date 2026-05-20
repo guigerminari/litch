@@ -500,3 +500,202 @@
 [dev:web] [2m16:41:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
 [dev:web] [2m16:45:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
 [dev:web] [2m16:46:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:47:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:55:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:55:05[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:55:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:55:17[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:55:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m16:55:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m16:56:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:57:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:57:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m16:57:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m17:12:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:12:13[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\src\client\App.tsx: Unexpected token (985:16)
+[dev:web] 
+[dev:web] [0m [90m 983 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[dev:web]  [90m 984 |[31m       [33m<[31m[33mform[31m className[33m=[31m[32m"market-form"[31m onSubmit[33m=[31m{donate}[33m>[31m
+[dev:web] [31m[1m>[22m[31m[90m 985 |[31m         [33m<[31m[33mCoins[31m  [33m<[31m[33minput[31m type[33m=[31m[32m"number"[31m min[33m=[31m{[35m0[31m} value[33m=[31m{gold} onChange[33m=[31m{(event) [33m=>[31m setGold([33mNumber[31m(event[33m.[31mtarget[33m.[31mvalue))} aria[33m-[31mlabel[33m=[31m[32m"Ouro"[31m [33m/[31m[33m>[31m
+[dev:web]  [90m     |[31m                 [31m[1m^[22m[31m
+[dev:web]  [90m 986 |[31m         [33m<[31m[33minput[31m
+[dev:web]  [90m 987 |[31m           type[33m=[31m[32m"number"[31m
+[dev:web]  [90m 988 |[31m           min[33m=[31m{[35m0[31m}[0m[39m
+[dev:web]   Plugin: [35mvite:react-babel[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/App.tsx[39m:985:16
+[dev:web] [33m  983|        </div>
+[dev:web]   984|        <form className="market-form" onSubmit={donate}>
+[dev:web]   985|          <Coins  <input type="number" min={0} value={gold} onChange={(event) => setGold(Number(event.target.value))} aria-label="Ouro" />
+[dev:web]      |                  ^
+[dev:web]   986|          <input
+[dev:web]   987|            type="number"[39m
+[dev:web]       at constructor (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:365:19)
+[dev:web]       at TypeScriptParserMixin.raise (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:6616:19)
+[dev:web]       at TypeScriptParserMixin.unexpected (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:6636:16)
+[dev:web]       at TypeScriptParserMixin.jsxParseIdentifier (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4581:12)
+[dev:web]       at TypeScriptParserMixin.jsxParseNamespacedName (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4588:23)
+[dev:web]       at TypeScriptParserMixin.jsxParseAttribute (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4664:22)
+[dev:web]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4679:28)
+[dev:web]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10060:18)
+[dev:web]       at TypeScriptParserMixin.jsxParseOpeningElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4674:17)
+[dev:web]       at TypeScriptParserMixin.jsxParseElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4698:33)
+[dev:web]       at TypeScriptParserMixin.jsxParseElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4710:32)
+[dev:web]       at TypeScriptParserMixin.jsxParseElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4710:32)
+[dev:web]       at TypeScriptParserMixin.jsxParseElement (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4761:17)
+[dev:web]       at TypeScriptParserMixin.parseExprAtom (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4771:19)
+[dev:web]       at TypeScriptParserMixin.parseExprSubscripts (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11098:23)
+[dev:web]       at TypeScriptParserMixin.parseUpdate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11083:21)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11063:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9854:18)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10916:61)
+[dev:web]       at TypeScriptParserMixin.parseExprOps (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10921:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeConditional (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10898:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10848:21)
+[dev:web]       at C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9792:39
+[dev:web]       at TypeScriptParserMixin.tryParse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:6924:20)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9792:18)
+[dev:web]       at C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10817:39
+[dev:web]       at TypeScriptParserMixin.allowInAnd (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12443:12)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10817:17)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12510:17)
+[dev:web]       at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11692:28)
+[dev:web]       at TypeScriptParserMixin.parseExprAtom (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11348:23)
+[dev:web]       at TypeScriptParserMixin.parseExprAtom (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4776:20)
+[dev:web]       at TypeScriptParserMixin.parseExprSubscripts (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11098:23)
+[dev:web]       at TypeScriptParserMixin.parseUpdate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11083:21)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11063:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9854:18)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10916:61)
+[dev:web]       at TypeScriptParserMixin.parseExprOps (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10921:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeConditional (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10898:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10848:21)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9803:20)
+[dev:web]       at TypeScriptParserMixin.parseExpressionBase (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10801:23)
+[dev:web]       at C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10797:39
+[dev:web]       at TypeScriptParserMixin.allowInAnd (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12438:16)
+[dev:web]       at TypeScriptParserMixin.parseExpression (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10797:17)
+[dev:web]       at TypeScriptParserMixin.parseReturnStatement (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:13159:28)
+[dev:web]       at TypeScriptParserMixin.parseStatementContent (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12815:21)
+[dev:web]       at TypeScriptParserMixin.parseStatementContent (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9525:18)
+[dev:web]       at TypeScriptParserMixin.parseStatementLike (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12784:17)
+[dev:web]       at TypeScriptParserMixin.parseStatementListItem (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12764:17)
+[dev:web] [2m17:12:13[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\src\client\App.tsx: Unexpected token (985:16)
+[dev:web] 
+[dev:web] [0m [90m 983 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[dev:web]  [90m 984 |[31m       [33m<[31m[33mform[31m className[33m=[31m[32m"market-form"[31m onSubmit[33m=[31m{donate}[33m>[31m
+[dev:web] [31m[1m>[22m[31m[90m 985 |[31m         [33m<[31m[33mCoins[31m  [33m<[31m[33minput[31m type[33m=[31m[32m"number"[31m min[33m=[31m{[35m0[31m} value[33m=[31m{gold} onChange[33m=[31m{(event) [33m=>[31m setGold([33mNumber[31m(event[33m.[31mtarget[33m.[31mvalue))} aria[33m-[31mlabel[33m=[31m[32m"Ouro"[31m [33m/[31m[33m>[31m
+[dev:web]  [90m     |[31m                 [31m[1m^[22m[31m
+[dev:web]  [90m 986 |[31m         [33m<[31m[33minput[31m
+[dev:web]  [90m 987 |[31m           type[33m=[31m[32m"number"[31m
+[dev:web]  [90m 988 |[31m           min[33m=[31m{[35m0[31m}[0m[39m
+[dev:web]   Plugin: [35mvite:react-babel[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/App.tsx[39m:985:16
+[dev:web] [33m  983|        </div>
+[dev:web]   984|        <form className="market-form" onSubmit={donate}>
+[dev:web]   985|          <Coins  <input type="number" min={0} value={gold} onChange={(event) => setGold(Number(event.target.value))} aria-label="Ouro" />
+[dev:web]      |                  ^
+[dev:web]   986|          <input
+[dev:web]   987|            type="number"[39m
+[dev:web]       at constructor (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:365:19)
+[dev:web]       at TypeScriptParserMixin.raise (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:6616:19)
+[dev:web]       at TypeScriptParserMixin.unexpected (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:6636:16)
+[dev:web]       at TypeScriptParserMixin.jsxParseIdentifier (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4581:12)
+[dev:web]       at TypeScriptParserMixin.jsxParseNamespacedName (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4588:23)
+[dev:web]       at TypeScriptParserMixin.jsxParseAttribute (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4664:22)
+[dev:web]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4679:28)
+[dev:web]       at TypeScriptParserMixin.jsxParseOpeningElementAfterName (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10060:18)
+[dev:web]       at TypeScriptParserMixin.jsxParseOpeningElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4674:17)
+[dev:web]       at TypeScriptParserMixin.jsxParseElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4698:33)
+[dev:web]       at TypeScriptParserMixin.jsxParseElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4710:32)
+[dev:web]       at TypeScriptParserMixin.jsxParseElementAt (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4710:32)
+[dev:web]       at TypeScriptParserMixin.jsxParseElement (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4761:17)
+[dev:web]       at TypeScriptParserMixin.parseExprAtom (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4771:19)
+[dev:web]       at TypeScriptParserMixin.parseExprSubscripts (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11098:23)
+[dev:web]       at TypeScriptParserMixin.parseUpdate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11083:21)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11063:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9854:18)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10916:61)
+[dev:web]       at TypeScriptParserMixin.parseExprOps (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10921:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeConditional (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10898:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10848:21)
+[dev:web]       at C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9792:39
+[dev:web]       at TypeScriptParserMixin.tryParse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:6924:20)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9792:18)
+[dev:web]       at C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10817:39
+[dev:web]       at TypeScriptParserMixin.allowInAnd (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12443:12)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10817:17)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12510:17)
+[dev:web]       at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11692:28)
+[dev:web]       at TypeScriptParserMixin.parseExprAtom (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11348:23)
+[dev:web]       at TypeScriptParserMixin.parseExprAtom (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:4776:20)
+[dev:web]       at TypeScriptParserMixin.parseExprSubscripts (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11098:23)
+[dev:web]       at TypeScriptParserMixin.parseUpdate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11083:21)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11063:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9854:18)
+[dev:web]       at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10916:61)
+[dev:web]       at TypeScriptParserMixin.parseExprOps (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10921:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeConditional (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10898:23)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10848:21)
+[dev:web]       at TypeScriptParserMixin.parseMaybeAssign (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9803:20)
+[dev:web]       at TypeScriptParserMixin.parseExpressionBase (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10801:23)
+[dev:web]       at C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10797:39
+[dev:web]       at TypeScriptParserMixin.allowInAnd (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12438:16)
+[dev:web]       at TypeScriptParserMixin.parseExpression (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:10797:17)
+[dev:web]       at TypeScriptParserMixin.parseReturnStatement (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:13159:28)
+[dev:web]       at TypeScriptParserMixin.parseStatementContent (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12815:21)
+[dev:web]       at TypeScriptParserMixin.parseStatementContent (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:9525:18)
+[dev:web]       at TypeScriptParserMixin.parseStatementLike (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12784:17)
+[dev:web]       at TypeScriptParserMixin.parseStatementListItem (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:12764:17)
+[dev:web] [2m17:12:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:13:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:14:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:15:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:16:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:17:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:server] 22:22:47 [tsx] change in ./src\server\content.ts Restarting...
+[dev:server] cLitch realtime server running on http://127.0.0.1:3001
+[dev:web] [2m22:32:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:32:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:37:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:42:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:42:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:47:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:47:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:52:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m22:53:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m22:56:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:13:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:16:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:17:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:17:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:18:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:18:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:24:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:24:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:25:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:25:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:26:05[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:26:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:26:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:31:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:server] 23:32:16 [tsx] change in ./src\server\content.ts Restarting...
+[dev:server] cLitch realtime server running on http://127.0.0.1:3001
+[dev:web] [2m23:37:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:38:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:38:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:38:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:38:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:39:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:41:19[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:43:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:45:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:45:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:46:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:47:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:47:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:47:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:48:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:49:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m23:51:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:51:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m23:52:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
