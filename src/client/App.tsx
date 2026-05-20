@@ -303,7 +303,7 @@ function Header({
           <User size={20} />
         </span>
         <strong>{game.character.name}</strong>
-        <small>Nível {game.character.level}</small>
+        <small>Nv {game.character.level} - {game.currentCity.name}</small>
       </button>
       <div className="resource-stack">
         <ResourceBar
