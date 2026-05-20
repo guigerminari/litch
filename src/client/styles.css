@@ -324,22 +324,51 @@ button:disabled {
   gap: 8px;
   align-items: center;
   min-width: 0;
+.topbar-clan-name {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
 }
 
 .resource-bar strong {
   color: var(--text);
   font-size: 0.78rem;
+.rankings-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
 .resource-icon {
+
   width: 20px;
   height: 20px;
   flex: 0 0 20px;
   display: grid;
   place-items: center;
   color: var(--muted);
+}
+
+.clan-ranking-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clan-ranking-row {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.clan-leave-button {
+  justify-self: start;
+}
+
+.clan-ranking-row .clan-ranking-main {
+  display: grid;
+  grid-template-columns: 43px auto;
+  align-items: center;
 }
 
 .resource-bar i,
@@ -2368,6 +2397,31 @@ button:disabled {
   gap: 8px;
 }
 
+.clan-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.clan-manage-form {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.45);
+}
+
+.clan-manage-form div:not(.crest-picker)  {
+  display: grid;
+  gap: 4px;
+}
+
+.clan-manage-form span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .clan-create-section {
   display: grid;
   gap: 12px;
@@ -2441,6 +2495,22 @@ button:disabled {
   border-color: rgba(255, 121, 198, 0.8);
   color: var(--pink);
   background: rgba(255, 121, 198, 0.14);
+}
+
+.clan-member-list {
+  display: grid;
+  gap: 10px;
+}
+
+.clan-member-row {
+  display: flex;
+  grid-template-columns: 1fr auto;
+}
+
+.clan-member-actions {
+  display: inline-flex !important;
+  gap: 8px;
+  align-items: center;
 }
 
 .clan-directory-row {
@@ -2521,7 +2591,7 @@ button:disabled {
 
 .clan-super-card {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
+  grid-template-columns: 38px minmax(0, 1fr);
   gap: 9px;
   align-items: center;
   padding: 10px;
@@ -2582,7 +2652,7 @@ button:disabled {
 .clan-benefit-tree::before {
   content: "";
   position: absolute;
-  left: 4px;
+  left: 0;
   top: 18px;
   bottom: 18px;
   width: 2px;
@@ -2611,18 +2681,6 @@ button:disabled {
   width: 13px;
   height: 2px;
   background: rgba(139, 233, 253, 0.48);
-}
-
-.clan-benefit-node:nth-child(4n + 2) {
-  transform: translateY(8px);
-}
-
-.clan-benefit-node:nth-child(4n + 3) {
-  transform: translateY(16px);
-}
-
-.clan-benefit-node:nth-child(4n) {
-  transform: translateY(8px);
 }
 
 .clan-benefit-node b {

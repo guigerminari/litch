@@ -9,7 +9,10 @@ import type {
   ClanChatSendPayload,
   ClanCreatePayload,
   ClanDonatePayload,
+  ClanKickPayload,
   ClanJoinPayload,
+  ClanTransferLeadershipPayload,
+  ClanUpdatePayload,
   CraftPayload,
   CurrencyExchangePayload,
   DungeonStartPayload,
@@ -70,7 +73,7 @@ const CLAN_CREATE_DIAMOND_COST = 10;
 const CLAN_BENEFIT_RESET_DIAMOND_COST = 1000;
 const CLAN_BENEFIT_RESET_REFUND_RATE = 0.8;
 const CLAN_DEFAULT_ICON = "shield";
-const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle", "trophy"]);
+const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"]);
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const ENHANCEMENT_GOLD_STEP = 10000;
@@ -512,7 +515,8 @@ function buildRankings() {
 
   return {
     level: [...entries].sort((a, b) => b.level - a.level || b.arenaWins - a.arenaWins).slice(0, 20),
-    arena: [...entries].sort((a, b) => b.arenaWins - a.arenaWins || a.arenaLosses - b.arenaLosses).slice(0, 20)
+    arena: [...entries].sort((a, b) => b.arenaWins - a.arenaWins || a.arenaLosses - b.arenaLosses).slice(0, 20),
+    clans: buildClanDirectory().slice(0, 20)
   };
 }
 
@@ -539,6 +543,21 @@ function getClanMemberCapacity(clan: { benefitAllocations: Record<string, number
 
 function normalizeClanIcon(icon?: string) {
   return icon && CLAN_ALLOWED_ICONS.has(icon) ? icon : CLAN_DEFAULT_ICON;
+}
+
+function normalizeClanName(name: string) {
+  return name.trim().replace(/\s+/g, " ").slice(0, 28);
+}
+
+function buildClanMembers(clan: { leaderPlayerId: string; memberPlayerIds: string[] }) {
+  return clan.memberPlayerIds.map((memberPlayerId) => {
+    const memberCharacter = store.characters.get(memberPlayerId);
+    return {
+      playerId: memberPlayerId,
+      name: memberCharacter?.name ?? currentPlayer(memberPlayerId).username,
+      isLeader: memberPlayerId === clan.leaderPlayerId
+    };
+  });
 }
 
 function getBattleMonsterId(battle: { participants: Array<{ kind: "player" | "monster"; id: string }> }) {
@@ -601,12 +620,13 @@ function takeAutoPveUntilStopped(character: Character, playerId: string, initial
   }
 }
 
-function decorateClan<T extends { benefitAllocations: Record<string, number> }>(clan: T) {
+function decorateClan<T extends { benefitAllocations: Record<string, number>; leaderPlayerId: string; memberPlayerIds: string[]; icon?: string }>(clan: T) {
   return {
     ...clan,
-    icon: normalizeClanIcon((clan as { icon?: string }).icon),
+    icon: normalizeClanIcon(clan.icon),
     level: getClanLevel(clan),
-    memberCapacity: getClanMemberCapacity(clan)
+    memberCapacity: getClanMemberCapacity(clan),
+    members: buildClanMembers(clan)
   };
 }
 
@@ -658,7 +678,7 @@ function createClan(character: Character, name: string, icon?: string) {
   if (character.diamonds < CLAN_CREATE_DIAMOND_COST) {
     throw new Error(`Criar um cla custa ${CLAN_CREATE_DIAMOND_COST} diamantes.`);
   }
-  const normalized = name.trim().replace(/\s+/g, " ").slice(0, 28);
+  const normalized = normalizeClanName(name);
   if (normalized.length < 3) {
     throw new Error("Use um nome de clã com pelo menos 3 caracteres.");
   }
@@ -686,6 +706,73 @@ function createClan(character: Character, name: string, icon?: string) {
   syncClanBenefits(character);
 }
 
+function updateClan(character: Character, name: string, icon?: string) {
+  const clan = character.clanId ? store.clans.get(character.clanId) : null;
+  if (!clan) {
+    throw new Error("Você não participa de um clã.");
+  }
+  if (clan.leaderPlayerId !== character.playerId) {
+    throw new Error("Apenas o líder pode editar o clã.");
+  }
+
+  const normalized = normalizeClanName(name);
+  if (normalized.length < 3) {
+    throw new Error("Use um nome de clã com pelo menos 3 caracteres.");
+  }
+  const exists = Array.from(store.clans.values()).some(
+    (entry) => entry.id !== clan.id && entry.name.toLowerCase() === normalized.toLowerCase()
+  );
+  if (exists) {
+    throw new Error("Já existe um clã com este nome.");
+  }
+
+  clan.name = normalized;
+  clan.icon = normalizeClanIcon(icon);
+}
+
+function kickClanMember(character: Character, memberPlayerId: string) {
+  const clan = character.clanId ? store.clans.get(character.clanId) : null;
+  if (!clan) {
+    throw new Error("Você não participa de um clã.");
+  }
+  if (clan.leaderPlayerId !== character.playerId) {
+    throw new Error("Apenas o líder pode remover membros.");
+  }
+  if (memberPlayerId === clan.leaderPlayerId) {
+    throw new Error("O líder não pode remover a si mesmo.");
+  }
+  if (!clan.memberPlayerIds.includes(memberPlayerId)) {
+    throw new Error("Membro não encontrado neste clã.");
+  }
+
+  clan.memberPlayerIds = clan.memberPlayerIds.filter((playerId) => playerId !== memberPlayerId);
+  const memberCharacter = store.characters.get(memberPlayerId);
+  if (memberCharacter) {
+    memberCharacter.clanId = null;
+    syncClanBenefits(memberCharacter);
+    normalizeVitals(memberCharacter);
+  }
+  syncClanMembers(clan.id);
+}
+
+function transferClanLeadership(character: Character, memberPlayerId: string) {
+  const clan = character.clanId ? store.clans.get(character.clanId) : null;
+  if (!clan) {
+    throw new Error("Você não participa de um clã.");
+  }
+  if (clan.leaderPlayerId !== character.playerId) {
+    throw new Error("Apenas o líder pode nomear outro líder.");
+  }
+  if (memberPlayerId === clan.leaderPlayerId) {
+    throw new Error("Este membro já é líder.");
+  }
+  if (!clan.memberPlayerIds.includes(memberPlayerId)) {
+    throw new Error("Membro não encontrado neste clã.");
+  }
+
+  clan.leaderPlayerId = memberPlayerId;
+}
+
 function joinClan(character: Character, clanId: string) {
   if (character.clanId) {
     throw new Error("Você já participa de um clã.");
@@ -700,6 +787,27 @@ function joinClan(character: Character, clanId: string) {
   clan.memberPlayerIds.push(character.playerId);
   character.clanId = clan.id;
   syncClanBenefits(character);
+}
+
+function leaveClan(character: Character) {
+  const clan = character.clanId ? store.clans.get(character.clanId) : null;
+  if (!clan) {
+    throw new Error("Você não participa de um clã.");
+  }
+
+  clan.memberPlayerIds = clan.memberPlayerIds.filter((playerId) => playerId !== character.playerId);
+  character.clanId = null;
+  syncClanBenefits(character);
+
+  if (clan.memberPlayerIds.length === 0) {
+    store.clans.delete(clan.id);
+    return;
+  }
+
+  if (clan.leaderPlayerId === character.playerId) {
+    clan.leaderPlayerId = clan.memberPlayerIds[0];
+  }
+  syncClanMembers(clan.id);
 }
 
 function donateToClan(character: Character, goldValue?: number, diamondValue?: number) {
@@ -1401,12 +1509,60 @@ io.on("connection", (socket: AuthedSocket) => {
     }
   });
 
+  socket.on("clan:update", (payload: ClanUpdatePayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      updateClan(character, payload.name, payload.icon);
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
   socket.on("clan:join", (payload: ClanJoinPayload) => {
     try {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
       joinClan(character, payload.clanId);
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("clan:leave", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      leaveClan(character);
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("clan:kick", (payload: ClanKickPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      kickClanMember(character, payload.memberPlayerId);
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("clan:leadership:transfer", (payload: ClanTransferLeadershipPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      transferClanLeadership(character, payload.memberPlayerId);
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);

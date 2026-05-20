@@ -318,6 +318,12 @@ export interface ClanSuperBenefitDefinition {
   icon?: string;
 }
 
+export interface ClanMemberView {
+  playerId: string;
+  name: string;
+  isLeader: boolean;
+}
+
 export interface Clan {
   id: string;
   name: string;
@@ -330,6 +336,7 @@ export interface Clan {
   diamonds: number;
   benefitAllocations: Record<string, number>;
   createdAt: number;
+  members?: ClanMemberView[];
 }
 
 export interface ClanSummary {
@@ -360,6 +367,18 @@ export interface RankingEntry {
   level: number;
   arenaWins: number;
   arenaLosses: number;
+}
+
+export interface ClanRankingEntry {
+  id: string;
+  name: string;
+  icon: string;
+  leaderName: string;
+  memberCount: number;
+  memberCapacity: number;
+  level: number;
+  gold: number;
+  diamonds: number;
 }
 
 export interface GameState {
@@ -395,6 +414,7 @@ export interface GameState {
   rankings: {
     level: RankingEntry[];
     arena: RankingEntry[];
+    clans: ClanRankingEntry[];
   };
   onlineCount: number;
   arenaQueueSize: number;
@@ -514,8 +534,21 @@ export interface ClanCreatePayload {
   icon?: string;
 }
 
+export interface ClanUpdatePayload {
+  name: string;
+  icon?: string;
+}
+
 export interface ClanJoinPayload {
   clanId: string;
+}
+
+export interface ClanKickPayload {
+  memberPlayerId: string;
+}
+
+export interface ClanTransferLeadershipPayload {
+  memberPlayerId: string;
 }
 
 export interface ClanDonatePayload {

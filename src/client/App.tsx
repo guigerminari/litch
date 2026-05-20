@@ -35,6 +35,7 @@ import type {
   AttributeKey,
   Attributes,
   BattleParticipant,
+  ClanRankingEntry,
   Currency,
   GameState,
   InventoryItem,
@@ -312,6 +313,7 @@ function Header({
         <div>
           <strong>Litch RPG</strong>
           <span>{game.currentCity.name}</span>
+          <small className="topbar-clan-name">{game.clan ? `Clã: ${game.clan.name}` : "Sem clã"}</small>
         </div>
       </div>
       <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
@@ -1040,11 +1042,19 @@ function DungeonPanel({ game }: { game: GameState }) {
 }
 
 function RankingsPanel({ game }: { game: GameState }) {
+  const [activeTab, setActiveTab] = useState<"level" | "arena" | "clans">("level");
+
   return (
     <section className="content-panel rankings-panel">
       <PanelTitle icon={<Trophy size={20} />} title="Ranking" />
-      <RankingList title="Nível" entries={game.rankings.level} mode="level" />
-      <RankingList title="Arena" entries={game.rankings.arena} mode="arena" />
+      <div className="rankings-tabs">
+        <button type="button" className={activeTab === "level" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("level")}>Nível</button>
+        <button type="button" className={activeTab === "arena" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("arena")}>Arena</button>
+        <button type="button" className={activeTab === "clans" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("clans")}>Clãs</button>
+      </div>
+      {activeTab === "level" && <RankingList title="Nível" entries={game.rankings.level} mode="level" />}
+      {activeTab === "arena" && <RankingList title="Arena" entries={game.rankings.arena} mode="arena" />}
+      {activeTab === "clans" && <ClanRankingList entries={game.rankings.clans} />}
     </section>
   );
 }
@@ -1059,6 +1069,29 @@ function RankingList({ title, entries, mode }: { title: string; entries: GameSta
             <strong>#{index + 1}</strong>
             <span>{entry.name}</span>
             <b>{mode === "level" ? `Nível ${entry.level}` : `${entry.arenaWins}V/${entry.arenaLosses}D`}</b>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ClanRankingList({ entries }: { entries: ClanRankingEntry[] }) {
+  return (
+    <section className="ranking-section">
+      <h3>Clãs</h3>
+      <div className="ranking-list">
+        {entries.map((entry, index) => (
+          <article className="ranking-row clan-ranking-row" key={entry.id}>
+            <strong>#{index + 1}</strong>
+            <div className="clan-ranking-main">
+              <span className="clan-directory-crest">{getClanCrestIcon(entry.icon)}</span>
+              <div>
+                <span>{entry.name}</span>
+                <small>Líder: {entry.leaderName}</small>
+              </div>
+            </div>
+            <b>Nv {entry.level} • {entry.memberCount}/{entry.memberCapacity}</b>
           </article>
         ))}
       </div>
@@ -1194,9 +1227,12 @@ function getClanCrestLabel(icon: string) {
 }
 
 function ClanPanel({ game }: { game: GameState }) {
+  const [activeTab, setActiveTab] = useState<"benefits" | "members" | "admin">("benefits");
   const [name, setName] = useState("");
   const [crestIcon, setCrestIcon] = useState<(typeof CLAN_CREST_OPTIONS)[number]>("shield");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editCrestIcon, setEditCrestIcon] = useState<(typeof CLAN_CREST_OPTIONS)[number]>("shield");
   const [gold, setGold] = useState(0);
   const [diamonds, setDiamonds] = useState(0);
   const clan = game.clan;
@@ -1286,17 +1322,42 @@ function ClanPanel({ game }: { game: GameState }) {
   }
 
   const leader = clan.leaderPlayerId === game.player.id;
+  const clanMembers = clan.members?.length
+    ? clan.members
+    : clan.memberPlayerIds.map((playerId) => ({ playerId, name: playerId, isLeader: playerId === clan.leaderPlayerId }));
+
+  useEffect(() => {
+    setActiveTab("benefits");
+    setEditName(clan.name);
+    setEditCrestIcon(
+      CLAN_CREST_OPTIONS.includes(clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
+        ? (clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
+        : "shield"
+    );
+  }, [clan.id, clan.name, clan.icon]);
+
+  useEffect(() => {
+    if (activeTab === "admin" && !leader) {
+      setActiveTab("benefits");
+    }
+  }, [activeTab, leader]);
+
+  const updateClanProfile = (event: FormEvent) => {
+    event.preventDefault();
+    socket.emit("clan:update", { name: editName, icon: editCrestIcon });
+  };
 
   return (
     <section className="content-panel clan-panel">
       <PanelTitle icon={getClanCrestIcon(clan.icon, 20)} title={clan.name} />
       <div className="clan-summary">
         <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
-        <Metric icon={<Users size={18} />} label="Membros" value={`${clan.memberPlayerIds.length}/${clan.memberCapacity}`} />
+        <Metric icon={<Users size={18} />} label="Membros" value={`${clanMembers.length}/${clan.memberCapacity}`} />
         <Metric icon={<Coins size={18} style={{ color: "var(--gold)" }} />} label="Tesouro" value={clan.gold} />
         <Metric icon={<Gem size={18} style={{ color: "var(--cyan)" }} />} label="Diamantes" value={clan.diamonds} />
         <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : "Clã"} />
       </div>
+
       <form className="market-form" onSubmit={donate}>
         <Coins width={50} size={18} style={{ color: "var(--gold)" }} />
         <input type="number" min={0} value={gold} onChange={(event) => setGold(Number(event.target.value))} aria-label="Ouro" />
@@ -1312,24 +1373,98 @@ function ClanPanel({ game }: { game: GameState }) {
           Doar
         </button>
       </form>
-      <section className="clan-reset-panel">
-        <div>
-          <strong>Resetar benefÃ­cios</strong>
-          <span>Custa 1000 diamantes do lÃ­der e devolve 80% do gold e diamantes gastos para o tesouro do clÃ£.</span>
-        </div>
-        <button
-          className="ghost-button"
-          disabled={!leader || game.character.diamonds < 1000 || clan.level <= 0}
-          onClick={() => {
-            if (window.confirm("Resetar todos os beneficios do cla por 1000 diamantes?")) {
-              socket.emit("clan:benefit:reset");
-            }
-          }}
-        >
-          Resetar
-        </button>
-      </section>
-      <ClanBenefitTree game={game} leader={leader} />
+
+      <button className="ghost-button clan-leave-button" onClick={() => socket.emit("clan:leave")}>Sair do clã</button>
+
+      <div className="clan-tabs">
+        <button type="button" className={activeTab === "benefits" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("benefits")}>Benefícios</button>
+        <button type="button" className={activeTab === "members" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("members")}>Membros</button>
+        {leader && (
+          <button type="button" className={activeTab === "admin" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("admin")}>Administração</button>
+        )}
+      </div>
+
+      {activeTab === "benefits" && <ClanBenefitTree game={game} leader={leader} />}
+
+      {activeTab === "members" && (
+        <section className="clan-member-list">
+          <h3>Membros</h3>
+          <div className="market-list">
+            {clanMembers.map((member) => (
+              <article className="market-row clan-member-row" key={member.playerId}>
+                <div>
+                  <strong>{member.name}</strong>
+                  <span>{member.isLeader ? "Líder" : "Membro"}</span>
+                </div>
+                {leader && !member.isLeader && (
+                  <div className="clan-member-actions">
+                    <button
+                      type="button"
+                      className="ghost-button"
+                      onClick={() => {
+                        if (window.confirm(`Nomear ${member.name} como novo líder? Você perderá a liderança.`)) {
+                          socket.emit("clan:leadership:transfer", { memberPlayerId: member.playerId });
+                        }
+                      }}
+                    >
+                      Nomear líder
+                    </button>
+                    <button type="button" className="danger-button" onClick={() => socket.emit("clan:kick", { memberPlayerId: member.playerId })}>
+                      Remover
+                    </button>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {leader && activeTab === "admin" && (
+        <>
+          <form className="clan-manage-form" onSubmit={updateClanProfile}>
+            <div>
+              <strong>Editar clã</strong>
+              <span>Altere o nome e o brasão do clã.</span>
+            </div>
+            <input value={editName} onChange={(event) => setEditName(event.target.value)} maxLength={28} placeholder="Nome do clã" />
+            <div className="crest-picker" aria-label="Brasao do cla">
+              {CLAN_CREST_OPTIONS.map((icon) => (
+                <button
+                  type="button"
+                  className={editCrestIcon === icon ? "crest-option selected" : "crest-option"}
+                  key={icon}
+                  title={getClanCrestLabel(icon)}
+                  onClick={() => setEditCrestIcon(icon)}
+                >
+                  {getClanCrestIcon(icon)}
+                </button>
+              ))}
+            </div>
+            <button className="primary-button" disabled={editName.trim().length < 3}>
+              Salvar alterações
+            </button>
+          </form>
+
+          <section className="clan-reset-panel">
+            <div>
+              <strong>Resetar benefícios</strong>
+              <span>Custa 1000 diamantes do líder e devolve 80% do gold e diamantes gastos para o tesouro do clã.</span>
+            </div>
+            <button
+              className="ghost-button"
+              disabled={game.character.diamonds < 1000 || clan.level <= 0}
+              onClick={() => {
+                if (window.confirm("Resetar todos os beneficios do cla por 1000 diamantes?")) {
+                  socket.emit("clan:benefit:reset");
+                }
+              }}
+            >
+              Resetar
+            </button>
+          </section>
+        </>
+      )}
     </section>
   );
 }
@@ -1405,13 +1540,15 @@ function ClanBenefitTree({ game, leader }: { game: GameState; leader: boolean })
               {selectedBenefit.requires && <span>{selectedLocked ? "Requer benefício anterior" : "Ramo liberado"}</span>}
             </div>
           </div>
-          <button
-            className="primary-button"
-            disabled={!leader || selectedLocked || selectedMaxed || !selectedAffordable}
-            onClick={() => socket.emit("clan:benefit:buy", { benefitId: selectedBenefit.id })}
-          >
-            {!leader ? "Somente lider" : selectedMaxed ? "Máximo" : "Comprar"}
-          </button>
+          {leader && (
+            <button
+              className="primary-button"
+              disabled={selectedLocked || selectedMaxed || !selectedAffordable}
+              onClick={() => socket.emit("clan:benefit:buy", { benefitId: selectedBenefit.id })}
+            >
+              {selectedMaxed ? "Máximo" : "Comprar"}
+            </button>
+          )}
         </section>
       )}
       <ClanBonusSummary game={game} />
@@ -1442,7 +1579,6 @@ function ClanSuperBenefits({ game }: { game: GameState }) {
                 <strong>{benefit.name}</strong>
                 <small>{benefit.description}</small>
               </div>
-              <b>{active ? "Ativo" : "Bloqueado"}</b>
             </article>
           );
         })}
