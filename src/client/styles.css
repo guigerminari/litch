@@ -1,29 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap");
+
 :root {
   color-scheme: dark;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #282a36;
-  color: #f8f8f2;
-  --bg: #282a36;
-  --panel: #343746;
-  --panel-soft: #44475a;
-  --line: rgba(248, 248, 242, 0.14);
-  --text: #f8f8f2;
-  --muted: #bdc2d9;
-  --gold: #f1fa8c;
-  --green: #50fa7b;
-  --red: #ff5555;
-  --pink: #ff79c6;
-  --purple: #bd93f9;
-  --cyan: #8be9fd;
-  --orange: #ffb86c;
-  --ink: #191a21;
-  --focus: #8be9fd;
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0b0912;
+  color: #f3ecff;
+  --font-title: "Cormorant SC", Georgia, serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg: #0b0912;
+  --bg-secondary: #100d1a;
+  --panel: #171424;
+  --panel-soft: #211b31;
+  --surface-card: #171424;
+  --surface-card-elevated: #211b31;
+  --line: rgba(220, 203, 255, 0.12);
+  --line-strong: rgba(220, 203, 255, 0.22);
+  --line-active: rgba(157, 107, 255, 0.55);
+  --text: #f3ecff;
+  --muted: #afa3c7;
+  --faint: #746a86;
+  --gold: #d8b24a;
+  --green: #52d89b;
+  --red: #c94e6b;
+  --danger: #b94a59;
+  --pink: #9d6bff;
+  --purple: #7c4dff;
+  --purple-2: #9d6bff;
+  --lavender: #dccbff;
+  --cyan: #52e0c4;
+  --orange: #d8b24a;
+  --ink: #08060f;
+  --focus: #9d6bff;
+  --shadow-card: 0 0 24px rgba(124, 77, 255, 0.06);
+  --shadow-elevated: 0 24px 70px rgba(3, 2, 8, 0.48);
   --rarity-common: #9ca3af;
-  --rarity-uncommon: #10b981;
-  --rarity-rare: #3b82f6;
-  --rarity-epic: #8b5cf6;
-  --rarity-legendary: #f59e0b;
+  --rarity-uncommon: #52d89b;
+  --rarity-rare: #9d6bff;
+  --rarity-epic: #7c4dff;
+  --rarity-legendary: #d8b24a;
 }
 
 * {
@@ -35,9 +50,12 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 16% -10%, rgba(189, 147, 249, 0.24), transparent 34rem),
-    radial-gradient(circle at 80% 4%, rgba(139, 233, 253, 0.13), transparent 30rem),
+    radial-gradient(circle at 14% -12%, rgba(124, 77, 255, 0.18), transparent 34rem),
+    radial-gradient(circle at 86% 0%, rgba(82, 224, 196, 0.06), transparent 26rem),
+    radial-gradient(circle at 50% 105%, rgba(157, 107, 255, 0.08), transparent 38rem),
     var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
 }
 
 button,
@@ -3807,6 +3825,840 @@ button:disabled {
   }
   to {
     box-shadow: 0 0 28px rgba(255, 121, 198, 0.18);
+  }
+}
+
+/* Litch dark fantasy theme */
+.game-shell {
+  --city-bg-a: rgba(124, 77, 255, 0.14);
+  --city-bg-b: rgba(157, 107, 255, 0.1);
+  --city-bg-c: rgba(16, 13, 26, 0.72);
+}
+
+.game-shell.country-aurevia,
+.game-shell.country-valfria,
+.game-shell.city-eldoria,
+.game-shell.city-ravenspire,
+.game-shell.city-ironhold,
+.game-shell.city-vila_de_valfria,
+.game-shell.city-rosindale {
+  --city-bg-a: rgba(124, 77, 255, 0.14);
+  --city-bg-b: rgba(157, 107, 255, 0.1);
+  --city-bg-c: rgba(16, 13, 26, 0.74);
+}
+
+.game-shell::before {
+  background:
+    radial-gradient(circle at 18% 8%, var(--city-bg-a), transparent 32rem),
+    radial-gradient(circle at 82% 4%, var(--city-bg-b), transparent 30rem),
+    radial-gradient(circle at 50% 112%, rgba(216, 178, 74, 0.045), transparent 34rem),
+    linear-gradient(140deg, var(--bg), var(--city-bg-c));
+}
+
+button,
+input,
+select {
+  font-family: var(--font-body);
+}
+
+button,
+.option-card,
+.entity-card,
+.item-card,
+.market-card,
+.shop-item-card,
+.enhancement-item-card,
+.bottom-button,
+.dock-button,
+.mini-tab,
+.character-chip,
+.stat-action,
+.combatant,
+.battle-log p {
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.option-card:focus-visible,
+.bottom-button:focus-visible,
+.character-chip:focus-visible {
+  outline: 2px solid rgba(157, 107, 255, 0.74);
+  outline-offset: 2px;
+}
+
+button:active:not(:disabled),
+.option-card:active,
+.bottom-button:active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.44;
+  filter: saturate(0.72);
+}
+
+.auth-panel,
+.side-panel,
+.content-panel,
+.city-hero,
+.character-drawer,
+.exchange-modal,
+.market-modal {
+  position: relative;
+  border-color: var(--line);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(220, 203, 255, 0.035), rgba(124, 77, 255, 0.018)),
+    var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.side-panel::before,
+.content-panel::before,
+.auth-panel::before,
+.character-drawer::before,
+.exchange-modal::before,
+.market-modal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(157, 107, 255, 0.55), transparent);
+  opacity: 0.62;
+}
+
+.auth-panel h1,
+.title-lockup strong,
+.city-copy h1,
+.panel-title h2,
+.character-panel h2,
+.arena-plate h2,
+.exchange-header h2,
+.market-modal h2,
+.city-group-title,
+.ranking-section h3,
+.talent-tree h3,
+.compact-section h3,
+.sell-strip h3,
+.entity-card strong,
+.item-card strong,
+.option-card strong,
+.combatant strong {
+  font-family: var(--font-title);
+  font-weight: 700;
+}
+
+.topbar {
+  border-color: var(--line);
+  border-radius: 14px;
+  background: rgba(16, 13, 26, 0.88);
+  box-shadow: 0 20px 60px rgba(4, 2, 10, 0.48);
+}
+
+.title-lockup-logo {
+  border: 1px solid rgba(220, 203, 255, 0.16);
+  background: #07050c;
+  box-shadow: 0 0 20px rgba(124, 77, 255, 0.1);
+}
+
+.title-lockup strong {
+  color: var(--lavender);
+  font-size: 1.08rem;
+  letter-spacing: 0.02em;
+}
+
+.character-chip,
+.stat-pill,
+.stat-action {
+  border: 1px solid var(--line);
+  background: rgba(23, 20, 36, 0.88);
+}
+
+.character-chip:hover,
+.stat-action:hover {
+  border-color: var(--line-active);
+  background: rgba(33, 27, 49, 0.94);
+  box-shadow: 0 0 20px rgba(124, 77, 255, 0.08);
+}
+
+.character-chip span {
+  border: 1px solid rgba(157, 107, 255, 0.38);
+  background: radial-gradient(circle at 42% 28%, rgba(220, 203, 255, 0.16), rgba(124, 77, 255, 0.18) 44%, #100d1a 100%);
+  color: var(--lavender);
+}
+
+.character-chip strong {
+  color: var(--text);
+}
+
+.character-chip-clan,
+.panel-title,
+.compact-section h3,
+.sell-strip h3 {
+  color: var(--purple-2);
+}
+
+.resource-icon {
+  color: var(--muted);
+}
+
+.resource-bar i,
+.hp-bar {
+  height: 10px;
+  border-color: rgba(220, 203, 255, 0.14);
+  background: #0b0912;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.42);
+}
+
+.resource-bar.life b,
+.hp-bar span {
+  background: linear-gradient(90deg, #9f3850, var(--red));
+}
+
+.resource-bar.energy b {
+  background: linear-gradient(90deg, #319e91, var(--cyan));
+}
+
+.resource-bar.xp b {
+  background: linear-gradient(90deg, var(--purple), var(--lavender));
+}
+
+.top-economy .stat-pill:nth-child(1) svg,
+.top-economy .stat-pill:nth-child(1) strong,
+.shop-card-price,
+.market-card-price {
+  color: var(--gold);
+}
+
+.status-dot.online::before {
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(82, 216, 155, 0.2);
+}
+
+.status-dot::before {
+  background: var(--danger);
+}
+
+.primary-button,
+.ghost-button,
+.danger-button,
+.dock-button,
+.mini-tab,
+.icon-button,
+.icon-submit,
+.auth-tabs button,
+.chat-tab {
+  min-height: 40px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.primary-button,
+.atack-button {
+  border-color: rgba(220, 203, 255, 0.14) !important;
+  background: linear-gradient(180deg, var(--purple-2), var(--purple)) !important;
+  color: var(--text) !important;
+  box-shadow: 0 0 22px rgba(124, 77, 255, 0.12) !important;
+}
+
+.primary-button:hover:not(:disabled),
+.atack-button:hover:not(:disabled) {
+  border-color: rgba(220, 203, 255, 0.3) !important;
+  background: linear-gradient(180deg, #a77aff, #8558ff) !important;
+  box-shadow: 0 0 26px rgba(124, 77, 255, 0.18) !important;
+}
+
+.ghost-button,
+.dock-button,
+.mini-tab,
+.auth-tabs button,
+.chat-tab,
+.icon-button,
+.icon-submit {
+  border-color: rgba(220, 203, 255, 0.16);
+  background: rgba(16, 13, 26, 0.72);
+  color: var(--lavender);
+}
+
+.ghost-button:hover:not(:disabled),
+.dock-button:hover:not(:disabled),
+.mini-tab:hover:not(:disabled),
+.auth-tabs button:hover:not(:disabled),
+.chat-tab:hover:not(:disabled),
+.icon-button:hover:not(:disabled),
+.icon-submit:hover:not(:disabled) {
+  border-color: var(--line-active);
+  background: rgba(33, 27, 49, 0.94);
+  box-shadow: 0 0 20px rgba(124, 77, 255, 0.08);
+}
+
+.danger-button {
+  border-color: rgba(185, 74, 89, 0.46);
+  background: rgba(68, 28, 38, 0.48);
+  color: #ef9baa;
+}
+
+.danger-button:hover:not(:disabled) {
+  border-color: rgba(201, 78, 107, 0.64);
+  background: rgba(91, 33, 47, 0.62);
+}
+
+.auth-tabs button.active,
+.dock-button.active,
+.mini-tab.active {
+  border-color: var(--line-active);
+  background: rgba(124, 77, 255, 0.18);
+  color: var(--text);
+}
+
+.auth-panel input,
+.chat-form input,
+.market-form input,
+.market-form select,
+.market-toolbar select {
+  border-color: rgba(220, 203, 255, 0.14);
+  border-radius: 10px;
+  background: #100d1a;
+}
+
+.auth-panel input:focus,
+.chat-form input:focus,
+.market-form input:focus,
+.market-form select:focus {
+  border-color: var(--line-active);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.12);
+}
+
+.city-hero {
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(157, 107, 255, 0.14), transparent 22rem),
+    radial-gradient(circle at 18% 92%, rgba(82, 224, 196, 0.055), transparent 24rem),
+    linear-gradient(135deg, #100d1a, #171424 58%, #0b0912);
+  box-shadow: 0 0 30px rgba(124, 77, 255, 0.08);
+}
+
+.city-hero::before,
+.city-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.city-hero::before {
+  background:
+    linear-gradient(90deg, rgba(220, 203, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(220, 203, 255, 0.035) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(circle at 28% 30%, black, transparent 68%);
+  opacity: 0.22;
+}
+
+.city-hero::after {
+  background:
+    radial-gradient(ellipse at 34% 88%, rgba(220, 203, 255, 0.08), transparent 34%),
+    radial-gradient(ellipse at 78% 24%, rgba(124, 77, 255, 0.1), transparent 38%);
+  opacity: 0.78;
+}
+
+.city-map {
+  opacity: 0.22;
+  filter: grayscale(0.75) sepia(0.18) hue-rotate(226deg) saturate(0.85) brightness(0.54);
+  mix-blend-mode: screen;
+}
+
+.city-copy {
+  z-index: 1;
+  width: min(650px, calc(100% - 32px));
+  padding: 34px 28px;
+  text-shadow: none;
+}
+
+.eyebrow,
+.city-group-title {
+  letter-spacing: 0.14em;
+}
+
+.eyebrow {
+  color: var(--purple-2);
+  font-weight: 800;
+}
+
+.city-copy h1 {
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.city-country {
+  color: var(--lavender);
+}
+
+.city-copy p {
+  color: rgba(243, 236, 255, 0.88);
+  line-height: 1.55;
+}
+
+.city-inhabitants {
+  color: var(--muted);
+}
+
+.city-group-title {
+  border-bottom-color: var(--line);
+  color: var(--muted);
+  font-family: var(--font-body);
+}
+
+.option-card,
+.entity-card,
+.item-card,
+.inventory-row,
+.market-row,
+.metric,
+.market-card,
+.shop-item-card,
+.enhancement-item-card,
+.quest-section-header,
+.quest-row,
+.talent-row,
+.clan-reset-panel,
+.clan-super-card,
+.chat-message,
+.sell-row {
+  border-color: var(--line);
+  background:
+    linear-gradient(180deg, rgba(220, 203, 255, 0.026), rgba(124, 77, 255, 0.015)),
+    var(--surface-card-elevated);
+  border-radius: 12px;
+}
+
+.option-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.option-card::before,
+.entity-card::before,
+.item-card::before,
+.market-card::before,
+.combatant::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(157, 107, 255, 0.45), transparent);
+  opacity: 0;
+}
+
+.entity-card,
+.item-card,
+.market-card,
+.combatant {
+  position: relative;
+  overflow: hidden;
+}
+
+.option-card:hover,
+.entity-card:hover,
+.item-card:hover,
+.market-card:hover,
+.shop-item-card:hover,
+.enhancement-item-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-active);
+  background:
+    linear-gradient(180deg, rgba(157, 107, 255, 0.07), rgba(124, 77, 255, 0.025)),
+    var(--surface-card-elevated);
+  box-shadow: 0 0 26px rgba(124, 77, 255, 0.08);
+}
+
+.option-card:hover::before,
+.entity-card:hover::before,
+.item-card:hover::before,
+.market-card:hover::before,
+.combatant.active::before {
+  opacity: 1;
+}
+
+.option-card span,
+.panel-title svg,
+.arena-plate svg,
+.metric svg {
+  color: var(--purple-2);
+}
+
+.option-card strong,
+.entity-card strong,
+.item-card strong,
+.market-card-body strong,
+.combatant strong {
+  color: var(--text);
+  font-size: 1.08rem;
+}
+
+.option-card small,
+.entity-card p,
+.market-card-subtle,
+.market-card-meta,
+.combatant span,
+.combatant small,
+.empty-state {
+  color: var(--muted);
+}
+
+.current-city,
+.inventory-row.equipped {
+  outline: 1px solid rgba(157, 107, 255, 0.48);
+  box-shadow: 0 0 20px rgba(124, 77, 255, 0.08);
+}
+
+.battle-panel {
+  gap: 16px;
+}
+
+.combatant {
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(157, 107, 255, 0.09), transparent 10rem),
+    var(--surface-card-elevated);
+}
+
+.combatant-art,
+.entity-art,
+.item-card-image,
+.shop-card-image {
+  border: 1px solid rgba(220, 203, 255, 0.13);
+  background: #100d1a;
+  box-shadow: inset 0 0 0 1px rgba(124, 77, 255, 0.08);
+}
+
+.combatant.active {
+  border-color: rgba(157, 107, 255, 0.64);
+  animation: turnGlow 1200ms ease-in-out infinite alternate;
+}
+
+.combatant.defeated {
+  border-color: rgba(185, 74, 89, 0.72);
+  background:
+    linear-gradient(135deg, rgba(185, 74, 89, 0.18), rgba(33, 27, 49, 0.72)),
+    var(--surface-card-elevated);
+  color: rgba(243, 236, 255, 0.74);
+}
+
+.defeated-badge {
+  border-color: rgba(185, 74, 89, 0.58);
+  background: rgba(45, 18, 27, 0.96);
+  color: #f0a4b2;
+}
+
+.combatant.winner {
+  border-color: rgba(216, 178, 74, 0.58);
+  box-shadow: 0 0 0 1px rgba(216, 178, 74, 0.12), 0 18px 42px rgba(216, 178, 74, 0.06);
+}
+
+.victory-stars svg {
+  color: var(--gold);
+  filter: drop-shadow(0 0 7px rgba(216, 178, 74, 0.25));
+}
+
+.combat-stat-row span,
+.recipe-ingredients small,
+.monster-stats small {
+  border-color: rgba(220, 203, 255, 0.12);
+  background: rgba(16, 13, 26, 0.58);
+  color: var(--muted);
+}
+
+.damage-float {
+  border-color: rgba(201, 78, 107, 0.48);
+  background: rgba(16, 13, 26, 0.92);
+  color: var(--red);
+}
+
+.damage-float.critical {
+  border-color: rgba(216, 178, 74, 0.6);
+  color: var(--gold);
+}
+
+.battle-actions {
+  gap: 8px;
+}
+
+.royal-auto-button {
+  border-color: rgba(157, 107, 255, 0.4);
+  color: var(--lavender);
+}
+
+.auto-pve-toggle {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-color: rgba(220, 203, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(16, 13, 26, 0.72);
+  color: var(--muted);
+}
+
+.auto-pve-toggle input {
+  accent-color: var(--purple);
+}
+
+.battle-log {
+  padding: 10px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(11, 9, 18, 0.42);
+}
+
+.battle-log p {
+  position: relative;
+  grid-template-columns: 26px minmax(0, 1fr);
+  border-color: rgba(220, 203, 255, 0.11);
+  border-left: 3px solid rgba(157, 107, 255, 0.28);
+  background: rgba(16, 13, 26, 0.72);
+  color: var(--text);
+}
+
+.battle-log p::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(157, 107, 255, 0.26), transparent);
+}
+
+.battle-log-icon {
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  background: rgba(11, 9, 18, 0.64);
+}
+
+.battle-log-entry.damage {
+  border-left-color: rgba(157, 107, 255, 0.5);
+}
+
+.battle-log-entry.damage .battle-log-icon,
+.battle-log-entry.critical .battle-log-icon {
+  color: var(--purple-2);
+}
+
+.battle-log-entry.dodge .battle-log-icon {
+  color: var(--cyan);
+}
+
+.battle-log-entry.heal {
+  border-left-color: rgba(82, 216, 155, 0.48);
+}
+
+.battle-log-entry.heal .battle-log-icon {
+  color: var(--green);
+}
+
+.battle-log-entry.victory .battle-log-icon,
+.battle-log-entry.reward .battle-log-icon,
+.battle-log-entry.loot .battle-log-icon {
+  color: var(--gold);
+}
+
+.bottom-nav {
+  border-color: var(--line);
+  border-radius: 16px;
+  background: rgba(16, 13, 26, 0.92);
+  box-shadow: 0 18px 56px rgba(4, 2, 10, 0.5);
+}
+
+.bottom-button {
+  color: var(--muted);
+}
+
+.bottom-button:hover {
+  border-color: rgba(220, 203, 255, 0.14);
+  background: rgba(33, 27, 49, 0.56);
+}
+
+.bottom-button.active {
+  border-color: rgba(157, 107, 255, 0.5);
+  background: rgba(124, 77, 255, 0.18);
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 rgba(220, 203, 255, 0.16), 0 0 18px rgba(124, 77, 255, 0.08);
+}
+
+.bottom-badge {
+  background: var(--purple-2);
+  color: var(--text);
+  box-shadow: 0 0 12px rgba(124, 77, 255, 0.16);
+}
+
+.floating-chat-button {
+  border-color: rgba(220, 203, 255, 0.18);
+  background: linear-gradient(145deg, var(--purple), var(--purple-2));
+  color: var(--text);
+  box-shadow: 0 18px 48px rgba(124, 77, 255, 0.16), 0 18px 48px rgba(0, 0, 0, 0.32);
+}
+
+.floating-chat-button span {
+  background: var(--red);
+  color: var(--text);
+}
+
+.chat-message strong {
+  color: var(--lavender);
+}
+
+.private-message.sent .chat-message strong {
+  color: var(--cyan);
+}
+
+.private-message.received .chat-message strong {
+  color: var(--purple-2);
+}
+
+.recovery-card,
+.recovery-modal {
+  border-color: rgba(216, 178, 74, 0.32);
+  background: rgba(216, 178, 74, 0.055);
+}
+
+.recovery-card code,
+.recovery-modal code {
+  border-color: rgba(216, 178, 74, 0.28);
+  background: #100d1a;
+  color: var(--gold);
+}
+
+.royal-seal,
+.royal-status,
+.travel-ticket-summary span {
+  border-color: rgba(216, 178, 74, 0.3);
+  background: rgba(216, 178, 74, 0.06);
+  color: var(--gold);
+}
+
+.character-clan-info,
+.character-clan-crest,
+.attribute-box,
+.hunt-location-banner,
+.inv-action-bar,
+.market-sale-form,
+.clan-reset-panel,
+.clan-bonus-summary,
+.clan-benefit-detail {
+  border-color: rgba(157, 107, 255, 0.26);
+  background: rgba(124, 77, 255, 0.06);
+}
+
+.hunt-location-banner span,
+.travel-ticket-summary span,
+.clan-reset-panel span,
+.clan-bonus-summary span {
+  color: var(--muted);
+}
+
+.inv-slot {
+  border-color: var(--line);
+  border-radius: 10px;
+  background: var(--surface-card-elevated);
+}
+
+.inv-slot.empty {
+  background: rgba(16, 13, 26, 0.58);
+  border-color: rgba(220, 203, 255, 0.08);
+}
+
+.inv-slot.equipped,
+.clan-benefit-node.maxed {
+  border-color: rgba(82, 216, 155, 0.46);
+  background: rgba(82, 216, 155, 0.055);
+}
+
+.inv-slot.selected,
+.crest-option.selected,
+.clan-benefit-node.selected {
+  border-color: var(--line-active);
+  background: rgba(124, 77, 255, 0.14);
+  color: var(--lavender);
+}
+
+.inv-slot:not(.empty):hover {
+  border-color: var(--line-active);
+  background: rgba(124, 77, 255, 0.1);
+}
+
+.asset-enhancement {
+  border-color: rgba(82, 216, 155, 0.4);
+  background: rgba(16, 13, 26, 0.94);
+  color: var(--green);
+}
+
+.branching-list::before,
+.clan-benefit-tree::before {
+  background: linear-gradient(var(--purple), rgba(157, 107, 255, 0.32));
+}
+
+.branching-list .talent-row::before,
+.clan-benefit-node::before {
+  background: rgba(157, 107, 255, 0.42);
+}
+
+.quest-section-header b {
+  background: var(--purple);
+  color: var(--text);
+}
+
+.ranking-row,
+.talent-row,
+.clan-manage-form,
+.crest-option,
+.clan-bonus-chip,
+.clan-benefit-node {
+  border-color: var(--line);
+  background: rgba(33, 27, 49, 0.72);
+}
+
+.clan-super-card.active {
+  border-color: rgba(216, 178, 74, 0.5);
+  background: rgba(216, 178, 74, 0.07);
+}
+
+.clan-bonus-chip svg,
+.clan-benefit-detail-icon {
+  color: var(--purple-2);
+}
+
+.clan-benefit-detail-icon {
+  border-color: rgba(157, 107, 255, 0.24);
+  background: rgba(124, 77, 255, 0.08);
+}
+
+.toast {
+  border-color: rgba(185, 74, 89, 0.48);
+  background: #2d121b;
+  color: #f0a4b2;
+}
+
+.regen-hint {
+  color: var(--green);
+}
+
+@keyframes turnGlow {
+  from {
+    box-shadow: 0 0 0 rgba(124, 77, 255, 0);
+  }
+  to {
+    box-shadow: 0 0 24px rgba(124, 77, 255, 0.16);
   }
 }
 

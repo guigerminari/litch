@@ -769,7 +769,7 @@ function CityHero({ game, view, setView }: { game: GameState; view: View; setVie
     <header className="city-hero">
       <img src={cityMap} alt="" className="city-map" />
       <div className="city-copy">
-        <span className="eyebrow">{viewLabels[view]}</span>
+        <span className="eyebrow">Cidade</span>
         <h1>{game.currentCity.name}</h1>
         <strong className="city-country">{game.currentCountry.name}</strong>
         <p>{game.currentCity.description}</p>
