@@ -2586,27 +2586,27 @@ button:disabled {
 }
 
 .combatant.striking.strike-a {
-  animation: combatStrikeA 360ms ease-out;
+  animation: combatStrikeA 220ms ease-out;
 }
 
 .combatant.striking.strike-b {
-  animation: combatStrikeB 360ms ease-out;
+  animation: combatStrikeB 220ms ease-out;
 }
 
 .combatant.hit.hit-a {
-  animation: combatHitA 420ms ease-out;
+  animation: combatHitA 260ms ease-out;
 }
 
 .combatant.hit.hit-b {
-  animation: combatHitB 420ms ease-out;
+  animation: combatHitB 260ms ease-out;
 }
 
 .combatant.dodging.dodge-a {
-  animation: combatDodgeA 380ms ease-out;
+  animation: combatDodgeA 230ms ease-out;
 }
 
 .combatant.dodging.dodge-b {
-  animation: combatDodgeB 380ms ease-out;
+  animation: combatDodgeB 230ms ease-out;
 }
 
 .combatant.defeated {
@@ -2660,7 +2660,7 @@ button:disabled {
   color: var(--gold);
   opacity: 0;
   filter: drop-shadow(0 0 8px rgba(241, 250, 140, 0.4));
-  animation: victoryStarRise 1400ms ease-out infinite;
+  animation: victoryStarRise 900ms ease-out infinite;
 }
 
 .victory-stars svg:nth-child(1) {
@@ -2697,7 +2697,7 @@ button:disabled {
   line-height: 1;
   pointer-events: none;
   transform: translateX(-50%);
-  animation: damageFloat 980ms ease-out forwards;
+  animation: damageFloat 620ms ease-out forwards;
 }
 
 .damage-float.critical {

@@ -102,9 +102,9 @@ type BattleHpChange = {
   delta: number;
 };
 
-const BATTLE_CUE_DURATION_MS = 1100;
-const BATTLE_LOG_STEP_MS = 520;
-const BATTLE_RESULT_PAUSE_MS = 900;
+const BATTLE_CUE_DURATION_MS = 680;
+const BATTLE_LOG_STEP_MS = 280;
+const BATTLE_RESULT_PAUSE_MS = 420;
 
 const viewLabels: Record<View, string> = {
   city: "Cidade",
@@ -444,7 +444,7 @@ function Header({
   onRanking: () => void;
   onLogout: () => void;
 }) {
-  const nextXp = game.character.level * 120;
+  const nextXp = experienceForNextLevel(game.character.level);
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
   const hpProgress = Math.min(100, Math.round((game.character.currentHp / game.derived.maxHp) * 100));
   const energyProgress = Math.min(100, Math.round((game.character.currentEnergy / game.derived.maxEnergy) * 100));
