@@ -2545,7 +2545,7 @@ button:disabled {
   align-items: center;
   padding: 14px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .combatant-art {
@@ -2567,6 +2567,134 @@ button:disabled {
   animation: turnGlow 1200ms ease-in-out infinite alternate;
 }
 
+.combatant.striking.strike-a {
+  animation: combatStrikeA 360ms ease-out;
+}
+
+.combatant.striking.strike-b {
+  animation: combatStrikeB 360ms ease-out;
+}
+
+.combatant.hit.hit-a {
+  animation: combatHitA 420ms ease-out;
+}
+
+.combatant.hit.hit-b {
+  animation: combatHitB 420ms ease-out;
+}
+
+.combatant.dodging.dodge-a {
+  animation: combatDodgeA 380ms ease-out;
+}
+
+.combatant.dodging.dodge-b {
+  animation: combatDodgeB 380ms ease-out;
+}
+
+.combatant.defeated {
+  border-color: rgba(255, 85, 85, 0.7);
+  background:
+    linear-gradient(135deg, rgba(255, 85, 85, 0.18), rgba(68, 71, 90, 0.62)),
+    var(--panel-soft);
+  color: rgba(248, 248, 242, 0.74);
+}
+
+.combatant.defeated .combatant-art {
+  opacity: 0.58;
+  filter: grayscale(1) saturate(0.7);
+}
+
+.defeated-badge {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 85, 85, 0.55);
+  border-radius: 999px;
+  background: rgba(58, 32, 40, 0.96);
+  color: #ffe7ef;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.combatant.winner {
+  border-color: rgba(241, 250, 140, 0.68);
+  box-shadow: 0 0 0 1px rgba(241, 250, 140, 0.15), 0 18px 42px rgba(241, 250, 140, 0.08);
+}
+
+.victory-stars {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  z-index: 3;
+  width: 80px;
+  height: 50px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.victory-stars svg {
+  position: absolute;
+  color: var(--gold);
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(241, 250, 140, 0.4));
+  animation: victoryStarRise 1400ms ease-out infinite;
+}
+
+.victory-stars svg:nth-child(1) {
+  left: 12px;
+  animation-delay: 0ms;
+}
+
+.victory-stars svg:nth-child(2) {
+  left: 34px;
+  top: 8px;
+  animation-delay: 220ms;
+}
+
+.victory-stars svg:nth-child(3) {
+  right: 10px;
+  animation-delay: 420ms;
+}
+
+.damage-float {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 4;
+  display: inline-grid;
+  justify-items: center;
+  min-width: 54px;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 85, 85, 0.5);
+  border-radius: 999px;
+  background: rgba(25, 26, 33, 0.9);
+  color: var(--red);
+  font-weight: 900;
+  font-size: 1rem;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: damageFloat 980ms ease-out forwards;
+}
+
+.damage-float.critical {
+  border-color: rgba(255, 184, 108, 0.65);
+  color: var(--orange);
+  font-size: 1.08rem;
+}
+
+.damage-float b {
+  margin-top: 2px;
+  color: var(--gold);
+  font-size: 0.55rem;
+  line-height: 1;
+}
+
 .battle-actions {
   display: flex;
   gap: 10px;
@@ -2576,6 +2704,10 @@ button:disabled {
 .royal-auto-button {
   border-color: rgba(241, 250, 140, 0.36);
   color: var(--gold);
+}
+
+.auto-pve-stop-button {
+  border-color: rgba(255, 85, 85, 0.54);
 }
 
 .auto-pve-toggle {
@@ -2605,11 +2737,50 @@ button:disabled {
 
 .battle-log p {
   margin: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
   padding: 9px 10px;
   border: 1px solid var(--line);
   background: rgba(33, 34, 44, 0.72);
   border-radius: 6px;
   animation: logIn 180ms ease;
+}
+
+.battle-log-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(25, 26, 33, 0.62);
+  color: var(--muted);
+}
+
+.battle-log-entry.damage .battle-log-icon {
+  color: var(--red);
+}
+
+.battle-log-entry.critical .battle-log-icon {
+  color: var(--orange);
+}
+
+.battle-log-entry.dodge .battle-log-icon {
+  color: var(--cyan);
+}
+
+.battle-log-entry.heal .battle-log-icon {
+  color: var(--green);
+}
+
+.battle-log-entry.victory .battle-log-icon,
+.battle-log-entry.reward .battle-log-icon {
+  color: var(--gold);
+}
+
+.battle-log-entry.loot .battle-log-icon {
+  color: var(--purple);
 }
 
 .missions-panel {
@@ -3514,6 +3685,119 @@ button:disabled {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes combatStrikeA {
+  0% {
+    transform: translateX(0);
+  }
+  42% {
+    transform: translateX(var(--attack-x, 14px)) scale(1.015);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes combatStrikeB {
+  0% {
+    transform: translateX(0);
+  }
+  42% {
+    transform: translateX(var(--attack-x, 14px)) scale(1.015);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes combatHitA {
+  0% {
+    transform: translateX(0);
+    filter: none;
+  }
+  24% {
+    transform: translateX(-4px);
+    filter: brightness(1.45) saturate(1.4);
+  }
+  52% {
+    transform: translateX(3px);
+  }
+  100% {
+    transform: translateX(0);
+    filter: none;
+  }
+}
+
+@keyframes combatHitB {
+  0% {
+    transform: translateX(0);
+    filter: none;
+  }
+  24% {
+    transform: translateX(-4px);
+    filter: brightness(1.45) saturate(1.4);
+  }
+  52% {
+    transform: translateX(3px);
+  }
+  100% {
+    transform: translateX(0);
+    filter: none;
+  }
+}
+
+@keyframes combatDodgeA {
+  0% {
+    transform: translateX(0);
+  }
+  34% {
+    transform: translateX(var(--dodge-x, 10px)) rotate(-1deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes combatDodgeB {
+  0% {
+    transform: translateX(0);
+  }
+  34% {
+    transform: translateX(var(--dodge-x, 10px)) rotate(-1deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes damageFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.86);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -34px) scale(1);
+  }
+}
+
+@keyframes victoryStarRise {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.6) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-32px) scale(1.08) rotate(32deg);
   }
 }
 

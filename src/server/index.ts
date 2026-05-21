@@ -1948,22 +1948,15 @@ io.on("connection", (socket: AuthedSocket) => {
       const potionUsed = payload.instanceId ? findInventoryItem(character, payload.instanceId) : null;
       const potionDefinition = potionUsed ? ITEM_CATALOG[potionUsed.itemId] : null;
       if (payload.action === "auto") {
-        if (payload.continueUntilStopped) {
-          takeAutoPveUntilStopped(character, playerId, battle);
-        } else {
-          takeAutoPveTurn(battle, character);
-        }
+        takeAutoPveTurn(battle, character);
       } else {
         takeBattleTurn(battle, character, payload.action, payload.instanceId);
       }
       if (payload.action === "usePotion" && potionDefinition?.stats.healPercent) {
         character.questProgress.healthPotionsUsed += 1;
       }
-      if (payload.action !== "auto" || !payload.continueUntilStopped) {
-        applyBattleProgress(character, playerId, battle, wasActive);
-      }
-      const syncBattleId = payload.action === "auto" && payload.continueUntilStopped ? character.activeBattleId ?? battle.id : battle.id;
-      const playerIds = syncBattleVitals(syncBattleId);
+      applyBattleProgress(character, playerId, battle, wasActive);
+      const playerIds = syncBattleVitals(battle.id);
       if (playerIds.length > 0) {
         emitMany(playerIds);
       } else {

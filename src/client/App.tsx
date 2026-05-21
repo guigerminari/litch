@@ -40,6 +40,7 @@ import {
 import type {
   AttributeKey,
   Attributes,
+  BattleLogEntry,
   BattleParticipant,
   ClanRankingEntry,
   Currency,
@@ -81,6 +82,29 @@ type View =
   | "clan";
 
 type AuthMode = "login" | "register" | "forgot";
+
+type BattleAnimationCue = {
+  kind: "damage" | "dodge";
+  attackerId: string;
+  defenderId: string;
+  damage?: number;
+  critical?: boolean;
+  sequence: number;
+};
+
+type BattleVisualEvent = {
+  entry: BattleLogEntry;
+  cue: Omit<BattleAnimationCue, "sequence"> | null;
+};
+
+type BattleHpChange = {
+  participantId: string;
+  delta: number;
+};
+
+const BATTLE_CUE_DURATION_MS = 1100;
+const BATTLE_LOG_STEP_MS = 520;
+const BATTLE_RESULT_PAUSE_MS = 900;
 
 const viewLabels: Record<View, string> = {
   city: "Cidade",
@@ -2811,11 +2835,32 @@ function MarketListingModal({
 function BattlePanel({ game }: { game: GameState }) {
   const battle = game.activeBattle!;
   const [autoUntilStopped, setAutoUntilStopped] = useState(false);
-  const me = battle.participants.find((participant) => participant.ownerPlayerId === game.player.id);
-  const opponent = battle.participants.find((participant) => participant.id !== me?.id);
+  const [autoPveRunning, setAutoPveRunning] = useState(false);
+  const [battleCue, setBattleCue] = useState<BattleAnimationCue | null>(null);
+  const [battleAnimationTick, setBattleAnimationTick] = useState(0);
+  const [displayHpByParticipantId, setDisplayHpByParticipantId] = useState<Record<string, number>>(() =>
+    Object.fromEntries(battle.participants.map((participant) => [participant.id, participant.hp]))
+  );
+  const [visibleBattleLogs, setVisibleBattleLogs] = useState<BattleLogEntry[]>(battle.log);
+  const pendingBattleEventsRef = useRef<BattleVisualEvent[]>([]);
+  const battleCueTimerRef = useRef<number | null>(null);
+  const battleResultPauseTimerRef = useRef<number | null>(null);
+  const battleAnimationGateRef = useRef(false);
+  const battleCueSequenceRef = useRef(0);
+  const autoPveRunningRef = useRef(false);
+  const lastAutoPveStepKeyRef = useRef<string | null>(null);
+  const lastBattleIdRef = useRef<string | null>(null);
+  const lastLogIdRef = useRef<string | null>(null);
+  const displayedParticipants = battle.participants.map((participant) => ({
+    ...participant,
+    hp: Math.max(0, Math.min(participant.maxHp, displayHpByParticipantId[participant.id] ?? participant.hp))
+  }));
+  const me = displayedParticipants.find((participant) => participant.ownerPlayerId === game.player.id);
+  const opponent = displayedParticipants.find((participant) => participant.id !== me?.id);
   const myTurn = battle.turnParticipantId === me?.id;
   const firstPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.healPercent);
   const autoPveActive = isAutoPveActive(game);
+  const canUseAutoPve = (battle.mode === "pve" || battle.mode === "dungeon") && autoPveActive;
   const rematchMonsterId = getBattleMonsterId(battle);
   const rematchMonster = rematchMonsterId ? game.cityMonsters.find((monster) => monster.id === rematchMonsterId) : null;
   const rematchEnergyCost = rematchMonster ? rematchMonster.level + (battle.mode === "dungeon" ? 1 : 0) : 0;
@@ -2826,8 +2871,250 @@ function BattlePanel({ game }: { game: GameState }) {
     (battle.mode === "pve" || battle.mode === "dungeon");
 
   useEffect(() => {
-    setAutoUntilStopped(false);
+    autoPveRunningRef.current = autoPveRunning;
+  }, [autoPveRunning]);
+
+  useEffect(() => {
+    if (!autoPveRunningRef.current) {
+      setAutoUntilStopped(false);
+    }
   }, [battle.id]);
+
+  const releaseBattleAnimationGate = () => {
+    battleAnimationGateRef.current = false;
+    setBattleAnimationTick((value) => value + 1);
+  };
+
+  const reconcileDisplayedHp = () => {
+    setDisplayHpByParticipantId(
+      Object.fromEntries(battle.participants.map((participant) => [participant.id, participant.hp]))
+    );
+  };
+
+  const applyBattleVisualEvent = (event: BattleVisualEvent) => {
+    setVisibleBattleLogs((current) => [event.entry, ...current.filter((entry) => entry.id !== event.entry.id)]);
+
+    const cue = event.cue;
+    const hpChange = parseBattleHpChange(event.entry.text, battle.participants);
+    if (!cue) {
+      if (hpChange) {
+        setDisplayHpByParticipantId((current) => {
+          const participant = battle.participants.find((entry) => entry.id === hpChange.participantId);
+          const currentHp = current[hpChange.participantId] ?? participant?.hp ?? 0;
+          return {
+            ...current,
+            [hpChange.participantId]: Math.max(0, Math.min(participant?.maxHp ?? currentHp, currentHp + hpChange.delta))
+          };
+        });
+      }
+      return BATTLE_LOG_STEP_MS;
+    }
+
+    battleAnimationGateRef.current = true;
+    battleCueSequenceRef.current += 1;
+    setBattleCue({ ...cue, sequence: battleCueSequenceRef.current });
+
+    if (cue.kind === "damage" && cue.damage !== undefined) {
+      setDisplayHpByParticipantId((current) => {
+        const defender = battle.participants.find((participant) => participant.id === cue.defenderId);
+        const currentHp = current[cue.defenderId] ?? defender?.hp ?? 0;
+        return {
+          ...current,
+          [cue.defenderId]: Math.max(0, currentHp - cue.damage!)
+        };
+      });
+    }
+
+    return BATTLE_CUE_DURATION_MS;
+  };
+
+  const playNextBattleEvent = () => {
+    const nextEvent = pendingBattleEventsRef.current.shift();
+    if (!nextEvent) {
+      setBattleCue(null);
+      reconcileDisplayedHp();
+      if (battle.status === "ended" && autoPveRunningRef.current) {
+        if (battleResultPauseTimerRef.current) {
+          window.clearTimeout(battleResultPauseTimerRef.current);
+        }
+        battleResultPauseTimerRef.current = window.setTimeout(() => {
+          battleResultPauseTimerRef.current = null;
+          releaseBattleAnimationGate();
+        }, BATTLE_RESULT_PAUSE_MS);
+      } else {
+        releaseBattleAnimationGate();
+      }
+      return;
+    }
+
+    setBattleCue(null);
+    battleAnimationGateRef.current = true;
+    const duration = applyBattleVisualEvent(nextEvent);
+    if (battleCueTimerRef.current) {
+      window.clearTimeout(battleCueTimerRef.current);
+    }
+    battleCueTimerRef.current = window.setTimeout(() => {
+      battleCueTimerRef.current = null;
+      playNextBattleEvent();
+    }, duration);
+  };
+
+  useEffect(() => {
+    if (lastBattleIdRef.current !== battle.id) {
+      lastBattleIdRef.current = battle.id;
+      lastLogIdRef.current = battle.log[0]?.id ?? null;
+      pendingBattleEventsRef.current = [];
+      battleAnimationGateRef.current = false;
+      if (battleCueTimerRef.current) {
+        window.clearTimeout(battleCueTimerRef.current);
+        battleCueTimerRef.current = null;
+      }
+      if (battleResultPauseTimerRef.current) {
+        window.clearTimeout(battleResultPauseTimerRef.current);
+        battleResultPauseTimerRef.current = null;
+      }
+      setBattleCue(null);
+      setVisibleBattleLogs(battle.log);
+      setDisplayHpByParticipantId(
+        Object.fromEntries(battle.participants.map((participant) => [participant.id, participant.hp]))
+      );
+      setBattleAnimationTick((value) => value + 1);
+      return;
+    }
+
+    const latestLogId = battle.log[0]?.id ?? null;
+    if (!latestLogId || latestLogId === lastLogIdRef.current) {
+      return;
+    }
+
+    const previousLatestIndex = battle.log.findIndex((entry) => entry.id === lastLogIdRef.current);
+    const newEntries = previousLatestIndex === -1 ? battle.log.slice(0, 1) : battle.log.slice(0, previousLatestIndex);
+    lastLogIdRef.current = latestLogId;
+    const events = newEntries
+      .slice()
+      .reverse()
+      .map((entry) => ({
+        entry,
+        cue: parseBattleAnimationCue(entry.text, battle.participants)
+      }));
+
+    if (events.length > 0) {
+      battleAnimationGateRef.current = true;
+      pendingBattleEventsRef.current.push(...events);
+      if (!battleCue && !battleCueTimerRef.current) {
+        playNextBattleEvent();
+      }
+    }
+  }, [battle.id, battle.log, battle.participants, battleCue]);
+
+  useEffect(() => {
+    return () => {
+      if (battleCueTimerRef.current) {
+        window.clearTimeout(battleCueTimerRef.current);
+      }
+      if (battleResultPauseTimerRef.current) {
+        window.clearTimeout(battleResultPauseTimerRef.current);
+      }
+    };
+  }, []);
+
+  const animationsPending = battleAnimationGateRef.current || Boolean(battleCue) || pendingBattleEventsRef.current.length > 0;
+
+  const emitAutoPveTurn = () => {
+    const key = `${battle.id}:${battle.updatedAt}:turn`;
+    lastAutoPveStepKeyRef.current = key;
+    socket.emit("battle:action", {
+      battleId: battle.id,
+      action: "auto",
+      continueUntilStopped: false
+    });
+  };
+
+  const triggerAutoPve = () => {
+    if (autoUntilStopped) {
+      setAutoPveRunning(true);
+    }
+    emitAutoPveTurn();
+  };
+
+  const stopAutoPve = () => {
+    autoPveRunningRef.current = false;
+    setAutoPveRunning(false);
+    setAutoUntilStopped(false);
+    lastAutoPveStepKeyRef.current = null;
+  };
+
+  useEffect(() => {
+    if (!autoPveRunning || battleAnimationGateRef.current || animationsPending || !autoPveActive || (battle.mode !== "pve" && battle.mode !== "dungeon")) {
+      return;
+    }
+
+    if (battle.status === "active") {
+      if (!myTurn) {
+        return;
+      }
+      const key = `${battle.id}:${battle.updatedAt}:turn`;
+      if (lastAutoPveStepKeyRef.current === key) {
+        return;
+      }
+      emitAutoPveTurn();
+      return;
+    }
+
+    const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
+    const playerWon = winner?.ownerPlayerId === game.player.id;
+    if (playerWon && rematchMonsterId && canRematch) {
+      const key = `${battle.id}:${battle.updatedAt}:next`;
+      if (lastAutoPveStepKeyRef.current === key) {
+        return;
+      }
+      lastAutoPveStepKeyRef.current = key;
+      socket.emit(battle.mode === "dungeon" ? "dungeon:start" : "hunt:start", { monsterId: rematchMonsterId });
+      return;
+    }
+
+    setAutoPveRunning(false);
+    setAutoUntilStopped(false);
+  }, [
+    autoPveRunning,
+    animationsPending,
+    battleAnimationTick,
+    autoPveActive,
+    battle.id,
+    battle.updatedAt,
+    battle.status,
+    battle.mode,
+    battle.winnerParticipantId,
+    battle.participants,
+    myTurn,
+    rematchMonsterId,
+    canRematch,
+    game.player.id
+  ]);
+
+  const combatantOrder = [me, opponent].filter((participant): participant is BattleParticipant => Boolean(participant));
+  const getMotionStyle = (participantId: string, role: "attacker" | "defender"): React.CSSProperties => {
+    const isLeft = combatantOrder[0]?.id === participantId;
+    if (role === "attacker") {
+      return { "--attack-x": `${isLeft ? 16 : -16}px` } as React.CSSProperties;
+    }
+    return { "--dodge-x": `${isLeft ? -12 : 12}px` } as React.CSSProperties;
+  };
+
+  const getMotionClass = (participantId: string) => {
+    if (!battleCue) return "";
+    const suffix = battleCue.sequence % 2 === 0 ? "a" : "b";
+    if (battleCue.attackerId === participantId) {
+      return `striking strike-${suffix}`;
+    }
+    if (battleCue.defenderId === participantId && battleCue.kind === "damage") {
+      return `hit hit-${suffix}`;
+    }
+    if (battleCue.defenderId === participantId && battleCue.kind === "dodge") {
+      return `dodging dodge-${suffix}`;
+    }
+    return "";
+  };
 
   return (
     <section className="content-panel battle-panel">
@@ -2836,22 +3123,42 @@ function BattlePanel({ game }: { game: GameState }) {
         title={battle.mode === "pvp" ? "Arena PvP" : battle.mode === "dungeon" ? "Masmorra" : "Batalha PvE"}
       />
       <div className="combatants">
-        {me && <CombatantCard participant={me} active={myTurn} />}
-        {opponent && <CombatantCard participant={opponent} active={battle.turnParticipantId === opponent.id} />}
+        {me && (
+          <CombatantCard
+            participant={me}
+            active={myTurn}
+            defeated={me.hp <= 0}
+            winner={battle.status === "ended" && battle.winnerParticipantId === me.id}
+            motionClass={getMotionClass(me.id)}
+            motionStyle={battleCue?.attackerId === me.id ? getMotionStyle(me.id, "attacker") : getMotionStyle(me.id, "defender")}
+            damageCue={battleCue?.kind === "damage" && battleCue.defenderId === me.id ? battleCue : null}
+          />
+        )}
+        {opponent && (
+          <CombatantCard
+            participant={opponent}
+            active={battle.turnParticipantId === opponent.id}
+            defeated={opponent.hp <= 0}
+            winner={battle.status === "ended" && battle.winnerParticipantId === opponent.id}
+            motionClass={getMotionClass(opponent.id)}
+            motionStyle={battleCue?.attackerId === opponent.id ? getMotionStyle(opponent.id, "attacker") : getMotionStyle(opponent.id, "defender")}
+            damageCue={battleCue?.kind === "damage" && battleCue.defenderId === opponent.id ? battleCue : null}
+          />
+        )}
       </div>
       <div className="battle-actions">
         {battle.status === "active" ? (
           <>
             <button
               className="primary-button atack-button"
-              disabled={!myTurn}
+              disabled={!myTurn || animationsPending}
               onClick={() => socket.emit("battle:action", { battleId: battle.id, action: "attack" })}
             >
               <Swords size={13} /> Atacar
             </button>
             <button
               className="ghost-button"
-              disabled={!myTurn || !firstPotion}
+              disabled={!myTurn || !firstPotion || animationsPending}
               onClick={() =>
                 socket.emit("battle:action", {
                   battleId: battle.id,
@@ -2864,65 +3171,125 @@ function BattlePanel({ game }: { game: GameState }) {
               <AssetImage style={{ width: 27 }} src={"assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} /> 
               <span style={{verticalAlign: "super"}}>Usar poção de vida</span>
             </button>
-            <button className="danger-button" onClick={() => socket.emit("battle:flee")}>
+            <button className="danger-button" disabled={animationsPending} onClick={() => socket.emit("battle:flee")}>
               Fugir
             </button>
-            {(battle.mode === "pve" || battle.mode === "dungeon") && autoPveActive && (
+            {canUseAutoPve && (
               <>
                 <label className="auto-pve-toggle">
                   <input
                     type="checkbox"
                     checked={autoUntilStopped}
-                    onChange={(event) => setAutoUntilStopped(event.target.checked)}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        setAutoUntilStopped(true);
+                      } else {
+                        stopAutoPve();
+                      }
+                    }}
                   />
                   Continuar até acabar energia ou morrer
                 </label>
-                <button
-                  className="ghost-button royal-auto-button"
-                  disabled={!myTurn}
-                  onClick={() =>
-                    socket.emit("battle:action", {
-                      battleId: battle.id,
-                      action: "auto",
-                      continueUntilStopped: autoUntilStopped
-                    })
-                  }
-                >
-                  <Crown size={14} /> Auto PvE
-                </button>
+                {!autoPveRunning && (
+                  <button
+                    className="ghost-button royal-auto-button"
+                    disabled={!myTurn || animationsPending}
+                    onClick={triggerAutoPve}
+                  >
+                    <Crown size={14} /> Auto PvE
+                  </button>
+                )}
               </>
             )}
           </>
         ) : (
           <>
-            {rematchMonsterId && (battle.mode === "pve" || battle.mode === "dungeon") && (
-              <button
-                className="primary-button"
-                disabled={!canRematch}
-                onClick={() => socket.emit(battle.mode === "dungeon" ? "dungeon:start" : "hunt:start", { monsterId: rematchMonsterId })}
-              >
-                Enfrentar novamente
+            {animationsPending ? (
+              <button className="ghost-button" disabled>
+                Finalizando animações...
               </button>
+            ) : (
+              <>
+                {rematchMonsterId && (battle.mode === "pve" || battle.mode === "dungeon") && (
+                  <button
+                    className="primary-button"
+                    disabled={!canRematch || autoPveRunning}
+                    onClick={() => socket.emit(battle.mode === "dungeon" ? "dungeon:start" : "hunt:start", { monsterId: rematchMonsterId })}
+                  >
+                    Enfrentar novamente
+                  </button>
+                )}
+                <button className="ghost-button" disabled={autoPveRunning} onClick={() => socket.emit("battle:leave")}>
+                  Voltar para a cidade
+                </button>
+              </>
             )}
-            <button className="ghost-button" onClick={() => socket.emit("battle:leave")}>
-              Voltar para a cidade
-            </button>
           </>
+        )}
+        {autoPveRunning && (
+          <button className="danger-button auto-pve-stop-button" onClick={stopAutoPve}>
+            <X size={14} /> Parar Auto PvE
+          </button>
         )}
       </div>
       <div className="battle-log">
-        {battle.log.map((entry) => (
-          <p key={entry.id}>{entry.text}</p>
+        {visibleBattleLogs.map((entry) => (
+          <p className={`battle-log-entry ${getBattleLogKind(entry.text)}`} key={entry.id}>
+            <span className="battle-log-icon">{getBattleLogIcon(entry.text)}</span>
+            <span>{entry.text}</span>
+          </p>
         ))}
       </div>
     </section>
   );
 }
 
-function CombatantCard({ participant, active }: { participant: BattleParticipant; active: boolean }) {
+function CombatantCard({
+  participant,
+  active,
+  defeated = false,
+  winner = false,
+  motionClass = "",
+  motionStyle,
+  damageCue
+}: {
+  participant: BattleParticipant;
+  active: boolean;
+  defeated?: boolean;
+  winner?: boolean;
+  motionClass?: string;
+  motionStyle?: React.CSSProperties;
+  damageCue?: BattleAnimationCue | null;
+}) {
   const hpPercent = Math.max(0, Math.round((participant.hp / participant.maxHp) * 100));
+  const classes = [
+    "combatant",
+    active ? "active" : "",
+    defeated ? "defeated" : "",
+    winner ? "winner" : "",
+    motionClass
+  ].filter(Boolean).join(" ");
+
   return (
-    <article className={active ? "combatant active" : "combatant"}>
+    <article className={classes} style={motionStyle}>
+      {damageCue && (
+        <span key={damageCue.sequence} className={damageCue.critical ? "damage-float critical" : "damage-float"}>
+          -{damageCue.damage}
+          {damageCue.critical && <b>CRIT</b>}
+        </span>
+      )}
+      {defeated && (
+        <span className="defeated-badge">
+          <Skull size={18} /> Derrotado
+        </span>
+      )}
+      {winner && (
+        <span className="victory-stars" aria-hidden="true">
+          <Star size={13} />
+          <Star size={10} />
+          <Star size={12} />
+        </span>
+      )}
       <ParticipantVisual participant={participant} className="combatant-art" />
       <div>
         <strong>{participant.name}</strong>
@@ -2941,6 +3308,80 @@ function CombatantCard({ participant, active }: { participant: BattleParticipant
       </div>
     </article>
   );
+}
+
+function parseBattleAnimationCue(text: string, participants: BattleParticipant[]): Omit<BattleAnimationCue, "sequence"> | null {
+  const damageMatch = text.match(/^(.+) causou (\d+) de dano em (.+?)( com acerto .*)?\.$/i);
+  if (damageMatch) {
+    const attacker = participants.find((participant) => participant.name === damageMatch[1]);
+    const defender = participants.find((participant) => participant.name === damageMatch[3]);
+    if (attacker && defender) {
+      return {
+        kind: "damage",
+        attackerId: attacker.id,
+        defenderId: defender.id,
+        damage: Number(damageMatch[2]),
+        critical: Boolean(damageMatch[4])
+      };
+    }
+  }
+
+  const dodgeMatch = text.match(/^(.+) esquivou do ataque de (.+)\.$/i);
+  if (dodgeMatch) {
+    const defender = participants.find((participant) => participant.name === dodgeMatch[1]);
+    const attacker = participants.find((participant) => participant.name === dodgeMatch[2]);
+    if (attacker && defender) {
+      return {
+        kind: "dodge",
+        attackerId: attacker.id,
+        defenderId: defender.id
+      };
+    }
+  }
+
+  return null;
+}
+
+function parseBattleHpChange(text: string, participants: BattleParticipant[]): BattleHpChange | null {
+  const healMatch = text.match(/^(.+) usou .+ e recuperou (\d+) de vida\.$/i);
+  if (!healMatch) {
+    return null;
+  }
+
+  const participant = participants.find((entry) => entry.name === healMatch[1]);
+  if (!participant) {
+    return null;
+  }
+
+  return {
+    participantId: participant.id,
+    delta: Number(healMatch[2])
+  };
+}
+
+function getBattleLogKind(text: string) {
+  const lower = text.toLowerCase();
+  if (lower.includes("causou")) return lower.includes("crítico") || lower.includes("critico") || lower.includes("crã") ? "critical" : "damage";
+  if (lower.includes("esquivou")) return "dodge";
+  if (lower.includes("usou") || lower.includes("recuperou")) return "heal";
+  if (lower.includes("venceu")) return "victory";
+  if (lower.includes("fugiu")) return "flee";
+  if (lower.includes("recebeu") || lower.includes("xp") || lower.includes("ouro")) return "reward";
+  if (lower.includes("encontrou") || lower.includes("caiu")) return "loot";
+  return "event";
+}
+
+function getBattleLogIcon(text: string) {
+  const kind = getBattleLogKind(text);
+  if (kind === "critical") return <Flame size={15} />;
+  if (kind === "damage") return <Swords size={15} />;
+  if (kind === "dodge") return <Crosshair size={15} />;
+  if (kind === "heal") return <Heart size={15} />;
+  if (kind === "victory") return <Trophy size={15} />;
+  if (kind === "flee") return <ArrowLeftRight size={15} />;
+  if (kind === "reward") return <Coins size={15} />;
+  if (kind === "loot") return <Sparkles size={15} />;
+  return <Shield size={15} />;
 }
 
 function FloatingChat({
