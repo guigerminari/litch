@@ -1,4 +1,5 @@
 import type { Character, DerivedStats, InventoryItem, ItemDefinition, ItemStats } from "../../shared/types";
+import { RARITY_STAT_MULTIPLIER } from "../../shared/rarity";
 import { CLAN_BENEFITS, TALENTS } from "../content";
 
 function isClanCategoryComplete(allocations: Record<string, number>, category: "combat" | "defense" | "prosperity") {
@@ -18,12 +19,14 @@ export function getEquippedItems(character: Character, itemCatalog: Record<strin
 }
 
 export function getEnhancedItemStats(inventoryItem: InventoryItem, definition: ItemDefinition): ItemStats {
-  const enhancementLevel = Math.max(0, inventoryItem.enhancementLevel ?? 0);
-  if (!definition.slot || enhancementLevel <= 0) {
+  if (!definition.slot) {
     return definition.stats;
   }
 
-  const multiplier = 1 + enhancementLevel * 0.2;
+  const enhancementLevel = Math.max(0, inventoryItem.enhancementLevel ?? 0);
+  const rarityMultiplier = RARITY_STAT_MULTIPLIER[inventoryItem.rarity ?? definition.rarity ?? "common"];
+  const enhancementMultiplier = 1 + enhancementLevel * 0.2;
+  const multiplier = rarityMultiplier * enhancementMultiplier;
   return {
     ...definition.stats,
     strength: definition.stats.strength === undefined ? undefined : Math.ceil(definition.stats.strength * multiplier),

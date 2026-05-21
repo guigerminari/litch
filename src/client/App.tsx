@@ -44,6 +44,7 @@ import type {
   ItemKind,
   ItemStats,
   MarketListing,
+  MarketTransactionHistory,
   PrivateMessage,
   ClanBenefitCategory,
   TalentCategory,
@@ -51,6 +52,7 @@ import type {
   Rarity,
   TalentDefinition
 } from "../shared/types";
+import { RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
 import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL } from "../shared/types";
 import cityMap from "./assets/city-map.svg";
 import { socket } from "./socket";
@@ -545,7 +547,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
             return (
               <div className={`equip-slot${definition ? " has-item" : ""}`} key={slot}>
                 {definition ? (
-                  <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={inventoryItem?.enhancementLevel} />
+                  <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={inventoryItem?.enhancementLevel} rarity={inventoryItem?.rarity} />
                 ) : (
                   <span className="equip-emoji">{slotEmoji[slot]}</span>
                 )}
@@ -948,7 +950,7 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
       {selectedEntry && selectedItem && plan && currentStats && nextStats && (
         <div className="enhancement-grid">
           <div className="enhancement-item-card">
-            <ItemVisual item={selectedItem} className="enhancement-item-visual" enhancementLevel={selectedEntry.enhancementLevel} />
+            <ItemVisual item={selectedItem} className="enhancement-item-visual" enhancementLevel={selectedEntry.enhancementLevel} rarity={selectedEntry.rarity} />
             <div>
               <strong>{formatInventoryItemName(selectedItem, selectedEntry)}</strong>
               <span>Proximo: +{plan.nextLevel}</span>
@@ -1970,7 +1972,7 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
                     disabled={equipped}
                     onClick={() => socket.emit("shop:sell", { instanceId: inventoryItem.instanceId, quantity: 1 })}
                   >
-                    Vender {Math.max(1, Math.floor(item.price / 2))}
+                    Vender {formatCurrency(Math.max(1, Math.floor(getItemValue(item, inventoryItem) / 2)))}
                   </button>
                 </div>
               );
@@ -2002,7 +2004,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 
   // Pad to exactly 40 slots (5 columns × 8 rows)
   const TOTAL_SLOTS = 40;
-  const slots: Array<{ instanceId: string; itemId: string; quantity: number; enhancementLevel?: number } | null> = [
+  const slots: Array<{ instanceId: string; itemId: string; quantity: number; enhancementLevel?: number; rarity?: Rarity } | null> = [
     ...filledSlots,
     ...Array(Math.max(0, TOTAL_SLOTS - filledSlots.length)).fill(null),
   ];
@@ -2010,6 +2012,9 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
   const selectedEntry = selectedInstanceId ? filledSlots.find((s) => s.instanceId === selectedInstanceId) ?? null : null;
   const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
   const selectedEquipped = selectedEntry ? isItemEquipped(game, selectedEntry.instanceId) : false;
+  const selectedStats = selectedItem && selectedEntry ? getEnhancedItemStats(selectedItem, selectedEntry) : null;
+  const selectedRarity = selectedItem && selectedEntry ? getItemRarity(selectedItem, selectedEntry) : undefined;
+  const selectedPrice = selectedItem ? getItemValue(selectedItem, selectedEntry) : 0;
 
   return (
     <section className="content-panel">
@@ -2027,7 +2032,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
           const item = game.itemCatalog[slot.itemId];
           const equipped = isItemEquipped(game, slot.instanceId);
           const selected = selectedInstanceId === slot.instanceId;
-          const rarityColor = getEquipmentRarityColor(item);
+          const rarityColor = getEquipmentRarityColor(item, slot.rarity);
           return (
             <button
               key={slot.instanceId}
@@ -2036,7 +2041,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
               style={{ borderColor: rarityColor }}
               onClick={() => setSelectedInstanceId(selected ? null : slot.instanceId)}
             >
-              <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} enhancementLevel={slot.enhancementLevel} />
+              <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} enhancementLevel={slot.enhancementLevel} rarity={slot.rarity} />
             </button>
           );
         })}
@@ -2047,8 +2052,35 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
           <div className="inv-action-info">
             <strong>{formatInventoryItemName(selectedItem, selectedEntry)}</strong>
             <span>{selectedItem.description}</span>
+            <div className="inventory-item-meta">
+              <small>{ITEM_KIND_LABELS[selectedItem.kind]}</small>
+              {selectedItem.slot && selectedRarity && <div className={`item-rarity ${selectedRarity}`}>{RARITY_LABELS[selectedRarity]}</div>}
+              <small>Quantidade: {selectedEntry.quantity}</small>
+              {selectedItem.slot && <small>Nível mínimo: {selectedItem.minLevel}</small>}
+              <small>Valor em ouro: {formatCurrency(selectedPrice)}</small>
+              {selectedItem.slot && (selectedEntry.enhancementLevel ?? 0) > 0 && <small>Melhoria: +{selectedEntry.enhancementLevel ?? 0}</small>}
+            </div>
             {selectedItem.slot && game.character.level < selectedItem.minLevel && (
               <small className="level-warn">⚠️ Nível {selectedItem.minLevel} necessário para equipar</small>
+            )}
+            {selectedItem.slot && selectedStats && (
+              <div className="market-modal-stats">
+                <h4>Atributos atuais</h4>
+                <div className="stat-list">
+                  {selectedStats.strength !== undefined && <div><span>Força</span> <strong>+{selectedStats.strength}</strong></div>}
+                  {selectedStats.constitution !== undefined && <div><span>Constituição</span> <strong>+{selectedStats.constitution}</strong></div>}
+                  {selectedStats.agility !== undefined && <div><span>Agilidade</span> <strong>+{selectedStats.agility}</strong></div>}
+                  {selectedStats.defense !== undefined && <div><span>Defesa</span> <strong>+{selectedStats.defense}</strong></div>}
+                </div>
+              </div>
+            )}
+            {!selectedItem.slot && (
+              <div className="market-modal-stats">
+                <h4>Informações</h4>
+                {selectedItem.stats.healPercent && <p>Restaura {selectedItem.stats.healPercent * 100}% da vida ao usar.</p>}
+                {selectedItem.stats.energyPercent && <p>Restaura {selectedItem.stats.energyPercent * 100}% da energia ao usar.</p>}
+                {selectedItem.stats.heal && <p>Restaura {selectedItem.stats.heal} de vida.</p>}
+              </div>
             )}
           </div>
           <div className="inv-action-buttons">
@@ -2163,11 +2195,15 @@ function MarketPanel({ game }: { game: GameState }) {
   const [currencyFilter, setCurrencyFilter] = useState<"all" | Currency>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | ItemKind>("all");
   const [sortBy, setSortBy] = useState<"date-desc" | "date-asc" | "price-desc" | "price-asc">("date-desc");
+  const [marketTab, setMarketTab] = useState<"buy" | "sell" | "history">("buy");
+  const [historyFilter, setHistoryFilter] = useState<"buy" | "sell">("buy");
   const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
   const selectedInventoryItem = tradableItems.find((item) => item.instanceId === instanceId) ?? null;
   const selectedItemDef = selectedInventoryItem ? game.itemCatalog[selectedInventoryItem.itemId] : null;
   const maxQuantity = selectedInventoryItem ? Math.max(1, selectedInventoryItem.quantity) : 1;
   const myListings = game.marketplaceListings.filter((listing) => listing.sellerPlayerId === game.player.id);
+  const marketHistory = [...(game.character.marketHistory ?? [])].sort((left, right) => right.createdAt - left.createdAt);
+  const historyEntries = marketHistory.filter((entry) => entry.kind === historyFilter);
   const purchaseListings = game.marketplaceListings
     .filter((listing) => listing.sellerPlayerId !== game.player.id)
     .filter((listing) => currencyFilter === "all" || listing.currency === currencyFilter)
@@ -2229,168 +2265,230 @@ function MarketPanel({ game }: { game: GameState }) {
   return (
     <section className="content-panel market-panel">
       <PanelTitle icon={<ShoppingBag size={20} />} title="Mercado de Trocas" />
+      <div className="market-tabs" role="tablist" aria-label="Ações do mercado">
+        <button type="button" className={marketTab === "buy" ? "mini-tab active" : "mini-tab"} onClick={() => setMarketTab("buy")}>
+          Compra
+        </button>
+        <button type="button" className={marketTab === "sell" ? "mini-tab active" : "mini-tab"} onClick={() => setMarketTab("sell")}>
+          Venda
+        </button>
+        <button type="button" className={marketTab === "history" ? "mini-tab active" : "mini-tab"} onClick={() => setMarketTab("history")}>
+          Histórico
+        </button>
+      </div>
       <div className="market-layout">
-        <section className="market-block">
-          <div className="market-block-head">
-            <div>
-              <h3>Gerenciar vendas</h3>
-              <p className="muted">Crie lotes dos itens agrupáveis e acompanhe suas ofertas abertas.</p>
+        {marketTab === "buy" && (
+          <section className="market-block">
+            <div className="market-block-head market-block-head-wrap">
+              <div>
+                <h3>Itens disponíveis para compra</h3>
+                <p className="muted">Cada oferta é comprada inteira, exatamente na quantidade anunciada.</p>
+              </div>
+              <div className="market-toolbar">
+                <div className="market-currency-filters" role="tablist" aria-label="Filtro de moeda">
+                  <button
+                    type="button"
+                    className={`market-filter-btn${currencyFilter === "all" ? " active" : ""}`}
+                    onClick={() => setCurrencyFilter("all")}
+                    aria-pressed={currencyFilter === "all"}
+                  >
+                    <ShoppingBag size={16} /> Todos
+                  </button>
+                  <button
+                    type="button"
+                    className={`market-filter-btn${currencyFilter === "gold" ? " active" : ""}`}
+                    onClick={() => setCurrencyFilter("gold")}
+                    aria-pressed={currencyFilter === "gold"}
+                  >
+                    <Coins size={16} style={{ color: "var(--gold)" }} /> Coin
+                  </button>
+                  <button
+                    type="button"
+                    className={`market-filter-btn${currencyFilter === "diamonds" ? " active" : ""}`}
+                    onClick={() => setCurrencyFilter("diamonds")}
+                    aria-pressed={currencyFilter === "diamonds"}
+                  >
+                    <Gem size={16} style={{ color: "var(--cyan)" }} /> Diamante
+                  </button>
+                </div>
+                <div className="market-selects">
+                  <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value as "all" | ItemKind)}>
+                    <option value="all">Todos os tipos</option>
+                    {Object.entries(ITEM_KIND_LABELS).map(([kind, label]) => (
+                      <option key={kind} value={kind}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                  <select value={sortBy} onChange={(event) => setSortBy(event.target.value as typeof sortBy)}>
+                    <option value="date-desc">Mais recentes</option>
+                    <option value="date-asc">Mais antigas</option>
+                    <option value="price-asc">Menor valor</option>
+                    <option value="price-desc">Maior valor</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
-          <form className="market-form" onSubmit={createListing}>
-            <select value={instanceId} onChange={(event) => setInstanceId(event.target.value)}>
-              {tradableItems.length === 0 && <option value="">Nenhum item disponível</option>}
-              {tradableItems.map((inventoryItem) => {
-                const item = game.itemCatalog[inventoryItem.itemId];
-                return (
-                  <option value={inventoryItem.instanceId} key={inventoryItem.instanceId}>
-                    {item.name} {inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : ""}
-                  </option>
-                );
-              })}
-            </select>
-            <input
-              type="number"
-              min={1}
-              max={selectedItemDef?.slot ? 1 : maxQuantity}
-              value={selectedItemDef?.slot ? 1 : quantity}
-              disabled={!selectedInventoryItem || Boolean(selectedItemDef?.slot)}
-              onChange={(event) => setQuantity(Number(event.target.value))}
-              aria-label="Quantidade do lote"
-            />
-            <input
-              type="number"
-              min={1}
-              value={price}
-              onChange={(event) => setPrice(Number(event.target.value))}
-              aria-label="Preço"
-            />
-            <select value={currency} onChange={(event) => setCurrency(event.target.value as Currency)}>
-              <option value="gold">Ouro</option>
-              <option value="diamonds">Diamantes</option>
-            </select>
-            <button className="primary-button" disabled={!instanceId}>
-              Ofertar lote
-            </button>
-          </form>
-          <div className="market-form-hint">
-            {selectedInventoryItem && selectedItemDef ? (
-              <span>
-                {selectedItemDef.slot
-                  ? "Equipamentos só podem ser vendidos unidade por unidade."
-                  : `Disponível para lote: até x${selectedInventoryItem.quantity}.`}
-              </span>
-            ) : (
-              <span>Nenhum item disponível para anunciar.</span>
-            )}
-          </div>
-          <section className="market-group">
-            <h3>Minhas ofertas</h3>
             <div className="market-list">
-              {myListings.length === 0 && <p className="empty-state">Você ainda não colocou nada à venda.</p>}
-              {myListings.map((listing) => (
-                <MarketListingCard
-                  key={listing.id}
-                  game={game}
-                  listing={listing}
-                  actionLabel="Cancelar"
-                  metaLabel="Sua oferta"
-                  onAction={() => socket.emit("market:cancel", { listingId: listing.id })}
-                />
+              {purchaseListings.length === 0 && <p className="empty-state">Nenhuma oferta encontrada com esse filtro.</p>}
+              <div className="shop-grid npc-shop-grid market-shop-grid">
+                {purchaseListings.map((listing) =>
+                  (() => {
+                    const item = game.itemCatalog[listing.item.itemId];
+                    return (
+                      <button
+                        key={listing.id}
+                        className="shop-item-card market-shop-card"
+                        onClick={() => setSelectedListing(listing)}
+                        title={formatInventoryItemName(item, listing.item)}
+                      >
+                        <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
+                        <strong>{formatInventoryItemName(item, listing.item)}</strong>
+                        <span className="shop-card-price">
+                          {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={13} style={{ color: "var(--gold)" }} /> : <Gem size={13} style={{ color: "var(--cyan)" }} />}
+                        </span>
+                      </button>
+                    );
+                  })()
+                )}
+              </div>
+            </div>
+            {selectedListing && (
+              <MarketListingModal
+                listing={selectedListing}
+                game={game}
+                onClose={() => setSelectedListing(null)}
+                onBuy={() => {
+                  socket.emit("market:buy", { listingId: selectedListing.id });
+                  setSelectedListing(null);
+                }}
+              />
+            )}
+          </section>
+        )}
+
+        {marketTab === "sell" && (
+          <section className="market-block">
+            <div className="market-block-head">
+              <div>
+                <h3>Gerenciar vendas</h3>
+                <p className="muted">Crie lotes dos itens agrupáveis e acompanhe suas ofertas abertas.</p>
+              </div>
+            </div>
+            <form className="market-form" onSubmit={createListing}>
+              <select value={instanceId} onChange={(event) => setInstanceId(event.target.value)}>
+                {tradableItems.length === 0 && <option value="">Nenhum item disponível</option>}
+                {tradableItems.map((inventoryItem) => {
+                  const item = game.itemCatalog[inventoryItem.itemId];
+                  return (
+                    <option value={inventoryItem.instanceId} key={inventoryItem.instanceId}>
+                      {item.name} {inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : ""}
+                    </option>
+                  );
+                })}
+              </select>
+              <input
+                type="number"
+                min={1}
+                max={selectedItemDef?.slot ? 1 : maxQuantity}
+                value={selectedItemDef?.slot ? 1 : quantity}
+                disabled={!selectedInventoryItem || Boolean(selectedItemDef?.slot)}
+                onChange={(event) => setQuantity(Number(event.target.value))}
+                aria-label="Quantidade do lote"
+              />
+              <input
+                type="number"
+                min={1}
+                value={price}
+                onChange={(event) => setPrice(Number(event.target.value))}
+                aria-label="Preço"
+              />
+              <select value={currency} onChange={(event) => setCurrency(event.target.value as Currency)}>
+                <option value="gold">Ouro</option>
+                <option value="diamonds">Diamantes</option>
+              </select>
+              <button className="primary-button" disabled={!instanceId}>
+                Ofertar lote
+              </button>
+            </form>
+            <div className="market-form-hint">
+              {selectedInventoryItem && selectedItemDef ? (
+                <span>
+                  {selectedItemDef.slot
+                    ? "Equipamentos só podem ser vendidos unidade por unidade."
+                    : `Disponível para lote: até x${selectedInventoryItem.quantity}.`}
+                </span>
+              ) : (
+                <span>Nenhum item disponível para anunciar.</span>
+              )}
+            </div>
+            <section className="market-group">
+              <h3>Minhas ofertas</h3>
+              <div className="market-list">
+                {myListings.length === 0 && <p className="empty-state">Você ainda não colocou nada à venda.</p>}
+                {myListings.map((listing) => (
+                  <MarketListingCard
+                    key={listing.id}
+                    game={game}
+                    listing={listing}
+                    actionLabel="Cancelar"
+                    metaLabel="Sua oferta"
+                    onAction={() => socket.emit("market:cancel", { listingId: listing.id })}
+                  />
+                ))}
+              </div>
+            </section>
+          </section>
+        )}
+
+        {marketTab === "history" && (
+          <section className="market-block">
+            <div className="market-block-head market-block-head-wrap">
+              <div>
+                <h3>Histórico do personagem</h3>
+                <p className="muted">Veja tudo o que você comprou e vendeu no Mercado.</p>
+              </div>
+              <div className="market-history-tabs" role="tablist" aria-label="Filtro do histórico">
+                <button type="button" className={historyFilter === "buy" ? "mini-tab active" : "mini-tab"} onClick={() => setHistoryFilter("buy")}>
+                  Compra
+                </button>
+                <button type="button" className={historyFilter === "sell" ? "mini-tab active" : "mini-tab"} onClick={() => setHistoryFilter("sell")}>
+                  Venda
+                </button>
+              </div>
+            </div>
+            <div className="market-list market-history-list">
+              {historyEntries.length === 0 && <p className="empty-state">Nenhuma movimentação registrada neste filtro.</p>}
+              {historyEntries.map((entry) => (
+                <MarketHistoryRow key={entry.id} entry={entry} game={game} />
               ))}
             </div>
           </section>
-        </section>
-
-        <section className="market-block">
-          <div className="market-block-head market-block-head-wrap">
-            <div>
-              <h3>Itens disponíveis para compra</h3>
-              <p className="muted">Cada oferta é comprada inteira, exatamente na quantidade anunciada.</p>
-            </div>
-            <div className="market-toolbar">
-              <div className="market-currency-filters" role="tablist" aria-label="Filtro de moeda">
-                <button
-                  type="button"
-                  className={`market-filter-btn${currencyFilter === "all" ? " active" : ""}`}
-                  onClick={() => setCurrencyFilter("all")}
-                  aria-pressed={currencyFilter === "all"}
-                >
-                  <ShoppingBag size={16} /> Todos
-                </button>
-                <button
-                  type="button"
-                  className={`market-filter-btn${currencyFilter === "gold" ? " active" : ""}`}
-                  onClick={() => setCurrencyFilter("gold")}
-                  aria-pressed={currencyFilter === "gold"}
-                >
-                  <Coins size={16} style={{ color: "var(--gold)" }} /> Coin
-                </button>
-                <button
-                  type="button"
-                  className={`market-filter-btn${currencyFilter === "diamonds" ? " active" : ""}`}
-                  onClick={() => setCurrencyFilter("diamonds")}
-                  aria-pressed={currencyFilter === "diamonds"}
-                >
-                  <Gem size={16} style={{ color: "var(--cyan)" }} /> Diamante
-                </button>
-              </div>
-              <div className="market-selects">
-                <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value as "all" | ItemKind)}>
-                  <option value="all">Todos os tipos</option>
-                  {Object.entries(ITEM_KIND_LABELS).map(([kind, label]) => (
-                    <option key={kind} value={kind}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-                <select value={sortBy} onChange={(event) => setSortBy(event.target.value as typeof sortBy)}>
-                  <option value="date-desc">Mais recentes</option>
-                  <option value="date-asc">Mais antigas</option>
-                  <option value="price-asc">Menor valor</option>
-                  <option value="price-desc">Maior valor</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="market-list">
-            {purchaseListings.length === 0 && <p className="empty-state">Nenhuma oferta encontrada com esse filtro.</p>}
-            <div className="shop-grid npc-shop-grid market-shop-grid">
-              {purchaseListings.map((listing) => (
-                (() => {
-                  const item = game.itemCatalog[listing.item.itemId];
-                  return (
-                <button
-                  key={listing.id}
-                  className="shop-item-card market-shop-card"
-                  onClick={() => setSelectedListing(listing)}
-                  title={formatInventoryItemName(item, listing.item)}
-                >
-                  <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} />
-                  <strong>{formatInventoryItemName(item, listing.item)}</strong>
-                  <span className="shop-card-price">
-                    {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={13} style={{ color: "var(--gold)" }} /> : <Gem size={13} style={{ color: "var(--cyan)" }} />}
-                  </span>
-                </button>
-                  );
-                })()
-              ))}
-            </div>
-          </div>
-          {selectedListing && (
-            <MarketListingModal
-              listing={selectedListing}
-              game={game}
-              onClose={() => setSelectedListing(null)}
-              onBuy={() => {
-                socket.emit("market:buy", { listingId: selectedListing.id });
-                setSelectedListing(null);
-              }}
-            />
-          )}
-        </section>
+        )}
       </div>
     </section>
+  );
+}
+
+function MarketHistoryRow({ entry, game }: { entry: MarketTransactionHistory; game: GameState }) {
+  const item = game.itemCatalog[entry.item.itemId];
+  return (
+    <article className={entry.kind === "buy" ? "market-history-row buy" : "market-history-row sell"}>
+      <div className="market-history-icon">
+        {entry.kind === "buy" ? <ShoppingBag size={18} /> : <ArrowLeftRight size={18} />}
+      </div>
+      <div className="market-history-body">
+        <strong>{entry.kind === "buy" ? "Compra" : "Venda"} - {formatInventoryItemName(item, entry.item)}</strong>
+        <span>
+          {entry.kind === "buy" ? "Comprado de" : "Vendido para"} {entry.counterpartyName}
+        </span>
+        <small>{formatListingDate(entry.createdAt)}</small>
+      </div>
+      <div className="market-history-side">
+        <b>{formatCurrency(entry.price)}</b>
+        <small>{entry.currency === "gold" ? "Ouro" : "Diamantes"}</small>
+      </div>
+    </article>
   );
 }
 
@@ -2408,12 +2506,13 @@ function MarketListingCard({
   onAction: () => void;
 }) {
   const item = game.itemCatalog[listing.item.itemId];
-  const rarityColor = getEquipmentRarityColor(item);
+  const rarityColor = getEquipmentRarityColor(item, listing.item.rarity);
   return (
     <article className="market-card" style={{ borderColor: rarityColor }}>
-      <ItemVisual item={item} className="market-item-box" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} />
+      <ItemVisual item={item} className="market-item-box" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
       <div className="market-card-body">
         <strong>{formatInventoryItemName(item, listing.item)}</strong>
+        <span className="market-card-meta">Valor do item: {formatCurrency(getItemValue(item, listing.item))}</span>
         <span className="market-card-meta">{metaLabel}</span>
       </div>
       <div className="market-card-side">
@@ -2440,7 +2539,8 @@ function MarketListingModal({
   onBuy: () => void;
 }) {
   const item = game.itemCatalog[listing.item.itemId];
-  const rarityColor = getEquipmentRarityColor(item);
+  const rarityColor = getEquipmentRarityColor(item, listing.item.rarity);
+  const selectedStats = getEnhancedItemStats(item, listing.item);
   const canBuy = 
     (listing.currency === "gold" ? game.character.gold >= listing.price : game.character.diamonds >= listing.price) &&
     game.inventoryUsed < game.inventoryCapacity;
@@ -2450,15 +2550,21 @@ function MarketListingModal({
         <button className="close-button" title="Fechar" onClick={onClose}>
           <X size={20} />
         </button>
-        <ItemVisual item={item} className="market-modal-icon" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} />
+        <ItemVisual item={item} className="market-modal-icon" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
         <div className="market-modal-content">
           <h2>{formatInventoryItemName(item, listing.item)}</h2>
           <small className="market-modal-type">{ITEM_KIND_LABELS[item.kind]}</small>
-          {item.rarity && (
-            <div className={`item-rarity ${item.rarity}`}>
-              {RARITY_LABELS[item.rarity]}
+          {getItemRarity(item, listing.item) && (
+            <div className={`item-rarity ${getItemRarity(item, listing.item)}`}>
+              {RARITY_LABELS[getItemRarity(item, listing.item) ?? "common"]}
             </div>
           )}
+          <div className="market-modal-details">
+            <div>
+              <span>Valor do item</span>
+              <strong>{formatCurrency(getItemValue(item, listing.item))} ouro</strong>
+            </div>
+          </div>
           <p className="market-modal-desc">{item.description}</p>
           
           <div className="market-modal-details">
@@ -2480,10 +2586,10 @@ function MarketListingModal({
             <div className="market-modal-stats">
               <h4>Bônus</h4>
               <div className="stat-list">
-                {item.stats.strength && <div><span>Força</span> <strong>+{item.stats.strength}</strong></div>}
-                {item.stats.constitution && <div><span>Constituição</span> <strong>+{item.stats.constitution}</strong></div>}
-                {item.stats.agility && <div><span>Agilidade</span> <strong>+{item.stats.agility}</strong></div>}
-                {item.stats.defense && <div><span>Defesa</span> <strong>+{item.stats.defense}</strong></div>}
+                {selectedStats.strength && <div><span>Força</span> <strong>+{selectedStats.strength}</strong></div>}
+                {selectedStats.constitution && <div><span>Constituição</span> <strong>+{selectedStats.constitution}</strong></div>}
+                {selectedStats.agility && <div><span>Agilidade</span> <strong>+{selectedStats.agility}</strong></div>}
+                {selectedStats.defense && <div><span>Defesa</span> <strong>+{selectedStats.defense}</strong></div>}
               </div>
             </div>
           )}
@@ -2935,14 +3041,16 @@ function ItemVisual({
   item,
   className,
   quantity,
-  enhancementLevel
+  enhancementLevel,
+  rarity
 }: {
   item: ItemDefinition;
   className?: string;
   quantity?: number;
   enhancementLevel?: number;
+  rarity?: Rarity;
 }) {
-  const rarityColor = getEquipmentRarityColor(item);
+  const rarityColor = getEquipmentRarityColor(item, rarity);
   const enhancement = item.slot ? Math.max(0, enhancementLevel ?? 0) : 0;
   return (
     <span className={`asset-frame item-visual ${className ?? ""}`} style={rarityColor ? { borderColor: rarityColor } : undefined}>
@@ -3169,24 +3277,34 @@ function getEnhancementLevel(inventoryItem?: { enhancementLevel?: number } | nul
   return Math.max(0, inventoryItem?.enhancementLevel ?? 0);
 }
 
-function formatInventoryItemName(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number } | null) {
+function getItemRarity(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number; rarity?: Rarity } | null) {
+  return item.slot ? inventoryItem?.rarity ?? item.rarity ?? "common" : item.rarity;
+}
+
+function getItemValue(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number; rarity?: Rarity } | null) {
+  const rarity = item.slot ? getItemRarity(item, inventoryItem) : item.rarity;
+  return Math.max(1, Math.floor(item.price * (rarity ? RARITY_PRICE_MULTIPLIER[rarity] : 1)));
+}
+
+function formatInventoryItemName(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number; rarity?: Rarity } | null) {
   const enhancement = item.slot ? getEnhancementLevel(inventoryItem) : 0;
   return enhancement > 0 ? `${item.name} +${enhancement}` : item.name;
 }
 
-function getEnhancedItemStats(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number } | null): ItemStats {
-  const enhancement = item.slot ? getEnhancementLevel(inventoryItem) : 0;
-  if (enhancement <= 0) {
+function getEnhancedItemStats(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number; rarity?: Rarity } | null): ItemStats {
+  if (!item.slot) {
     return item.stats;
   }
 
-  const multiplier = 1 + enhancement * ENHANCEMENT_STAT_STEP;
+  const enhancement = item.slot ? getEnhancementLevel(inventoryItem) : 0;
+  const rarityMultiplier = RARITY_STAT_MULTIPLIER[getItemRarity(item, inventoryItem) ?? "common"];
+
   return {
     ...item.stats,
-    strength: item.stats.strength === undefined ? undefined : Math.ceil(item.stats.strength * multiplier),
-    constitution: item.stats.constitution === undefined ? undefined : Math.ceil(item.stats.constitution * multiplier),
-    agility: item.stats.agility === undefined ? undefined : Math.ceil(item.stats.agility * multiplier),
-    defense: item.stats.defense === undefined ? undefined : Math.ceil(item.stats.defense * multiplier)
+    strength: item.stats.strength === undefined ? undefined : Math.ceil((item.stats.strength * rarityMultiplier) * (1 + enhancement * ENHANCEMENT_STAT_STEP)),
+    constitution: item.stats.constitution === undefined ? undefined : Math.ceil((item.stats.constitution * rarityMultiplier) * (1 + enhancement * ENHANCEMENT_STAT_STEP)),
+    agility: item.stats.agility === undefined ? undefined : Math.ceil((item.stats.agility * rarityMultiplier) * (1 + enhancement * ENHANCEMENT_STAT_STEP)),
+    defense: item.stats.defense === undefined ? undefined : Math.ceil((item.stats.defense * rarityMultiplier) * (1 + enhancement * ENHANCEMENT_STAT_STEP))
   };
 }
 
@@ -3310,8 +3428,7 @@ function formatCurrency(n: number): string {
   return String(n);
 }
 
-function getEquipmentRarityColor(item: ItemDefinition) {
+function getEquipmentRarityColor(item: ItemDefinition, rarity?: Rarity) {
   if (!item.slot) return undefined;
-  const rarity = item.rarity ?? "common";
-  return RARITY_COLORS[rarity];
+  return RARITY_COLORS[rarity ?? item.rarity ?? "common"];
 }

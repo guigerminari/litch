@@ -7,6 +7,7 @@ import type {
   ItemDefinition,
   MonsterDefinition
 } from "../../shared/types";
+import { getRarityFromRoll } from "../../shared/rarity";
 import { ITEM_CATALOG, MONSTERS } from "../content";
 import { addItem, findInventoryItem, hasCapacity, removeItem } from "./inventory";
 import { deriveStats, grantExperience } from "./stats";
@@ -328,7 +329,9 @@ function grantPveRewards(battle: BattleState, character: Character) {
   for (const drop of monster.drops) {
     if (Math.random() <= Math.min(0.95, drop.chance + stats.dropBonusPercent)) {
       if (hasCapacity(character, 1)) {
-        addItem(character, drop.itemId, ITEM_CATALOG, 1);
+        const definition = ITEM_CATALOG[drop.itemId];
+        const rarity = definition?.slot ? getRarityFromRoll() : undefined;
+        addItem(character, drop.itemId, ITEM_CATALOG, 1, { rarity });
         battle.log.unshift(entry(`${character.name} encontrou ${ITEM_CATALOG[drop.itemId].name}.`));
       } else {
         battle.log.unshift(entry(`${ITEM_CATALOG[drop.itemId].name} caiu no chão. Inventário cheio.`));

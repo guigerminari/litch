@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Character, InventoryItem, ItemDefinition } from "../../shared/types";
+import type { Character, InventoryItem, ItemDefinition, Rarity } from "../../shared/types";
 import { CLAN_BENEFITS, INVENTORY_CAPACITY } from "../content";
 
 function isProsperitySuperActive(character: Character) {
@@ -39,7 +39,8 @@ export function addItem(
   character: Character,
   itemId: string,
   itemCatalog: Record<string, ItemDefinition>,
-  quantity = 1
+  quantity = 1,
+  options?: { rarity?: Rarity }
 ): InventoryItem {
   const definition = itemCatalog[itemId];
   if (!definition) {
@@ -66,7 +67,12 @@ export function addItem(
     throw new Error("Inventário cheio.");
   }
 
-  const item = { instanceId: randomUUID(), itemId, quantity };
+  const item: InventoryItem = {
+    instanceId: randomUUID(),
+    itemId,
+    quantity,
+    rarity: definition.slot ? options?.rarity : undefined
+  };
   character.inventory.push(item);
   return item;
 }

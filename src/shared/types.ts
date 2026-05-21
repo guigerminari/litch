@@ -49,6 +49,7 @@ export interface InventoryItem {
   itemId: string;
   quantity: number;
   enhancementLevel?: number;
+  rarity?: Rarity;
 }
 
 export interface EquipmentState {
@@ -81,6 +82,7 @@ export interface Character {
   arenaWins: number;
   arenaLosses: number;
   dungeonClears: number;
+  marketHistory: MarketTransactionHistory[];
   pveAutoUntil?: number;
   royalSealUntil?: number;
 }
@@ -247,6 +249,20 @@ export interface MarketListing {
   item: InventoryItem;
   price: number;
   currency: Currency;
+  createdAt: number;
+}
+
+export type MarketTransactionKind = "buy" | "sell";
+
+export interface MarketTransactionHistory {
+  id: string;
+  kind: MarketTransactionKind;
+  listingId: string;
+  item: InventoryItem;
+  price: number;
+  currency: Currency;
+  counterpartyPlayerId: string;
+  counterpartyName: string;
   createdAt: number;
 }
 

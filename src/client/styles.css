@@ -1048,6 +1048,25 @@ button:disabled {
   gap: 3px;
 }
 
+.inventory-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.inventory-item-meta small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(33, 34, 44, 0.55);
+  color: var(--muted);
+}
+
 .inv-action-buttons {
   display: flex;
   gap: 8px;
@@ -1686,6 +1705,85 @@ button:disabled {
   display: grid;
   gap: 10px;
   margin-top: 16px;
+}
+
+.market-history-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.market-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.market-history-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 62px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-soft);
+}
+
+.market-history-row.buy {
+  border-color: rgba(80, 250, 123, 0.26);
+}
+
+.market-history-row.sell {
+  border-color: rgba(255, 184, 108, 0.26);
+}
+
+.market-history-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.86);
+  color: var(--cyan);
+}
+
+.market-history-row.buy .market-history-icon {
+  color: var(--green);
+}
+
+.market-history-row.sell .market-history-icon {
+  color: var(--gold);
+}
+
+.market-history-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.market-history-body span,
+.market-history-body small,
+.market-history-side small {
+  color: var(--muted);
+}
+
+.market-history-body strong,
+.market-history-body span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.market-history-side {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  text-align: right;
+}
+
+.market-history-side b {
+  color: var(--text);
 }
 
 .market-group h3,
@@ -2442,6 +2540,13 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.market-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .clan-manage-form {

@@ -14,6 +14,7 @@ import type {
   ClanTransferLeadershipPayload,
   ClanUpdatePayload,
   CraftPayload,
+  Currency,
   CurrencyExchangePayload,
   DungeonStartPayload,
   EnhancePayload,
@@ -36,6 +37,7 @@ import type {
   TravelPayload,
   UseItemPayload
 } from "../shared/types";
+import { RARITY_PRICE_MULTIPLIER } from "../shared/rarity";
 import {
   CITIES,
   CLAN_BENEFITS,
@@ -82,7 +84,7 @@ const ENHANCEMENT_MIN_CHANCE = 5;
 const ENHANCEMENT_CREATION_STONE_BONUS = 3;
 const ENHANCEMENT_ITEMS = {
   oldStone: "material_old_stone",
-  eranStone: "material_eran_fragment",
+  eranStone: "misc_eran",
   celena: "material_celena",
   midran: "material_midran",
   creationStone: "misc_stone_craft"
@@ -139,6 +141,7 @@ function createCharacter(player: Player): Character {
     arenaWins: 0,
     arenaLosses: 0,
     dungeonClears: 0,
+    marketHistory: [],
     pveAutoUntil: 0,
     royalSealUntil: 0
   };
@@ -165,10 +168,33 @@ function currentCharacter(playerId: string) {
   character.arenaWins ??= 0;
   character.arenaLosses ??= 0;
   character.dungeonClears ??= 0;
+  character.marketHistory ??= [];
   character.pveAutoUntil ??= 0;
   character.royalSealUntil ??= 0;
   ensureQuestProgress(character);
   return character;
+}
+
+function pushMarketHistory(
+  character: Character,
+  entry: {
+    kind: "buy" | "sell";
+    listingId: string;
+    item: InventoryItem;
+    price: number;
+    currency: Currency;
+    counterpartyPlayerId: string;
+    counterpartyName: string;
+  }
+) {
+  character.marketHistory = [
+    {
+      id: randomUUID(),
+      createdAt: Date.now(),
+      ...entry
+    },
+    ...(character.marketHistory ?? [])
+  ].slice(0, 60);
 }
 
 function currentPlayer(playerId: string) {
@@ -1091,8 +1117,19 @@ function grantInventoryEntry(character: Character, item: InventoryItem) {
     instanceId: randomUUID(),
     itemId: item.itemId,
     quantity: 1,
-    enhancementLevel: item.enhancementLevel
+    enhancementLevel: item.enhancementLevel,
+    rarity: item.rarity
   });
+}
+
+function getItemValue(item: InventoryItem) {
+  const definition = ITEM_CATALOG[item.itemId];
+  if (!definition) {
+    return 1;
+  }
+
+  const rarity = definition.slot ? item.rarity ?? definition.rarity ?? "common" : definition.rarity ?? "common";
+  return Math.max(1, Math.floor(definition.price * RARITY_PRICE_MULTIPLIER[rarity]));
 }
 
 function craftItem(character: Character, recipeId: string) {
@@ -1350,7 +1387,7 @@ io.on("connection", (socket: AuthedSocket) => {
       }
 
       removeItem(character, item.instanceId, quantity);
-      character.gold += Math.max(1, Math.floor((definition.price * quantity) / 2));
+      character.gold += Math.max(1, Math.floor((getItemValue(item) * quantity) / 2));
       character.questProgress.shopItemsSold += quantity;
       emitState(playerId);
     } catch (error) {
@@ -1807,7 +1844,8 @@ io.on("connection", (socket: AuthedSocket) => {
         instanceId: randomUUID(),
         itemId: inventoryItem.itemId,
         quantity,
-        enhancementLevel: itemDef?.slot ? inventoryItem.enhancementLevel : undefined
+        enhancementLevel: itemDef?.slot ? inventoryItem.enhancementLevel : undefined,
+        rarity: itemDef?.slot ? inventoryItem.rarity : undefined
       };
       removeItem(character, inventoryItem.instanceId, quantity);
       const listing = {
@@ -1864,6 +1902,24 @@ io.on("connection", (socket: AuthedSocket) => {
       grantInventoryEntry(buyer, listing.item);
       buyer.questProgress.marketItemsBought += listing.item.quantity;
       seller.questProgress.marketItemsSold += listing.item.quantity;
+      pushMarketHistory(buyer, {
+        kind: "buy",
+        listingId: listing.id,
+        item: listing.item,
+        price: listing.price,
+        currency: listing.currency,
+        counterpartyPlayerId: listing.sellerPlayerId,
+        counterpartyName: listing.sellerName
+      });
+      pushMarketHistory(seller, {
+        kind: "sell",
+        listingId: listing.id,
+        item: listing.item,
+        price: listing.price,
+        currency: listing.currency,
+        counterpartyPlayerId: playerId,
+        counterpartyName: currentCharacter(playerId).name
+      });
       store.marketplace.delete(listing.id);
       emitMany([playerId, listing.sellerPlayerId]);
       broadcastWorldState();
