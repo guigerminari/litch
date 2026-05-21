@@ -1,7 +1,18 @@
 import type { BattleState, Character, ChatMessage, Clan, MarketListing, Player, PrivateMessage } from "../shared/types";
 
+export interface AuthAccount {
+  playerId: string;
+  email: string;
+  passwordHash: string;
+  recoveryCodeHash: string;
+  createdAt: number;
+  passwordUpdatedAt?: number;
+  recoveryCodeUpdatedAt?: number;
+}
+
 export interface GameStore {
   players: Map<string, Player>;
+  accountsByEmail: Map<string, AuthAccount>;
   characters: Map<string, Character>;
   sessions: Map<string, string>;
   battles: Map<string, BattleState>;
@@ -18,6 +29,7 @@ export interface GameStore {
 
 export const store: GameStore = {
   players: new Map(),
+  accountsByEmail: new Map(),
   characters: new Map(),
   sessions: new Map(),
   battles: new Map(),

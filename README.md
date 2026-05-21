@@ -7,7 +7,7 @@ Base de webapp para um RPG text-based com combate por turno, chat, mercado entre
 - React + Vite + TypeScript no cliente.
 - Node + TypeScript + Socket.IO no servidor realtime.
 - Dominio modular com servidor autoritativo.
-- Store em memoria para desenvolvimento. A proxima etapa natural e trocar os repositorios por PostgreSQL e Redis.
+- Persistencia local em `data/game-state.json`, incluindo contas, personagens, mercado, chat, clas e batalhas.
 
 ## Rodando
 
@@ -23,6 +23,7 @@ Servidor realtime: http://127.0.0.1:3001
 ## Regras implementadas
 
 - Cadastro cria jogador e personagem automaticamente.
+- Login com e-mail e senha, logout de sessao e redefinicao de senha por codigo de recuperacao.
 - Atributos iniciais: FORCA, CONSTITUICAO e AGILIDADE com 1 ponto.
 - Equipamentos: arma, armadura e amuleto.
 - Inventario com capacidade de 40 itens.

@@ -103,6 +103,7 @@ export interface QuestProgress {
 export interface Player {
   id: string;
   username: string;
+  email: string;
   createdAt: number;
 }
 
@@ -449,11 +450,25 @@ export interface ServerError {
 
 export interface RegisterPayload {
   username: string;
+  email: string;
+  password: string;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+  recoveryCode: string;
+  newPassword: string;
 }
 
 export interface AuthOkPayload {
   sessionToken: string;
   playerId: string;
+  recoveryCode?: string;
 }
 
 export interface AllocatePayload extends Partial<Attributes> {}

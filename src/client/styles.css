@@ -55,6 +55,18 @@ button:disabled {
   opacity: 0.48;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .auth-screen {
   min-height: 100vh;
   display: grid;
@@ -81,11 +93,41 @@ button:disabled {
   letter-spacing: 0;
 }
 
+.auth-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.auth-tabs button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #21222c;
+  color: var(--muted);
+}
+
+.auth-tabs button.active {
+  border-color: rgba(139, 233, 253, 0.56);
+  background: rgba(139, 233, 253, 0.12);
+  color: var(--text);
+}
+
 .auth-panel label {
   display: grid;
   gap: 8px;
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.auth-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .auth-panel input,
@@ -110,14 +152,81 @@ button:disabled {
   border-color: var(--focus);
 }
 
-.brand-mark {
-  width: 60px;
-  height: 60px;
+.recovery-card {
   display: grid;
-  place-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(241, 250, 140, 0.34);
   border-radius: 8px;
-  background: linear-gradient(145deg, var(--purple), var(--cyan));
-  color: #191a21;
+  background: rgba(241, 250, 140, 0.08);
+}
+
+.recovery-card span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.recovery-card code {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid rgba(241, 250, 140, 0.26);
+  border-radius: 6px;
+  color: var(--gold);
+  background: #191a21;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.recovery-modal {
+  position: relative;
+  width: min(430px, calc(100vw - 32px));
+  display: grid;
+  gap: 12px;
+  padding: 28px;
+  border: 1px solid rgba(241, 250, 140, 0.34);
+  border-radius: 10px;
+  background: #282a36;
+  color: var(--text);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+.recovery-modal > svg {
+  color: var(--gold);
+}
+
+.recovery-modal h2,
+.recovery-modal p {
+  margin: 0;
+}
+
+.recovery-modal p {
+  color: var(--muted);
+}
+
+.recovery-modal code {
+  padding: 12px;
+  border: 1px solid rgba(241, 250, 140, 0.3);
+  border-radius: 8px;
+  background: #191a21;
+  color: var(--gold);
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.title-lockup-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.auth-wordmark {
+  width: min(230px, 82vw);
+  aspect-ratio: 1;
+  justify-self: center;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #07050c;
 }
 
 .game-shell {
@@ -202,6 +311,13 @@ button:disabled {
   gap: 12px;
   align-items: center;
   min-width: 0;
+}
+
+.title-lockup-logo {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 7px;
 }
 
 .title-lockup div {
@@ -1258,6 +1374,21 @@ button:disabled {
   font-size: 0.86rem;
 }
 
+.market-shop-card {
+  grid-template-rows: 60px minmax(30px, auto) auto auto;
+  min-height: 184px;
+}
+
+.market-card-subtle {
+  max-width: 100%;
+  color: rgba(189, 194, 217, 0.72);
+  font-size: 0.66rem;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .shop-quantity-control {
   display: grid;
   gap: 8px;
@@ -1701,6 +1832,80 @@ button:disabled {
   margin-bottom: 10px;
 }
 
+.market-sale-form {
+  grid-template-columns: minmax(240px, 1.2fr) minmax(170px, 0.8fr) 100px 110px 140px auto;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid rgba(139, 233, 253, 0.26);
+  border-radius: 8px;
+  background: rgba(139, 233, 253, 0.06);
+}
+
+.market-form label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.market-selected-summary {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.market-selected-summary > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.market-selected-summary strong,
+.market-selected-summary small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.market-selected-summary span,
+.market-selected-summary small {
+  color: var(--muted);
+}
+
+.market-selected-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+}
+
+.market-sale-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.market-sale-stats span {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid rgba(80, 250, 123, 0.24);
+  border-radius: 6px;
+  background: rgba(80, 250, 123, 0.07);
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.market-sale-stats b {
+  color: var(--green);
+}
+
+.market-sell-grid {
+  margin-bottom: 4px;
+}
+
 .market-group {
   display: grid;
   gap: 10px;
@@ -2123,6 +2328,26 @@ button:disabled {
   font-size: 0.95rem;
 }
 
+.market-subtle-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+  color: rgba(189, 194, 217, 0.7);
+  font-size: 0.72rem;
+}
+
+.market-subtle-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.market-subtle-meta b {
+  color: rgba(248, 248, 242, 0.76);
+  font-weight: 600;
+}
+
 .market-modal-stats {
   display: grid;
   gap: 10px;
@@ -2157,6 +2382,29 @@ button:disabled {
 
 .stat-list strong {
   color: var(--green);
+}
+
+.market-attribute-highlight {
+  padding: 12px;
+  border: 1px solid rgba(80, 250, 123, 0.32);
+  border-radius: 10px;
+  background: rgba(80, 250, 123, 0.07);
+}
+
+.market-attribute-highlight .stat-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.market-attribute-highlight .stat-list > div {
+  padding: 9px 10px;
+  border: 1px solid rgba(80, 250, 123, 0.22);
+  border-radius: 8px;
+  background: rgba(25, 26, 33, 0.42);
+}
+
+.market-attribute-highlight .stat-list strong {
+  color: var(--green);
+  font-size: 1rem;
 }
 
 .market-modal-requirement {
@@ -2917,6 +3165,7 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
+  width: 100%;
 }
 
 .quest-progress i {
@@ -3439,6 +3688,11 @@ button:disabled {
   .quest-info-line {
     grid-template-columns: 1fr;
     justify-items: start;
+    width: 100%;
+  }
+
+  .quest-progress {
+    grid-template-columns: minmax(120px, 1fr) auto;
     width: 100%;
   }
 

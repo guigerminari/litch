@@ -14,7 +14,11 @@ import {
   Gem,
   Hammer,
   Heart,
+  KeyRound,
   Lock,
+  LogIn,
+  LogOut,
+  Mail,
   MapPinned,
   MessageCircle,
   ScrollText,
@@ -27,6 +31,7 @@ import {
   Swords,
   Trophy,
   User,
+  UserPlus,
   Users,
   X,
   Zap,
@@ -74,6 +79,8 @@ type View =
   | "rankings"
   | "gameShop"
   | "clan";
+
+type AuthMode = "login" | "register" | "forgot";
 
 const viewLabels: Record<View, string> = {
   city: "Cidade",
@@ -149,6 +156,8 @@ const ENHANCEMENT_ITEMS = {
 } as const;
 const TRAIN_TICKET_ID = "ticket_train";
 const SHIP_TICKET_ID = "ticket_ship";
+const BRAND_ICON_URL = "/assets/brand/litch-logo-square-512x512.png";
+const BRAND_WORDMARK_URL = "/assets/brand/litch-1500x1500.png";
 const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
   strength: "Forca",
   constitution: "Constituicao",
@@ -159,7 +168,13 @@ const EQUIPMENT_STAT_KEYS: Array<keyof typeof EQUIPMENT_STAT_LABELS> = ["strengt
 
 export function App() {
   const [game, setGame] = useState<GameState | null>(null);
+  const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [recoveryCode, setRecoveryCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [latestRecoveryCode, setLatestRecoveryCode] = useState<string | null>(null);
   const [view, setView] = useState<View>("city");
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(socket.connected);
@@ -177,8 +192,20 @@ export function App() {
       }
     };
 
-    const onAuthOk = (payload: { sessionToken: string }) => {
+    const onAuthOk = (payload: { sessionToken: string; recoveryCode?: string }) => {
       localStorage.setItem("litch:session", payload.sessionToken);
+      if (payload.recoveryCode) {
+        setLatestRecoveryCode(payload.recoveryCode);
+      }
+      setPassword("");
+      setNewPassword("");
+      setRecoveryCode("");
+    };
+
+    const onAuthLogout = () => {
+      localStorage.removeItem("litch:session");
+      setGame(null);
+      setAuthMode("login");
     };
 
     const onGameState = (state: GameState) => {
@@ -187,7 +214,7 @@ export function App() {
 
     const onError = (payload: { message: string }) => {
       setError(payload.message);
-      if (payload.message.includes("Sessão")) {
+      if (payload.message.toLowerCase().includes("sess")) {
         localStorage.removeItem("litch:session");
         setGame(null);
       }
@@ -199,6 +226,7 @@ export function App() {
     socket.on("connect", resume);
     socket.on("disconnect", onDisconnect);
     socket.on("auth:ok", onAuthOk);
+    socket.on("auth:logout", onAuthLogout);
     socket.on("game:state", onGameState);
     socket.on("game:error", onError);
 
@@ -210,6 +238,7 @@ export function App() {
       socket.off("connect", resume);
       socket.off("disconnect", onDisconnect);
       socket.off("auth:ok", onAuthOk);
+      socket.off("auth:logout", onAuthLogout);
       socket.off("game:state", onGameState);
       socket.off("game:error", onError);
     };
@@ -223,30 +252,117 @@ export function App() {
     return () => clearInterval(id);
   }, [game?.nextRegenAt]);
 
-  const register = (event: FormEvent) => {
+  const submitAuth = (event: FormEvent) => {
     event.preventDefault();
-    socket.emit("auth:register", { username });
+    setLatestRecoveryCode(null);
+    if (authMode === "login") {
+      socket.emit("auth:login", { email, password });
+      return;
+    }
+    if (authMode === "register") {
+      socket.emit("auth:register", { username, email, password });
+      return;
+    }
+    socket.emit("auth:forgotPassword", { email, recoveryCode, newPassword });
   };
+
+  const logout = () => {
+    const token = localStorage.getItem("litch:session");
+    socket.emit("auth:logout", token ?? "");
+    localStorage.removeItem("litch:session");
+    setGame(null);
+    setAuthMode("login");
+  };
+
+  const canSubmitAuth =
+    connected &&
+    email.trim().length > 0 &&
+    (authMode === "forgot" ? newPassword.length >= 6 && recoveryCode.trim().length > 0 : password.length >= 6) &&
+    (authMode !== "register" || username.trim().length >= 3);
 
   if (!game) {
     return (
       <main className="auth-screen">
-        <form className="auth-panel" onSubmit={register}>
-          <div className="brand-mark">
-            <Castle size={34} />
+        <form className="auth-panel" onSubmit={submitAuth}>
+          <h1 className="sr-only">Litch RPG</h1>
+          <img className="auth-wordmark" src={BRAND_WORDMARK_URL} alt="Litch RPG" />
+          <div className="auth-tabs">
+            <button type="button" className={authMode === "login" ? "active" : ""} onClick={() => setAuthMode("login")}>
+              <LogIn size={15} /> Entrar
+            </button>
+            <button type="button" className={authMode === "register" ? "active" : ""} onClick={() => setAuthMode("register")}>
+              <UserPlus size={15} /> Cadastro
+            </button>
+            <button type="button" className={authMode === "forgot" ? "active" : ""} onClick={() => setAuthMode("forgot")}>
+              <KeyRound size={15} /> Senha
+            </button>
           </div>
-          <h1>Litch RPG</h1>
+          {authMode === "register" && (
+            <label>
+              <span className="auth-label"><User size={15} /> Nome do jogador</span>
+              <input
+                value={username}
+                maxLength={24}
+                autoComplete="username"
+                onChange={(event) => setUsername(event.target.value)}
+                placeholder="Ex: Arthen"
+              />
+            </label>
+          )}
           <label>
-            Nome do jogador
+            <span className="auth-label"><Mail size={15} /> E-mail</span>
             <input
-              value={username}
-              maxLength={24}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="Ex: Arthen"
+              type="email"
+              value={email}
+              autoComplete="email"
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="voce@email.com"
             />
           </label>
-          <button className="primary-button" type="submit" disabled={!connected}>
-            Criar personagem
+          {authMode === "forgot" ? (
+            <>
+              <label>
+                <span className="auth-label"><KeyRound size={15} /> Codigo de recuperacao</span>
+                <input
+                  value={recoveryCode}
+                  autoComplete="one-time-code"
+                  onChange={(event) => setRecoveryCode(event.target.value)}
+                  placeholder="XXXX-XXXX-XXXX"
+                />
+              </label>
+              <label>
+                <span className="auth-label"><Lock size={15} /> Nova senha</span>
+                <input
+                  type="password"
+                  value={newPassword}
+                  minLength={6}
+                  autoComplete="new-password"
+                  onChange={(event) => setNewPassword(event.target.value)}
+                  placeholder="Minimo de 6 caracteres"
+                />
+              </label>
+            </>
+          ) : (
+            <label>
+              <span className="auth-label"><Lock size={15} /> Senha</span>
+              <input
+                type="password"
+                value={password}
+                minLength={6}
+                autoComplete={authMode === "register" ? "new-password" : "current-password"}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Minimo de 6 caracteres"
+              />
+            </label>
+          )}
+          {latestRecoveryCode && (
+            <div className="recovery-card">
+              <span>Codigo de recuperacao</span>
+              <code>{latestRecoveryCode}</code>
+            </div>
+          )}
+          <button className="primary-button" type="submit" disabled={!canSubmitAuth}>
+            {authMode === "login" ? "Entrar" : authMode === "register" ? "Criar conta" : "Redefinir senha"}
           </button>
           <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Conectando"}</span>
         </form>
@@ -267,6 +383,7 @@ export function App() {
         onGameShop={() => setView("gameShop")}
         onExchange={() => setShowExchange(true)}
         onRanking={() => setView("rankings")}
+        onLogout={logout}
       />
       <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
         <section className="city-stage">
@@ -278,6 +395,7 @@ export function App() {
       {!game.activeBattle && <FloatingChat game={game} open={showChat} setOpen={setShowChat} />}
       {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
       {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
+      {latestRecoveryCode && <RecoveryCodeModal code={latestRecoveryCode} onClose={() => setLatestRecoveryCode(null)} />}
       {error && <Toast message={error} />}
     </main>
   );
@@ -290,7 +408,8 @@ function Header({
   onDetails,
   onGameShop,
   onExchange,
-  onRanking
+  onRanking,
+  onLogout
 }: {
   game: GameState;
   connected: boolean;
@@ -299,6 +418,7 @@ function Header({
   onGameShop: () => void;
   onExchange: () => void;
   onRanking: () => void;
+  onLogout: () => void;
 }) {
   const nextXp = game.character.level * 120;
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
@@ -313,7 +433,7 @@ function Header({
   return (
     <header className="topbar">
       <div className="title-lockup">
-        <Castle size={26} />
+        <img className="title-lockup-logo" src={BRAND_ICON_URL} alt="" />
         <div>
           <strong>Litch RPG</strong>
           <span>{game.currentCity.name}</span>
@@ -367,6 +487,9 @@ function Header({
           onClick={onRanking}
         >
           <Trophy size={17} style={{ color: "var(--gold)" }} />
+        </button>
+        <button className="stat-pill stat-action logout-action" title="Deslogar" aria-label="Deslogar" onClick={onLogout}>
+          <LogOut size={17} style={{ color: "var(--red)" }} />
         </button>
         <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Offline"}</span>
       </div>
@@ -2188,7 +2311,7 @@ function TravelPanel({ game }: { game: GameState }) {
 
 function MarketPanel({ game }: { game: GameState }) {
   const tradableItems = game.character.inventory.filter((item) => !isItemEquipped(game, item.instanceId));
-  const [instanceId, setInstanceId] = useState(tradableItems[0]?.instanceId ?? "");
+  const [instanceId, setInstanceId] = useState("");
   const [price, setPrice] = useState(25);
   const [quantity, setQuantity] = useState(1);
   const [currency, setCurrency] = useState<Currency>("gold");
@@ -2200,7 +2323,13 @@ function MarketPanel({ game }: { game: GameState }) {
   const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
   const selectedInventoryItem = tradableItems.find((item) => item.instanceId === instanceId) ?? null;
   const selectedItemDef = selectedInventoryItem ? game.itemCatalog[selectedInventoryItem.itemId] : null;
+  const selectedSellStats = selectedInventoryItem && selectedItemDef ? getEnhancedItemStats(selectedItemDef, selectedInventoryItem) : null;
+  const selectedSellRarity = selectedInventoryItem && selectedItemDef ? getItemRarity(selectedItemDef, selectedInventoryItem) : undefined;
   const maxQuantity = selectedInventoryItem ? Math.max(1, selectedInventoryItem.quantity) : 1;
+  const saleSlots: Array<InventoryItem | null> = [
+    ...tradableItems,
+    ...Array(Math.max(0, 40 - tradableItems.length)).fill(null)
+  ];
   const myListings = game.marketplaceListings.filter((listing) => listing.sellerPlayerId === game.player.id);
   const marketHistory = [...(game.character.marketHistory ?? [])].sort((left, right) => right.createdAt - left.createdAt);
   const historyEntries = marketHistory.filter((entry) => entry.kind === historyFilter);
@@ -2228,9 +2357,7 @@ function MarketPanel({ game }: { game: GameState }) {
 
   useEffect(() => {
     if (!tradableItems.some((item) => item.instanceId === instanceId)) {
-      setInstanceId(tradableItems[0]?.instanceId ?? "");
-    } else if (!instanceId && tradableItems[0]) {
-      setInstanceId(tradableItems[0].instanceId);
+      setInstanceId("");
     }
   }, [instanceId, tradableItems]);
 
@@ -2260,6 +2387,8 @@ function MarketPanel({ game }: { game: GameState }) {
       currency,
       quantity: selectedItemDef?.slot ? 1 : Math.max(1, Math.min(maxQuantity, quantity))
     });
+    setInstanceId("");
+    setQuantity(1);
   };
 
   return (
@@ -2342,8 +2471,11 @@ function MarketPanel({ game }: { game: GameState }) {
                         onClick={() => setSelectedListing(listing)}
                         title={formatInventoryItemName(item, listing.item)}
                       >
-                        <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
+                        <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity > 1 ? listing.item.quantity : undefined} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
                         <strong>{formatInventoryItemName(item, listing.item)}</strong>
+                        <small className="market-card-subtle">
+                          {listing.sellerName} - NPC {formatCurrency(getNpcSellValue(item, listing.item))}
+                        </small>
                         <span className="shop-card-price">
                           {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={13} style={{ color: "var(--gold)" }} /> : <Gem size={13} style={{ color: "var(--cyan)" }} />}
                         </span>
@@ -2372,56 +2504,104 @@ function MarketPanel({ game }: { game: GameState }) {
             <div className="market-block-head">
               <div>
                 <h3>Gerenciar vendas</h3>
-                <p className="muted">Crie lotes dos itens agrupáveis e acompanhe suas ofertas abertas.</p>
+                <p className="muted">Clique em um item para completar a oferta.</p>
               </div>
             </div>
-            <form className="market-form" onSubmit={createListing}>
-              <select value={instanceId} onChange={(event) => setInstanceId(event.target.value)}>
-                {tradableItems.length === 0 && <option value="">Nenhum item disponível</option>}
-                {tradableItems.map((inventoryItem) => {
-                  const item = game.itemCatalog[inventoryItem.itemId];
-                  return (
-                    <option value={inventoryItem.instanceId} key={inventoryItem.instanceId}>
-                      {item.name} {inventoryItem.quantity > 1 ? `x${inventoryItem.quantity}` : ""}
-                    </option>
-                  );
-                })}
-              </select>
-              <input
-                type="number"
-                min={1}
-                max={selectedItemDef?.slot ? 1 : maxQuantity}
-                value={selectedItemDef?.slot ? 1 : quantity}
-                disabled={!selectedInventoryItem || Boolean(selectedItemDef?.slot)}
-                onChange={(event) => setQuantity(Number(event.target.value))}
-                aria-label="Quantidade do lote"
-              />
-              <input
-                type="number"
-                min={1}
-                value={price}
-                onChange={(event) => setPrice(Number(event.target.value))}
-                aria-label="Preço"
-              />
-              <select value={currency} onChange={(event) => setCurrency(event.target.value as Currency)}>
-                <option value="gold">Ouro</option>
-                <option value="diamonds">Diamantes</option>
-              </select>
-              <button className="primary-button" disabled={!instanceId}>
-                Ofertar lote
-              </button>
-            </form>
-            <div className="market-form-hint">
-              {selectedInventoryItem && selectedItemDef ? (
-                <span>
-                  {selectedItemDef.slot
-                    ? "Equipamentos só podem ser vendidos unidade por unidade."
-                    : `Disponível para lote: até x${selectedInventoryItem.quantity}.`}
-                </span>
-              ) : (
-                <span>Nenhum item disponível para anunciar.</span>
-              )}
+            <div className="inventory-grid market-sell-grid">
+              {saleSlots.map((slot, index) => {
+                if (!slot) {
+                  return <div key={`sale-empty-${index}`} className="inv-slot empty" />;
+                }
+                const item = game.itemCatalog[slot.itemId];
+                const selected = instanceId === slot.instanceId;
+                const rarityColor = getEquipmentRarityColor(item, slot.rarity);
+                return (
+                  <button
+                    key={slot.instanceId}
+                    type="button"
+                    className={`inv-slot${selected ? " selected" : ""}`}
+                    title={formatInventoryItemName(item, slot)}
+                    style={{ borderColor: rarityColor }}
+                    onClick={() => setInstanceId(selected ? "" : slot.instanceId)}
+                  >
+                    <ItemVisual
+                      item={item}
+                      className="slot-visual"
+                      quantity={slot.quantity > 1 ? slot.quantity : undefined}
+                      enhancementLevel={slot.enhancementLevel}
+                      rarity={slot.rarity}
+                    />
+                  </button>
+                );
+              })}
             </div>
+            {selectedInventoryItem && selectedItemDef ? (
+              <form className="market-form market-sale-form" onSubmit={createListing}>
+                <div className="market-selected-summary">
+                  <ItemVisual
+                    item={selectedItemDef}
+                    className="market-selected-icon"
+                    quantity={selectedInventoryItem.quantity > 1 ? selectedInventoryItem.quantity : undefined}
+                    enhancementLevel={selectedInventoryItem.enhancementLevel}
+                    rarity={selectedInventoryItem.rarity}
+                  />
+                  <div>
+                    <strong>{formatInventoryItemName(selectedItemDef, selectedInventoryItem)}</strong>
+                    <span>{ITEM_KIND_LABELS[selectedItemDef.kind]}</span>
+                    <small>
+                      {selectedItemDef.slot
+                        ? "Equipamento vendido unidade por unidade."
+                        : `Disponível para lote: até x${selectedInventoryItem.quantity}.`}
+                    </small>
+                    {selectedItemDef.slot && selectedSellRarity && <div className={`item-rarity ${selectedSellRarity}`}>{RARITY_LABELS[selectedSellRarity]}</div>}
+                  </div>
+                </div>
+                {selectedItemDef.slot && selectedSellStats && (
+                  <div className="market-sale-stats">
+                    {selectedSellStats.strength !== undefined && <span>FOR <b>+{selectedSellStats.strength}</b></span>}
+                    {selectedSellStats.constitution !== undefined && <span>CON <b>+{selectedSellStats.constitution}</b></span>}
+                    {selectedSellStats.agility !== undefined && <span>AGI <b>+{selectedSellStats.agility}</b></span>}
+                    {selectedSellStats.defense !== undefined && <span>DEF <b>+{selectedSellStats.defense}</b></span>}
+                  </div>
+                )}
+                <label>
+                  <span>Quantidade</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={selectedItemDef.slot ? 1 : maxQuantity}
+                    value={selectedItemDef.slot ? 1 : quantity}
+                    disabled={Boolean(selectedItemDef.slot)}
+                    onChange={(event) => setQuantity(Number(event.target.value))}
+                    aria-label="Quantidade do lote"
+                  />
+                </label>
+                <label>
+                  <span>Preço</span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={price}
+                    onChange={(event) => setPrice(Number(event.target.value))}
+                    aria-label="Preço"
+                  />
+                </label>
+                <label>
+                  <span>Moeda</span>
+                  <select value={currency} onChange={(event) => setCurrency(event.target.value as Currency)}>
+                    <option value="gold">Ouro</option>
+                    <option value="diamonds">Diamantes</option>
+                  </select>
+                </label>
+                <button className="primary-button">
+                  Ofertar lote
+                </button>
+              </form>
+            ) : (
+              <div className="market-form-hint">
+                <span>{tradableItems.length === 0 ? "Nenhum item disponível para anunciar." : "Selecione um item acima para anunciar."}</span>
+              </div>
+            )}
             <section className="market-group">
               <h3>Minhas ofertas</h3>
               <div className="market-list">
@@ -2509,10 +2689,10 @@ function MarketListingCard({
   const rarityColor = getEquipmentRarityColor(item, listing.item.rarity);
   return (
     <article className="market-card" style={{ borderColor: rarityColor }}>
-      <ItemVisual item={item} className="market-item-box" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
+      <ItemVisual item={item} className="market-item-box" quantity={listing.item.quantity > 1 ? listing.item.quantity : undefined} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
       <div className="market-card-body">
         <strong>{formatInventoryItemName(item, listing.item)}</strong>
-        <span className="market-card-meta">Valor do item: {formatCurrency(getItemValue(item, listing.item))}</span>
+        <span className="market-card-meta">NPC: {formatCurrency(getNpcSellValue(item, listing.item))} ouro</span>
         <span className="market-card-meta">{metaLabel}</span>
       </div>
       <div className="market-card-side">
@@ -2541,16 +2721,20 @@ function MarketListingModal({
   const item = game.itemCatalog[listing.item.itemId];
   const rarityColor = getEquipmentRarityColor(item, listing.item.rarity);
   const selectedStats = getEnhancedItemStats(item, listing.item);
+  const canReceiveListing =
+    item.slot || !game.character.inventory.some((inventoryItem) => inventoryItem.itemId === listing.item.itemId)
+      ? game.inventoryUsed < game.inventoryCapacity
+      : true;
   const canBuy = 
     (listing.currency === "gold" ? game.character.gold >= listing.price : game.character.diamonds >= listing.price) &&
-    game.inventoryUsed < game.inventoryCapacity;
+    canReceiveListing;
   return (
     <div className="drawer-backdrop" role="presentation" onClick={onClose}>
       <div className="market-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} style={{ borderColor: rarityColor }}>
         <button className="close-button" title="Fechar" onClick={onClose}>
           <X size={20} />
         </button>
-        <ItemVisual item={item} className="market-modal-icon" quantity={listing.item.quantity} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
+        <ItemVisual item={item} className="market-modal-icon" quantity={listing.item.quantity > 1 ? listing.item.quantity : undefined} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
         <div className="market-modal-content">
           <h2>{formatInventoryItemName(item, listing.item)}</h2>
           <small className="market-modal-type">{ITEM_KIND_LABELS[item.kind]}</small>
@@ -2559,32 +2743,18 @@ function MarketListingModal({
               {RARITY_LABELS[getItemRarity(item, listing.item) ?? "common"]}
             </div>
           )}
-          <div className="market-modal-details">
-            <div>
-              <span>Valor do item</span>
-              <strong>{formatCurrency(getItemValue(item, listing.item))} ouro</strong>
-            </div>
-          </div>
           <p className="market-modal-desc">{item.description}</p>
           
-          <div className="market-modal-details">
-            <div>
-              <span>Vendedor</span>
-              <strong>{listing.sellerName}</strong>
-            </div>
-            <div>
-              <span>Data da oferta</span>
-              <strong>{formatListingDate(listing.createdAt)}</strong>
-            </div>
-            <div>
-              <span>Quantidade no lote</span>
-              <strong>x{listing.item.quantity}</strong>
-            </div>
+          <div className="market-subtle-meta">
+            <span>Vendedor <b>{listing.sellerName}</b></span>
+            <span>NPC <b>{formatCurrency(getNpcSellValue(item, listing.item))} ouro</b></span>
+            <span>{formatListingDate(listing.createdAt)}</span>
+            {listing.item.quantity > 1 && <span>Lote <b>x{listing.item.quantity}</b></span>}
           </div>
 
           {item.slot && (
-            <div className="market-modal-stats">
-              <h4>Bônus</h4>
+            <div className="market-modal-stats market-attribute-highlight">
+              <h4>Atributos</h4>
               <div className="stat-list">
                 {selectedStats.strength && <div><span>Força</span> <strong>+{selectedStats.strength}</strong></div>}
                 {selectedStats.constitution && <div><span>Constituição</span> <strong>+{selectedStats.constitution}</strong></div>}
@@ -2628,7 +2798,7 @@ function MarketListingModal({
             >
               {!canBuy && listing.currency === "gold" && game.character.gold < listing.price ? "Ouro insuficiente" : ""}
               {!canBuy && listing.currency === "diamonds" && game.character.diamonds < listing.price ? "Diamantes insuficientes" : ""}
-              {!canBuy && game.inventoryUsed >= game.inventoryCapacity ? "Inventário cheio" : ""}
+              {!canBuy && !canReceiveListing ? "Inventário cheio" : ""}
               {canBuy ? "Comprar lote" : ""}
             </button>
           </div>
@@ -3254,6 +3424,23 @@ function IconButton({
   );
 }
 
+function RecoveryCodeModal({ code, onClose }: { code: string; onClose: () => void }) {
+  return (
+    <div className="drawer-backdrop" role="presentation" onClick={onClose}>
+      <div className="recovery-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={20} />
+        </button>
+        <KeyRound size={28} />
+        <h2>Codigo de recuperacao</h2>
+        <p>Guarde este codigo para redefinir sua senha depois.</p>
+        <code>{code}</code>
+        <button className="primary-button" onClick={onClose}>Entendi</button>
+      </div>
+    </div>
+  );
+}
+
 function Toast({ message }: { message: string }) {
   return <div className="toast">{message}</div>;
 }
@@ -3284,6 +3471,10 @@ function getItemRarity(item: ItemDefinition, inventoryItem?: { enhancementLevel?
 function getItemValue(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number; rarity?: Rarity } | null) {
   const rarity = item.slot ? getItemRarity(item, inventoryItem) : item.rarity;
   return Math.max(1, Math.floor(item.price * (rarity ? RARITY_PRICE_MULTIPLIER[rarity] : 1)));
+}
+
+function getNpcSellValue(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number; rarity?: Rarity } | null) {
+  return Math.max(1, Math.floor(getItemValue(item, inventoryItem) / 2));
 }
 
 function formatInventoryItemName(item: ItemDefinition, inventoryItem?: { enhancementLevel?: number; rarity?: Rarity } | null) {

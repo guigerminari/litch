@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import { Server } from "socket.io";
 import type {
   AllocatePayload,
@@ -18,11 +18,13 @@ import type {
   CurrencyExchangePayload,
   DungeonStartPayload,
   EnhancePayload,
+  ForgotPasswordPayload,
   EquipPayload,
   GameState,
   GameShopPurchasePayload,
   HuntStartPayload,
   InventoryItem,
+  LoginPayload,
   MarketBuyPayload,
   MarketCreatePayload,
   Player,
@@ -65,9 +67,11 @@ import {
 import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, removeItem } from "./domain/inventory";
 import { deriveStats, grantExperience } from "./domain/stats";
 import { store } from "./store";
+import { flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
+const PASSWORD_MIN_LENGTH = 6;
 const POTION_MISSION_TARGETS = [5, 50, 100, 200];
 const CLAN_BASE_MEMBER_CAPACITY = 20;
 const CLAN_CREATE_MIN_LEVEL = 15;
@@ -95,6 +99,8 @@ const DAILY_MISSIONS = [
   { id: "daily-defeat-15", title: "Caçada longa", target: 15, reward: { experience: 480, gold: 240 } }
 ];
 
+loadPersistentStore();
+
 const httpServer = createServer((request, response) => {
   if (request.url === "/health") {
     response.writeHead(200, { "content-type": "application/json" });
@@ -114,7 +120,7 @@ const io = new Server(httpServer, {
 });
 
 type AuthedSocket = Parameters<Parameters<typeof io.on>[1]>[0] & {
-  data: { playerId?: string };
+  data: { playerId?: string; sessionToken?: string };
 };
 
 function createCharacter(player: Player): Character {
@@ -202,6 +208,7 @@ function currentPlayer(playerId: string) {
   if (!player) {
     throw new Error("Jogador não encontrado.");
   }
+  player.email ??= "";
   return player;
 }
 
@@ -282,18 +289,21 @@ function emitState(playerId: string) {
   }
 
   const state = serializeGameState(playerId);
+  persistStoreSoon();
   for (const socketId of socketIds) {
     io.to(socketId).emit("game:state", state);
   }
 }
 
 function emitMany(playerIds: Iterable<string>) {
+  persistStoreSoon();
   for (const playerId of playerIds) {
     emitState(playerId);
   }
 }
 
 function broadcastWorldState() {
+  persistStoreSoon();
   emitMany(store.players.keys());
 }
 
@@ -312,6 +322,105 @@ function handleError(socket: AuthedSocket, error: unknown) {
 
 function sanitizeName(value: string) {
   return value.trim().replace(/\s+/g, " ").slice(0, 24);
+}
+
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function validateEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function normalizeRecoveryCode(value: string) {
+  return value.trim().replace(/[\s-]+/g, "").toUpperCase();
+}
+
+function createRecoveryCode() {
+  const raw = randomBytes(6).toString("hex").toUpperCase();
+  return raw.match(/.{1,4}/g)?.join("-") ?? raw;
+}
+
+function hashSecret(secret: string) {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(secret, salt, 64).toString("hex");
+  return `scrypt:${salt}:${hash}`;
+}
+
+function verifySecret(secret: string, storedHash: string) {
+  const [scheme, salt, expectedHash] = storedHash.split(":");
+  if (scheme !== "scrypt" || !salt || !expectedHash) {
+    return false;
+  }
+
+  const expected = Buffer.from(expectedHash, "hex");
+  const actual = scryptSync(secret, salt, expected.length);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+function assertPassword(password: string) {
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    throw new Error(`Use uma senha com pelo menos ${PASSWORD_MIN_LENGTH} caracteres.`);
+  }
+}
+
+function attachSocketSession(socket: AuthedSocket, playerId: string, sessionToken: string) {
+  socket.data.playerId = playerId;
+  socket.data.sessionToken = sessionToken;
+  socket.join(`player:${playerId}`);
+  const sockets = store.socketsByPlayer.get(playerId) ?? new Set<string>();
+  sockets.add(socket.id);
+  store.socketsByPlayer.set(playerId, sockets);
+}
+
+function detachSocketSession(socket: AuthedSocket) {
+  const playerId = socket.data.playerId;
+  if (!playerId) {
+    return null;
+  }
+
+  const sockets = store.socketsByPlayer.get(playerId);
+  sockets?.delete(socket.id);
+  if (!sockets || sockets.size === 0) {
+    store.socketsByPlayer.delete(playerId);
+  }
+  socket.leave(`player:${playerId}`);
+  socket.data.playerId = undefined;
+  socket.data.sessionToken = undefined;
+  return playerId;
+}
+
+function deleteSessionsForPlayer(playerId: string) {
+  for (const [sessionToken, sessionPlayerId] of store.sessions) {
+    if (sessionPlayerId === playerId) {
+      store.sessions.delete(sessionToken);
+    }
+  }
+}
+
+function forceLogoutPlayerSockets(playerId: string, exceptSocketId?: string) {
+  const socketIds = Array.from(store.socketsByPlayer.get(playerId) ?? []);
+  for (const socketId of socketIds) {
+    if (socketId === exceptSocketId) {
+      continue;
+    }
+    const playerSocket = io.sockets.sockets.get(socketId) as AuthedSocket | undefined;
+    playerSocket?.emit("auth:logout");
+    if (playerSocket) {
+      detachSocketSession(playerSocket);
+    }
+  }
+}
+
+function createSession(socket: AuthedSocket, playerId: string) {
+  if (socket.data.sessionToken) {
+    store.sessions.delete(socket.data.sessionToken);
+  }
+  detachSocketSession(socket);
+  const sessionToken = randomUUID();
+  store.sessions.set(sessionToken, playerId);
+  attachSocketSession(socket, playerId, sessionToken);
+  return sessionToken;
 }
 
 function currentDayKey() {
@@ -1227,16 +1336,30 @@ function activePlayerIdsForBattle(battleId: string) {
 io.on("connection", (socket: AuthedSocket) => {
   socket.on("auth:resume", (sessionToken: string) => {
     try {
-      const playerId = store.sessions.get(sessionToken);
-      if (!playerId) {
+      const token = String(sessionToken ?? "");
+      const playerId = store.sessions.get(token);
+      if (!playerId || !store.players.has(playerId)) {
         throw new Error("Sessão expirada.");
       }
-      socket.data.playerId = playerId;
-      socket.join(`player:${playerId}`);
-      const sockets = store.socketsByPlayer.get(playerId) ?? new Set<string>();
-      sockets.add(socket.id);
-      store.socketsByPlayer.set(playerId, sockets);
-      socket.emit("auth:ok", { sessionToken, playerId });
+      attachSocketSession(socket, playerId, token);
+      socket.emit("auth:ok", { sessionToken: token, playerId });
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("auth:login", (payload: LoginPayload) => {
+    try {
+      const email = normalizeEmail(String(payload.email ?? ""));
+      const password = String(payload.password ?? "");
+      const account = store.accountsByEmail.get(email);
+      if (!account || !verifySecret(password, account.passwordHash)) {
+        throw new Error("E-mail ou senha invalidos.");
+      }
+
+      const sessionToken = createSession(socket, account.playerId);
+      socket.emit("auth:ok", { sessionToken, playerId: account.playerId });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
@@ -1245,27 +1368,87 @@ io.on("connection", (socket: AuthedSocket) => {
 
   socket.on("auth:register", (payload: RegisterPayload) => {
     try {
-      const username = sanitizeName(payload.username);
+      const username = sanitizeName(String(payload.username ?? ""));
+      const email = normalizeEmail(String(payload.email ?? ""));
+      const password = String(payload.password ?? "");
       if (username.length < 3) {
         throw new Error("Use um nome com pelo menos 3 caracteres.");
       }
+      if (!validateEmail(email)) {
+        throw new Error("Informe um e-mail valido.");
+      }
+      assertPassword(password);
+      if (store.accountsByEmail.has(email)) {
+        throw new Error("Ja existe uma conta com este e-mail.");
+      }
+      const usernameTaken = Array.from(store.players.values()).some(
+        (player) => player.username.toLowerCase() === username.toLowerCase()
+      );
+      if (usernameTaken) {
+        throw new Error("Este nome de jogador ja esta em uso.");
+      }
 
-      const player: Player = { id: randomUUID(), username, createdAt: Date.now() };
+      const player: Player = { id: randomUUID(), username, email, createdAt: Date.now() };
       const character = createCharacter(player);
-      const sessionToken = randomUUID();
+      const recoveryCode = createRecoveryCode();
 
       store.players.set(player.id, player);
       store.characters.set(player.id, character);
-      store.sessions.set(sessionToken, player.id);
-      socket.data.playerId = player.id;
-      socket.join(`player:${player.id}`);
-      store.socketsByPlayer.set(player.id, new Set([socket.id]));
+      store.accountsByEmail.set(email, {
+        playerId: player.id,
+        email,
+        passwordHash: hashSecret(password),
+        recoveryCodeHash: hashSecret(normalizeRecoveryCode(recoveryCode)),
+        createdAt: Date.now()
+      });
 
-      socket.emit("auth:ok", { sessionToken, playerId: player.id });
+      const sessionToken = createSession(socket, player.id);
+      socket.emit("auth:ok", { sessionToken, playerId: player.id, recoveryCode });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
     }
+  });
+
+  socket.on("auth:forgotPassword", (payload: ForgotPasswordPayload) => {
+    try {
+      const email = normalizeEmail(String(payload.email ?? ""));
+      const recoveryCode = normalizeRecoveryCode(String(payload.recoveryCode ?? ""));
+      const newPassword = String(payload.newPassword ?? "");
+      const account = store.accountsByEmail.get(email);
+      if (!account || !verifySecret(recoveryCode, account.recoveryCodeHash)) {
+        throw new Error("E-mail ou codigo de recuperacao invalido.");
+      }
+      assertPassword(newPassword);
+
+      const nextRecoveryCode = createRecoveryCode();
+      account.passwordHash = hashSecret(newPassword);
+      account.recoveryCodeHash = hashSecret(normalizeRecoveryCode(nextRecoveryCode));
+      account.passwordUpdatedAt = Date.now();
+      account.recoveryCodeUpdatedAt = Date.now();
+      deleteSessionsForPlayer(account.playerId);
+      forceLogoutPlayerSockets(account.playerId, socket.id);
+
+      const sessionToken = createSession(socket, account.playerId);
+      socket.emit("auth:ok", { sessionToken, playerId: account.playerId, recoveryCode: nextRecoveryCode });
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("auth:logout", (sessionToken?: string) => {
+    const token = socket.data.sessionToken ?? String(sessionToken ?? "");
+    if (token) {
+      store.sessions.delete(token);
+    }
+    const playerId = detachSocketSession(socket);
+    if (playerId) {
+      leaveArenaQueue(playerId);
+    }
+    socket.emit("auth:logout");
+    persistStoreSoon();
+    broadcastWorldState();
   });
 
   socket.on("character:allocate", (payload: AllocatePayload) => {
@@ -2073,17 +2256,9 @@ io.on("connection", (socket: AuthedSocket) => {
   });
 
   socket.on("disconnect", () => {
-    const playerId = socket.data.playerId;
-    if (!playerId) {
-      return;
+    if (detachSocketSession(socket)) {
+      broadcastWorldState();
     }
-
-    const sockets = store.socketsByPlayer.get(playerId);
-    sockets?.delete(socket.id);
-    if (!sockets || sockets.size === 0) {
-      store.socketsByPlayer.delete(playerId);
-    }
-    broadcastWorldState();
   });
 });
 
@@ -2091,9 +2266,23 @@ httpServer.listen(PORT, () => {
   console.log(`Litch realtime server running on http://127.0.0.1:${PORT}`);
 });
 
+function flushAndExit(code = 0) {
+  try {
+    flushPersistentStore();
+  } finally {
+    process.exit(code);
+  }
+}
+
+process.on("SIGINT", () => flushAndExit(0));
+process.on("SIGTERM", () => flushAndExit(0));
+process.on("beforeExit", () => flushPersistentStore());
+
 // Regen tick: every 2 real minutes restore 10% HP and Energy
 const REGEN_INTERVAL_MS = 2 * 60 * 1000;
-store.nextRegenAt = Date.now() + REGEN_INTERVAL_MS;
+if (!store.nextRegenAt || store.nextRegenAt <= Date.now()) {
+  store.nextRegenAt = Date.now() + REGEN_INTERVAL_MS;
+}
 
 setInterval(() => {
   store.nextRegenAt = Date.now() + REGEN_INTERVAL_MS;
