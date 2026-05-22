@@ -1493,6 +1493,10 @@ io.on("connection", (socket: AuthedSocket) => {
       const currentCity = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
       const sameCountry = currentCity.countryId === city.countryId;
       const destinationCountry = COUNTRIES.find((country) => country.id === city.countryId);
+      if (!sameCountry && !city.isPort) {
+        const destinationPort = CITIES.find((entry) => entry.id === destinationCountry?.portCityId);
+        throw new Error(`Viaje primeiro para ${destinationPort?.name ?? "o porto"} antes de acessar cidades internas.`);
+      }
       const destinationCity = sameCountry
         ? city
         : CITIES.find((entry) => entry.id === destinationCountry?.portCityId) ?? city;
