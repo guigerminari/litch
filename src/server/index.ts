@@ -31,6 +31,8 @@ import type {
   MonarchRankingEntry,
   MonarchRewardEntry,
   Player,
+  PlayerInspectPayload,
+  PlayerPublicProfile,
   PrivateSendPayload,
   QuestClaimPayload,
   QuestView,
@@ -958,6 +960,30 @@ function buildRankings() {
   };
 }
 
+function buildPlayerPublicProfile(playerId: string): PlayerPublicProfile | null {
+  const character = store.characters.get(playerId);
+  const player = store.players.get(playerId);
+  if (!character && !player) {
+    return null;
+  }
+
+  const city = character ? CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0] : CITIES[0];
+  const country = COUNTRIES.find((entry) => entry.id === city.countryId) ?? COUNTRIES[0];
+  const clan = character?.clanId ? store.clans.get(character.clanId) : null;
+  return {
+    playerId,
+    name: character?.name ?? player?.username ?? playerId,
+    level: character?.level ?? 1,
+    cityName: city.name,
+    countryName: country.name,
+    clanName: clan?.name,
+    arenaWins: character?.arenaWins ?? 0,
+    arenaLosses: character?.arenaLosses ?? 0,
+    dungeonClears: character?.dungeonClears ?? 0,
+    online: store.socketsByPlayer.has(playerId)
+  };
+}
+
 function getClanLevel(clan: { benefitAllocations: Record<string, number> }) {
   return Object.values(clan.benefitAllocations ?? {}).reduce((total, rank) => total + rank, 0);
 }
@@ -1079,6 +1105,7 @@ function buildClanDirectory() {
         id: clan.id,
         name: clan.name,
         icon: clanView.icon,
+        leaderPlayerId: clan.leaderPlayerId,
         leaderName: leaderCharacter?.name ?? leaderPlayer?.username ?? clan.leaderPlayerId,
         memberCount: clan.memberPlayerIds.length,
         memberCapacity: clanView.memberCapacity,
@@ -2572,10 +2599,13 @@ io.on("connection", (socket: AuthedSocket) => {
       const normalized = String(payload.text ?? "").trim().replace(/\s+/g, " ").slice(0, 240);
       if (!normalized) return;
 
+      const targetPlayerId = String(payload.targetPlayerId ?? "");
       const targetName = String(payload.targetPlayerName ?? "").trim();
-      const targetPlayer = Array.from(store.players.values()).find(
-        (p) => p.username.toLowerCase() === targetName.toLowerCase()
-      );
+      const targetPlayer = targetPlayerId
+        ? store.players.get(targetPlayerId)
+        : Array.from(store.players.values()).find(
+            (p) => p.username.toLowerCase() === targetName.toLowerCase()
+          );
       if (!targetPlayer) throw new Error("Jogador não encontrado.");
       if (targetPlayer.id === playerId) throw new Error("Você não pode enviar mensagem para si mesmo.");
 
@@ -2594,6 +2624,20 @@ io.on("connection", (socket: AuthedSocket) => {
       store.allPrivateMessages = [msg, ...store.allPrivateMessages].slice(0, 500);
 
       emitMany([playerId, targetPlayer.id]);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("player:inspect", (payload: PlayerInspectPayload) => {
+    try {
+      requirePlayer(socket);
+      const targetPlayerId = String(payload?.playerId ?? "");
+      const profile = buildPlayerPublicProfile(targetPlayerId);
+      if (!profile) {
+        throw new Error("Jogador nao encontrado.");
+      }
+      socket.emit("player:profile", profile);
     } catch (error) {
       handleError(socket, error);
     }

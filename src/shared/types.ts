@@ -439,6 +439,7 @@ export interface ClanSummary {
   id: string;
   name: string;
   icon: string;
+  leaderPlayerId: string;
   leaderName: string;
   memberCount: number;
   memberCapacity: number;
@@ -465,10 +466,24 @@ export interface RankingEntry {
   arenaLosses: number;
 }
 
+export interface PlayerPublicProfile {
+  playerId: string;
+  name: string;
+  level: number;
+  cityName: string;
+  countryName: string;
+  clanName?: string;
+  arenaWins: number;
+  arenaLosses: number;
+  dungeonClears: number;
+  online: boolean;
+}
+
 export interface ClanRankingEntry {
   id: string;
   name: string;
   icon: string;
+  leaderPlayerId: string;
   leaderName: string;
   memberCount: number;
   memberCapacity: number;
@@ -615,8 +630,13 @@ export interface ClanChatSendPayload {
 }
 
 export interface PrivateSendPayload {
-  targetPlayerName: string;
+  targetPlayerName?: string;
+  targetPlayerId?: string;
   text: string;
+}
+
+export interface PlayerInspectPayload {
+  playerId: string;
 }
 
 export interface CraftPayload {

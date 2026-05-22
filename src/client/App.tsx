@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { createContext, FormEvent, useContext, useEffect, useRef, useState } from "react";
 import {
   ArrowLeftRight,
   Backpack,
@@ -53,6 +53,7 @@ import type {
   MarketListing,
   MarketTransactionHistory,
   PrivateMessage,
+  PlayerPublicProfile,
   ClanBenefitCategory,
   TalentCategory,
   QuestView,
@@ -209,6 +210,22 @@ const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
 };
 const EQUIPMENT_STAT_KEYS: Array<keyof typeof EQUIPMENT_STAT_LABELS> = ["strength", "constitution", "agility", "defense"];
 
+type PlayerReference = {
+  playerId: string;
+  name: string;
+};
+
+type PlayerActionContextValue = {
+  currentPlayerId: string;
+  openPlayerActions: (player: PlayerReference) => void;
+};
+
+const PlayerActionContext = createContext<PlayerActionContextValue | null>(null);
+
+function usePlayerActions() {
+  return useContext(PlayerActionContext);
+}
+
 export function App() {
   const [game, setGame] = useState<GameState | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
@@ -224,6 +241,10 @@ export function App() {
   const [showDetails, setShowDetails] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showExchange, setShowExchange] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerReference | null>(null);
+  const [privateChatTarget, setPrivateChatTarget] = useState<PlayerReference | null>(null);
+  const [playerProfiles, setPlayerProfiles] = useState<Record<string, PlayerPublicProfile>>({});
+  const [loadingPlayerProfileId, setLoadingPlayerProfileId] = useState<string | null>(null);
   const [regenMs, setRegenMs] = useState(0);
 
   useEffect(() => {
@@ -255,8 +276,14 @@ export function App() {
       setGame(state);
     };
 
+    const onPlayerProfile = (profile: PlayerPublicProfile) => {
+      setPlayerProfiles((current) => ({ ...current, [profile.playerId]: profile }));
+      setLoadingPlayerProfileId((current) => (current === profile.playerId ? null : current));
+    };
+
     const onError = (payload: { message: string }) => {
       setError(payload.message);
+      setLoadingPlayerProfileId(null);
       if (payload.message.toLowerCase().includes("sess")) {
         localStorage.removeItem("litch:session");
         setGame(null);
@@ -271,6 +298,7 @@ export function App() {
     socket.on("auth:ok", onAuthOk);
     socket.on("auth:logout", onAuthLogout);
     socket.on("game:state", onGameState);
+    socket.on("player:profile", onPlayerProfile);
     socket.on("game:error", onError);
 
     if (socket.connected) {
@@ -283,6 +311,7 @@ export function App() {
       socket.off("auth:ok", onAuthOk);
       socket.off("auth:logout", onAuthLogout);
       socket.off("game:state", onGameState);
+      socket.off("player:profile", onPlayerProfile);
       socket.off("game:error", onError);
     };
   }, []);
@@ -415,32 +444,135 @@ export function App() {
   }
 
   const gameShellClass = `game-shell country-${game.currentCountry.id} city-${game.currentCity.id}`;
+  const openPlayerActions = (player: PlayerReference) => {
+    if (!player.playerId || player.playerId === "system" || player.playerId === game.player.id) {
+      return;
+    }
+    setSelectedPlayer(player);
+  };
+  const inspectPlayer = (player: PlayerReference) => {
+    setLoadingPlayerProfileId(player.playerId);
+    socket.emit("player:inspect", { playerId: player.playerId });
+  };
+  const startPrivateChat = (player: PlayerReference) => {
+    setPrivateChatTarget(player);
+    setShowChat(true);
+    setSelectedPlayer(null);
+  };
 
   return (
     <main className={gameShellClass}>
-      <Header
-        game={game}
-        connected={connected}
-        regenMs={regenMs}
-        onDetails={() => setShowDetails(true)}
-        onGameShop={() => setView("gameShop")}
-        onExchange={() => setShowExchange(true)}
-        onRanking={() => setView("rankings")}
-        onLogout={logout}
-      />
-      <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
-        <section className="city-stage">
-          {!game.activeBattle && view === "city" && <CityHero game={game} view={view} setView={setView} />}
-          <GamePane game={game} view={view} setView={setView} />
-        </section>
-      </div>
-      <BottomNav game={game} view={view} setView={setView} />
-      {!game.activeBattle && <FloatingChat game={game} open={showChat} setOpen={setShowChat} />}
-      {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
-      {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
-      {latestRecoveryCode && <RecoveryCodeModal code={latestRecoveryCode} onClose={() => setLatestRecoveryCode(null)} />}
-      {error && <Toast message={error} />}
+      <PlayerActionContext.Provider value={{ currentPlayerId: game.player.id, openPlayerActions }}>
+        <Header
+          game={game}
+          connected={connected}
+          regenMs={regenMs}
+          onDetails={() => setShowDetails(true)}
+          onGameShop={() => setView("gameShop")}
+          onExchange={() => setShowExchange(true)}
+          onRanking={() => setView("rankings")}
+          onLogout={logout}
+        />
+        <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
+          <section className="city-stage">
+            {!game.activeBattle && view === "city" && <CityHero game={game} view={view} setView={setView} />}
+            <GamePane game={game} view={view} setView={setView} />
+          </section>
+        </div>
+        <BottomNav game={game} view={view} setView={setView} />
+        <FloatingChat
+          game={game}
+          open={showChat}
+          setOpen={setShowChat}
+          privateTarget={privateChatTarget}
+          setPrivateTarget={setPrivateChatTarget}
+        />
+        {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
+        {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
+        {selectedPlayer && (
+          <PlayerActionModal
+            player={selectedPlayer}
+            profile={playerProfiles[selectedPlayer.playerId]}
+            loading={loadingPlayerProfileId === selectedPlayer.playerId}
+            onInspect={() => inspectPlayer(selectedPlayer)}
+            onMessage={() => startPrivateChat(selectedPlayer)}
+            onClose={() => setSelectedPlayer(null)}
+          />
+        )}
+        {latestRecoveryCode && <RecoveryCodeModal code={latestRecoveryCode} onClose={() => setLatestRecoveryCode(null)} />}
+        {error && <Toast message={error} />}
+      </PlayerActionContext.Provider>
     </main>
+  );
+}
+
+function PlayerName({ playerId, name, className }: PlayerReference & { className?: string }) {
+  const actions = usePlayerActions();
+  if (!actions || !playerId || playerId === "system" || playerId === actions.currentPlayerId) {
+    return <span className={className}>{name}</span>;
+  }
+
+  return (
+    <button
+      type="button"
+      className={className ? `player-name-link ${className}` : "player-name-link"}
+      onClick={(event) => {
+        event.stopPropagation();
+        actions.openPlayerActions({ playerId, name });
+      }}
+    >
+      {name}
+    </button>
+  );
+}
+
+function PlayerActionModal({
+  player,
+  profile,
+  loading,
+  onInspect,
+  onMessage,
+  onClose
+}: {
+  player: PlayerReference;
+  profile?: PlayerPublicProfile;
+  loading: boolean;
+  onInspect: () => void;
+  onMessage: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="drawer-backdrop" role="presentation" onClick={onClose}>
+      <div className="player-action-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <div className="player-action-header">
+          <span className="player-action-avatar"><User size={28} /></span>
+          <div>
+            <span className="eyebrow">Jogador</span>
+            <h2>{profile?.name ?? player.name}</h2>
+            {profile && <small>{profile.online ? "Online" : "Offline"} - {profile.cityName}, {profile.countryName}</small>}
+          </div>
+        </div>
+        <div className="player-action-buttons">
+          <button className="primary-button" onClick={onMessage}>
+            <MessageCircle size={15} /> Mensagem privada
+          </button>
+          <button className="ghost-button" onClick={onInspect} disabled={loading}>
+            <User size={15} /> {loading ? "Carregando..." : "Ver informacoes"}
+          </button>
+        </div>
+        {profile && (
+          <div className="player-profile-grid">
+            <div><span>Nivel</span><strong>{profile.level}</strong></div>
+            <div><span>Cla</span><strong>{profile.clanName ?? "Sem cla"}</strong></div>
+            <div><span>Arena</span><strong>{profile.arenaWins}V/{profile.arenaLosses}D</strong></div>
+            <div><span>Masmorras</span><strong>{profile.dungeonClears}</strong></div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -1306,7 +1438,7 @@ function MonarchPanel({ game }: { game: GameState }) {
             <article className="ranking-row" key={entry.playerId}>
               <b>#{entry.rank}</b>
               <div>
-                <strong>{entry.name}</strong>
+                <strong><PlayerName playerId={entry.playerId} name={entry.name} /></strong>
                 <span>{entry.damage.toLocaleString()} dano</span>
               </div>
             </article>
@@ -1322,7 +1454,7 @@ function MonarchPanel({ game }: { game: GameState }) {
               <article className="ranking-row" key={`reward-${reward.playerId}`}>
                 <b>#{reward.rank}</b>
                 <div>
-                  <strong>{reward.name}</strong>
+                  <strong><PlayerName playerId={reward.playerId} name={reward.name} /></strong>
                   <span>{reward.experience.toLocaleString()} XP, {reward.gold.toLocaleString()} ouro{reward.diamonds ? `, ${reward.diamonds} diamantes` : ""}</span>
                 </div>
               </article>
@@ -1360,7 +1492,7 @@ function RankingList({ title, entries, mode }: { title: string; entries: GameSta
         {entries.map((entry, index) => (
           <article className="ranking-row" key={`${mode}-${entry.playerId}`}>
             <strong>#{index + 1}</strong>
-            <span>{entry.name}</span>
+            <PlayerName playerId={entry.playerId} name={entry.name} />
             <b>{mode === "level" ? `Nível ${entry.level}` : `${entry.arenaWins}V/${entry.arenaLosses}D`}</b>
           </article>
         ))}
@@ -1379,8 +1511,9 @@ function ClanRankingList({ entries }: { entries: ClanRankingEntry[] }) {
             <strong>#{index + 1}</strong>
             <div className="clan-ranking-main">
               <span className="clan-directory-crest">{getClanCrestIcon(entry.icon)}</span>
-              <div>
+              <div className="clan-leader-main">
                 <span>{entry.name}</span>
+                <small className="clan-leader-clickable">Lider: <PlayerName playerId={entry.leaderPlayerId} name={entry.leaderName} /></small>
                 <small>Líder: {entry.leaderName}</small>
               </div>
             </div>
@@ -1644,8 +1777,9 @@ function ClanPanel({ game }: { game: GameState }) {
             {game.clanDirectory.map((entry) => (
               <article className="market-row clan-directory-row" key={entry.id}>
                 <span className="clan-directory-crest">{getClanCrestIcon(entry.icon)}</span>
-                <div>
+                <div className="clan-leader-main">
                   <strong>{entry.name}</strong>
+                  <span className="clan-leader-clickable">Lider: <PlayerName playerId={entry.leaderPlayerId} name={entry.leaderName} /> - Nv {entry.level}</span>
                   <span>Líder: {entry.leaderName} - Nv {entry.level}</span>
                 </div>
                 <b>{entry.memberCount}/{entry.memberCapacity}</b>
@@ -1713,7 +1847,7 @@ function ClanPanel({ game }: { game: GameState }) {
             {clanMembers.map((member) => (
               <article className="market-row clan-member-row" key={member.playerId}>
                 <div>
-                  <strong>{member.name}</strong>
+                  <strong><PlayerName playerId={member.playerId} name={member.name} /></strong>
                   <span>{member.isLeader ? "Líder" : "Membro"}</span>
                 </div>
                 {leader && !member.isLeader && (
@@ -2738,21 +2872,29 @@ function MarketPanel({ game }: { game: GameState }) {
                   (() => {
                     const item = game.itemCatalog[listing.item.itemId];
                     return (
-                      <button
+                      <div
                         key={listing.id}
+                        role="button"
+                        tabIndex={0}
                         className="shop-item-card market-shop-card"
                         onClick={() => setSelectedListing(listing)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            setSelectedListing(listing);
+                          }
+                        }}
                         title={formatInventoryItemName(item, listing.item)}
                       >
                         <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity > 1 ? listing.item.quantity : undefined} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
                         <strong>{formatInventoryItemName(item, listing.item)}</strong>
                         <small className="market-card-subtle">
-                          {listing.sellerName} - NPC {formatCurrency(getNpcSellValue(item, listing.item))}
+                          <PlayerName playerId={listing.sellerPlayerId} name={listing.sellerName} /> - NPC {formatCurrency(getNpcSellValue(item, listing.item))}
                         </small>
                         <span className="shop-card-price">
                           {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={13} style={{ color: "var(--gold)" }} /> : <Gem size={13} style={{ color: "var(--cyan)" }} />}
                         </span>
-                      </button>
+                      </div>
                     );
                   })()
                 )}
@@ -2933,7 +3075,7 @@ function MarketHistoryRow({ entry, game }: { entry: MarketTransactionHistory; ga
       <div className="market-history-body">
         <strong>{entry.kind === "buy" ? "Compra" : "Venda"} - {formatInventoryItemName(item, entry.item)}</strong>
         <span>
-          {entry.kind === "buy" ? "Comprado de" : "Vendido para"} {entry.counterpartyName}
+          {entry.kind === "buy" ? "Comprado de" : "Vendido para"} <PlayerName playerId={entry.counterpartyPlayerId} name={entry.counterpartyName} />
         </span>
         <small>{formatListingDate(entry.createdAt)}</small>
       </div>
@@ -3019,7 +3161,7 @@ function MarketListingModal({
           <p className="market-modal-desc">{item.description}</p>
           
           <div className="market-subtle-meta">
-            <span>Vendedor <b>{listing.sellerName}</b></span>
+            <span>Vendedor <b><PlayerName playerId={listing.sellerPlayerId} name={listing.sellerName} /></b></span>
             <span>NPC <b>{formatCurrency(getNpcSellValue(item, listing.item))} ouro</b></span>
             <span>{formatListingDate(listing.createdAt)}</span>
             {listing.item.quantity > 1 && <span>Lote <b>x{listing.item.quantity}</b></span>}
@@ -3495,7 +3637,7 @@ function BattlePanel({ game }: { game: GameState }) {
         {visibleBattleLogs.map((entry) => (
           <p className={`battle-log-entry ${getBattleLogKind(entry.text)}`} key={entry.id}>
             <span className="battle-log-icon">{getBattleLogIcon(entry.text)}</span>
-            <span>{entry.text}</span>
+            <span>{renderTextWithPlayerLinks(entry.text, battle.participants)}</span>
           </p>
         ))}
       </div>
@@ -3551,7 +3693,11 @@ function CombatantCard({
       )}
       <ParticipantVisual participant={participant} className="combatant-art" />
       <div>
-        <strong>{participant.name}</strong>
+        {participant.ownerPlayerId ? (
+          <strong><PlayerName playerId={participant.ownerPlayerId} name={participant.name} /></strong>
+        ) : (
+          <strong>{participant.name}</strong>
+        )}
         <span>Nível {participant.level}</span>
       </div>
       <div className="hp-bar">
@@ -3643,20 +3789,56 @@ function getBattleLogIcon(text: string) {
   return <Shield size={15} />;
 }
 
+function renderTextWithPlayerLinks(text: string, participants: BattleParticipant[]) {
+  const players = participants
+    .filter((participant) => participant.ownerPlayerId)
+    .map((participant) => ({ playerId: participant.ownerPlayerId!, name: participant.name }))
+    .sort((left, right) => right.name.length - left.name.length);
+  if (players.length === 0) {
+    return text;
+  }
+
+  const fragments: Array<string | JSX.Element> = [];
+  let cursor = 0;
+  while (cursor < text.length) {
+    let next: { playerId: string; name: string; index: number } | null = null;
+    for (const player of players) {
+      const index = text.indexOf(player.name, cursor);
+      if (index === -1) continue;
+      if (!next || index < next.index) {
+        next = { ...player, index };
+      }
+    }
+    if (!next) {
+      fragments.push(text.slice(cursor));
+      break;
+    }
+    if (next.index > cursor) {
+      fragments.push(text.slice(cursor, next.index));
+    }
+    fragments.push(<PlayerName key={`${next.playerId}-${next.index}`} playerId={next.playerId} name={next.name} />);
+    cursor = next.index + next.name.length;
+  }
+  return fragments;
+}
+
 function FloatingChat({
   game,
   open,
-  setOpen
+  setOpen,
+  privateTarget,
+  setPrivateTarget
 }: {
   game: GameState;
   open: boolean;
   setOpen: (open: boolean) => void;
+  privateTarget: PlayerReference | null;
+  setPrivateTarget: (player: PlayerReference | null) => void;
 }) {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<"global" | "clan" | "private">("global");
-  const [privateTarget, setPrivateTarget] = useState<{ playerId: string; name: string } | null>(null);
-  const [pmTarget, setPmTarget] = useState("");
   const feedRef = useRef<HTMLDivElement>(null);
+  const playerActions = usePlayerActions();
 
   const hasClan = Boolean(game.clan);
 
@@ -3677,7 +3859,7 @@ function FloatingChat({
   const sendPrivate = (event: FormEvent) => {
     event.preventDefault();
     if (!message.trim() || !privateTarget) return;
-    socket.emit("private:send", { targetPlayerName: privateTarget.name, text: message });
+    socket.emit("private:send", { targetPlayerId: privateTarget.playerId, targetPlayerName: privateTarget.name, text: message });
     setMessage("");
   };
 
@@ -3690,6 +3872,12 @@ function FloatingChat({
     : [];
 
   const unreadPrivate = game.privateMessages.filter((msg) => msg.toPlayerId === game.player.id).length;
+
+  useEffect(() => {
+    if (privateTarget) {
+      setTab("private");
+    }
+  }, [privateTarget?.playerId]);
 
   return (
     <>
@@ -3723,7 +3911,7 @@ function FloatingChat({
                 {game.chatMessages.length === 0 && <p className="empty-state">Chat vazio.</p>}
                 {game.chatMessages.map((chat) => (
                   <article className="chat-message" key={chat.id}>
-                    <strong>{chat.author}</strong>
+                    <strong><PlayerName playerId={chat.playerId} name={chat.author} /></strong>
                     <span>{chat.text}</span>
                   </article>
                 ))}
@@ -3741,7 +3929,7 @@ function FloatingChat({
                 {game.clanChatMessages.length === 0 && <p className="empty-state">Chat do clã vazio.</p>}
                 {game.clanChatMessages.map((chat) => (
                   <article className="chat-message" key={chat.id}>
-                    <strong>{chat.author}</strong>
+                    <strong><PlayerName playerId={chat.playerId} name={chat.author} /></strong>
                     <span>{chat.text}</span>
                   </article>
                 ))}
@@ -3778,8 +3966,22 @@ function FloatingChat({
                           const isFrom = msg.fromPlayerId === game.player.id;
                           return (
                             <article className="chat-message private-message" key={msg.id}>
-                              <strong style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}>
-                                {isFrom ? `Você → ${msg.toName}` : `${msg.fromName} → Você`}
+                              <strong
+                                className="player-name-inline"
+                                style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  const target = isFrom
+                                    ? { playerId: msg.toPlayerId, name: msg.toName }
+                                    : { playerId: msg.fromPlayerId, name: msg.fromName };
+                                  playerActions?.openPlayerActions(target);
+                                }}
+                              >
+                                {isFrom ? (
+                                  <>Você → <PlayerName playerId={msg.toPlayerId} name={msg.toName} /></>
+                                ) : (
+                                  <><PlayerName playerId={msg.fromPlayerId} name={msg.fromName} /> → Você</>
+                                )}
                               </strong>
                               <span>{msg.text}</span>
                             </article>
@@ -3795,7 +3997,7 @@ function FloatingChat({
                     <button className="ghost-button" style={{ padding: "4px 8px", fontSize: "0.82rem" }} onClick={() => setPrivateTarget(null)}>
                       ← Voltar
                     </button>
-                    <strong>{privateTarget.name}</strong>
+                    <strong><PlayerName playerId={privateTarget.playerId} name={privateTarget.name} /></strong>
                   </div>
                   <div className="chat-feed">
                     {privateConversation.length === 0 && <p className="empty-state">Nenhuma mensagem ainda.</p>}
@@ -3803,8 +4005,16 @@ function FloatingChat({
                       const isFrom = msg.fromPlayerId === game.player.id;
                       return (
                         <article className={`chat-message private-message ${isFrom ? "sent" : "received"}`} key={msg.id}>
-                          <strong style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}>
-                            {isFrom ? "Você" : msg.fromName}
+                          <strong
+                            className={!isFrom ? "player-name-inline" : undefined}
+                            style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}
+                            onClick={(event) => {
+                              if (isFrom) return;
+                              event.stopPropagation();
+                              playerActions?.openPlayerActions({ playerId: msg.fromPlayerId, name: msg.fromName });
+                            }}
+                          >
+                            {isFrom ? "Você" : <PlayerName playerId={msg.fromPlayerId} name={msg.fromName} />}
                           </strong>
                           <span>{msg.text}</span>
                         </article>
