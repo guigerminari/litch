@@ -281,7 +281,7 @@ export function takeBattleTurn(
 
 export function takeAutoPveTurn(battle: BattleState, character: Character) {
   if (battle.mode !== "pve" && battle.mode !== "dungeon") {
-    throw new Error("Batalha automatica esta disponivel apenas no PvE.");
+    throw new Error("Batalha automatica está disponível apenas no PvE.");
   }
   if ((character.pveAutoUntil ?? 0) <= Date.now()) {
     throw new Error("O beneficio de batalha PvE automatica expirou.");
@@ -289,7 +289,7 @@ export function takeAutoPveTurn(battle: BattleState, character: Character) {
 
   const participant = battle.participants.find((entry) => entry.ownerPlayerId === character.playerId);
   if (!participant) {
-    throw new Error("Voce nao participa desta batalha.");
+    throw new Error("Você não participa desta batalha.");
   }
 
   let turns = 0;

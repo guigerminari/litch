@@ -383,7 +383,7 @@ export function App() {
   if (!game) {
     return (
       <main className="auth-screen">
-        <form className="auth-panel" onSubmit={submitAuth}>
+        <form className="auth-panel" style={{backgroundColor:"#020007"}} onSubmit={submitAuth}>
           <h1 className="sr-only">Litch RPG</h1>
           <img className="auth-wordmark" src={BRAND_WORDMARK_URL} alt="Litch RPG" />
           <div className="auth-tabs">
@@ -391,7 +391,7 @@ export function App() {
               <LogIn size={15} /> Entrar
             </button>
             <button type="button" className={authMode === "register" ? "active" : ""} onClick={() => setAuthMode("register")}>
-              <UserPlus size={15} /> Cadastro
+              <UserPlus size={15} /> Registrar
             </button>
             <button type="button" className={authMode === "forgot" ? "active" : ""} onClick={() => setAuthMode("forgot")}>
               <KeyRound size={15} /> Senha
@@ -399,7 +399,7 @@ export function App() {
           </div>
           {authMode === "register" && (
             <label>
-              <span className="auth-label"><User size={15} /> Nome do jogador</span>
+              <span className="auth-label"><User size={15} /> Nome do recruta</span>
               <input
                 value={username}
                 maxLength={24}
@@ -611,7 +611,7 @@ function PlayerActionModal({
             className="player-action-avatar"
           />
           <div>
-            <span className="eyebrow">Jogador</span>
+            <span className="eyebrow">Recruta</span>
             <h2>{profile?.name ?? player.name}</h2>
             {profile ? (
               <small>Nivel {profile.level} - {profile.online ? "Online" : "Offline"} - {profile.cityName}, {profile.countryName}</small>
@@ -637,7 +637,7 @@ function PlayerActionModal({
                 <span>{getClanCrestIcon(profile.clanIcon ?? "shield", 18)}</span>
                 <div>
                   <strong>{profile.clanName}</strong>
-                  <small>Cla nivel {profile.clanLevel ?? 0}</small>
+                  <small>Cla nível {profile.clanLevel ?? 0}</small>
                 </div>
               </div>
             )}
@@ -924,7 +924,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
           <div className="utility-stack">
             <section className="account-summary">
               <div>
-                <span>Jogador</span>
+                <span>Recruta</span>
                 <strong>{game.player.username}</strong>
               </div>
               <div>
@@ -945,9 +945,9 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
               <div className="invite-header">
                 <div>
                   <span className="eyebrow">Convide seus amigos</span>
-                  <h3>Recompensa no nivel {game.referrals.rewardLevel}</h3>
+                  <h3>Recompensa no nível {game.referrals.rewardLevel}</h3>
                   <p>
-                    Quando um amigo cadastrado com seu codigo chegar ao nivel {game.referrals.rewardLevel}, voce pode resgatar
+                    Quando um amigo cadastrado com seu codigo chegar ao nível {game.referrals.rewardLevel}, você pode resgatar
                     {` ${formatCurrency(game.referrals.reward.gold)} ouro e ${game.referrals.reward.diamonds} `}
                     <Gem size={13} style={{ color: "var(--cyan)" }} />.
                   </p>
@@ -1015,7 +1015,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
               />
             </label>
             {nextPassword && confirmPassword && nextPassword !== confirmPassword && (
-              <small className="form-warning">As senhas nao conferem.</small>
+              <small className="form-warning">As senhas não conferem.</small>
             )}
             <button className="primary-button" type="submit" disabled={!passwordReady}>
               Alterar senha
@@ -1355,37 +1355,37 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
           <div className="faq-list">
             <section className="faq-section">
               <h3>Primeiros passos</h3>
-              <article><strong>Como meu personagem comeca?</strong><span>Ao criar a conta, o personagem ja nasce com FOR, CON e AGI em 1, arma de treino, algumas pocoes e inventario limitado.</span></article>
-              <article><strong>O que devo fazer primeiro?</strong><span>Entre em Caca, escolha um local da cidade e enfrente monstros adequados ao seu nivel para ganhar XP, ouro e possiveis drops.</span></article>
-              <article><strong>O que fica bloqueado em batalha?</strong><span>Durante a batalha, a maioria das acoes fica bloqueada. Voce ainda pode abrir inventario, detalhes do personagem e sair da conta.</span></article>
+              <article><strong>Como meu personagem começa?</strong><span>Ao criar a conta, o personagem ja nasce com FOR, CON e AGI em 1, arma de treino, algumas poções e inventario limitado.</span></article>
+              <article><strong>O que devo fazer primeiro?</strong><span>Entre em Caca, escolha um local da cidade e enfrente monstros adequados ao seu nível para ganhar XP, ouro e possiveis drops.</span></article>
+              <article><strong>O que fica bloqueado em batalha?</strong><span>Durante a batalha, a maioria das ações fica bloqueada. Você ainda pode abrir inventario, detalhes do personagem e sair da conta.</span></article>
             </section>
 
             <section className="faq-section">
               <h3>Regras e recursos</h3>
-              <article><strong>Como funciona o inventario?</strong><span>Itens que nao sao equipamentos ficam agrupados. Equipamentos ocupam espacos individuais, pois podem ter raridade e aprimoramento.</span></article>
-              <article><strong>Como recupero vida e energia?</strong><span>A cada 2 minutos reais voce recupera 10%, com bonus de talentos. Pocoes tambem recuperam 30% de vida ou energia.</span></article>
-              <article><strong>Como a energia limita a caca?</strong><span>A energia maxima e CON + nivel. Cada batalha PvE consome energia igual ao nivel do monstro.</span></article>
+              <article><strong>Como funciona o inventario?</strong><span>Itens que não sao equipamentos ficam agrupados. Equipamentos ocupam espacos individuais, pois podem ter raridade e aprimoramento.</span></article>
+              <article><strong>Como recupero vida e energia?</strong><span>A cada 2 minutos reais você recupera 10%, com bonus de talentos. Poções tambem recuperam 30% de vida ou energia.</span></article>
+              <article><strong>Como a energia limita a caca?</strong><span>A energia maxima e CON + nível. Cada batalha PvE consome energia igual ao nível do monstro.</span></article>
             </section>
 
             <section className="faq-section">
               <h3>Viagens</h3>
-              <article><strong>Como viajo entre cidades?</strong><span>Use Ticket de Trem. Algumas cidades tambem exigem nivel minimo para entrada.</span></article>
-              <article><strong>Como viajo entre paises?</strong><span>Use Ticket de Navio. Ao chegar em outro pais, voce aporta na cidade porto daquele pais.</span></article>
+              <article><strong>Como viajo entre cidades?</strong><span>Use Ticket de Trem. Algumas cidades tambem exigem nível minimo para entrada.</span></article>
+              <article><strong>Como viajo entre paises?</strong><span>Use Ticket de Navio. Ao chegar em outro pais, você aporta na cidade porto daquele pais.</span></article>
               <article><strong>Onde compro tickets e pergaminhos?</strong><span>No Cambista, que fica apenas em cidades porto. Ele vende tickets e e o unico NPC que vende pergaminhos.</span></article>
             </section>
 
             <section className="faq-section">
               <h3>Combate</h3>
-              <article><strong>Como a vida e calculada?</strong><span>Vida maxima: nivel * 50 + 2 * CON, somando bonus de equipamentos, talentos e beneficios.</span></article>
+              <article><strong>Como a vida e calculada?</strong><span>Vida maxima: nível * 50 + 2 * CON, somando bonus de equipamentos, talentos e beneficios.</span></article>
               <article><strong>Como o dano e calculado?</strong><span>O dano base e FOR do atacante menos DEF do defensor, com minimo de 1 quando o ataque acerta.</span></article>
               <article><strong>Para que serve AGI?</strong><span>AGI aumenta chance de critico e esquiva. Ela tambem conversa bem com talentos ofensivos e defensivos.</span></article>
             </section>
 
             <section className="faq-section highlighted">
               <h3>Diamantes e Amigo do Rei</h3>
-              <article><strong>Quando vale comprar diamantes?</strong><span>Diamantes aceleram resets, criacao de cla, compra de avatares premium e trocas por ouro quando voce precisa agir rapido no mercado.</span></article>
+              <article><strong>Quando vale comprar diamantes?</strong><span>Diamantes aceleram resets, criacao de cla, compra de avatares premium e trocas por ouro quando você precisa agir rapido no mercado.</span></article>
               <article><strong>O que e Amigo do Rei?</strong><span>E um pacote em destaque da Loja do Jogo com 200 diamantes, 100 tickets de trem, 30 tickets de navio, PvE automatico por 1 mes e selo do rei no avatar por 1 mes.</span></article>
-              <article><strong>Por que o PvE automatico ajuda?</strong><span>Ele reduz repeticao em sessoes longas de caca, ideal para farmar XP, gold e drops enquanto voce foca em mercado, cla e progresso.</span></article>
+              <article><strong>Por que o PvE automatico ajuda?</strong><span>Ele reduz repeticao em sessoes longas de caca, ideal para farmar XP, gold e drops enquanto você foca em mercado, cla e progresso.</span></article>
             </section>
           </div>
         )}
@@ -1519,11 +1519,11 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
         {tab === "monarchs" && (
           <div className="monarch-guide">
             <section className="guide-list">
-              <article><strong>Entrada</strong><span>O evento dos Monarcas acontece em Morthaly. Para entrar, o jogador usa Chaves Altas e respeita o limite diario de tentativas.</span></article>
+              <article><strong>Entrada</strong><span>O evento dos Monarcas acontece em Morthaly. Para entrar, o recruta usa Chaves Altas e respeita o limite diario de tentativas.</span></article>
               <article><strong>Objetivo</strong><span>Todos os participantes atacam o mesmo chefe global. O dano fica registrado no ranking do evento.</span></article>
               <article><strong>Recompensas</strong><span>Ao final, participantes recebem XP e ouro conforme dano/ranking. Quando o chefe e derrotado, os 3 melhores tambem recebem diamantes.</span></article>
               <article><strong>Rei Lich</strong><span>No fim de semana, o Rei Lich substitui os generais e triplica as recompensas do evento.</span></article>
-              <article><strong>Status atual</strong><span>{game.monarchEvent ? `${game.monarchEvent.name} esta ${game.monarchEvent.status}.` : "Evento ainda nao carregado."}</span></article>
+              <article><strong>Status atual</strong><span>{game.monarchEvent ? `${game.monarchEvent.name} está ${game.monarchEvent.status}.` : "Evento ainda não carregado."}</span></article>
             </section>
             <section className="monarch-general-grid">
               {game.monarchGenerals.map((general) => (
@@ -1552,7 +1552,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
             <div className="guide-copy developer-copy">
               <h3>Fale com o desenvolvedor</h3>
               <p>Obrigado por jogar e testar Litch. Cada bug reportado, sugestao de balanceamento e comentario sobre a experiencia ajuda a deixar o jogo mais vivo, justo e divertido.</p>
-              <p>Use este canal para contar o que travou seu progresso, qual sistema ficou confuso, que item parece forte demais ou que ideia voce gostaria de ver no mundo.</p>
+              <p>Use este canal para contar o que travou seu progresso, qual sistema ficou confuso, que item parece forte demais ou que ideia você gostaria de ver no mundo.</p>
             </div>
             <label>
               <span>Assunto</span>
@@ -1570,7 +1570,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
 
         {tab === "stats" && (
           <div className="guide-stat-grid">
-            <Metric icon={<Users size={17} />} label="Jogadores" value={game.registeredPlayersCount} />
+            <Metric icon={<Users size={17} />} label="Recrutas" value={game.registeredPlayersCount} />
             <Metric icon={<Users size={17} />} label="Online" value={game.onlineCount} />
             <Metric icon={<ShoppingBag size={17} />} label="Mercado" value={game.marketplaceListings.length} />
             <Metric icon={<Users size={17} />} label="Clas" value={game.clanDirectory.length} />
@@ -1856,7 +1856,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           <CharacterAvatar avatar={currentAvatar} size={54} royal={royalSealActive} />
           <div>
             <strong>{currentAvatar?.name ?? "Avatar"}</strong>
-            <small>{showAvatarChoices ? "Ocultar opcoes" : "Trocar avatar"}</small>
+            <small>{showAvatarChoices ? "Ocultar opções" : "Trocar avatar"}</small>
           </div>
         </button>
         {showAvatarChoices && <div className="avatar-choice-grid">
@@ -2494,7 +2494,7 @@ function MonarchPanel({ game }: { game: GameState }) {
           <span className="eyebrow">{event.title}</span>
           <h2>{event.name}</h2>
           <p>
-            Cada dano causado por qualquer jogador reduz a vida global do monarca em tempo real.
+            Cada dano causado por qualquer recruta reduz a vida global do monarca em tempo real.
             {event.isKing ? " As recompensas do Rei Lich sao triplicadas." : ""}
           </p>
           <div className="monarch-hp">
@@ -2522,7 +2522,7 @@ function MonarchPanel({ game }: { game: GameState }) {
       <section className="monarch-ranking">
         <h3 className="city-group-title">Ranking de dano</h3>
         <div className="ranking-list">
-          {event.ranking.length === 0 && <p className="empty-state">Nenhum jogador causou dano ainda.</p>}
+          {event.ranking.length === 0 && <p className="empty-state">Nenhum recruta causou dano ainda.</p>}
           {event.ranking.slice(0, 10).map((entry) => (
             <article className="ranking-row" key={entry.playerId}>
               <b>#{entry.rank}</b>
@@ -3388,7 +3388,7 @@ function ArenaPanel({ game }: { game: GameState }) {
       <div className="arena-plate">
         <Shield size={44} />
         <h2>{queued ? "Aguardando adversário" : "Fila PvP"}</h2>
-        <p>{game.arenaQueueSize} jogador(es) na fila</p>
+        <p>{game.arenaQueueSize} recruta(s) na fila</p>
         <div className="button-row">
           <button className="primary-button" onClick={() => socket.emit("arena:join")}>
             Entrar na fila
@@ -3662,11 +3662,11 @@ function TravelPanel({ game }: { game: GameState }) {
             ? "Viajar de trem"
             : `Navio para ${destinationCity.name}`;
     const actionLabel = current
-      ? "Voce esta aqui"
+      ? "Você está aqui"
       : blockedByForeignInterior
         ? "Destino interno bloqueado"
         : locked
-          ? "Viagem indisponivel"
+          ? "Viagem indisponível"
           : sameCountry
             ? "Viajar com ticket de trem"
             : `Viajar de navio para ${destinationCity.name}`;
@@ -4972,7 +4972,7 @@ function FloatingChat({
   }, [privateTarget?.playerId]);
 
   const chatContent = (
-    <div className="floating-chat-layer">
+    <div className={`floating-chat-layer country-${game.currentCountry.id}`}>
       <button className="floating-chat-button" title="Chat" onClick={() => setOpen(!open)}>
         <MessageCircle size={22} />
         {!open && unreadPrivate > 0 && <span>{Math.min(99, unreadPrivate)}</span>}
@@ -5037,7 +5037,7 @@ function FloatingChat({
             <>
               {!privateTarget ? (
                 <div className="private-chat-home">
-                  <p className="muted" style={{ margin: "0 0 8px", fontSize: "0.85rem" }}>Selecione um jogador online:</p>
+                  <p className="muted" style={{ margin: "0 0 8px", fontSize: "0.85rem" }}>Selecione um recruta online:</p>
                   <div className="online-player-list">
                     {game.onlinePlayers
                       .filter((p) => p.playerId !== game.player.id)
@@ -5047,7 +5047,7 @@ function FloatingChat({
                         </button>
                       ))}
                     {game.onlinePlayers.filter((p) => p.playerId !== game.player.id).length === 0 && (
-                      <p className="empty-state">Nenhum jogador online.</p>
+                      <p className="empty-state">Nenhum recruta online.</p>
                     )}
                   </div>
                   {game.privateMessages.length > 0 && (
@@ -5340,7 +5340,7 @@ function ShopItemModal({
 
           {item.slot && item.minLevel > 1 && (
             <div className={item.minLevel > game.character.level ? "market-modal-requirement unmet" : "market-modal-requirement"}>
-              Nivel minimo: {item.minLevel} {item.minLevel > game.character.level && "(nao alcancado)"}
+              Nivel minimo: {item.minLevel} {item.minLevel > game.character.level && "(não alcancado)"}
             </div>
           )}
 

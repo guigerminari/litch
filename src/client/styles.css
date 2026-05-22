@@ -41,6 +41,127 @@
   --rarity-legendary: #d8b24a;
 }
 
+/* Litch dark fantasy theme */
+.game-shell,
+.floating-chat-layer {
+  --city-bg-a: rgba(124, 77, 255, 0.14);
+  --city-bg-b: rgba(157, 107, 255, 0.1);
+  --city-bg-c: rgba(16, 13, 26, 0.72);
+  --theme-accent: #7c4dff;
+  --theme-accent-2: #9d6bff;
+  --theme-highlight: #dccbff;
+  --theme-focus-ring: rgba(157, 107, 255, 0.74);
+  --theme-focus-shadow: rgba(124, 77, 255, 0.12);
+  --theme-line-active: rgba(157, 107, 255, 0.55);
+  --theme-panel-grad-top: rgba(220, 203, 255, 0.035);
+  --theme-panel-grad-bottom: rgba(124, 77, 255, 0.018);
+  --theme-hover-bg: rgba(33, 27, 49, 0.94);
+  --theme-active-bg: rgba(124, 77, 255, 0.18);
+  --theme-active-border: rgba(157, 107, 255, 0.5);
+  --theme-glow-soft: rgba(124, 77, 255, 0.08);
+  --theme-glow-strong: rgba(124, 77, 255, 0.18);
+  --theme-section-border: rgba(157, 107, 255, 0.26);
+  --theme-section-bg: rgba(124, 77, 255, 0.06);
+  --theme-divider: rgba(157, 107, 255, 0.45);
+  --theme-button-a: var(--theme-accent-2);
+  --theme-button-b: var(--theme-accent);
+  --theme-button-hover-a: #a77aff;
+  --theme-button-hover-b: #8558ff;
+  --theme-chat-a: var(--theme-accent);
+  --theme-chat-b: var(--theme-accent-2);
+  --theme-toast-error-border: rgba(185, 74, 89, 0.48);
+  --theme-toast-error-bg: #2d121b;
+  --theme-toast-error-text: #f0a4b2;
+  --theme-toast-success-border: rgba(82, 216, 155, 0.42);
+  --theme-toast-success-bg: #10271d;
+  --theme-toast-success-text: #bdf5d2;
+}
+
+.game-shell.country-aurevia,
+.floating-chat-layer.country-aurevia,
+.game-shell.city-eldoria,
+.game-shell.city-ironhold {
+  --city-bg-a: rgba(86, 168, 111, 0.2);
+  --city-bg-b: rgba(130, 146, 141, 0.15);
+  --city-bg-c: rgba(25, 40, 34, 0.76);
+  --theme-accent: #4f8a5f;
+  --theme-accent-2: #7b9188;
+  --theme-highlight: #d6e1db;
+  --theme-focus-ring: rgba(92, 145, 110, 0.72);
+  --theme-focus-shadow: rgba(79, 138, 95, 0.14);
+  --theme-line-active: rgba(110, 155, 126, 0.58);
+  --theme-panel-grad-top: rgba(173, 197, 183, 0.07);
+  --theme-panel-grad-bottom: rgba(79, 138, 95, 0.02);
+  --theme-hover-bg: rgba(36, 54, 45, 0.94);
+  --theme-active-bg: rgba(79, 138, 95, 0.18);
+  --theme-active-border: rgba(108, 160, 124, 0.52);
+  --theme-glow-soft: rgba(79, 138, 95, 0.1);
+  --theme-glow-strong: rgba(79, 138, 95, 0.2);
+  --theme-section-border: rgba(116, 152, 132, 0.3);
+  --theme-section-bg: rgba(79, 138, 95, 0.08);
+  --theme-divider: rgba(104, 146, 122, 0.42);
+  --theme-button-a: #437c65;
+  --theme-button-b: #224d2d;
+  --theme-button-hover-a: #27684b;
+  --theme-button-hover-b: #153f21;
+  --theme-chat-a: #4f8a5f;
+  --theme-chat-b: #7b9188;
+  --theme-toast-error-border: rgba(146, 80, 97, 0.5);
+  --theme-toast-error-bg: #2e1a21;
+  --theme-toast-error-text: #f2b7c6;
+  --theme-toast-success-border: rgba(89, 161, 118, 0.45);
+  --theme-toast-success-bg: #173125;
+  --theme-toast-success-text: #c6eed8;
+  --line-active: rgba(130, 146, 141, 0.55);
+}
+
+.game-shell.country-valfria,
+.floating-chat-layer.country-valfria,
+.game-shell.city-vila_de_valfria,
+.game-shell.city-rosindale {
+  --city-bg-a: rgba(201, 133, 73, 0.2);
+  --city-bg-b: rgba(221, 198, 157, 0.14);
+  --city-bg-c: rgba(90, 66, 40, 0.72);
+  --theme-accent: #b98243;
+  --theme-accent-2: #d8b46f;
+  --theme-highlight: #f0e1c5;
+  --theme-focus-ring: rgba(205, 156, 88, 0.72);
+  --theme-focus-shadow: rgba(185, 130, 67, 0.16);
+  --theme-line-active: rgba(207, 161, 96, 0.58);
+  --theme-panel-grad-top: rgba(240, 219, 184, 0.07);
+  --theme-panel-grad-bottom: rgba(185, 130, 67, 0.025);
+  --theme-hover-bg: rgba(72, 52, 34, 0.94);
+  --theme-active-bg: rgba(185, 130, 67, 0.2);
+  --theme-active-border: rgba(216, 180, 111, 0.56);
+  --theme-glow-soft: rgba(185, 130, 67, 0.11);
+  --theme-glow-strong: rgba(185, 130, 67, 0.22);
+  --theme-section-border: rgba(216, 180, 111, 0.34);
+  --theme-section-bg: rgba(185, 130, 67, 0.09);
+  --theme-divider: rgba(216, 180, 111, 0.42);
+  --theme-button-a: #a56f0b;
+  --theme-button-b: #7e4d15;
+  --theme-button-hover-a: #7e6128;
+  --theme-button-hover-b: #573a1a;
+  --theme-chat-a: #b98243;
+  --theme-chat-b: #d8b46f;
+  --theme-toast-error-border: rgba(169, 111, 94, 0.5);
+  --theme-toast-error-bg: #3b221b;
+  --theme-toast-error-text: #f3c5b8;
+  --theme-toast-success-border: rgba(194, 166, 98, 0.5);
+  --theme-toast-success-bg: #322a1a;
+  --theme-toast-success-text: #f5e7be;
+  --line-active: rgba(221, 198, 157, 0.55);
+}
+
+.game-shell.country-morthaly,
+.floating-chat-layer.country-morthaly,
+.game-shell.city-ravenspire,
+.game-shell.city-necropole_de_morthaly {
+  --city-bg-a: rgba(124, 77, 255, 0.14);
+  --city-bg-b: rgba(157, 107, 255, 0.1);
+  --city-bg-c: rgba(16, 13, 26, 0.74);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -901,7 +1022,7 @@ button:disabled {
 }
 
 .game-shell.country-valfria {
-  --city-bg-a: rgba(139, 233, 253, 0.2);
+  --city-bg-a: rgba(211, 174, 52, 0.2);
   --city-bg-b: rgba(189, 147, 249, 0.16);
   --city-bg-c: rgba(68, 71, 90, 0.42);
 }
@@ -922,7 +1043,7 @@ button:disabled {
 }
 
 .game-shell.city-vila_de_valfria {
-  --city-bg-a: rgba(139, 233, 253, 0.2);
+  --city-bg-a: rgba(211, 174, 52, 0.2);
   --city-bg-b: rgba(248, 248, 242, 0.08);
 }
 
@@ -1960,8 +2081,9 @@ button:disabled {
   border: 1px solid rgba(220, 203, 255, 0.14);
   border-radius: 14px;
   background:
-    linear-gradient(180deg, rgba(157, 107, 255, 0.055), rgba(124, 77, 255, 0.018)),
-    var(--surface-card-elevated);
+    linear-gradient(180deg,
+ color-mix(in srgb, var(--theme-highlight) 14%, transparent),
+ color-mix(in srgb, var(--theme-accent) 10%, transparent)), var(--surface-card-elevated);
 }
 
 .travel-selection-heading {
@@ -4767,11 +4889,11 @@ button:disabled {
   height: var(--chat-button-size);
   display: grid;
   place-items: center;
-  border: 1px solid rgba(139, 233, 253, 0.42);
   border-radius: 50%;
-  background: linear-gradient(145deg, var(--purple), var(--pink));
-  color: var(--ink);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+  border: 1px solid rgba(220, 203, 255, 0.18);
+  background: linear-gradient(145deg, var(--theme-chat-a), var(--theme-chat-b));
+  color: var(--text);
+  box-shadow: 0 18px 48px var(--theme-glow-strong), 0 18px 48px rgba(0, 0, 0, 0.32);
 }
 
 .floating-chat-button span {
@@ -5189,24 +5311,7 @@ button:disabled {
   }
 }
 
-/* Litch dark fantasy theme */
-.game-shell {
-  --city-bg-a: rgba(124, 77, 255, 0.14);
-  --city-bg-b: rgba(157, 107, 255, 0.1);
-  --city-bg-c: rgba(16, 13, 26, 0.72);
-}
 
-.game-shell.country-aurevia,
-.game-shell.country-valfria,
-.game-shell.city-eldoria,
-.game-shell.city-ravenspire,
-.game-shell.city-ironhold,
-.game-shell.city-vila_de_valfria,
-.game-shell.city-rosindale {
-  --city-bg-a: rgba(124, 77, 255, 0.14);
-  --city-bg-b: rgba(157, 107, 255, 0.1);
-  --city-bg-c: rgba(16, 13, 26, 0.74);
-}
 
 .game-shell::before {
   background:
@@ -5250,7 +5355,7 @@ select:focus-visible,
 .option-card:focus-visible,
 .bottom-button:focus-visible,
 .character-chip:focus-visible {
-  outline: 2px solid rgba(157, 107, 255, 0.74);
+  outline: 2px solid var(--theme-focus-ring);
   outline-offset: 2px;
 }
 
@@ -5277,7 +5382,7 @@ button:disabled {
   border-color: var(--line);
   border-radius: 16px;
   background:
-    linear-gradient(180deg, rgba(220, 203, 255, 0.035), rgba(124, 77, 255, 0.018)),
+    linear-gradient(180deg, var(--theme-panel-grad-top), var(--theme-panel-grad-bottom)),
     var(--surface-card);
   box-shadow: var(--shadow-card);
 }
@@ -5296,7 +5401,7 @@ button:disabled {
   right: 18px;
   height: 1px;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(157, 107, 255, 0.55), transparent);
+  background: linear-gradient(90deg, transparent, var(--theme-line-active), transparent);
   opacity: 0.62;
 }
 
@@ -5333,7 +5438,7 @@ button:disabled {
 .title-lockup-logo {
   border: 1px solid rgba(220, 203, 255, 0.16);
   background: #07050c;
-  box-shadow: 0 0 20px rgba(124, 77, 255, 0.1);
+  box-shadow: 0 0 20px var(--theme-glow-soft);
 }
 
 .title-lockup strong {
@@ -5345,14 +5450,14 @@ button:disabled {
 .character-chip:hover,
 .stat-action:hover {
   border-color: var(--line-active);
-  background: rgba(33, 27, 49, 0.94);
-  box-shadow: 0 0 20px rgba(124, 77, 255, 0.08);
+  background: var(--theme-hover-bg);
+  box-shadow: 0 0 20px var(--theme-glow-soft);
 }
 
 .character-chip span {
-  border: 1px solid rgba(157, 107, 255, 0.38);
-  background: radial-gradient(circle at 42% 28%, rgba(220, 203, 255, 0.16), rgba(124, 77, 255, 0.18) 44%, #100d1a 100%);
-  color: var(--lavender);
+  border: 1px solid color-mix(in srgb, var(--theme-accent-2) 45%, transparent);
+  background: radial-gradient(circle at 42% 28%, color-mix(in srgb, var(--theme-highlight) 22%, transparent), color-mix(in srgb, var(--theme-accent) 28%, transparent) 44%, #100d1a 100%);
+  color: var(--theme-highlight);
 }
 
 .character-chip strong {
@@ -5363,7 +5468,7 @@ button:disabled {
 .panel-title,
 .compact-section h3,
 .sell-strip h3 {
-  color: var(--purple-2);
+  color: var(--theme-accent-2);
 }
 
 .resource-icon {
@@ -5422,16 +5527,16 @@ button:disabled {
 .primary-button,
 .atack-button {
   border-color: rgba(220, 203, 255, 0.14) !important;
-  background: linear-gradient(180deg, var(--purple-2), var(--purple)) !important;
+  background: linear-gradient(180deg, var(--theme-button-a), var(--theme-button-b)) !important;
   color: var(--text) !important;
-  box-shadow: 0 0 22px rgba(124, 77, 255, 0.12) !important;
+  box-shadow: 0 0 22px var(--theme-glow-soft) !important;
 }
 
 .primary-button:hover:not(:disabled),
 .atack-button:hover:not(:disabled) {
   border-color: rgba(220, 203, 255, 0.3) !important;
-  background: linear-gradient(180deg, #a77aff, #8558ff) !important;
-  box-shadow: 0 0 26px rgba(124, 77, 255, 0.18) !important;
+  background: linear-gradient(180deg, var(--theme-button-hover-a), var(--theme-button-hover-b)) !important;
+  box-shadow: 0 0 26px var(--theme-glow-strong) !important;
 }
 
 .ghost-button,
@@ -5443,7 +5548,7 @@ button:disabled {
 .icon-submit {
   border-color: rgba(220, 203, 255, 0.16);
   background: rgba(16, 13, 26, 0.72);
-  color: var(--lavender);
+  color: var(--theme-highlight);
 }
 
 .ghost-button:hover:not(:disabled),
@@ -5454,8 +5559,8 @@ button:disabled {
 .icon-button:hover:not(:disabled),
 .icon-submit:hover:not(:disabled) {
   border-color: var(--line-active);
-  background: rgba(33, 27, 49, 0.94);
-  box-shadow: 0 0 20px rgba(124, 77, 255, 0.08);
+  background: var(--theme-hover-bg);
+  box-shadow: 0 0 20px var(--theme-glow-soft);
 }
 
 .danger-button {
@@ -5473,7 +5578,7 @@ button:disabled {
 .dock-button.active,
 .mini-tab.active {
   border-color: var(--line-active);
-  background: rgba(124, 77, 255, 0.18);
+  background: var(--theme-active-bg);
   color: var(--text);
 }
 
@@ -5492,7 +5597,7 @@ button:disabled {
 .market-form input:focus,
 .market-form select:focus {
   border-color: var(--line-active);
-  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.12);
+  box-shadow: 0 0 0 3px var(--theme-focus-shadow);
 }
 
 .city-hero {
@@ -5520,19 +5625,19 @@ button:disabled {
     linear-gradient(0deg, rgba(220, 203, 255, 0.035) 1px, transparent 1px);
   background-size: 52px 52px;
   mask-image: radial-gradient(circle at 28% 30%, black, transparent 68%);
-  opacity: 0.22;
+  opacity: 0.12;
 }
 
 .city-hero::after {
   background:
     radial-gradient(ellipse at 34% 88%, rgba(220, 203, 255, 0.08), transparent 34%),
     radial-gradient(ellipse at 78% 24%, rgba(124, 77, 255, 0.1), transparent 38%);
-  opacity: 0.78;
+  opacity: 0.42;
 }
 
 .city-map {
-  opacity: 0.58;
-  filter: saturate(0.82) brightness(0.48) contrast(1.06);
+  opacity: 0.82;
+  filter: saturate(0.96) brightness(0.72) contrast(1.08);
   mix-blend-mode: normal;
 }
 
@@ -5549,7 +5654,7 @@ button:disabled {
 }
 
 .eyebrow {
-  color: var(--purple-2);
+  color: var(--theme-accent-2);
   font-weight: 800;
 }
 
@@ -5595,7 +5700,7 @@ button:disabled {
 .sell-row {
   border-color: var(--line);
   background:
-    linear-gradient(180deg, rgba(220, 203, 255, 0.026), rgba(124, 77, 255, 0.015)),
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-highlight) 14%, transparent), color-mix(in srgb, var(--theme-accent) 10%, transparent)),
     var(--surface-card-elevated);
   border-radius: 12px;
 }
@@ -5615,7 +5720,7 @@ button:disabled {
   inset: 0 0 auto;
   height: 2px;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(157, 107, 255, 0.45), transparent);
+  background: linear-gradient(90deg, transparent, var(--theme-divider), transparent);
   opacity: 0;
 }
 
@@ -5636,9 +5741,9 @@ button:disabled {
   transform: translateY(-2px);
   border-color: var(--line-active);
   background:
-    linear-gradient(180deg, rgba(157, 107, 255, 0.07), rgba(124, 77, 255, 0.025)),
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-accent-2) 16%, transparent), color-mix(in srgb, var(--theme-accent) 10%, transparent)),
     var(--surface-card-elevated);
-  box-shadow: 0 0 26px rgba(124, 77, 255, 0.08);
+  box-shadow: 0 0 26px var(--theme-glow-soft);
 }
 
 .option-card:hover::before,
@@ -5653,7 +5758,7 @@ button:disabled {
 .panel-title svg,
 .arena-plate svg,
 .metric svg {
-  color: var(--purple-2);
+  color: var(--theme-accent-2);
 }
 
 .option-card strong,
@@ -5677,8 +5782,8 @@ button:disabled {
 
 .current-city,
 .inventory-row.equipped {
-  outline: 1px solid rgba(157, 107, 255, 0.48);
-  box-shadow: 0 0 20px rgba(124, 77, 255, 0.08);
+  outline: 1px solid color-mix(in srgb, var(--theme-accent-2) 50%, transparent);
+  box-shadow: 0 0 20px var(--theme-glow-soft);
 }
 
 .battle-panel {
@@ -5688,7 +5793,7 @@ button:disabled {
 .combatant {
   border-radius: 16px;
   background:
-    radial-gradient(circle at 18% 8%, rgba(157, 107, 255, 0.09), transparent 10rem),
+    radial-gradient(circle at 18% 8%, color-mix(in srgb, var(--theme-accent-2) 20%, transparent), transparent 10rem),
     var(--surface-card-elevated);
 }
 
@@ -5698,11 +5803,11 @@ button:disabled {
 .shop-card-image {
   border: 1px solid rgba(220, 203, 255, 0.13);
   background: #100d1a;
-  box-shadow: inset 0 0 0 1px rgba(124, 77, 255, 0.08);
+  box-shadow: inset 0 0 0 1px var(--theme-glow-soft);
 }
 
 .combatant.active {
-  border-color: rgba(157, 107, 255, 0.64);
+  border-color: color-mix(in srgb, var(--theme-accent-2) 68%, transparent);
   animation: turnGlow 1200ms ease-in-out infinite alternate;
 }
 
@@ -5754,8 +5859,8 @@ button:disabled {
 }
 
 .royal-auto-button {
-  border-color: rgba(157, 107, 255, 0.4);
-  color: var(--lavender);
+  border-color: color-mix(in srgb, var(--theme-accent-2) 45%, transparent);
+  color: var(--theme-highlight);
 }
 
 .auto-pve-toggle {
@@ -5768,7 +5873,7 @@ button:disabled {
 }
 
 .auto-pve-toggle input {
-  accent-color: var(--purple);
+  accent-color: var(--theme-accent);
 }
 
 .battle-log {
@@ -5782,7 +5887,7 @@ button:disabled {
   position: relative;
   grid-template-columns: 26px minmax(0, 1fr);
   border-color: rgba(220, 203, 255, 0.11);
-  border-left: 3px solid rgba(157, 107, 255, 0.28);
+  border-left: 3px solid color-mix(in srgb, var(--theme-accent-2) 35%, transparent);
   background: rgba(16, 13, 26, 0.72);
   color: var(--text);
 }
@@ -5794,7 +5899,7 @@ button:disabled {
   left: 10px;
   right: 10px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(157, 107, 255, 0.26), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--theme-accent-2) 40%, transparent), transparent);
 }
 
 .battle-log-icon {
@@ -5803,12 +5908,12 @@ button:disabled {
 }
 
 .battle-log-entry.damage {
-  border-left-color: rgba(157, 107, 255, 0.5);
+  border-left-color: color-mix(in srgb, var(--theme-accent-2) 62%, transparent);
 }
 
 .battle-log-entry.damage .battle-log-icon,
 .battle-log-entry.critical .battle-log-icon {
-  color: var(--purple-2);
+  color: var(--theme-accent-2);
 }
 
 .battle-log-entry.dodge .battle-log-icon {
@@ -5846,28 +5951,16 @@ button:disabled {
 }
 
 .bottom-button.active {
-  border-color: rgba(157, 107, 255, 0.5);
-  background: rgba(124, 77, 255, 0.18);
+  border-color: var(--theme-active-border);
+  background: var(--theme-active-bg);
   color: var(--text);
-  box-shadow: inset 0 -2px 0 rgba(220, 203, 255, 0.16), 0 0 18px rgba(124, 77, 255, 0.08);
+  box-shadow: inset 0 -2px 0 rgba(220, 203, 255, 0.16), 0 0 18px var(--theme-glow-soft);
 }
 
 .bottom-badge {
-  background: var(--purple-2);
+  background: var(--theme-accent-2);
   color: var(--text);
-  box-shadow: 0 0 12px rgba(124, 77, 255, 0.16);
-}
-
-.floating-chat-button {
-  border-color: rgba(220, 203, 255, 0.18);
-  background: linear-gradient(145deg, var(--purple), var(--purple-2));
-  color: var(--text);
-  box-shadow: 0 18px 48px rgba(124, 77, 255, 0.16), 0 18px 48px rgba(0, 0, 0, 0.32);
-}
-
-.floating-chat-button span {
-  background: var(--red);
-  color: var(--text);
+  box-shadow: 0 0 12px var(--theme-glow-strong);
 }
 
 .chat-message strong {
@@ -5879,7 +5972,7 @@ button:disabled {
 }
 
 .private-message.received .chat-message strong {
-  color: var(--purple-2);
+  color: var(--theme-accent-2);
 }
 
 .recovery-card,
@@ -5912,8 +6005,8 @@ button:disabled {
 .clan-reset-panel,
 .clan-bonus-summary,
 .clan-benefit-detail {
-  border-color: rgba(157, 107, 255, 0.26);
-  background: rgba(124, 77, 255, 0.06);
+  border-color: var(--theme-section-border);
+  background: var(--theme-section-bg);
 }
 
 .hunt-location-banner span,
@@ -5944,13 +6037,13 @@ button:disabled {
 .crest-option.selected,
 .clan-benefit-node.selected {
   border-color: var(--line-active);
-  background: rgba(124, 77, 255, 0.14);
-  color: var(--lavender);
+  background: var(--theme-active-bg);
+  color: var(--theme-highlight);
 }
 
 .inv-slot:not(.empty):hover {
   border-color: var(--line-active);
-  background: rgba(124, 77, 255, 0.1);
+  background: color-mix(in srgb, var(--theme-accent) 20%, transparent);
 }
 
 .asset-enhancement {
@@ -5961,16 +6054,16 @@ button:disabled {
 
 .branching-list::before,
 .clan-benefit-tree::before {
-  background: linear-gradient(var(--purple), rgba(157, 107, 255, 0.32));
+  background: linear-gradient(var(--theme-accent), color-mix(in srgb, var(--theme-accent-2) 50%, transparent));
 }
 
 .branching-list .talent-row::before,
 .clan-benefit-node::before {
-  background: rgba(157, 107, 255, 0.42);
+  background: color-mix(in srgb, var(--theme-accent-2) 55%, transparent);
 }
 
 .quest-section-header b {
-  background: var(--purple);
+  background: var(--theme-accent);
   color: var(--text);
 }
 
@@ -5991,24 +6084,24 @@ button:disabled {
 
 .clan-bonus-chip svg,
 .clan-benefit-detail-icon {
-  color: var(--purple-2);
+  color: var(--theme-accent-2);
 }
 
 .clan-benefit-detail-icon {
-  border-color: rgba(157, 107, 255, 0.24);
-  background: rgba(124, 77, 255, 0.08);
+  border-color: color-mix(in srgb, var(--theme-accent-2) 35%, transparent);
+  background: color-mix(in srgb, var(--theme-accent) 18%, transparent);
 }
 
 .toast {
-  border-color: rgba(185, 74, 89, 0.48);
-  background: #2d121b;
-  color: #f0a4b2;
+  border-color: var(--theme-toast-error-border);
+  background: var(--theme-toast-error-bg);
+  color: var(--theme-toast-error-text);
 }
 
 .toast.success {
-  border-color: rgba(82, 216, 155, 0.42);
-  background: #10271d;
-  color: #bdf5d2;
+  border-color: var(--theme-toast-success-border);
+  background: var(--theme-toast-success-bg);
+  color: var(--theme-toast-success-text);
 }
 
 .regen-hint {
@@ -6017,10 +6110,10 @@ button:disabled {
 
 @keyframes turnGlow {
   from {
-    box-shadow: 0 0 0 rgba(124, 77, 255, 0);
+    box-shadow: 0 0 0 color-mix(in srgb, var(--theme-accent) 0%, transparent);
   }
   to {
-    box-shadow: 0 0 24px rgba(124, 77, 255, 0.16);
+    box-shadow: 0 0 24px var(--theme-glow-strong);
   }
 }
 

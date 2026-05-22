@@ -1805,7 +1805,7 @@ export const CITIES: CityDefinition[] = [
     "name": "Vila de Valfria",
     "minLevel": 15,
     "travelCost": 130,
-    "description": "Uma vila pitoresca nas montanhas, conhecida por suas tradicoes antigas.",
+    "description": "Uma vila pitoresca nas montanhas, conhecida por suas tradições antigas.",
     "isPort": true,
     "inhabitants": [
       "Helga Forja-Alta",
@@ -3166,7 +3166,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "deep_dwarf": {
     "id": "deep_dwarf",
     "cityId": "ravenspire",
-    "name": "Anao das Profundezas",
+    "name": "Anão das Profundezas",
     "imageUrl": "/assets/monsters/deep-dwarf.png",
     "level": 27,
     "maxHp": 635,

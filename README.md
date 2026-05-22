@@ -1,6 +1,6 @@
 # Litch RPG Webapp
 
-Base de webapp para um RPG text-based com combate por turno, chat, mercado entre jogadores e informacoes em tempo real.
+Base de webapp para um RPG text-based com combate por turno, chat, mercado entre jogadores e informações em tempo real.
 
 ## Stack
 
@@ -27,15 +27,15 @@ Servidor realtime: http://127.0.0.1:3001
 - Atributos iniciais: FORCA, CONSTITUICAO e AGILIDADE com 1 ponto.
 - Equipamentos: arma, armadura e amuleto.
 - Inventario com capacidade de 40 itens.
-- Viagem entre cidades com custo e nivel minimo.
+- Viagem entre cidades com custo e nível minimo.
 - Cidade principal com Cacar, Arena, Armeiro e Boticario.
 - Combate por turno com dano baseado em FORCA atacante menos DEFESA defensor.
-- Vida do personagem: `nivel * 50 + 2 * CON`.
-- FORCA total: `nivel * 10 + atributo FORCA`.
+- Vida do personagem: `nível * 50 + 2 * CON`.
+- FORCA total: `nível * 10 + atributo FORCA`.
 - AGILIDADE controla critico e esquiva.
-- Experiencia, nivel, pontos de atributo e chance de drop em monstros.
+- Experiencia, nível, pontos de atributo e chance de drop em monstros.
 - Venda para NPC apenas no Armeiro.
-- Chat e atualizacoes realtime via WebSocket.
+- Chat e atualizações realtime via WebSocket.
 
 ## Sistema de raridade
 
@@ -98,6 +98,6 @@ Formula base:
 
 ### Estado atual de integracao
 
-- O utilitario de sorteio (`getRarityFromRoll`) ja existe e esta pronto para uso.
-- Neste momento, o servidor ainda nao aplica sorteio automatico de raridade na geracao de itens.
+- O utilitario de sorteio (`getRarityFromRoll`) ja existe e está pronto para uso.
+- Neste momento, o servidor ainda não aplica sorteio automatico de raridade na geracao de itens.
 - Sem `rarity` explicita no item, o cliente trata como `common`.

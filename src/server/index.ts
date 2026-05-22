@@ -322,7 +322,7 @@ function pushMarketHistory(
 function currentPlayer(playerId: string) {
   const player = store.players.get(playerId);
   if (!player) {
-    throw new Error("Jogador não encontrado.");
+    throw new Error("Recruta não encontrado.");
   }
   player.email ??= "";
   ensureReferralCode(player);
@@ -553,7 +553,7 @@ function assertPassword(password: string) {
 function accountForPlayer(playerId: string) {
   const account = Array.from(store.accountsByEmail.values()).find((entry) => entry.playerId === playerId);
   if (!account) {
-    throw new Error("Conta nao encontrada.");
+    throw new Error("Conta não encontrada.");
   }
   return account;
 }
@@ -1252,7 +1252,7 @@ function createClan(character: Character, name: string, icon?: string) {
     throw new Error("Você já participa de um clã.");
   }
   if (character.level < CLAN_CREATE_MIN_LEVEL) {
-    throw new Error(`Voce precisa estar no nivel ${CLAN_CREATE_MIN_LEVEL} para criar um cla.`);
+    throw new Error(`Você precisa estar no nível ${CLAN_CREATE_MIN_LEVEL} para criar um cla.`);
   }
   if (character.diamonds < CLAN_CREATE_DIAMOND_COST) {
     throw new Error(`Criar um cla custa ${CLAN_CREATE_DIAMOND_COST} diamantes.`);
@@ -1448,7 +1448,7 @@ function buyClanBenefit(character: Character, benefitId: string) {
 function resetClanBenefits(character: Character) {
   const clan = character.clanId ? store.clans.get(character.clanId) : null;
   if (!clan) {
-    throw new Error("Voce nao participa de um cla.");
+    throw new Error("Você não participa de um cla.");
   }
   if (clan.leaderPlayerId !== character.playerId) {
     throw new Error("Apenas o lider pode resetar os beneficios.");
@@ -1494,7 +1494,7 @@ function buyDiamondPackage(character: Character, packageId: string) {
 function selectAvatar(character: Character, avatarId: string) {
   const avatar = AVATARS.find((entry) => entry.id === avatarId);
   if (!avatar) {
-    throw new Error("Avatar nao encontrado.");
+    throw new Error("Avatar não encontrado.");
   }
   character.unlockedAvatarIds ??= AVATARS.filter((entry) => entry.priceDiamonds === 0).map((entry) => entry.id);
   if (!character.unlockedAvatarIds.includes(avatar.id)) {
@@ -1627,12 +1627,12 @@ function getEnhancementPlan(item: InventoryItem, requestedCreationStones?: numbe
 function enhanceEquipment(character: Character, payload: EnhancePayload) {
   const city = CITIES.find((entry) => entry.id === character.cityId);
   if (!city?.blacksmithEnhancement) {
-    throw new Error("Este ferreiro nao faz aprimoramentos.");
+    throw new Error("Este ferreiro não faz aprimoramentos.");
   }
 
   const inventoryItem = findInventoryItem(character, payload.instanceId);
   if (!inventoryItem) {
-    throw new Error("Item nao encontrado.");
+    throw new Error("Item não encontrado.");
   }
   const definition = ITEM_CATALOG[inventoryItem.itemId];
   if (!definition?.slot) {
@@ -1847,7 +1847,7 @@ io.on("connection", (socket: AuthedSocket) => {
         (player) => player.username.toLowerCase() === username.toLowerCase()
       );
       if (usernameTaken) {
-        throw new Error("Este nome de jogador ja esta em uso.");
+        throw new Error("Este nome de recruta ja está em uso.");
       }
       const inviter = inviteCode ? findInviterByReferralCode(inviteCode) : null;
       if (inviteCode && !inviter) {
@@ -2436,7 +2436,7 @@ io.on("connection", (socket: AuthedSocket) => {
         throw new Error("Limite diario de 10 confrontos contra o monarca atingido.");
       }
       if (countItem(character, MONARCH_ACCESS_KEY_ID) < 1) {
-        throw new Error(`Voce precisa de 1 ${ITEM_CATALOG[MONARCH_ACCESS_KEY_ID]?.name ?? "chave"}.`);
+        throw new Error(`Você precisa de 1 ${ITEM_CATALOG[MONARCH_ACCESS_KEY_ID]?.name ?? "chave"}.`);
       }
 
       removeItemByItemId(character, MONARCH_ACCESS_KEY_ID, 1);
@@ -2509,7 +2509,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const potionDefinition = potionUsed ? ITEM_CATALOG[potionUsed.itemId] : null;
       if (battle.mode === "monarch") {
         if (payload.action === "auto") {
-          throw new Error("Auto PvE nao esta disponivel contra monarcas.");
+          throw new Error("Auto PvE não está disponível contra monarcas.");
         }
         const event = ensureMonarchEvent();
         if (event.status !== "active") {
@@ -2780,7 +2780,7 @@ io.on("connection", (socket: AuthedSocket) => {
         : Array.from(store.players.values()).find(
             (p) => p.username.toLowerCase() === targetName.toLowerCase()
           );
-      if (!targetPlayer) throw new Error("Jogador não encontrado.");
+      if (!targetPlayer) throw new Error("Recruta não encontrado.");
       if (targetPlayer.id === playerId) throw new Error("Você não pode enviar mensagem para si mesmo.");
 
       const targetCharacter = store.characters.get(targetPlayer.id);
@@ -2809,7 +2809,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const targetPlayerId = String(payload?.playerId ?? "");
       const profile = buildPlayerPublicProfile(targetPlayerId);
       if (!profile) {
-        throw new Error("Jogador nao encontrado.");
+        throw new Error("Recruta não encontrado.");
       }
       socket.emit("player:profile", profile);
     } catch (error) {
@@ -2826,10 +2826,10 @@ io.on("connection", (socket: AuthedSocket) => {
       const invitedPlayer = store.players.get(invitedPlayerId);
       const invitedCharacter = store.characters.get(invitedPlayerId);
       if (!invitedPlayer || invitedPlayer.referredByPlayerId !== playerId || !invitedCharacter) {
-        throw new Error("Convite nao encontrado.");
+        throw new Error("Convite não encontrado.");
       }
       if (invitedCharacter.level < REFERRAL_REWARD_LEVEL) {
-        throw new Error(`O amigo precisa chegar ao nivel ${REFERRAL_REWARD_LEVEL}.`);
+        throw new Error(`O amigo precisa chegar ao nível ${REFERRAL_REWARD_LEVEL}.`);
       }
       character.referralRewardsClaimedFor ??= [];
       if (character.referralRewardsClaimedFor.includes(invitedPlayerId)) {
