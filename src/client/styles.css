@@ -1263,6 +1263,102 @@ button:disabled {
   color: var(--muted);
 }
 
+.monarch-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.monarch-hero {
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  padding: 14px;
+  border: 1px solid rgba(220, 203, 255, 0.14);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 78% 16%, rgba(124, 77, 255, 0.16), transparent 18rem),
+    linear-gradient(180deg, rgba(220, 203, 255, 0.035), rgba(124, 77, 255, 0.018)),
+    var(--surface-card-elevated);
+  box-shadow: 0 0 28px rgba(124, 77, 255, 0.08);
+}
+
+.monarch-hero.king {
+  border-color: rgba(216, 178, 74, 0.28);
+}
+
+.monarch-hero > img,
+.monarch-hero > .asset-fallback {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  height: auto;
+  align-self: start;
+  object-fit: contain;
+  object-position: center;
+  border: 1px solid rgba(220, 203, 255, 0.14);
+  border-radius: 14px;
+  background: #0b0912;
+}
+
+.monarch-hero-copy {
+  display: grid;
+  align-content: center;
+  gap: 12px;
+}
+
+.monarch-hero-copy h2,
+.monarch-hero-copy p {
+  margin: 0;
+}
+
+.monarch-hero-copy h2 {
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  line-height: 0.95;
+}
+
+.monarch-hero-copy p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.monarch-hp {
+  display: grid;
+  gap: 6px;
+}
+
+.monarch-hp strong {
+  color: var(--lavender);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.monarch-entry-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.monarch-entry-row span {
+  padding: 7px 9px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(11, 9, 18, 0.42);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.monarch-entry-row strong {
+  color: var(--text);
+}
+
+.monarch-ranking {
+  display: grid;
+  gap: 10px;
+}
+
 .travel-map-caption {
   display: flex;
   flex-wrap: wrap;
@@ -2980,6 +3076,40 @@ button:disabled {
   line-height: 1;
 }
 
+.monarch-doom-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid rgba(157, 107, 255, 0.3);
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(124, 77, 255, 0.12), rgba(16, 13, 26, 0.82)),
+    rgba(11, 9, 18, 0.7);
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.monarch-doom-counter strong {
+  color: var(--lavender);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.monarch-doom-counter.danger {
+  border-color: rgba(201, 78, 107, 0.46);
+  background:
+    linear-gradient(90deg, rgba(201, 78, 107, 0.16), rgba(16, 13, 26, 0.86)),
+    rgba(11, 9, 18, 0.76);
+}
+
+.monarch-doom-counter.danger strong {
+  color: var(--red);
+}
+
 .battle-actions {
   display: flex;
   gap: 10px;
@@ -4442,9 +4572,9 @@ button:disabled {
 }
 
 .city-map {
-  opacity: 0.22;
-  filter: grayscale(0.75) sepia(0.18) hue-rotate(226deg) saturate(0.85) brightness(0.54);
-  mix-blend-mode: screen;
+  opacity: 0.58;
+  filter: saturate(0.82) brightness(0.48) contrast(1.06);
+  mix-blend-mode: normal;
 }
 
 .city-copy {
@@ -5097,6 +5227,16 @@ button:disabled {
   .quest-progress {
     grid-template-columns: minmax(120px, 1fr) auto;
     width: 100%;
+  }
+
+  .monarch-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .monarch-hero > img,
+  .monarch-hero > .asset-fallback {
+    min-height: 0;
+    max-height: none;
   }
 
   .clan-benefit-detail {

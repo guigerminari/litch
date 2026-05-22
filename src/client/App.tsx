@@ -61,8 +61,7 @@ import type {
 } from "../shared/types";
 import { RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
 import { experienceForNextLevel } from "../shared/progression";
-import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL } from "../shared/types";
-import cityMap from "./assets/city-map.svg";
+import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL, MONARCH_BATTLE_ATTACK_LIMIT } from "../shared/types";
 import { socket } from "./socket";
 
 type View =
@@ -79,6 +78,7 @@ type View =
   | "blacksmith"
   | "alchemist"
   | "dungeon"
+  | "monarch"
   | "rankings"
   | "gameShop"
   | "clan";
@@ -138,6 +138,7 @@ const viewLabels: Record<View, string> = {
   blacksmith: "Ferreiro",
   alchemist: "Alquimista",
   dungeon: "Masmorra",
+  monarch: "Monarca",
   rankings: "Ranking",
   gameShop: "Loja do Jogo",
   clan: "Clã"
@@ -783,9 +784,10 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
 }
 
 function CityHero({ game, view, setView }: { game: GameState; view: View; setView: (view: View) => void }) {
+  const countryCover = game.currentCountry.imageUrl ?? `/assets/locals/${game.currentCountry.id}.png`;
   return (
     <header className="city-hero">
-      <img src={cityMap} alt="" className="city-map" />
+      <img src={countryCover} alt="" className="city-map" />
       <div className="city-copy">
         <span className="eyebrow">Cidade</span>
         <h1>{game.currentCity.name}</h1>
@@ -841,6 +843,9 @@ function GamePane({ game, view, setView }: { game: GameState; view: View; setVie
   if (view === "dungeon") {
     return <DungeonPanel game={game} />;
   }
+  if (view === "monarch") {
+    return <MonarchPanel game={game} />;
+  }
   if (view === "rankings") {
     return <RankingsPanel game={game} />;
   }
@@ -885,6 +890,14 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   ];
   if (game.currentCity.dungeonMonsterIds?.length) {
     combatOptions.push({ view: "dungeon", icon: <Star size={24} />, title: "Masmorra", value: `${game.currentCity.dungeonMonsterIds.length} desafios` });
+  }
+  if (game.currentCountry.id === "morthaly" && game.monarchEvent) {
+    combatOptions.push({
+      view: "monarch",
+      icon: <Crown size={24} />,
+      title: game.monarchEvent.isKing ? "Rei Lich" : "Monarca",
+      value: game.monarchEvent.status === "active" ? `${game.monarchEvent.attemptsLimit - game.monarchEvent.attemptsUsed} entradas` : "Encerrado"
+    });
   }
 
   const actionOptions: CityOption[] = [
@@ -1219,6 +1232,104 @@ function DungeonPanel({ game }: { game: GameState }) {
           );
         })}
       </div>
+    </section>
+  );
+}
+
+function MonarchPanel({ game }: { game: GameState }) {
+  const event = game.monarchEvent;
+  const highKeys = countInventoryItem(game, "misc_high_dungeon_key");
+  if (!event) {
+    return (
+      <section className="content-panel monarch-panel">
+        <PanelTitle icon={<Crown size={20} />} title="Monarca de Morthaly" />
+        <p className="empty-state">Nenhum monarca foi avistado hoje.</p>
+      </section>
+    );
+  }
+
+  const inMorthaly = game.currentCountry.id === "morthaly";
+  const hpPercent = Math.max(0, Math.round((event.currentHp / event.maxHp) * 100));
+  const attemptsLeft = Math.max(0, event.attemptsLimit - event.attemptsUsed);
+  const blockedReason =
+    !inMorthaly
+      ? "Viaje para Morthaly"
+      : event.status !== "active"
+        ? "Evento encerrado"
+        : attemptsLeft <= 0
+          ? "Limite diario atingido"
+          : highKeys <= 0
+            ? "Precisa de Chave de Masmorra Avancada"
+            : game.character.currentHp <= 0
+              ? "Recupere sua vida"
+              : "";
+  const canStart = !blockedReason;
+  return (
+    <section className="content-panel monarch-panel">
+      <PanelTitle icon={<Crown size={20} />} title="Monarca de Morthaly" />
+      <div className={event.isKing ? "monarch-hero king" : "monarch-hero"}>
+        <AssetImage src={event.imageUrl} alt={event.name} fallback={<Crown size={44} />} />
+        <div className="monarch-hero-copy">
+          <span className="eyebrow">{event.title}</span>
+          <h2>{event.name}</h2>
+          <p>
+            Cada dano causado por qualquer jogador reduz a vida global do monarca em tempo real.
+            {event.isKing ? " As recompensas do Rei Lich sao triplicadas." : ""}
+          </p>
+          <div className="monarch-hp">
+            <div className="hp-bar">
+              <span style={{ width: `${hpPercent}%` }} />
+            </div>
+            <strong>{event.currentHp.toLocaleString()} / {event.maxHp.toLocaleString()} vida</strong>
+          </div>
+          <div className="monster-stats">
+            <small title="Nivel"><Star size={13} /> {event.level}</small>
+            <small title="Forca"><Swords size={13} /> {event.strength}</small>
+            <small title="Defesa"><Shield size={13} /> {event.defense}</small>
+            <small title="Agilidade"><Crosshair size={13} /> {event.agility}</small>
+          </div>
+          <div className="monarch-entry-row">
+            <span>Entradas hoje: <strong>{event.attemptsUsed}/{event.attemptsLimit}</strong></span>
+            <span>Chaves: <strong>{highKeys}</strong></span>
+          </div>
+          <button className="primary-button" disabled={!canStart} onClick={() => socket.emit("monarch:start")}>
+            {canStart ? "Enfrentar monarca" : blockedReason}
+          </button>
+        </div>
+      </div>
+
+      <section className="monarch-ranking">
+        <h3 className="city-group-title">Ranking de dano</h3>
+        <div className="ranking-list">
+          {event.ranking.length === 0 && <p className="empty-state">Nenhum jogador causou dano ainda.</p>}
+          {event.ranking.slice(0, 10).map((entry) => (
+            <article className="ranking-row" key={entry.playerId}>
+              <b>#{entry.rank}</b>
+              <div>
+                <strong>{entry.name}</strong>
+                <span>{entry.damage.toLocaleString()} dano</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {event.rewardLog.length > 0 && (
+        <section className="monarch-ranking">
+          <h3 className="city-group-title">Ultimas recompensas</h3>
+          <div className="ranking-list">
+            {event.rewardLog.slice(0, 8).map((reward) => (
+              <article className="ranking-row" key={`reward-${reward.playerId}`}>
+                <b>#{reward.rank}</b>
+                <div>
+                  <strong>{reward.name}</strong>
+                  <span>{reward.experience.toLocaleString()} XP, {reward.gold.toLocaleString()} ouro{reward.diamonds ? `, ${reward.diamonds} diamantes` : ""}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   );
 }
@@ -3007,6 +3118,9 @@ function BattlePanel({ game }: { game: GameState }) {
     game.character.currentHp > 0 &&
     game.character.currentEnergy >= rematchEnergyCost &&
     (battle.mode === "pve" || battle.mode === "dungeon");
+  const monarchAttackLimit = battle.monarch?.attackLimit ?? MONARCH_BATTLE_ATTACK_LIMIT;
+  const monarchAttacksUsed = battle.monarch?.attacksUsed ?? 0;
+  const monarchHitsLeft = Math.max(0, monarchAttackLimit - monarchAttacksUsed);
 
   useEffect(() => {
     autoPveRunningRef.current = autoPveRunning;
@@ -3258,7 +3372,7 @@ function BattlePanel({ game }: { game: GameState }) {
     <section className="content-panel battle-panel">
       <PanelTitle
         icon={<Swords size={20} />}
-        title={battle.mode === "pvp" ? "Arena PvP" : battle.mode === "dungeon" ? "Masmorra" : "Batalha PvE"}
+        title={battle.mode === "pvp" ? "Arena PvP" : battle.mode === "dungeon" ? "Masmorra" : battle.mode === "monarch" ? "Monarca" : "Batalha PvE"}
       />
       <div className="combatants">
         {me && (
@@ -3284,6 +3398,13 @@ function BattlePanel({ game }: { game: GameState }) {
           />
         )}
       </div>
+      {battle.mode === "monarch" && (
+        <div className={monarchHitsLeft <= 10 ? "monarch-doom-counter danger" : "monarch-doom-counter"}>
+          <span>Decreto final em</span>
+          <strong>{monarchHitsLeft}</strong>
+          <span>{monarchHitsLeft === 1 ? "hit" : "hits"}</span>
+        </div>
+      )}
       <div className="battle-actions">
         {battle.status === "active" ? (
           <>

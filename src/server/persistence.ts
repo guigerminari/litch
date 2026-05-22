@@ -1,6 +1,6 @@
 import { dirname, join } from "node:path";
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
-import type { BattleState, Character, ChatMessage, Clan, MarketListing, Player, PrivateMessage } from "../shared/types";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import type { BattleState, Character, ChatMessage, Clan, MarketListing, MonarchEventState, Player, PrivateMessage } from "../shared/types";
 import { store, type AuthAccount, type GameStore } from "./store";
 
 interface PersistedGameStore {
@@ -19,6 +19,7 @@ interface PersistedGameStore {
   arenaQueue: string[];
   arenaRecordedBattleIds: string[];
   nextRegenAt: number;
+  monarchEvent: MonarchEventState | null;
 }
 
 const DEFAULT_DATA_FILE = join(process.cwd(), "data", "game-state.json");
@@ -41,7 +42,8 @@ function toPersistedStore(source: GameStore): PersistedGameStore {
     allPrivateMessages: source.allPrivateMessages,
     arenaQueue: source.arenaQueue,
     arenaRecordedBattleIds: Array.from(source.arenaRecordedBattleIds.values()),
-    nextRegenAt: source.nextRegenAt
+    nextRegenAt: source.nextRegenAt,
+    monarchEvent: source.monarchEvent
   };
 }
 
@@ -66,13 +68,33 @@ export function loadPersistentStore(target: GameStore = store) {
   target.arenaRecordedBattleIds = new Set(persisted.arenaRecordedBattleIds ?? []);
   target.socketsByPlayer = new Map();
   target.nextRegenAt = persisted.nextRegenAt ?? Date.now() + 2 * 60 * 1000;
+  target.monarchEvent = persisted.monarchEvent ?? null;
 }
 
 export function saveStoreNow(source: GameStore = store) {
   mkdirSync(dirname(DATA_FILE), { recursive: true });
   const tempFile = `${DATA_FILE}.tmp`;
-  writeFileSync(tempFile, JSON.stringify(toPersistedStore(source), null, 2));
-  renameSync(tempFile, DATA_FILE);
+  const payload = JSON.stringify(toPersistedStore(source), null, 2);
+
+  writeFileSync(tempFile, payload);
+  try {
+    renameSync(tempFile, DATA_FILE);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+
+    // Windows can transiently deny rename while another handle has the target file open.
+    if (code === "EPERM" || code === "EACCES" || code === "EBUSY") {
+      writeFileSync(DATA_FILE, payload);
+      try {
+        unlinkSync(tempFile);
+      } catch {
+        // Best-effort cleanup for temp file.
+      }
+      return;
+    }
+
+    throw error;
+  }
 }
 
 export function persistStoreSoon(source: GameStore = store) {
@@ -82,7 +104,11 @@ export function persistStoreSoon(source: GameStore = store) {
 
   pendingSave = setTimeout(() => {
     pendingSave = null;
-    saveStoreNow(source);
+    try {
+      saveStoreNow(source);
+    } catch (error) {
+      console.error("Failed to persist game state:", error);
+    }
   }, 250);
 }
 

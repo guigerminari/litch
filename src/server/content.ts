@@ -753,6 +753,42 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     },
     "description": "Recupera 30% da vida maxima"
   },
+  "potion_health_light": {
+    "id": "potion_health_light",
+    "name": "Pocao de Vida Leve",
+    "kind": "potion",
+    "imageUrl": "/assets/items/potions/health-light.png",
+    "minLevel": 1,
+    "price": 18,
+    "stats": {
+      "heal": 20
+    },
+    "description": "Recupera 20 de vida"
+  },
+  "potion_health_medium": {
+    "id": "potion_health_medium",
+    "name": "Pocao de Vida Media",
+    "kind": "potion",
+    "imageUrl": "/assets/items/potions/health-medium.png",
+    "minLevel": 1,
+    "price": 18,
+    "stats": {
+      "heal": 100
+    },
+    "description": "Recupera 100 de vida"
+  },
+  "potion_health_high": {
+    "id": "potion_health_high",
+    "name": "Pocao de Vida Alta",
+    "kind": "potion",
+    "imageUrl": "/assets/items/potions/health-high.png",
+    "minLevel": 1,
+    "price": 18,
+    "stats": {
+      "heal": 300
+    },
+    "description": "Recupera 300 de vida"
+  },
   "potion_mana": {
     "id": "potion_mana",
     "name": "Pocao de Mana",
@@ -1392,19 +1428,22 @@ export const COUNTRIES: CountryDefinition[] = [
     id: "aurevia",
     name: "Aurevia",
     description: "Reino de estradas antigas, fortalezas de pedra e bosques seguros.",
-    portCityId: "eldoria"
+    portCityId: "eldoria",
+    imageUrl: "/assets/locals/aurevia.png"
   },
   {
     id: "valfria",
     name: "Valfria",
     description: "Pais frio de montanhas, ruinas espectrais e vilas isoladas.",
-    portCityId: "vila_de_valfria"
+    portCityId: "vila_de_valfria",
+    imageUrl: "/assets/locals/valfria.png"
   },
   {
     id: "morthaly",
     name: "Morthaly",
     description: "Ilha necromantica de rochas negras, runas violetas e cidades tomadas por magia morta.",
-    portCityId: "porto_sombrio"
+    portCityId: "porto_sombrio",
+    imageUrl: "/assets/locals/morthaly.png"
   }
 ];
 

@@ -4,9 +4,11 @@ export type EquipmentSlot = "weapon" | "armor" | "amulet";
 
 export type ItemKind = "weapon" | "armor" | "amulet" | "potion" | "material" | "scroll" | "ticket" | "misc";
 
-export type BattleMode = "pve" | "pvp" | "dungeon";
+export type BattleMode = "pve" | "pvp" | "dungeon" | "monarch";
 
 export type BattleStatus = "active" | "ended";
+
+export const MONARCH_BATTLE_ATTACK_LIMIT = 50;
 
 export type Currency = "gold" | "diamonds";
 
@@ -86,6 +88,10 @@ export interface Character {
   marketHistory: MarketTransactionHistory[];
   pveAutoUntil?: number;
   royalSealUntil?: number;
+  monarchAttempts?: {
+    dayKey: string;
+    count: number;
+  };
 }
 
 export interface QuestProgress {
@@ -147,11 +153,76 @@ export interface MonsterDefinition {
   drops: MonsterDrop[];
 }
 
+export type MonarchEventStatus = "active" | "defeated" | "expired";
+
+export interface MonarchRankingEntry {
+  playerId: string;
+  name: string;
+  damage: number;
+  rank: number;
+}
+
+export interface MonarchRewardEntry extends MonarchRankingEntry {
+  experience: number;
+  gold: number;
+  diamonds: number;
+}
+
+export interface MonarchEventState {
+  dayKey: string;
+  monarchId: string;
+  name: string;
+  title: string;
+  imageUrl: string;
+  level: number;
+  maxHp: number;
+  currentHp: number;
+  strength: number;
+  defense: number;
+  agility: number;
+  experience: number;
+  gold: number;
+  isKing: boolean;
+  status: MonarchEventStatus;
+  startsAt: number;
+  endsAt: number;
+  endedAt?: number;
+  damageByPlayer: Record<string, number>;
+  participantNames: Record<string, string>;
+  attemptsByPlayer: Record<string, number>;
+  rewardsGranted: boolean;
+  rewardLog: MonarchRewardEntry[];
+}
+
+export interface MonarchEventView {
+  dayKey: string;
+  monarchId: string;
+  name: string;
+  title: string;
+  imageUrl: string;
+  level: number;
+  maxHp: number;
+  currentHp: number;
+  strength: number;
+  defense: number;
+  agility: number;
+  isKing: boolean;
+  status: MonarchEventStatus;
+  startsAt: number;
+  endsAt: number;
+  endedAt?: number;
+  attemptsUsed: number;
+  attemptsLimit: number;
+  ranking: MonarchRankingEntry[];
+  rewardLog: MonarchRewardEntry[];
+}
+
 export interface CountryDefinition {
   id: string;
   name: string;
   description: string;
   portCityId: string;
+  imageUrl?: string;
 }
 
 export interface HuntingLocationDefinition {
@@ -213,6 +284,11 @@ export interface BattleLogEntry {
   text: string;
 }
 
+export interface MonarchBattleProgress {
+  attacksUsed: number;
+  attackLimit: number;
+}
+
 export interface BattleState {
   id: string;
   mode: BattleMode;
@@ -224,6 +300,7 @@ export interface BattleState {
   winnerParticipantId: string | null;
   createdAt: number;
   updatedAt: number;
+  monarch?: MonarchBattleProgress;
 }
 
 export interface ChatMessage {
@@ -438,6 +515,7 @@ export interface GameState {
   onlineCount: number;
   arenaQueueSize: number;
   nextRegenAt: number;
+  monarchEvent: MonarchEventView | null;
   regenHpAmount: number;
   regenEnergyAmount: number;
   clanChatMessages: ChatMessage[];

@@ -27,6 +27,9 @@ import type {
   LoginPayload,
   MarketBuyPayload,
   MarketCreatePayload,
+  MonarchEventState,
+  MonarchRankingEntry,
+  MonarchRewardEntry,
   Player,
   PrivateSendPayload,
   QuestClaimPayload,
@@ -57,10 +60,12 @@ import {
 } from "./content";
 import {
   createDungeonBattle,
+  createMonarchBattle,
   createPveBattle,
   createPvpBattle,
   fleeBattle,
   syncCharacterVitalsFromBattle,
+  takeMonarchBattleTurn,
   takeBattleTurn,
   takeAutoPveTurn
 } from "./domain/battle";
@@ -86,6 +91,11 @@ const ENHANCEMENT_GOLD_STEP = 10000;
 const ENHANCEMENT_CHANCE_STEP = 5;
 const ENHANCEMENT_MIN_CHANCE = 5;
 const ENHANCEMENT_CREATION_STONE_BONUS = 3;
+const MORTHALY_COUNTRY_ID = "morthaly";
+const MONARCH_ACCESS_KEY_ID = "misc_high_dungeon_key";
+const MONARCH_DAILY_ATTEMPT_LIMIT = 10;
+const MONARCH_EXPIRED_REWARD_RATE = 0.15;
+const MONARCH_KING_REWARD_MULTIPLIER = 3;
 const ENHANCEMENT_ITEMS = {
   oldStone: "material_old_stone",
   eranStone: "misc_eran",
@@ -93,6 +103,87 @@ const ENHANCEMENT_ITEMS = {
   midran: "material_midran",
   creationStone: "misc_stone_craft"
 } as const;
+const MONARCH_SCHEDULE = [
+  {
+    id: "monday",
+    name: "General Mortis, o Estandarte Oco",
+    title: "General Undead de Segunda",
+    imageUrl: "/assets/monarchs/monday.png",
+    level: 34,
+    maxHp: 12500000,
+    strength: 260,
+    defense: 120,
+    agility: 42,
+    experience: 52000,
+    gold: 26000
+  },
+  {
+    id: "tuesday",
+    name: "Dama Sepulcral Vael",
+    title: "General Undead de Terca",
+    imageUrl: "/assets/monarchs/tuesday.png",
+    level: 36,
+    maxHp: 14500000,
+    strength: 285,
+    defense: 135,
+    agility: 48,
+    experience: 59000,
+    gold: 30000
+  },
+  {
+    id: "wednesday",
+    name: "Carrasco Ossur",
+    title: "General Undead de Quarta",
+    imageUrl: "/assets/monarchs/wednesday.png",
+    level: 38,
+    maxHp: 16500000,
+    strength: 315,
+    defense: 148,
+    agility: 44,
+    experience: 66000,
+    gold: 34000
+  },
+  {
+    id: "thursday",
+    name: "Profeta Nulgrave",
+    title: "General Undead de Quinta",
+    imageUrl: "/assets/monarchs/thursday.png",
+    level: 40,
+    maxHp: 18500000,
+    strength: 340,
+    defense: 160,
+    agility: 55,
+    experience: 74000,
+    gold: 38000
+  },
+  {
+    id: "friday",
+    name: "Marechal Varkul",
+    title: "General Undead de Sexta",
+    imageUrl: "/assets/monarchs/friday.png",
+    level: 42,
+    maxHp: 21000000,
+    strength: 370,
+    defense: 178,
+    agility: 58,
+    experience: 83000,
+    gold: 43000
+  },
+  {
+    id: "rei-lich",
+    name: "Rei Lich",
+    title: "Monarca do Fim de Semana",
+    imageUrl: "/assets/monarchs/rei-lich.png",
+    level: 50,
+    maxHp: 51000000,
+    strength: 520,
+    defense: 240,
+    agility: 72,
+    experience: 120000,
+    gold: 70000,
+    isKing: true
+  }
+] as const;
 const DAILY_MISSIONS = [
   { id: "daily-defeat-3", title: "Patrulha diária", target: 3, reward: { experience: 90, gold: 45 } },
   { id: "daily-defeat-8", title: "Limpeza das rotas", target: 8, reward: { experience: 220, gold: 110 } },
@@ -149,7 +240,8 @@ function createCharacter(player: Player): Character {
     dungeonClears: 0,
     marketHistory: [],
     pveAutoUntil: 0,
-    royalSealUntil: 0
+    royalSealUntil: 0,
+    monarchAttempts: { dayKey: "", count: 0 }
   };
 
   addItem(character, "training_sword", ITEM_CATALOG, 1);
@@ -177,6 +269,7 @@ function currentCharacter(playerId: string) {
   character.marketHistory ??= [];
   character.pveAutoUntil ??= 0;
   character.royalSealUntil ??= 0;
+  character.monarchAttempts ??= { dayKey: "", count: 0 };
   ensureQuestProgress(character);
   return character;
 }
@@ -274,6 +367,7 @@ function serializeGameState(playerId: string): GameState {
     onlineCount: store.socketsByPlayer.size,
     arenaQueueSize: store.arenaQueue.length,
     nextRegenAt: store.nextRegenAt,
+    monarchEvent: buildMonarchEventView(playerId),
     regenHpAmount,
     regenEnergyAmount,
     clanChatMessages,
@@ -612,10 +706,219 @@ function normalizeVitals(character: Character) {
   character.arenaWins ??= 0;
   character.arenaLosses ??= 0;
   character.dungeonClears ??= 0;
+  character.monarchAttempts ??= { dayKey: "", count: 0 };
   ensureQuestProgress(character);
   const stats = deriveStats(character, ITEM_CATALOG);
   character.currentHp = Math.min(Math.max(0, character.currentHp ?? stats.maxHp), stats.maxHp);
   character.currentEnergy = Math.min(Math.max(0, character.currentEnergy ?? stats.maxEnergy), stats.maxEnergy);
+}
+
+function getLocalDayKey(now = new Date()) {
+  const year = now.getFullYear();
+  const month = `${now.getMonth() + 1}`.padStart(2, "0");
+  const day = `${now.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getNextLocalDayStart(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
+}
+
+function getTodayMonarchDefinition(now = new Date()) {
+  const day = now.getDay();
+  if (day === 0 || day === 6) {
+    return MONARCH_SCHEDULE.find((entry) => entry.id === "rei-lich")!;
+  }
+  return MONARCH_SCHEDULE[Math.max(0, day - 1)];
+}
+
+function buildMonarchRanking(event: MonarchEventState): MonarchRankingEntry[] {
+  return Object.keys(event.participantNames ?? {})
+    .map((playerId) => ({
+      playerId,
+      name: event.participantNames[playerId],
+      damage: event.damageByPlayer[playerId] ?? 0,
+      rank: 0
+    }))
+    .sort((a, b) => b.damage - a.damage || a.name.localeCompare(b.name))
+    .map((entry, index) => ({ ...entry, rank: index + 1 }));
+}
+
+function createMonarchEvent(now = new Date()): MonarchEventState {
+  const definition = getTodayMonarchDefinition(now);
+  return {
+    dayKey: getLocalDayKey(now),
+    monarchId: definition.id,
+    name: definition.name,
+    title: definition.title,
+    imageUrl: definition.imageUrl,
+    level: definition.level,
+    maxHp: definition.maxHp,
+    currentHp: definition.maxHp,
+    strength: definition.strength,
+    defense: definition.defense,
+    agility: definition.agility,
+    experience: definition.experience,
+    gold: definition.gold,
+    isKing: "isKing" in definition && Boolean(definition.isKing),
+    status: "active",
+    startsAt: new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(),
+    endsAt: getNextLocalDayStart(now),
+    damageByPlayer: {},
+    participantNames: {},
+    attemptsByPlayer: {},
+    rewardsGranted: false,
+    rewardLog: []
+  };
+}
+
+function ensureMonarchEvent(now = new Date()) {
+  const dayKey = getLocalDayKey(now);
+  if (store.monarchEvent?.dayKey === dayKey) {
+    return store.monarchEvent;
+  }
+
+  if (store.monarchEvent && store.monarchEvent.status === "active") {
+    finalizeMonarchEvent(store.monarchEvent, "expired");
+  }
+
+  store.monarchEvent = createMonarchEvent(now);
+  return store.monarchEvent;
+}
+
+function monarchAsMonster(event: MonarchEventState) {
+  return {
+    id: event.monarchId,
+    cityId: "necropole_de_morthaly",
+    name: event.name,
+    imageUrl: event.imageUrl,
+    level: event.level,
+    maxHp: event.maxHp,
+    strength: event.strength,
+    defense: event.defense,
+    agility: event.agility,
+    experience: event.experience,
+    gold: event.gold,
+    drops: []
+  };
+}
+
+function syncMonarchBattles(event: MonarchEventState, options?: { sourceBattleId?: string; sourceName?: string; damage?: number }) {
+  const playerIds = new Set<string>();
+  for (const battle of store.battles.values()) {
+    if (battle.mode !== "monarch" || battle.status !== "active") {
+      continue;
+    }
+    const monarch = battle.participants.find((participant) => participant.kind === "monster");
+    const player = battle.participants.find((participant) => participant.ownerPlayerId);
+    if (player?.ownerPlayerId) {
+      playerIds.add(player.ownerPlayerId);
+    }
+    if (monarch) {
+      monarch.hp = Math.min(Math.max(0, event.currentHp), monarch.maxHp);
+    }
+    if (options?.damage && battle.id !== options.sourceBattleId) {
+      battle.log.unshift({
+        id: randomUUID(),
+        createdAt: Date.now(),
+        text: `${options.sourceName} causou ${options.damage} de dano em ${event.name}.`
+      });
+    }
+    if (event.status !== "active") {
+      battle.status = "ended";
+      battle.turnParticipantId = null;
+      battle.winnerParticipantId = event.status === "defeated" ? player?.id ?? null : monarch?.id ?? null;
+      battle.updatedAt = Date.now();
+      battle.log.unshift({
+        id: randomUUID(),
+        createdAt: Date.now(),
+        text:
+          event.status === "defeated"
+            ? `${event.name} foi derrotado pelos herois de Morthaly.`
+            : `${event.name} desapareceu com a troca do dia.`
+      });
+    }
+  }
+  return playerIds;
+}
+
+function finalizeMonarchEvent(event: MonarchEventState, status: "defeated" | "expired") {
+  if (event.rewardsGranted) {
+    return;
+  }
+
+  event.status = status;
+  event.endedAt = Date.now();
+  if (status === "defeated") {
+    event.currentHp = 0;
+  }
+
+  const ranking = buildMonarchRanking(event);
+  const statusMultiplier = status === "defeated" ? 1 : MONARCH_EXPIRED_REWARD_RATE;
+  const kingMultiplier = event.isKing ? MONARCH_KING_REWARD_MULTIPLIER : 1;
+  const rewards: MonarchRewardEntry[] = [];
+  for (const entry of ranking) {
+    const character = store.characters.get(entry.playerId);
+    if (!character) {
+      continue;
+    }
+    const rankMultiplier = entry.rank === 1 ? 1 : entry.rank === 2 ? 0.75 : entry.rank === 3 ? 0.55 : 0.28;
+    const damageMultiplier = entry.damage > 0 ? 1 : 0.18;
+    const totalMultiplier = (rankMultiplier + damageMultiplier + statusMultiplier) * kingMultiplier;
+    const experience = Math.max(25, Math.ceil(event.experience * totalMultiplier));
+    const gold = Math.max(10, Math.ceil(event.gold * totalMultiplier));
+    const diamonds = status === "defeated" && entry.rank <= 3 ? (event.isKing ? 300 : 100) : 0;
+    character.gold += gold;
+    character.diamonds += diamonds;
+    for (const levelMessage of grantExperience(character, experience)) {
+      store.chatMessages = [
+        { id: randomUUID(), playerId: "system", author: "Oraculo", text: levelMessage, createdAt: Date.now() },
+        ...store.chatMessages
+      ].slice(0, 50);
+    }
+    rewards.push({ ...entry, experience, gold, diamonds });
+  }
+
+  event.rewardLog = rewards;
+  event.rewardsGranted = true;
+  const outcome = status === "defeated" ? "foi derrotado" : "desapareceu com a alvorada";
+  store.chatMessages = [
+    {
+      id: randomUUID(),
+      playerId: "system",
+      author: "Arauto de Morthaly",
+      text: `${event.name} ${outcome}. Recompensas distribuidas para ${rewards.length} participante(s).`,
+      createdAt: Date.now()
+    },
+    ...store.chatMessages
+  ].slice(0, 50);
+  syncMonarchBattles(event);
+}
+
+function buildMonarchEventView(playerId: string) {
+  const event = ensureMonarchEvent();
+  return {
+    dayKey: event.dayKey,
+    monarchId: event.monarchId,
+    name: event.name,
+    title: event.title,
+    imageUrl: event.imageUrl,
+    level: event.level,
+    maxHp: event.maxHp,
+    currentHp: event.currentHp,
+    strength: event.strength,
+    defense: event.defense,
+    agility: event.agility,
+    isKing: event.isKing,
+    status: event.status,
+    startsAt: event.startsAt,
+    endsAt: event.endsAt,
+    endedAt: event.endedAt,
+    attemptsUsed: event.attemptsByPlayer[playerId] ?? 0,
+    attemptsLimit: MONARCH_DAILY_ATTEMPT_LIMIT,
+    ranking: buildMonarchRanking(event).slice(0, 20),
+    rewardLog: event.rewardLog
+  };
 }
 
 function syncBattleVitals(battleId: string) {
@@ -1907,6 +2210,48 @@ io.on("connection", (socket: AuthedSocket) => {
     }
   });
 
+  socket.on("monarch:start", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      clearEndedBattle(character);
+      ensureNotInBattle(character);
+      normalizeVitals(character);
+
+      const city = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
+      if (city.countryId !== MORTHALY_COUNTRY_ID) {
+        throw new Error("O monarca so pode ser enfrentado em Morthaly.");
+      }
+      if (character.currentHp <= 0) {
+        throw new Error("Recupere sua vida antes de enfrentar o monarca.");
+      }
+
+      const event = ensureMonarchEvent();
+      if (event.status !== "active" || event.currentHp <= 0) {
+        throw new Error("O monarca de hoje ja foi encerrado.");
+      }
+      const attempts = event.attemptsByPlayer[playerId] ?? 0;
+      if (attempts >= MONARCH_DAILY_ATTEMPT_LIMIT) {
+        throw new Error("Limite diario de 10 confrontos contra o monarca atingido.");
+      }
+      if (countItem(character, MONARCH_ACCESS_KEY_ID) < 1) {
+        throw new Error(`Voce precisa de 1 ${ITEM_CATALOG[MONARCH_ACCESS_KEY_ID]?.name ?? "chave"}.`);
+      }
+
+      removeItemByItemId(character, MONARCH_ACCESS_KEY_ID, 1);
+      event.attemptsByPlayer[playerId] = attempts + 1;
+      character.monarchAttempts = { dayKey: event.dayKey, count: event.attemptsByPlayer[playerId] };
+      event.participantNames[playerId] = character.name;
+      event.damageByPlayer[playerId] ??= 0;
+      const battle = createMonarchBattle(character, monarchAsMonster(event), event.currentHp);
+      store.battles.set(battle.id, battle);
+      leaveArenaQueue(playerId);
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
   socket.on("arena:join", () => {
     try {
       const playerId = requirePlayer(socket);
@@ -1961,6 +2306,34 @@ io.on("connection", (socket: AuthedSocket) => {
       const wasActive = battle.status === "active";
       const potionUsed = payload.instanceId ? findInventoryItem(character, payload.instanceId) : null;
       const potionDefinition = potionUsed ? ITEM_CATALOG[potionUsed.itemId] : null;
+      if (battle.mode === "monarch") {
+        if (payload.action === "auto") {
+          throw new Error("Auto PvE nao esta disponivel contra monarcas.");
+        }
+        const event = ensureMonarchEvent();
+        if (event.status !== "active") {
+          throw new Error("O monarca de hoje ja foi encerrado.");
+        }
+        const beforeHp = event.currentHp;
+        const result = takeMonarchBattleTurn(battle, character, event.currentHp, payload.action, payload.instanceId);
+        const damage = Math.min(beforeHp, result.damageToMonarch);
+        if (damage > 0) {
+          event.currentHp = Math.max(0, event.currentHp - damage);
+          event.participantNames[playerId] = character.name;
+          event.damageByPlayer[playerId] = (event.damageByPlayer[playerId] ?? 0) + damage;
+        }
+        if (event.currentHp <= 0) {
+          finalizeMonarchEvent(event, "defeated");
+        } else {
+          syncMonarchBattles(event, { sourceBattleId: battle.id, sourceName: character.name, damage });
+        }
+        if (payload.action === "usePotion" && potionDefinition?.stats.healPercent) {
+          character.questProgress.healthPotionsUsed += 1;
+        }
+        syncBattleVitals(battle.id);
+        broadcastWorldState();
+        return;
+      }
       if (payload.action === "auto") {
         takeAutoPveTurn(battle, character);
       } else {

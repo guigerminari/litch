@@ -7,6 +7,7 @@ import type {
   ItemDefinition,
   MonsterDefinition
 } from "../../shared/types";
+import { MONARCH_BATTLE_ATTACK_LIMIT } from "../../shared/types";
 import { getRarityFromRoll } from "../../shared/rarity";
 import { ITEM_CATALOG, MONSTERS } from "../content";
 import { addItem, findInventoryItem, hasCapacity, removeItem } from "./inventory";
@@ -69,7 +70,7 @@ function attack(attacker: BattleParticipant, defender: BattleParticipant, battle
   const dodged = Math.random() < (defender.dodgeChance ?? dodgeChance(defender.agility));
   if (dodged) {
     battle.log.unshift(entry(`${defender.name} esquivou do ataque de ${attacker.name}.`));
-    return;
+    return { damage: 0, dodged: true, critical: false };
   }
 
   const critical = Math.random() < (attacker.criticalChance ?? criticalChance(attacker.agility));
@@ -83,6 +84,7 @@ function attack(attacker: BattleParticipant, defender: BattleParticipant, battle
       `${attacker.name} causou ${damage} de dano em ${defender.name}${critical ? " com acerto crítico" : ""}.`
     )
   );
+  return { damage, dodged: false, critical };
 }
 
 function getOpponent(battle: BattleState, participant: BattleParticipant) {
@@ -99,6 +101,14 @@ function finishBattle(battle: BattleState, winner: BattleParticipant) {
   battle.winnerParticipantId = winner.id;
   battle.updatedAt = Date.now();
   battle.log.unshift(entry(`${winner.name} venceu a batalha.`));
+}
+
+function finishMonarchBattleByFatalAttack(battle: BattleState, monarch: BattleParticipant, participant: BattleParticipant) {
+  const fatalDamage = Math.max(0, participant.hp);
+  participant.hp = 0;
+  battle.log.unshift(entry(`${monarch.name} causou ${fatalDamage} de dano em ${participant.name}.`));
+  battle.log.unshift(entry(`${monarch.name} executou o decreto final apos ${MONARCH_BATTLE_ATTACK_LIMIT} ataques.`));
+  finishBattle(battle, monarch);
 }
 
 export function createPveBattle(character: Character, monster: MonsterDefinition): BattleState {
@@ -128,6 +138,32 @@ export function createDungeonBattle(character: Character, monster: MonsterDefini
   return battle;
 }
 
+export function createMonarchBattle(character: Character, monarch: MonsterDefinition, currentHp: number): BattleState {
+  const player = playerParticipant(character, ITEM_CATALOG);
+  const enemy = monsterParticipant(monarch);
+  enemy.id = `monarch:${monarch.id}`;
+  enemy.hp = Math.min(Math.max(0, currentHp), enemy.maxHp);
+  const battle: BattleState = {
+    id: randomUUID(),
+    mode: "monarch",
+    status: "active",
+    cityId: character.cityId,
+    participants: [player, enemy],
+    turnParticipantId: player.id,
+    log: [entry(`${character.name} desafiou ${monarch.name}.`)],
+    winnerParticipantId: null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    monarch: {
+      attacksUsed: 0,
+      attackLimit: MONARCH_BATTLE_ATTACK_LIMIT
+    }
+  };
+
+  character.activeBattleId = battle.id;
+  return battle;
+}
+
 export function createPvpBattle(first: Character, second: Character): BattleState {
   const firstParticipant = playerParticipant(first, ITEM_CATALOG);
   const secondParticipant = playerParticipant(second, ITEM_CATALOG);
@@ -148,6 +184,66 @@ export function createPvpBattle(first: Character, second: Character): BattleStat
   first.activeBattleId = battle.id;
   second.activeBattleId = battle.id;
   return battle;
+}
+
+export function takeMonarchBattleTurn(
+  battle: BattleState,
+  character: Character,
+  sharedMonarchHp: number,
+  action: "attack" | "usePotion",
+  potionInstanceId?: string
+) {
+  if (battle.status !== "active") {
+    throw new Error("A batalha ja terminou.");
+  }
+
+  const participant = battle.participants.find((entry) => entry.ownerPlayerId === character.playerId);
+  const monarch = battle.participants.find((entry) => entry.kind === "monster");
+  if (!participant || !monarch) {
+    throw new Error("Batalha de monarca invalida.");
+  }
+
+  if (battle.turnParticipantId !== participant.id) {
+    throw new Error("Aguarde seu turno.");
+  }
+
+  monarch.hp = Math.min(Math.max(0, sharedMonarchHp), monarch.maxHp);
+  battle.monarch ??= { attacksUsed: 0, attackLimit: MONARCH_BATTLE_ATTACK_LIMIT };
+  let damageToMonarch = 0;
+  if (action === "usePotion") {
+    usePotionInBattle(character, participant, battle, potionInstanceId);
+  } else {
+    if (battle.monarch.attacksUsed >= battle.monarch.attackLimit) {
+      finishMonarchBattleByFatalAttack(battle, monarch, participant);
+      battle.updatedAt = Date.now();
+      return { damageToMonarch, playerDefeated: true, monarchDefeated: false, fatalTriggered: true };
+    }
+    damageToMonarch = attack(participant, monarch, battle).damage;
+    battle.monarch.attacksUsed += 1;
+  }
+
+  if (monarch.hp <= 0) {
+    finishBattle(battle, participant);
+    battle.updatedAt = Date.now();
+    return { damageToMonarch, playerDefeated: false, monarchDefeated: true, fatalTriggered: false };
+  }
+
+  if (action === "attack" && battle.monarch.attacksUsed >= battle.monarch.attackLimit) {
+    finishMonarchBattleByFatalAttack(battle, monarch, participant);
+    battle.updatedAt = Date.now();
+    return { damageToMonarch, playerDefeated: true, monarchDefeated: false, fatalTriggered: true };
+  }
+
+  attack(monarch, participant, battle);
+  if (participant.hp <= 0) {
+    finishBattle(battle, monarch);
+    battle.updatedAt = Date.now();
+    return { damageToMonarch, playerDefeated: true, monarchDefeated: false, fatalTriggered: false };
+  }
+
+  battle.turnParticipantId = participant.id;
+  battle.updatedAt = Date.now();
+  return { damageToMonarch, playerDefeated: false, monarchDefeated: false, fatalTriggered: false };
 }
 
 export function takeBattleTurn(
