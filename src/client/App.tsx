@@ -43,7 +43,8 @@ import {
   Users,
   X,
   Zap,
-  Crosshair
+  Crosshair,
+  PencilRuler
 } from "lucide-react";
 import type {
   AttributeKey,
@@ -506,19 +507,16 @@ export function App() {
   return (
     <main className={gameShellClass}>
       <PlayerActionContext.Provider value={{ currentPlayerId: game.player.id, openPlayerActions }}>
-        <UtilityStrip
-          onSettings={() => setUtilityModal("settings")}
-          onGuide={() => setUtilityModal("guide")}
-          onLogout={logout}
-        />
         <Header
           game={game}
-          connected={connected}
           regenMs={regenMs}
           onDetails={() => setShowDetails(true)}
           onGameShop={() => setView("gameShop")}
           onExchange={() => setShowExchange(true)}
           onRanking={() => setView("rankings")}
+          onSettings={() => setUtilityModal("settings")}
+          onGuide={() => setUtilityModal("guide")}
+          onLogout={logout}
         />
         <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
           <section className="city-stage">
@@ -701,20 +699,24 @@ function UtilityStrip({
 
 function Header({
   game,
-  connected,
   regenMs,
   onDetails,
   onGameShop,
   onExchange,
-  onRanking
+  onRanking,
+  onSettings,
+  onGuide,
+  onLogout
 }: {
   game: GameState;
-  connected: boolean;
   regenMs: number;
   onDetails: () => void;
   onGameShop: () => void;
   onExchange: () => void;
   onRanking: () => void;
+  onSettings: () => void;
+  onGuide: () => void;
+  onLogout: () => void;
 }) {
   const nextXp = Math.max(1, experienceForNextLevel(game.character.level));
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
@@ -728,67 +730,67 @@ function Header({
 
   return (
     <header className="topbar">
-      <div className="title-lockup">
-        <img className="title-lockup-logo" src={BRAND_ICON_URL} alt="" />
-        <div>
-          <strong>Litch RPG</strong>
-          <span>{game.currentCity.name}</span>
+      <div className="topbar-profile">
+        <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
+          <CharacterAvatar avatar={getCurrentAvatar(game)} size={42} royal={royalSealActive} className="character-chip-avatar" />
+          <strong>{game.character.name}</strong>
+          <small>Nv {game.character.level}</small>
+          <small className="character-chip-clan">
+            {game.clan ? <>{getClanCrestIcon(game.clan.icon, 11)} {game.clan.name}</> : "Sem clã"}
+          </small>
+        </button>
+      </div>
+      <div className="topbar-status">
+        <div className="top-economy">
+          <span className="stat-pill city-pill" title={game.currentCity.name}>
+            <MapPinned size={17} style={{ color: "var(--purple)" }} />
+            <strong>{game.currentCity.name}</strong>
+          </span>
+          <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
+            <Coins size={17} style={{ color: "var(--gold)" }} />
+            <strong>{formatCurrency(game.character.gold)}</strong>
+          </button>
+          <button className="stat-pill stat-action" onClick={onGameShop} title="Loja do Jogo">
+            <Gem size={17} style={{ color: "var(--cyan)" }} />
+            <strong>{formatCurrency(game.character.diamonds)}</strong>
+          </button>
+          <button
+            className="stat-pill stat-action"
+            title="Ranking"
+            onClick={onRanking}
+          >
+            <Trophy size={17} style={{ color: "var(--gold)" }} />
+          </button>
+          
+          <UtilityStrip onSettings={onSettings} onGuide={onGuide} onLogout={onLogout} />
+        </div>
+        <div className="resource-stack">
+          <ResourceBar
+            className="life"
+            icon={<Heart size={15} style={{ color: "var(--red)" }} />}
+            value={`${game.character.currentHp}/${game.derived.maxHp}`}
+            progress={hpProgress}
+            regenAmount={game.regenHpAmount}
+            timerLabel={timerLabel}
+            atMax={game.character.currentHp >= game.derived.maxHp}
+          />
+          <ResourceBar
+            className="energy"
+            icon={<Zap size={15} style={{ color: "var(--green)" }} />}
+            value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
+            progress={energyProgress}
+            regenAmount={game.regenEnergyAmount}
+            timerLabel={timerLabel}
+            atMax={game.character.currentEnergy >= game.derived.maxEnergy}
+          />
+          <ResourceBar
+            className="xp"
+            icon={<Star size={15} style={{ color: "var(--purple)" }} />}
+            value={`${formatCurrency(game.character.experience)}/${formatCurrency(nextXp)}`}
+            progress={xpProgress}
+          />
         </div>
       </div>
-      <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
-        <CharacterAvatar avatar={getCurrentAvatar(game)} size={34} royal={royalSealActive} className="character-chip-avatar" />
-        <strong>{game.character.name}</strong>
-        <small>Nv {game.character.level} — {game.currentCity.name}</small>
-        {game.clan && (
-          <small className="character-chip-clan">
-            {getClanCrestIcon(game.clan.icon, 11)} {game.clan.name}
-          </small>
-        )}
-      </button>
-      <div className="resource-stack">
-        <ResourceBar
-          className="life"
-          icon={<Heart size={15} style={{ color: "var(--red)" }} />}
-          value={`${game.character.currentHp}/${game.derived.maxHp}`}
-          progress={hpProgress}
-          regenAmount={game.regenHpAmount}
-          timerLabel={timerLabel}
-          atMax={game.character.currentHp >= game.derived.maxHp}
-        />
-        <ResourceBar
-          className="energy"
-          icon={<Zap size={15} style={{ color: "var(--green)" }} />}
-          value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
-          progress={energyProgress}
-          regenAmount={game.regenEnergyAmount}
-          timerLabel={timerLabel}
-          atMax={game.character.currentEnergy >= game.derived.maxEnergy}
-        />
-      </div>
-      <div className="top-economy">
-        <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
-          <Coins size={17} style={{ color: "var(--gold)" }} />
-          <strong>{formatCurrency(game.character.gold)}</strong>
-        </button>
-        <button className="stat-pill stat-action" onClick={onGameShop} title="Loja do Jogo">
-          <Gem size={17} style={{ color: "var(--cyan)" }} />
-          <strong>{formatCurrency(game.character.diamonds)}</strong>
-        </button>
-        <button
-          className="stat-pill stat-action"
-          title="Ranking"
-          onClick={onRanking}
-        >
-          <Trophy size={17} style={{ color: "var(--gold)" }} />
-        </button>
-        <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Offline"}</span>
-      </div>
-      <ResourceBar
-        className="xp"
-        icon={<Star size={15} style={{ color: "var(--purple)" }} />}
-        value={`${formatCurrency(game.character.experience)}/${formatCurrency(nextXp)}`}
-        progress={xpProgress}
-      />
     </header>
   );
 }
@@ -1094,7 +1096,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     { id: "world", label: "Mundo", icon: <Castle size={14} /> },
     { id: "items", label: "Itens", icon: <Backpack size={14} /> },
     { id: "monsters", label: "Monstros", icon: <Skull size={14} /> },
-    { id: "monarchs", label: "Monarcas", icon: <Crown size={14} /> },
+    { id: "monarchs", label: "Monarcas", icon: <Crown style={{color: "var(--red)"}} size={14} /> },
     { id: "developer", label: "Dev", icon: <Send size={14} /> },
     { id: "stats", label: "Stats", icon: <BarChart3 size={14} /> }
   ];
@@ -1830,7 +1832,6 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
     <aside className="side-panel character-panel">
       <div className="avatar-ring">
         <CharacterAvatar avatar={currentAvatar} size={76} royal={royalSealActive} />
-        {royalSealActive && <span className="royal-seal"><Crown size={15} /> Selo do Rei</span>}
       </div>
       <h2>{game.character.name}</h2>
       <p className="muted">Nível {game.character.level} — {game.currentCity.name}</p>
@@ -2111,36 +2112,36 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   if (game.currentCity.dungeonMonsterIds?.length) {
     combatOptions.push({ view: "dungeon", icon: <Star size={24} />, title: "Masmorra", value: `${game.currentCity.dungeonMonsterIds.length} desafios` });
   }
+
+  const actionOptions: CityOption[] = [];
+  
   if (game.currentCountry.id === "morthaly" && game.monarchEvent) {
-    combatOptions.push({
+    actionOptions.push({
       view: "monarch",
-      icon: <Crown size={24} />,
+      icon: <Crown size={24} style={{ color: "var(--red)" }} />,
       title: game.monarchEvent.isKing ? "Rei Lich" : "Monarca",
       value: game.monarchEvent.status === "active" ? `${game.monarchEvent.attemptsLimit - game.monarchEvent.attemptsUsed} entradas` : "Encerrado"
     });
   }
 
-  const actionOptions: CityOption[] = [
-    
+  const inhabitantOptions: CityOption[] = [
+    { view: "armorer", icon: <Gavel size={24} />, title: game.currentCity.npcs.armorer ?? "Armeiro", value: `Meus equipamentos vão te acompanhar do início ao fim` },
+    { view: "apothecary", icon: <FlaskConical size={24} />, title: game.currentCity.npcs.apothecary ?? "Boticário", value: `As poções de cura são muito importantes` },
   ];
+
   if (game.currentCity.blacksmithRecipeIds?.length || game.currentCity.blacksmithEnhancement) {
-    actionOptions.push({ view: "blacksmith", icon: <Hammer size={24} />, title: "Ferreiro", value: game.currentCity.npcs.blacksmith ?? "Receitas" });
+    inhabitantOptions.push({ view: "blacksmith", icon: <Hammer size={24} />, title: game.currentCity.npcs.blacksmith ?? "Ferreiro", value: "Minha forja está pronta" });
   }
 
-  const inhabitantOptions: CityOption[] = [
-    { view: "armorer", icon: <Gavel size={24} />, title: "Armeiro", value: `${game.currentCity.armorerItemIds.length} itens` },
-    { view: "apothecary", icon: <FlaskConical size={24} />, title: "Boticário", value: `${game.currentCity.apothecaryItemIds.length} poções` },
-  ];
-
   if (game.currentCity.alchemistRecipeIds?.length) {
-    inhabitantOptions.push({ view: "alchemist", icon: <FlaskConical size={24} />, title: "Alquimista", value: game.currentCity.npcs.alchemist ?? "Receitas" });
+    inhabitantOptions.push({ view: "alchemist", icon: <PencilRuler size={24} />, title: game.currentCity.npcs.alchemist ?? "Alquimista", value: "Posso fabricar coisas interessantes" });
   }
   if (game.currentCity.npcs.moneyChanger) {
     inhabitantOptions.push({
       view: "moneyChanger",
       icon: <Coins size={24} />,
-      title: "Cambista",
-      value: `${game.currentCity.moneyChangerItemIds?.length ?? 0} itens`
+      title: game.currentCity.npcs.moneyChanger ?? "Cambista",
+      value: `Na minha mão é mais barato`
     });
   }
 

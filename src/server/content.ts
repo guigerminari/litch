@@ -2092,13 +2092,14 @@ export const CITIES: CityDefinition[] = [
       "Marechal Voss",
       "Irma Velka",
       "Orives Nulo",
+      "Ancião Loren",
       "Barqueiro Naren"
     ],
     "npcs": {
       "armorer": "Marechal Voss",
       "apothecary": "Irma Velka",
       "blacksmith": "Orives Nulo",
-      "alchemist": "Irma Velka",
+      "alchemist": "Ancião Loren",
       "moneyChanger": "Barqueiro Naren"
     },
     "dungeonMonsterIds": [
