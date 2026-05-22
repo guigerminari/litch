@@ -224,6 +224,21 @@ export interface MonarchEventView {
   rewardLog: MonarchRewardEntry[];
 }
 
+export interface MonarchGeneralView {
+  id: string;
+  name: string;
+  title: string;
+  imageUrl: string;
+  level: number;
+  maxHp: number;
+  strength: number;
+  defense: number;
+  agility: number;
+  experience: number;
+  gold: number;
+  isKing: boolean;
+}
+
 export interface CountryDefinition {
   id: string;
   name: string;
@@ -570,9 +585,11 @@ export interface GameState {
     clans: ClanRankingEntry[];
   };
   onlineCount: number;
+  registeredPlayersCount: number;
   arenaQueueSize: number;
   nextRegenAt: number;
   monarchEvent: MonarchEventView | null;
+  monarchGenerals: MonarchGeneralView[];
   regenHpAmount: number;
   regenEnergyAmount: number;
   clanChatMessages: ChatMessage[];

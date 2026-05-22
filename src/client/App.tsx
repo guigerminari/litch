@@ -1025,10 +1025,10 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
   );
 }
 
-type GuideTab = "intro" | "rules" | "travel" | "world" | "combat" | "items" | "monsters" | "events" | "developer" | "stats";
+type GuideTab = "history" | "faq" | "world" | "items" | "monsters" | "monarchs" | "developer" | "stats";
 
 function GuideModal({ game, onClose }: { game: GameState; onClose: () => void }) {
-  const [tab, setTab] = useState<GuideTab>("intro");
+  const [tab, setTab] = useState<GuideTab>("history");
   const [worldFilter, setWorldFilter] = useState("");
   const [itemFilter, setItemFilter] = useState("");
   const [itemKind, setItemKind] = useState<"all" | ItemKind>("all");
@@ -1047,7 +1047,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     const matchesTerm = !term || item.name.toLowerCase().includes(term) || ITEM_KIND_LABELS[item.kind].toLowerCase().includes(term);
     return matchesKind && matchesTerm;
   });
-  const selectedItem = game.itemCatalog[selectedItemId] ?? filteredItems[0] ?? null;
+  const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] ?? null : null;
   const allMonsters = Object.values(game.monsterCatalog).sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
   const filteredMonsters = allMonsters.filter((monster) => {
     const city = citiesById.get(monster.cityId);
@@ -1056,14 +1056,29 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     const term = monsterFilter.trim().toLowerCase();
     return (monsterCity === "all" || monster.cityId === monsterCity) && (!term || haystack.includes(term));
   });
-  const selectedMonster = game.monsterCatalog[selectedMonsterId] ?? filteredMonsters[0] ?? null;
+  const selectedMonster = selectedMonsterId ? game.monsterCatalog[selectedMonsterId] ?? null : null;
   const worldTerm = worldFilter.trim().toLowerCase();
-  const visibleCities = game.cities.filter((city) => {
-    const country = countriesById.get(city.countryId);
-    const locations = game.huntingLocations.filter((location) => location.cityId === city.id);
-    const haystack = `${city.name} ${country?.name ?? ""} ${locations.map((location) => location.name).join(" ")}`.toLowerCase();
-    return !worldTerm || haystack.includes(worldTerm);
-  });
+  const countryGroups = game.countries
+    .map((country) => {
+      const countryMatches = `${country.name} ${country.description}`.toLowerCase().includes(worldTerm);
+      const cities = game.cities
+        .filter((city) => city.countryId === country.id)
+        .map((city) => {
+          const locations = game.huntingLocations.filter((location) => location.cityId === city.id);
+          const npcNames = Object.values(city.npcs).filter(Boolean).join(" ");
+          const monsterNames = locations
+            .flatMap((location) => location.monsterIds)
+            .map((monsterId) => game.monsterCatalog[monsterId]?.name ?? "")
+            .join(" ");
+          const haystack = `${city.name} ${city.description} ${city.inhabitants.join(" ")} ${npcNames} ${locations
+            .map((location) => `${location.name} ${location.description}`)
+            .join(" ")} ${monsterNames}`.toLowerCase();
+          return { city, locations, matches: !worldTerm || countryMatches || haystack.includes(worldTerm) };
+        })
+        .filter((entry) => entry.matches);
+      return { country, cities };
+    })
+    .filter((group) => group.cities.length > 0);
 
   const sendDeveloperMessage = (event: FormEvent) => {
     event.preventDefault();
@@ -1074,14 +1089,12 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   };
 
   const tabs: Array<{ id: GuideTab; label: string; icon: React.ReactNode }> = [
-    { id: "intro", label: "Inicio", icon: <Info size={14} /> },
-    { id: "rules", label: "Regras", icon: <ScrollText size={14} /> },
-    { id: "travel", label: "Viagens", icon: <MapPinned size={14} /> },
+    { id: "history", label: "Historia", icon: <BookOpen size={14} /> },
+    { id: "faq", label: "FAQ", icon: <Info size={14} /> },
     { id: "world", label: "Mundo", icon: <Castle size={14} /> },
-    { id: "combat", label: "Combate", icon: <Swords size={14} /> },
     { id: "items", label: "Itens", icon: <Backpack size={14} /> },
     { id: "monsters", label: "Monstros", icon: <Skull size={14} /> },
-    { id: "events", label: "Eventos", icon: <Crown size={14} /> },
+    { id: "monarchs", label: "Monarcas", icon: <Crown size={14} /> },
     { id: "developer", label: "Dev", icon: <Send size={14} /> },
     { id: "stats", label: "Stats", icon: <BarChart3 size={14} /> }
   ];
@@ -1101,28 +1114,277 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
           ))}
         </div>
 
-        {tab === "intro" && (
+        {tab === "history" && (
           <div className="guide-copy">
-            <h3>Comeco rapido</h3>
-            <p>Seu personagem nasce no cadastro com FOR, CON e AGI em 1. Evolua cacando monstros, distribua atributos, equipe arma, armadura e amuleto, e use ouro ou diamantes com cuidado.</p>
-            <p>Durante uma batalha, as acoes de jogo ficam bloqueadas. Voce ainda pode abrir inventario, detalhes do personagem e sair da conta.</p>
+            <h1>O Chamado dos Vivos</h1>
+            <p>
+              Antes que o medo tivesse nome e antes que os mortos aprendessem a marchar,
+              havia três grandes países separados pelas águas antigas do mundo:
+              <strong>Aurevia</strong>, <strong>Valfria</strong> e <strong>Duskwood</strong>.
+            </p>
+            <p>
+              Por muitos séculos, eles viveram em harmonia.
+            </p>
+            <p>
+              Aurevia era o coração verde do continente. Suas florestas se estendiam como mantos vivos
+              sobre colinas férteis, rios claros e cidades erguidas entre árvores milenares.
+              Era uma terra próspera, lar de cavaleiros, caçadores, guardiões e heróis cujos nomes
+              atravessavam gerações.
+            </p>
+            <p>
+              Valfria, ao sul, era o reino das areias douradas. Onde muitos viam apenas deserto,
+              os valfrianos viam conhecimento. Eles ergueram torres entre dunas, bibliotecas sob templos
+              de pedra, observatórios voltados às estrelas e escolas dedicadas ao estudo das feras,
+              do clima, da guerra e da mente.
+            </p>
+            <p>
+              E Duskwood, ao leste, era uma terra de bosques escuros, montanhas frias e vales envoltos
+              por névoa. Apesar de seu aspecto sombrio, era um país antigo e respeitado.
+              Seus habitantes guardavam tradições profundas, protegiam fronteiras esquecidas e mantinham
+              vigílias sobre ruínas que já existiam antes dos primeiros reis.
+            </p>
+            <p>
+              Juntos, os três países formavam um equilíbrio raro.
+            </p>
+            <p>
+              Aurevia oferecia alimento, madeira, remédios e heróis.<br/>
+              Valfria oferecia ciência, estratégia, mapas, técnicas e sabedoria.<br/>
+              Duskwood oferecia minerais, fortalezas, artefatos antigos e vigilância contra perigos
+              enterrados pela história.
+            </p>
+            <p>
+              Durante muito tempo, as bandeiras dos três reinos tremularam lado a lado.
+              Mercadores cruzavam os mares. Estudiosos viajavam entre universidades.
+              Guerreiros treinavam em terras estrangeiras. Crianças cresciam ouvindo histórias de união,
+              coragem e prosperidade.
+            </p>
+            <p>
+              Mas havia uma lenda.
+            </p>
+            <p>
+              Uma profecia antiga, tão velha que muitos já a tratavam como conto para assustar crianças.
+            </p>
+            <p>
+              Ela dizia que, quando a lua perdesse sua cor e as torres de Duskwood projetassem sombras
+              contra o céu sem sol, um rei esquecido despertaria sob a terra.
+              Não um rei dos vivos, mas dos mortos.
+            </p>
+            <p>
+              Um soberano sem carne, sem piedade e sem fim. Ele se ergueria usando uma coroa profanada
+              e traria consigo generais caídos, legiões sem alma e uma fome que não seria saciada por terras,
+              ouro ou tronos.
+            </p>
+            <p>
+              A profecia dizia que ele não desejaria apenas governar.
+            </p>
+            <p>
+              Ele desejaria calar toda vida.
+            </p>
+            <p>
+              Por gerações, ninguém acreditou.
+            </p>
+            <p>
+              Até a noite em que os sinos de Duskwood tocaram sozinhos.
+            </p>
+            <p>
+              Naquela noite, as estrelas desapareceram atrás de nuvens roxas.
+              As florestas escureceram. As criptas se abriram.
+              Os túmulos racharam como cascas secas.
+              Dos campos, das catacumbas e dos salões esquecidos sob antigos castelos,
+              os mortos se levantaram.
+            </p>
+            <p>
+              E no centro de tudo, em uma fortaleza sepultada sob a capital de Duskwood, ele despertou.
+            </p>
+            <h2>O Rei Lich</h2>
+            <p>
+              Seus olhos ardiam com luz violeta. Suas vestes rasgadas pareciam feitas da própria noite.
+              Em uma das mãos, carregava um cajado imponente, coroado por pedras arcanas e ossos de reis vencidos.
+            </p>
+            <p>
+              Ao seu redor, ajoelhavam-se seus generais: guerreiros mortos, assassinos sem rosto,
+              carrascos de armadura negra, comandantes de foices e lâminas gigantescas.
+            </p>
+            <p>
+              Duskwood caiu em poucos dias.
+            </p>
+            <p>
+              Suas cidades foram tomadas. Seus castelos, profanados.
+              Seus campos, cobertos por névoa púrpura.
+              Aqueles que resistiram foram esmagados.
+              Aqueles que tombaram se levantaram novamente, agora servindo ao trono dos mortos.
+            </p>
+            <p>
+              E então, diante de suas legiões, o Rei Lich apagou o nome antigo do reino.
+            </p>
+            <p>
+              Duskwood não existia mais.
+            </p>
+            <p>
+              Em seu lugar nasceu <strong>Morthaly</strong>, a Coroa dos Mortos.
+            </p>
+            <p>
+              Das torres negras de sua nova capital, o Rei Lich enviou sua declaração aos outros países.
+              Não foi escrita em tinta, mas em cinzas. Não foi entregue por mensageiros vivos,
+              mas por corvos de ossos e sombras.
+            </p>
+            <blockquote>
+              <p>
+                Todos os reinos cairão.<br/>
+                Todos os vivos servirão.<br/>
+                Toda existência humana será dobrada diante de Morthaly.
+              </p>
+            </blockquote>
+            <p>
+              Aurevia chorou pelos aliados perdidos.<br/>
+              Valfria fechou suas bibliotecas e abriu seus arsenais.<br/>
+              Os mares, antes caminhos de comércio, tornaram-se fronteiras de guerra.
+            </p>
+            <p>
+              Pela primeira vez em séculos, os três países restantes do mundo livre compreenderam
+              que a harmonia havia terminado.
+            </p>
+            <h2>O Alistamento dos Vivos</h2>
+            <p>
+              Então foi criado o <strong>Alistamento dos Vivos</strong>.
+            </p>
+            <p>
+              Não importava a origem. Não importava se alguém era camponês, caçador, aprendiz,
+              mercador, estudioso, desertor, órfão ou herdeiro de sangue nobre.
+              Todos aqueles que ainda carregavam vida no peito poderiam se apresentar.
+            </p>
+            <p>
+              Alguns vieram por dever.<br/>
+              Outros, por vingança.<br/>
+              Alguns vieram por glória.<br/>
+              Outros, porque não tinham mais para onde fugir.
+            </p>
+            <p>
+              Entre eles, estava você.
+            </p>
+            <p>
+              No início, você não era uma lenda.
+              Não era um campeão celebrado em canções.
+              Não carregava uma coroa, nem comandava exércitos,
+              nem possuía poder suficiente para desafiar os horrores de Morthaly.
+            </p>
+            <p>
+              Você era apenas mais uma chama pequena diante de uma escuridão imensa.
+            </p>
+            <p>
+              Mas até a menor chama pode incendiar uma noite inteira.
+            </p>
+            <p>
+              Seu juramento foi feito diante das bandeiras de Aurevia e Valfria,
+              sob o olhar severo dos comandantes, dos sábios, dos sobreviventes de Duskwood
+              e dos feridos que ainda sussurravam os nomes dos que ficaram para trás.
+            </p>
+            <p>
+              Você jurou lutar.
+            </p>
+            <p>
+              Lutar contra os mortos-vivos que cruzam as fronteiras.<br/>
+              Lutar contra os generais do Rei Lich.<br/>
+              Lutar contra as fortalezas profanadas, as criptas abertas e as hordas que não conhecem cansaço.<br/>
+              Lutar até que Morthaly recue.<br/>
+              Lutar até que os vivos possam dormir sem temer que seus ancestrais batam à porta durante a noite.
+            </p>
+            <p>
+              Mas essa guerra não será vencida em um único dia.
+            </p>
+            <p>
+              O Rei Lich é antigo. Seus generais são poderosos.
+              Seus exércitos crescem a cada batalha.
+              Cada derrota alimenta sua marcha.
+              Cada cidade perdida se torna mais uma peça em seu império de ossos.
+            </p>
+            <p>
+              Por isso, sua missão é crescer.
+            </p>
+            <p>
+              Ficar mais forte.<br/>
+              Treinar.<br/>
+              Explorar.<br/>
+              Caçar monstros.<br/>
+              Conquistar equipamentos.<br/>
+              Dominar habilidades.<br/>
+              Encontrar companheiros que compartilham o mesmo juramento.<br/>
+              Formar alianças.<br/>
+              Enfrentar inimigos cada vez mais terríveis.<br/>
+              Retornar das batalhas com cicatrizes, recompensas e histórias.
+            </p>
+            <p>
+              Cada combate vencido é uma vida protegida.<br/>
+              Cada monstro derrotado é um passo contra a escuridão.<br/>
+              Cada companheiro encontrado é uma prova de que os vivos ainda sabem se unir.<br/>
+              Cada nível conquistado é uma afronta ao trono de Morthaly.
+            </p>
+            <p>
+              E talvez, um dia, quando seu nome for conhecido nas tavernas de Aurevia,
+              nas academias de Valfria e nos acampamentos de guerra espalhados pelo mundo,
+              você esteja pronto para marchar até o coração do reino morto.
+            </p>
+            <p>
+              Talvez um dia você encare os generais do Rei Lich.<br/>
+              Talvez um dia atravesse os portões negros de Morthaly.<br/>
+              Talvez um dia suba os degraus do trono profanado.<br/>
+              Talvez um dia olhe nos olhos violetas do Rei dos Mortos e prove que a humanidade
+              ainda não terminou sua história.
+            </p>
+            <p>
+              Até lá, a guerra continua.
+            </p>
+            <p>
+              As florestas de Aurevia ainda resistem.<br/>
+              As torres de Valfria ainda estudam os céus.<br/>
+              Os sobreviventes de Duskwood ainda esperam redenção.<br/>
+              E Morthaly ainda cresce nas sombras.
+            </p>
+            <p>
+              Mas enquanto houver vivos dispostos a lutar, o mundo não pertence aos mortos.
+            </p>
+            <p>
+              <strong>E é aqui que sua jornada começa.</strong>
+            </p>
           </div>
         )}
 
-        {tab === "rules" && (
-          <div className="guide-list">
-            <article><strong>Inventario</strong><span>Itens empilhaveis ocupam um espaco por grupo. Equipamentos ocupam um espaco por instancia.</span></article>
-            <article><strong>Energia</strong><span>A energia maxima e CON + nivel. Cacar gasta energia igual ao nivel do monstro.</span></article>
-            <article><strong>Recuperacao</strong><span>A cada 2 minutos reais, vida e energia recuperam 10% mais bonus de talentos.</span></article>
-            <article><strong>Mercado</strong><span>Jogadores podem vender itens por ouro ou diamantes. Ofertas proprias podem ser canceladas.</span></article>
-          </div>
-        )}
+        {tab === "faq" && (
+          <div className="faq-list">
+            <section className="faq-section">
+              <h3>Primeiros passos</h3>
+              <article><strong>Como meu personagem comeca?</strong><span>Ao criar a conta, o personagem ja nasce com FOR, CON e AGI em 1, arma de treino, algumas pocoes e inventario limitado.</span></article>
+              <article><strong>O que devo fazer primeiro?</strong><span>Entre em Caca, escolha um local da cidade e enfrente monstros adequados ao seu nivel para ganhar XP, ouro e possiveis drops.</span></article>
+              <article><strong>O que fica bloqueado em batalha?</strong><span>Durante a batalha, a maioria das acoes fica bloqueada. Voce ainda pode abrir inventario, detalhes do personagem e sair da conta.</span></article>
+            </section>
 
-        {tab === "travel" && (
-          <div className="guide-list">
-            <article><strong>Entre cidades</strong><span>Use Ticket de Trem. A cidade tambem pode exigir nivel minimo.</span></article>
-            <article><strong>Entre paises</strong><span>Use Ticket de Navio. Ao chegar em outro pais, voce aporta na cidade portuaria.</span></article>
-            <article><strong>Cambista</strong><span>Fica apenas em portos e vende tickets e pergaminhos.</span></article>
+            <section className="faq-section">
+              <h3>Regras e recursos</h3>
+              <article><strong>Como funciona o inventario?</strong><span>Itens que nao sao equipamentos ficam agrupados. Equipamentos ocupam espacos individuais, pois podem ter raridade e aprimoramento.</span></article>
+              <article><strong>Como recupero vida e energia?</strong><span>A cada 2 minutos reais voce recupera 10%, com bonus de talentos. Pocoes tambem recuperam 30% de vida ou energia.</span></article>
+              <article><strong>Como a energia limita a caca?</strong><span>A energia maxima e CON + nivel. Cada batalha PvE consome energia igual ao nivel do monstro.</span></article>
+            </section>
+
+            <section className="faq-section">
+              <h3>Viagens</h3>
+              <article><strong>Como viajo entre cidades?</strong><span>Use Ticket de Trem. Algumas cidades tambem exigem nivel minimo para entrada.</span></article>
+              <article><strong>Como viajo entre paises?</strong><span>Use Ticket de Navio. Ao chegar em outro pais, voce aporta na cidade porto daquele pais.</span></article>
+              <article><strong>Onde compro tickets e pergaminhos?</strong><span>No Cambista, que fica apenas em cidades porto. Ele vende tickets e e o unico NPC que vende pergaminhos.</span></article>
+            </section>
+
+            <section className="faq-section">
+              <h3>Combate</h3>
+              <article><strong>Como a vida e calculada?</strong><span>Vida maxima: nivel * 50 + 2 * CON, somando bonus de equipamentos, talentos e beneficios.</span></article>
+              <article><strong>Como o dano e calculado?</strong><span>O dano base e FOR do atacante menos DEF do defensor, com minimo de 1 quando o ataque acerta.</span></article>
+              <article><strong>Para que serve AGI?</strong><span>AGI aumenta chance de critico e esquiva. Ela tambem conversa bem com talentos ofensivos e defensivos.</span></article>
+            </section>
+
+            <section className="faq-section highlighted">
+              <h3>Diamantes e Amigo do Rei</h3>
+              <article><strong>Quando vale comprar diamantes?</strong><span>Diamantes aceleram resets, criacao de cla, compra de avatares premium e trocas por ouro quando voce precisa agir rapido no mercado.</span></article>
+              <article><strong>O que e Amigo do Rei?</strong><span>E um pacote em destaque da Loja do Jogo com 200 diamantes, 100 tickets de trem, 30 tickets de navio, PvE automatico por 1 mes e selo do rei no avatar por 1 mes.</span></article>
+              <article><strong>Por que o PvE automatico ajuda?</strong><span>Ele reduz repeticao em sessoes longas de caca, ideal para farmar XP, gold e drops enquanto voce foca em mercado, cla e progresso.</span></article>
+            </section>
           </div>
         )}
 
@@ -1131,97 +1393,165 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
             <div className="guide-filters">
               <input value={worldFilter} onChange={(event) => setWorldFilter(event.target.value)} placeholder="Filtrar pais, cidade ou local" />
             </div>
-            <div className="guide-world-list">
-              {visibleCities.map((city) => {
-                const country = countriesById.get(city.countryId);
-                const locations = game.huntingLocations.filter((location) => location.cityId === city.id);
-                return (
-                  <article key={city.id} className="guide-world-row">
-                    <div>
-                      <strong>{city.name}</strong>
-                      <span>{country?.name ?? "Pais desconhecido"} - Nivel minimo {city.minLevel}</span>
+            <div className="guide-country-list">
+              {countryGroups.map(({ country, cities }) => (
+                <article className="guide-country-card" key={country.id}>
+                  <div className="guide-country-media">
+                    <AssetImage src={country.imageUrl} alt={country.name} fallback={<MapPinned size={34} />} />
+                  </div>
+                  <div className="guide-country-content">
+                    <div className="guide-country-heading">
+                      <div>
+                        <span className="eyebrow">Pais</span>
+                        <h3>{country.name}</h3>
+                      </div>
+                      {country.id === "morthaly" && <strong className="monarch-home-badge">Sede dos Monarcas</strong>}
                     </div>
-                    <p>{city.description}</p>
-                    <small>Locais: {locations.length ? locations.map((location) => location.name).join(", ") : "Nenhum"}</small>
-                  </article>
-                );
-              })}
+                    <p>{country.description}</p>
+                    <div className="guide-city-list">
+                      {cities.map(({ city, locations }) => {
+                        const npcEntries = Object.entries(city.npcs).filter((entry): entry is [string, string] => Boolean(entry[1]));
+                        return (
+                          <section className="guide-city-card" key={city.id}>
+                            <div className="guide-city-heading">
+                              <div>
+                                <strong>{city.name}</strong>
+                                <span>Nivel minimo {city.minLevel}{city.isPort ? " - Porto" : ""}</span>
+                              </div>
+                              {city.countryId === "morthaly" && <small>Rotas do evento Monarca passam por Morthaly.</small>}
+                            </div>
+                            <p>{city.description}</p>
+                            <div className="guide-chip-group">
+                              <b>Habitantes</b>
+                              <div>
+                                {city.inhabitants.map((inhabitant) => <span key={inhabitant}>{inhabitant}</span>)}
+                              </div>
+                            </div>
+                            <div className="guide-chip-group">
+                              <b>Comerciantes</b>
+                              <div>
+                                {npcEntries.map(([role, name]) => <span key={`${city.id}-${role}`}>{formatNpcRole(role)}: {name}</span>)}
+                              </div>
+                            </div>
+                            <div className="guide-location-list">
+                              {locations.map((location) => {
+                                const monsters = location.monsterIds
+                                  .map((monsterId) => game.monsterCatalog[monsterId])
+                                  .filter(Boolean) as GameState["cityMonsters"];
+                                return (
+                                  <article className="guide-location-card" key={location.id}>
+                                    <div>
+                                      <strong>{location.name}</strong>
+                                      <span>{location.description}</span>
+                                    </div>
+                                    <div className="guide-mini-entity-grid">
+                                      {monsters.map((monster) => (
+                                        <button type="button" className="guide-mini-entity" key={monster.id} onClick={() => setSelectedMonsterId(monster.id)}>
+                                          <MonsterVisual monster={monster} className="guide-mini-art" />
+                                          <span>{monster.name}</span>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </article>
+                                );
+                              })}
+                            </div>
+                          </section>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </article>
+              ))}
+              {countryGroups.length === 0 && <p className="empty-state">Nenhum pais, cidade ou local encontrado.</p>}
             </div>
-          </div>
-        )}
-
-        {tab === "combat" && (
-          <div className="guide-list">
-            <article><strong>Vida</strong><span>Nivel * 50 + 2 * CON.</span></article>
-            <article><strong>Forca total</strong><span>Nivel * 10 + atributo FOR. Atributos de equipamentos e talentos entram nos calculos derivados.</span></article>
-            <article><strong>Dano</strong><span>FOR do atacante menos DEF do defensor, com minimo de 1 quando o golpe acerta.</span></article>
-            <article><strong>Agilidade</strong><span>Aumenta chance de critico e esquiva. Talentos podem melhorar dano critico e utilidade.</span></article>
           </div>
         )}
 
         {tab === "items" && (
-          <div className="guide-catalog split">
-            <div className="guide-list-pane">
-              <div className="guide-filters">
-                <input value={itemFilter} onChange={(event) => setItemFilter(event.target.value)} placeholder="Filtrar item" />
-                <select value={itemKind} onChange={(event) => setItemKind(event.target.value as "all" | ItemKind)}>
-                  <option value="all">Todos</option>
-                  {Object.entries(ITEM_KIND_LABELS).map(([kind, label]) => (
-                    <option value={kind} key={kind}>{label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="guide-result-list">
-                {filteredItems.map((item) => (
-                  <button key={item.id} className={selectedItem?.id === item.id ? "guide-result active" : "guide-result"} onClick={() => setSelectedItemId(item.id)}>
-                    <ItemVisual item={item} className="guide-result-art" />
-                    <span>{item.name}</span>
-                    <small>{ITEM_KIND_LABELS[item.kind]}</small>
-                  </button>
+          <div className="guide-catalog">
+            <div className="guide-filters">
+              <input value={itemFilter} onChange={(event) => setItemFilter(event.target.value)} placeholder="Filtrar item" />
+              <select value={itemKind} onChange={(event) => setItemKind(event.target.value as "all" | ItemKind)}>
+                <option value="all">Todos</option>
+                {Object.entries(ITEM_KIND_LABELS).map(([kind, label]) => (
+                  <option value={kind} key={kind}>{label}</option>
                 ))}
-              </div>
+              </select>
             </div>
-            {selectedItem && <GuideItemDetail item={selectedItem} />}
+            <div className="guide-card-grid">
+              {filteredItems.map((item) => (
+                <button key={item.id} className="guide-card" onClick={() => setSelectedItemId(item.id)} title={item.name}>
+                  <ItemVisual item={item} className="guide-card-art" />
+                  <strong>{item.name}</strong>
+                </button>
+              ))}
+              {filteredItems.length === 0 && <p className="empty-state">Nenhum item encontrado.</p>}
+            </div>
           </div>
         )}
 
         {tab === "monsters" && (
-          <div className="guide-catalog split">
-            <div className="guide-list-pane">
-              <div className="guide-filters">
-                <input value={monsterFilter} onChange={(event) => setMonsterFilter(event.target.value)} placeholder="Filtrar monstro, cidade ou pais" />
-                <select value={monsterCity} onChange={(event) => setMonsterCity(event.target.value)}>
-                  <option value="all">Todas as cidades</option>
-                  {game.cities.map((city) => (
-                    <option value={city.id} key={city.id}>{city.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="guide-result-list">
-                {filteredMonsters.map((monster) => (
-                  <button key={monster.id} className={selectedMonster?.id === monster.id ? "guide-result active" : "guide-result"} onClick={() => setSelectedMonsterId(monster.id)}>
-                    <MonsterVisual monster={monster} className="guide-result-art" />
-                    <span>{monster.name}</span>
-                    <small>Nv {monster.level}</small>
-                  </button>
+          <div className="guide-catalog">
+            <div className="guide-filters">
+              <input value={monsterFilter} onChange={(event) => setMonsterFilter(event.target.value)} placeholder="Filtrar monstro, cidade ou pais" />
+              <select value={monsterCity} onChange={(event) => setMonsterCity(event.target.value)}>
+                <option value="all">Todas as cidades</option>
+                {game.cities.map((city) => (
+                  <option value={city.id} key={city.id}>{city.name}</option>
                 ))}
-              </div>
+              </select>
             </div>
-            {selectedMonster && <GuideMonsterDetail monster={selectedMonster} game={game} />}
+            <div className="guide-card-grid">
+              {filteredMonsters.map((monster) => (
+                <button key={monster.id} className="guide-card" onClick={() => setSelectedMonsterId(monster.id)} title={monster.name}>
+                  <MonsterVisual monster={monster} className="guide-card-art" />
+                  <strong>{monster.name}</strong>
+                </button>
+              ))}
+              {filteredMonsters.length === 0 && <p className="empty-state">Nenhum monstro encontrado.</p>}
+            </div>
           </div>
         )}
 
-        {tab === "events" && (
-          <div className="guide-list">
-            <article><strong>Monarca</strong><span>{game.monarchEvent ? `${game.monarchEvent.name} esta ${game.monarchEvent.status}.` : "Evento ainda nao carregado."}</span></article>
-            <article><strong>Arena</strong><span>Batalhas PvP por turno. A fila atual tem {game.arenaQueueSize} jogador(es).</span></article>
-            <article><strong>Missoes</strong><span>Diarias concedem XP e ouro. Fixas concedem diamantes por progresso de longo prazo.</span></article>
-            <article><strong>Amigo do Rei</strong><span>Pacote especial com diamantes, tickets, PvE automatico e selo temporario no avatar.</span></article>
+        {tab === "monarchs" && (
+          <div className="monarch-guide">
+            <section className="guide-list">
+              <article><strong>Entrada</strong><span>O evento dos Monarcas acontece em Morthaly. Para entrar, o jogador usa Chaves Altas e respeita o limite diario de tentativas.</span></article>
+              <article><strong>Objetivo</strong><span>Todos os participantes atacam o mesmo chefe global. O dano fica registrado no ranking do evento.</span></article>
+              <article><strong>Recompensas</strong><span>Ao final, participantes recebem XP e ouro conforme dano/ranking. Quando o chefe e derrotado, os 3 melhores tambem recebem diamantes.</span></article>
+              <article><strong>Rei Lich</strong><span>No fim de semana, o Rei Lich substitui os generais e triplica as recompensas do evento.</span></article>
+              <article><strong>Status atual</strong><span>{game.monarchEvent ? `${game.monarchEvent.name} esta ${game.monarchEvent.status}.` : "Evento ainda nao carregado."}</span></article>
+            </section>
+            <section className="monarch-general-grid">
+              {game.monarchGenerals.map((general) => (
+                <article className={general.isKing ? "monarch-general-card king" : "monarch-general-card"} key={general.id}>
+                  <AssetImage src={general.imageUrl} alt={general.name} fallback={<Crown size={30} />} />
+                  <div>
+                    <span className="eyebrow">{general.title}</span>
+                    <strong>{general.name}</strong>
+                    <small>Nv {general.level} - {general.maxHp.toLocaleString()} vida</small>
+                  </div>
+                  <div className="monster-stats">
+                    <small title="Forca"><Swords size={13} /> {general.strength}</small>
+                    <small title="Defesa"><Shield size={13} /> {general.defense}</small>
+                    <small title="Agilidade"><Crosshair size={13} /> {general.agility}</small>
+                    <small title="XP"><Sparkles size={13} /> {general.experience.toLocaleString()}</small>
+                    <small title="Ouro"><Coins size={13} /> {general.gold.toLocaleString()}</small>
+                  </div>
+                </article>
+              ))}
+            </section>
           </div>
         )}
 
         {tab === "developer" && (
           <form className="utility-form" onSubmit={sendDeveloperMessage}>
+            <div className="guide-copy developer-copy">
+              <h3>Fale com o desenvolvedor</h3>
+              <p>Obrigado por jogar e testar Litch. Cada bug reportado, sugestao de balanceamento e comentario sobre a experiencia ajuda a deixar o jogo mais vivo, justo e divertido.</p>
+              <p>Use este canal para contar o que travou seu progresso, qual sistema ficou confuso, que item parece forte demais ou que ideia voce gostaria de ver no mundo.</p>
+            </div>
             <label>
               <span>Assunto</span>
               <input value={developerSubject} onChange={(event) => setDeveloperSubject(event.target.value)} placeholder="Bug, sugestao ou duvida" />
@@ -1238,79 +1568,176 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
 
         {tab === "stats" && (
           <div className="guide-stat-grid">
+            <Metric icon={<Users size={17} />} label="Jogadores" value={game.registeredPlayersCount} />
             <Metric icon={<Users size={17} />} label="Online" value={game.onlineCount} />
-            <Metric icon={<Castle size={17} />} label="Cidades" value={game.cities.length} />
-            <Metric icon={<MapPinned size={17} />} label="Paises" value={game.countries.length} />
-            <Metric icon={<Backpack size={17} />} label="Itens" value={Object.keys(game.itemCatalog).length} />
-            <Metric icon={<Skull size={17} />} label="Monstros" value={Object.keys(game.monsterCatalog).length} />
             <Metric icon={<ShoppingBag size={17} />} label="Mercado" value={game.marketplaceListings.length} />
             <Metric icon={<Users size={17} />} label="Clas" value={game.clanDirectory.length} />
-            <Metric icon={<Shield size={17} />} label="Fila arena" value={game.arenaQueueSize} />
+            <Metric icon={<Trophy size={17} />} label="Rankeados" value={game.rankings.level.length} />
           </div>
         )}
+
+        {selectedItem && <GuideItemDetail item={selectedItem} game={game} onClose={() => setSelectedItemId("")} />}
+        {selectedMonster && <GuideMonsterDetail monster={selectedMonster} game={game} onClose={() => setSelectedMonsterId("")} />}
       </section>
     </div>
   );
 }
 
-function GuideItemDetail({ item }: { item: ItemDefinition }) {
+function GuideItemDetail({ item, game, onClose }: { item: ItemDefinition; game: GameState; onClose: () => void }) {
   const statEntries = EQUIPMENT_STAT_KEYS
     .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: item.stats[key] }))
     .filter((entry) => entry.value !== undefined);
+  const dropSources = getItemDropSources(game, item.id);
+  const vendors = getItemVendors(game, item.id);
 
   return (
-    <aside className="guide-detail-card">
-      <ItemVisual item={item} className="guide-detail-art" />
-      <div>
-        <span className="eyebrow">{ITEM_KIND_LABELS[item.kind]}</span>
-        <h3>{item.name}</h3>
-        <p>{item.description ?? "Sem descricao."}</p>
-      </div>
-      <div className="guide-detail-stats">
-        {item.slot && <span>Nivel minimo <strong>{item.minLevel}</strong></span>}
-        <span>Valor <strong>{formatCurrency(item.price)} ouro</strong></span>
-        {item.rarity && <span>Raridade <strong>{RARITY_LABELS[item.rarity]}</strong></span>}
-        {statEntries.map((entry) => (
-          <span key={entry.key}>{entry.label} <strong>+{entry.value}</strong></span>
-        ))}
-        {item.stats.healPercent && <span>Vida <strong>+{Math.round(item.stats.healPercent * 100)}%</strong></span>}
-        {item.stats.energyPercent && <span>Energia <strong>+{Math.round(item.stats.energyPercent * 100)}%</strong></span>}
-      </div>
-    </aside>
+    <div className="guide-detail-backdrop" role="presentation" onClick={onClose}>
+      <aside className="guide-detail-card modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <ItemVisual item={item} className="guide-detail-art" />
+        <div>
+          <span className="eyebrow">{ITEM_KIND_LABELS[item.kind]}</span>
+          <h3>{item.name}</h3>
+          <p>{item.description ?? "Sem descricao."}</p>
+        </div>
+        <div className="guide-detail-stats">
+          {item.slot && <span>Nivel minimo <strong>{item.minLevel}</strong></span>}
+          <span>Valor <strong>{formatCurrency(item.price)} ouro</strong></span>
+          {item.rarity && <span>Raridade <strong>{RARITY_LABELS[item.rarity]}</strong></span>}
+          {statEntries.map((entry) => (
+            <span key={entry.key}>{entry.label} <strong>+{entry.value}</strong></span>
+          ))}
+          {item.stats.healPercent && <span>Vida <strong>+{Math.round(item.stats.healPercent * 100)}%</strong></span>}
+          {item.stats.energyPercent && <span>Energia <strong>+{Math.round(item.stats.energyPercent * 100)}%</strong></span>}
+        </div>
+        <section className="guide-detail-section">
+          <h4>Monstros que dropam</h4>
+          {dropSources.length === 0 ? (
+            <p className="empty-state">Nenhum monstro dropa este item.</p>
+          ) : (
+            <div className="guide-detail-list">
+              {dropSources.map((source) => (
+                <article key={`${source.monster.id}-${source.chance}`}>
+                  <MonsterVisual monster={source.monster} className="guide-mini-art" />
+                  <div>
+                    <strong>{source.monster.name}</strong>
+                    <span>{source.city?.name ?? "Cidade desconhecida"} - {Math.round(source.chance * 100)}%</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+        <section className="guide-detail-section">
+          <h4>Habitantes que vendem</h4>
+          {vendors.length === 0 ? (
+            <p className="empty-state">Nenhum habitante vende este item diretamente.</p>
+          ) : (
+            <div className="guide-detail-list">
+              {vendors.map((vendor) => (
+                <article key={`${vendor.city.id}-${vendor.role}-${vendor.name}`}>
+                  <User size={20} />
+                  <div>
+                    <strong>{vendor.name}</strong>
+                    <span>{vendor.role} - {vendor.city.name}, {vendor.country?.name ?? "Pais desconhecido"}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      </aside>
+    </div>
   );
 }
 
-function GuideMonsterDetail({ monster, game }: { monster: GameState["cityMonsters"][number]; game: GameState }) {
+function GuideMonsterDetail({ monster, game, onClose }: { monster: GameState["cityMonsters"][number]; game: GameState; onClose: () => void }) {
   const city = game.cities.find((entry) => entry.id === monster.cityId);
   const country = city ? game.countries.find((entry) => entry.id === city.countryId) : null;
 
   return (
-    <aside className="guide-detail-card">
-      <MonsterVisual monster={monster} className="guide-detail-art" />
-      <div>
-        <span className="eyebrow">{city?.name ?? "Cidade desconhecida"} - {country?.name ?? "Pais desconhecido"}</span>
-        <h3>{monster.name}</h3>
-      </div>
-      <div className="monster-stats">
-        <small title="Nivel"><Star size={13} /> {monster.level}</small>
-        <small title="Vida"><Heart size={13} /> {monster.maxHp}</small>
-        <small title="Forca"><Swords size={13} /> {monster.strength}</small>
-        <small title="Defesa"><Shield size={13} /> {monster.defense}</small>
-        <small title="Agilidade"><Crosshair size={13} /> {monster.agility}</small>
-        <small title="XP"><Sparkles size={13} /> {monster.experience}</small>
-        <small title="Ouro"><Coins size={13} /> {monster.gold}</small>
-      </div>
-      <div className="guide-detail-stats">
-        {monster.drops.length === 0 && <span>Drop <strong>Nenhum</strong></span>}
-        {monster.drops.map((drop) => (
-          <span key={drop.itemId}>
-            {game.itemCatalog[drop.itemId]?.name ?? drop.itemId}
-            <strong>{Math.round(drop.chance * 100)}%</strong>
-          </span>
-        ))}
-      </div>
-    </aside>
+    <div className="guide-detail-backdrop" role="presentation" onClick={onClose}>
+      <aside className="guide-detail-card modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <MonsterVisual monster={monster} className="guide-detail-art" />
+        <div>
+          <span className="eyebrow">{city?.name ?? "Cidade desconhecida"} - {country?.name ?? "Pais desconhecido"}</span>
+          <h3>{monster.name}</h3>
+        </div>
+        <div className="monster-stats">
+          <small title="Nivel"><Star size={13} /> {monster.level}</small>
+          <small title="Vida"><Heart size={13} /> {monster.maxHp}</small>
+          <small title="Forca"><Swords size={13} /> {monster.strength}</small>
+          <small title="Defesa"><Shield size={13} /> {monster.defense}</small>
+          <small title="Agilidade"><Crosshair size={13} /> {monster.agility}</small>
+          <small title="XP"><Sparkles size={13} /> {monster.experience}</small>
+          <small title="Ouro"><Coins size={13} /> {monster.gold}</small>
+        </div>
+        <section className="guide-detail-section">
+          <h4>Drops</h4>
+          <div className="guide-detail-stats">
+            {monster.drops.length === 0 && <span>Drop <strong>Nenhum</strong></span>}
+            {monster.drops.map((drop) => (
+              <span key={drop.itemId}>
+                {game.itemCatalog[drop.itemId]?.name ?? drop.itemId}
+                <strong>{Math.round(drop.chance * 100)}%</strong>
+              </span>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
   );
+}
+
+function getItemDropSources(game: GameState, itemId: string) {
+  return Object.values(game.monsterCatalog).flatMap((monster) =>
+    monster.drops
+      .filter((drop) => drop.itemId === itemId)
+      .map((drop) => ({
+        monster,
+        chance: drop.chance,
+        city: game.cities.find((city) => city.id === monster.cityId)
+      }))
+  );
+}
+
+function getItemVendors(game: GameState, itemId: string) {
+  const vendors: Array<{ city: GameState["cities"][number]; country?: GameState["countries"][number]; role: string; name: string }> = [];
+  for (const city of game.cities) {
+    const country = game.countries.find((entry) => entry.id === city.countryId);
+    if (city.armorerItemIds.includes(itemId)) {
+      vendors.push({ city, country, role: "Armeiro", name: city.npcs.armorer });
+    }
+    if (city.apothecaryItemIds.includes(itemId)) {
+      vendors.push({ city, country, role: "Boticario", name: city.npcs.apothecary });
+    }
+    if ((city.moneyChangerItemIds ?? []).includes(itemId) && city.npcs.moneyChanger) {
+      vendors.push({ city, country, role: "Cambista", name: city.npcs.moneyChanger });
+    }
+  }
+  return vendors;
+}
+
+function formatNpcRole(role: string) {
+  switch (role) {
+    case "armorer":
+      return "Armeiro";
+    case "apothecary":
+      return "Boticario";
+    case "blacksmith":
+      return "Ferreiro";
+    case "alchemist":
+      return "Alquimista";
+    case "moneyChanger":
+      return "Cambista";
+    default:
+      return role;
+  }
 }
 
 function getAvatarIcon(icon: AvatarIcon, size = 34) {

@@ -422,9 +422,14 @@ function serializeGameState(playerId: string): GameState {
     availableCraftingRecipes: availableRecipes,
     rankings: buildRankings(),
     onlineCount: store.socketsByPlayer.size,
+    registeredPlayersCount: store.players.size,
     arenaQueueSize: store.arenaQueue.length,
     nextRegenAt: store.nextRegenAt,
     monarchEvent: buildMonarchEventView(playerId),
+    monarchGenerals: MONARCH_SCHEDULE.map((general) => ({
+      ...general,
+      isKing: "isKing" in general ? Boolean(general.isKing) : false
+    })),
     regenHpAmount,
     regenEnergyAmount,
     clanChatMessages,
