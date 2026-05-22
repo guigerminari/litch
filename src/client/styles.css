@@ -408,6 +408,21 @@ button:disabled {
   color: var(--ink);
 }
 
+.profile-avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(248, 248, 242, 0.18);
+  border-radius: 50%;
+  color: var(--ink);
+  overflow: visible;
+}
+
+.profile-avatar svg {
+  color: currentColor;
+}
+
 .character-chip-avatar,
 .avatar-ring {
   position: relative;
@@ -480,6 +495,86 @@ button:disabled {
 .character-clan-info small {
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.avatar-section {
+  gap: 10px;
+}
+
+.current-avatar-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  color: var(--text);
+  text-align: left;
+}
+
+.current-avatar-card div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.current-avatar-card small {
+  color: var(--muted);
+}
+
+.avatar-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: 8px;
+}
+
+.avatar-choice {
+  position: relative;
+  min-height: 112px;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  color: var(--text);
+  text-align: center;
+}
+
+.avatar-choice span {
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+
+.avatar-choice small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.avatar-choice.selected {
+  border-color: rgba(80, 250, 123, 0.56);
+  background: rgba(80, 250, 123, 0.08);
+}
+
+.avatar-choice.locked {
+  border-color: rgba(241, 250, 140, 0.28);
+}
+
+.avatar-lock {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(241, 250, 140, 0.4);
+  border-radius: 50%;
+  background: rgba(25, 26, 33, 0.88);
+  color: var(--gold);
 }
 
 .resource-stack {
@@ -1474,7 +1569,7 @@ button:disabled {
 
 .player-action-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -1500,6 +1595,54 @@ button:disabled {
 
 .player-profile-grid strong {
   color: var(--text);
+}
+
+.player-public-status,
+.player-profile-clan {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid rgba(216, 178, 74, 0.28);
+  border-radius: 10px;
+  background: rgba(216, 178, 74, 0.06);
+  color: var(--gold);
+}
+
+.player-profile-clan {
+  border-color: rgba(157, 107, 255, 0.28);
+  background: rgba(124, 77, 255, 0.07);
+  color: var(--text);
+}
+
+.player-profile-clan > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(157, 107, 255, 0.36);
+  border-radius: 8px;
+  color: var(--lavender);
+}
+
+.player-profile-clan div {
+  display: grid;
+  gap: 2px;
+}
+
+.player-profile-clan small {
+  color: var(--muted);
+}
+
+.player-public-equipment {
+  display: grid;
+  gap: 8px;
+}
+
+.player-public-equipment h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.94rem;
 }
 
 .clan-leader-main > small:not(.clan-leader-clickable),
@@ -3917,13 +4060,28 @@ button:disabled {
   flex-direction: column;
 }
 
+.floating-chat-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  pointer-events: none;
+  --chat-button-size: 54px;
+  --chat-button-bottom: 88px;
+  --chat-gap: 4px;
+}
+
+.floating-chat-layer .floating-chat-button,
+.floating-chat-layer .floating-chat-panel {
+  pointer-events: auto;
+}
+
 .floating-chat-button {
   position: fixed;
   right: 18px;
-  bottom: 88px;
-  z-index: 29;
-  width: 54px;
-  height: 54px;
+  bottom: var(--chat-button-bottom);
+  z-index: 1;
+  width: var(--chat-button-size);
+  height: var(--chat-button-size);
   display: grid;
   place-items: center;
   border: 1px solid rgba(139, 233, 253, 0.42);
@@ -3950,13 +4108,13 @@ button:disabled {
 }
 
 .floating-chat-panel {
-  position: fixed;
+  position: fixed !important;
   right: 18px;
-  bottom: 150px;
-  z-index: 29;
+  bottom: calc(var(--chat-button-bottom) + var(--chat-button-size) + var(--chat-gap));
+  z-index: 1;
   width: min(380px, calc(100vw - 36px));
   min-height: 0;
-  height: min(560px, calc(100vh - 260px));
+  height: min(440px, calc(100vh - var(--chat-button-bottom) - var(--chat-button-size) - 32px));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -3978,6 +4136,9 @@ button:disabled {
   display: grid;
   gap: 4px;
   padding: 9px 10px;
+  border: 1px solid rgba(248, 248, 242, 0.1);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.86);
 }
 
 .chat-message strong {
@@ -5471,18 +5632,24 @@ button:disabled {
     font-size: 0.58rem;
   }
 
+  .floating-chat-layer {
+    --chat-button-size: 48px;
+    --chat-button-bottom: calc(56px + env(safe-area-inset-bottom));
+    --chat-gap: 4px;
+  }
+
   .floating-chat-button {
     right: 12px;
-    bottom: calc(56px + env(safe-area-inset-bottom));
-    width: 48px;
-    height: 48px;
+    bottom: var(--chat-button-bottom);
+    width: var(--chat-button-size);
+    height: var(--chat-button-size);
   }
 
   .floating-chat-panel {
     right: 8px;
-    bottom: calc(108px + env(safe-area-inset-bottom));
+    bottom: calc(var(--chat-button-bottom) + var(--chat-button-size) + var(--chat-gap));
     width: calc(100vw - 16px);
-    height: min(500px, calc(100vh - 230px));
+    height: min(420px, calc(100vh - var(--chat-button-bottom) - var(--chat-button-size) - 24px));
   }
 
   .toast {

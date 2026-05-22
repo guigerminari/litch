@@ -20,6 +20,8 @@ export type TalentCategory = "offensive" | "defensive" | "utility";
 
 export type ClanBenefitCategory = "combat" | "defense" | "prosperity";
 
+export type AvatarIcon = "user" | "shield" | "swords" | "crown" | "flame" | "skull" | "sparkles" | "gem";
+
 export interface Attributes {
   strength: number;
   constitution: number;
@@ -88,6 +90,8 @@ export interface Character {
   marketHistory: MarketTransactionHistory[];
   pveAutoUntil?: number;
   royalSealUntil?: number;
+  avatarId?: string;
+  unlockedAvatarIds?: string[];
   monarchAttempts?: {
     dayKey: string;
     count: number;
@@ -469,14 +473,28 @@ export interface RankingEntry {
 export interface PlayerPublicProfile {
   playerId: string;
   name: string;
+  avatarId?: string;
   level: number;
   cityName: string;
   countryName: string;
   clanName?: string;
+  clanIcon?: string;
+  clanLevel?: number;
   arenaWins: number;
   arenaLosses: number;
   dungeonClears: number;
+  royalSealUntil?: number;
+  pveAutoUntil?: number;
+  equipment: Array<{ slot: EquipmentSlot; item: InventoryItem | null }>;
   online: boolean;
+}
+
+export interface AvatarDefinition {
+  id: string;
+  name: string;
+  icon: AvatarIcon;
+  accent: string;
+  priceDiamonds: number;
 }
 
 export interface ClanRankingEntry {
@@ -505,6 +523,7 @@ export interface GameState {
   cityHuntLocations: HuntingLocationDefinition[];
   cityMonsters: MonsterDefinition[];
   itemCatalog: Record<string, ItemDefinition>;
+  avatarCatalog: AvatarDefinition[];
   activeBattle: BattleState | null;
   chatMessages: ChatMessage[];
   marketplaceListings: MarketListing[];
@@ -658,6 +677,10 @@ export interface ResetPayload {
 
 export interface GameShopPurchasePayload {
   packageId: string;
+}
+
+export interface AvatarSelectPayload {
+  avatarId: string;
 }
 
 export interface ClanCreatePayload {

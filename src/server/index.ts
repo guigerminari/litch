@@ -3,6 +3,7 @@ import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypt
 import { Server } from "socket.io";
 import type {
   AllocatePayload,
+  AvatarSelectPayload,
   BattleActionPayload,
   Character,
   ClanBenefitBuyPayload,
@@ -47,6 +48,7 @@ import type {
 import { RARITY_PRICE_MULTIPLIER } from "../shared/rarity";
 import {
   CITIES,
+  AVATARS,
   CLAN_BENEFITS,
   CLAN_SUPER_BENEFITS,
   COUNTRIES,
@@ -89,6 +91,7 @@ const CLAN_DEFAULT_ICON = "shield";
 const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"]);
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
+const DEFAULT_AVATAR_ID = "wanderer";
 const ENHANCEMENT_GOLD_STEP = 10000;
 const ENHANCEMENT_CHANCE_STEP = 5;
 const ENHANCEMENT_MIN_CHANCE = 5;
@@ -243,6 +246,8 @@ function createCharacter(player: Player): Character {
     marketHistory: [],
     pveAutoUntil: 0,
     royalSealUntil: 0,
+    avatarId: DEFAULT_AVATAR_ID,
+    unlockedAvatarIds: AVATARS.filter((avatar) => avatar.priceDiamonds === 0).map((avatar) => avatar.id),
     monarchAttempts: { dayKey: "", count: 0 }
   };
 
@@ -271,6 +276,14 @@ function currentCharacter(playerId: string) {
   character.marketHistory ??= [];
   character.pveAutoUntil ??= 0;
   character.royalSealUntil ??= 0;
+  character.unlockedAvatarIds ??= AVATARS.filter((avatar) => avatar.priceDiamonds === 0).map((avatar) => avatar.id);
+  character.avatarId = AVATARS.some((avatar) => avatar.id === character.avatarId) ? character.avatarId : DEFAULT_AVATAR_ID;
+  if (!character.unlockedAvatarIds.includes(DEFAULT_AVATAR_ID)) {
+    character.unlockedAvatarIds.push(DEFAULT_AVATAR_ID);
+  }
+  if (character.avatarId && !character.unlockedAvatarIds.includes(character.avatarId)) {
+    character.avatarId = DEFAULT_AVATAR_ID;
+  }
   character.monarchAttempts ??= { dayKey: "", count: 0 };
   ensureQuestProgress(character);
   return character;
@@ -354,6 +367,7 @@ function serializeGameState(playerId: string): GameState {
       .map((id) => MONSTERS[id])
       .filter(Boolean),
     itemCatalog: ITEM_CATALOG,
+    avatarCatalog: AVATARS,
     activeBattle,
     chatMessages: store.chatMessages,
     marketplaceListings: Array.from(store.marketplace.values()).sort((a, b) => b.createdAt - a.createdAt),
@@ -970,16 +984,29 @@ function buildPlayerPublicProfile(playerId: string): PlayerPublicProfile | null 
   const city = character ? CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0] : CITIES[0];
   const country = COUNTRIES.find((entry) => entry.id === city.countryId) ?? COUNTRIES[0];
   const clan = character?.clanId ? store.clans.get(character.clanId) : null;
+  const clanView = clan ? decorateClan(clan) : null;
+  const equipment = (["weapon", "armor", "amulet"] as const).map((slot) => {
+    const instanceId = character?.equipment[slot];
+    const item = instanceId ? character?.inventory.find((entry) => entry.instanceId === instanceId) ?? null : null;
+    return { slot, item };
+  });
+
   return {
     playerId,
     name: character?.name ?? player?.username ?? playerId,
+    avatarId: character?.avatarId ?? DEFAULT_AVATAR_ID,
     level: character?.level ?? 1,
     cityName: city.name,
     countryName: country.name,
-    clanName: clan?.name,
+    clanName: clanView?.name,
+    clanIcon: clanView?.icon,
+    clanLevel: clanView?.level,
     arenaWins: character?.arenaWins ?? 0,
     arenaLosses: character?.arenaLosses ?? 0,
     dungeonClears: character?.dungeonClears ?? 0,
+    royalSealUntil: character?.royalSealUntil ?? 0,
+    pveAutoUntil: character?.pveAutoUntil ?? 0,
+    equipment,
     online: store.socketsByPlayer.has(playerId)
   };
 }
@@ -1378,6 +1405,26 @@ function buyDiamondPackage(character: Character, packageId: string) {
     character.pveAutoUntil = baseUntil + ROYAL_FRIEND_DURATION_MS;
     character.royalSealUntil = baseUntil + ROYAL_FRIEND_DURATION_MS;
   }
+}
+
+function selectAvatar(character: Character, avatarId: string) {
+  const avatar = AVATARS.find((entry) => entry.id === avatarId);
+  if (!avatar) {
+    throw new Error("Avatar nao encontrado.");
+  }
+  character.unlockedAvatarIds ??= AVATARS.filter((entry) => entry.priceDiamonds === 0).map((entry) => entry.id);
+  if (!character.unlockedAvatarIds.includes(avatar.id)) {
+    if (avatar.priceDiamonds <= 0) {
+      character.unlockedAvatarIds.push(avatar.id);
+    } else {
+      if (character.diamonds < avatar.priceDiamonds) {
+        throw new Error(`Sao necessarios ${avatar.priceDiamonds} diamantes para comprar este avatar.`);
+      }
+      character.diamonds -= avatar.priceDiamonds;
+      character.unlockedAvatarIds.push(avatar.id);
+    }
+  }
+  character.avatarId = avatar.id;
 }
 
 function grantPackageStack(character: Character, itemId: string, quantity: number) {
@@ -1799,6 +1846,18 @@ io.on("connection", (socket: AuthedSocket) => {
       character.attributes.agility += agility;
       character.unspentAttributePoints -= total;
       normalizeVitals(character);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("character:avatar", (payload: AvatarSelectPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      selectAvatar(character, String(payload.avatarId ?? ""));
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);

@@ -1,4 +1,5 @@
 import { createContext, FormEvent, useContext, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowLeftRight,
   Backpack,
@@ -41,6 +42,8 @@ import {
 import type {
   AttributeKey,
   Attributes,
+  AvatarDefinition,
+  AvatarIcon,
   BattleLogEntry,
   BattleParticipant,
   ClanRankingEntry,
@@ -449,6 +452,10 @@ export function App() {
       return;
     }
     setSelectedPlayer(player);
+    if (!playerProfiles[player.playerId]) {
+      setLoadingPlayerProfileId(player.playerId);
+      socket.emit("player:inspect", { playerId: player.playerId });
+    }
   };
   const inspectPlayer = (player: PlayerReference) => {
     setLoadingPlayerProfileId(player.playerId);
@@ -493,6 +500,8 @@ export function App() {
           <PlayerActionModal
             player={selectedPlayer}
             profile={playerProfiles[selectedPlayer.playerId]}
+            avatarCatalog={game.avatarCatalog}
+            itemCatalog={game.itemCatalog}
             loading={loadingPlayerProfileId === selectedPlayer.playerId}
             onInspect={() => inspectPlayer(selectedPlayer)}
             onMessage={() => startPrivateChat(selectedPlayer)}
@@ -529,6 +538,8 @@ function PlayerName({ playerId, name, className }: PlayerReference & { className
 function PlayerActionModal({
   player,
   profile,
+  avatarCatalog,
+  itemCatalog,
   loading,
   onInspect,
   onMessage,
@@ -536,11 +547,15 @@ function PlayerActionModal({
 }: {
   player: PlayerReference;
   profile?: PlayerPublicProfile;
+  avatarCatalog: AvatarDefinition[];
+  itemCatalog: Record<string, ItemDefinition>;
   loading: boolean;
   onInspect: () => void;
   onMessage: () => void;
   onClose: () => void;
 }) {
+  const royalFriendUntil = Math.max(profile?.pveAutoUntil ?? 0, profile?.royalSealUntil ?? 0);
+
   return (
     <div className="drawer-backdrop" role="presentation" onClick={onClose}>
       <div className="player-action-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
@@ -548,28 +563,69 @@ function PlayerActionModal({
           <X size={18} />
         </button>
         <div className="player-action-header">
-          <span className="player-action-avatar"><User size={28} /></span>
+          <CharacterAvatar
+            avatar={avatarCatalog.find((avatar) => avatar.id === profile?.avatarId) ?? avatarCatalog[0]}
+            size={58}
+            royal={royalFriendUntil > Date.now()}
+            className="player-action-avatar"
+          />
           <div>
             <span className="eyebrow">Jogador</span>
             <h2>{profile?.name ?? player.name}</h2>
-            {profile && <small>{profile.online ? "Online" : "Offline"} - {profile.cityName}, {profile.countryName}</small>}
+            {profile ? (
+              <small>Nivel {profile.level} - {profile.online ? "Online" : "Offline"} - {profile.cityName}, {profile.countryName}</small>
+            ) : (
+              <small>{loading ? "Carregando perfil..." : "Perfil publico"}</small>
+            )}
           </div>
         </div>
         <div className="player-action-buttons">
           <button className="primary-button" onClick={onMessage}>
             <MessageCircle size={15} /> Mensagem privada
           </button>
-          <button className="ghost-button" onClick={onInspect} disabled={loading}>
-            <User size={15} /> {loading ? "Carregando..." : "Ver informacoes"}
-          </button>
         </div>
         {profile && (
-          <div className="player-profile-grid">
-            <div><span>Nivel</span><strong>{profile.level}</strong></div>
-            <div><span>Cla</span><strong>{profile.clanName ?? "Sem cla"}</strong></div>
-            <div><span>Arena</span><strong>{profile.arenaWins}V/{profile.arenaLosses}D</strong></div>
-            <div><span>Masmorras</span><strong>{profile.dungeonClears}</strong></div>
-          </div>
+          <>
+            {royalFriendUntil > Date.now() && (
+              <div className="player-public-status">
+                <Crown size={15} /> Amigo do Rei
+              </div>
+            )}
+            {profile.clanName && (
+              <div className="player-profile-clan">
+                <span>{getClanCrestIcon(profile.clanIcon ?? "shield", 18)}</span>
+                <div>
+                  <strong>{profile.clanName}</strong>
+                  <small>Cla nivel {profile.clanLevel ?? 0}</small>
+                </div>
+              </div>
+            )}
+            <div className="player-profile-grid">
+              <div><span>Nivel</span><strong>{profile.level}</strong></div>
+              <div><span>Cla</span><strong>{profile.clanName ? `Nv ${profile.clanLevel ?? 0}` : "Sem cla"}</strong></div>
+              <div><span>Arena</span><strong>{profile.arenaWins}V/{profile.arenaLosses}D</strong></div>
+              <div><span>Masmorras</span><strong>{profile.dungeonClears}</strong></div>
+            </div>
+            <section className="player-public-equipment">
+              <h3>Equipamentos</h3>
+              {profile.equipment.map(({ slot, item }) => {
+                const definition = item ? itemCatalog[item.itemId] : null;
+                return (
+                  <article className={definition ? "equip-slot has-item" : "equip-slot"} key={slot}>
+                    {definition ? (
+                      <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={item?.enhancementLevel} rarity={item?.rarity} />
+                    ) : (
+                      <span className="equip-emoji">{slot === "weapon" ? "Arma" : slot === "armor" ? "Armadura" : "Amuleto"}</span>
+                    )}
+                    <div className="equip-info">
+                      <small>{EQUIPMENT_LABEL[slot]}</small>
+                      <strong>{definition ? formatInventoryItemName(definition, item ?? undefined) : "Vazio"}</strong>
+                    </div>
+                  </article>
+                );
+              })}
+            </section>
+          </>
         )}
       </div>
     </div>
@@ -615,10 +671,7 @@ function Header({
         </div>
       </div>
       <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
-        <span className="character-chip-avatar">
-          <User size={20} />
-          {royalSealActive && <i className="royal-seal-mini"><Crown size={10} /></i>}
-        </span>
+        <CharacterAvatar avatar={getCurrentAvatar(game)} size={34} royal={royalSealActive} className="character-chip-avatar" />
         <strong>{game.character.name}</strong>
         <small>Nv {game.character.level} — {game.currentCity.name}</small>
         {game.clan && (
@@ -761,13 +814,65 @@ function CharacterDrawer({ game, onClose }: { game: GameState; onClose: () => vo
   );
 }
 
+function getAvatarIcon(icon: AvatarIcon, size = 34) {
+  switch (icon) {
+    case "shield":
+      return <Shield size={size} />;
+    case "swords":
+      return <Swords size={size} />;
+    case "crown":
+      return <Crown size={size} />;
+    case "flame":
+      return <Flame size={size} />;
+    case "skull":
+      return <Skull size={size} />;
+    case "sparkles":
+      return <Sparkles size={size} />;
+    case "gem":
+      return <Gem size={size} />;
+    case "user":
+    default:
+      return <User size={size} />;
+  }
+}
+
+function getCurrentAvatar(game: GameState) {
+  return game.avatarCatalog.find((avatar) => avatar.id === game.character.avatarId) ?? game.avatarCatalog[0];
+}
+
+function CharacterAvatar({
+  avatar,
+  size = 72,
+  royal = false,
+  className = ""
+}: {
+  avatar?: AvatarDefinition;
+  size?: number;
+  royal?: boolean;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`profile-avatar ${className}`}
+      style={{ width: size, height: size, background: avatar?.accent }}
+      title={avatar?.name}
+    >
+      {getAvatarIcon(avatar?.icon ?? "user", Math.max(18, Math.floor(size * 0.48)))}
+      {royal && <i className="royal-seal-mini"><Crown size={Math.max(9, Math.floor(size * 0.16))} /></i>}
+    </span>
+  );
+}
+
 function CharacterPanel({ game, locked = false }: { game: GameState; locked?: boolean }) {
   const [pending, setPending] = useState<Attributes>({ strength: 0, constitution: 0, agility: 0 });
+  const [showAvatarChoices, setShowAvatarChoices] = useState(false);
   const pendingTotal = pending.strength + pending.constitution + pending.agility;
   const healthPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.healPercent);
   const energyPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.energyPercent);
   const royalSealActive = isRoyalSealActive(game);
   const autoPveActive = isAutoPveActive(game);
+  const currentAvatar = getCurrentAvatar(game);
+  const unlockedAvatarIds = game.character.unlockedAvatarIds ?? [];
   const changePending = (key: AttributeKey, delta: number) => {
     setPending((current) => {
       const nextValue = Math.max(0, current[key] + delta);
@@ -781,25 +886,82 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
     socket.emit("character:allocate", pending);
     setPending({ strength: 0, constitution: 0, agility: 0 });
   };
+  const chooseAvatar = (avatar: AvatarDefinition, unlocked: boolean) => {
+    if (locked) {
+      return;
+    }
+    if (avatar.id === game.character.avatarId) {
+      setShowAvatarChoices((current) => !current);
+      return;
+    }
+    if (!unlocked && !window.confirm(`Comprar ${avatar.name} por ${avatar.priceDiamonds} diamantes?`)) {
+      return;
+    }
+    socket.emit("character:avatar", { avatarId: avatar.id });
+  };
 
   return (
     <aside className="side-panel character-panel">
       <div className="avatar-ring">
-        <User size={42} />
+        <CharacterAvatar avatar={currentAvatar} size={76} royal={royalSealActive} />
         {royalSealActive && <span className="royal-seal"><Crown size={15} /> Selo do Rei</span>}
       </div>
       <h2>{game.character.name}</h2>
       <p className="muted">Nível {game.character.level} — {game.currentCity.name}</p>
-      {autoPveActive && <p className="royal-status"><Crown size={14} /> Amigo do Rei ativo</p>}
+      {autoPveActive && (
+        <p className="royal-status">
+          <Crown size={14} /> Amigo do Rei ativo ate {formatListingDate(game.character.pveAutoUntil ?? 0)}
+        </p>
+      )}
       {game.clan && (
         <div className="character-clan-info">
           <span className="character-clan-crest">{getClanCrestIcon(game.clan.icon, 18)}</span>
           <div>
             <strong>{game.clan.name}</strong>
-            <small>{game.clan.leaderPlayerId === game.player.id ? "Líder do clã" : "Membro do clã"}</small>
+            <small>Nivel {game.clan.level} - {game.clan.leaderPlayerId === game.player.id ? "Lider do cla" : "Membro do cla"}</small>
           </div>
         </div>
       )}
+
+      <section className="compact-section avatar-section">
+        <h3>Avatar</h3>
+        <button className="current-avatar-card" type="button" disabled={locked} onClick={() => setShowAvatarChoices((current) => !current)}>
+          <CharacterAvatar avatar={currentAvatar} size={54} royal={royalSealActive} />
+          <div>
+            <strong>{currentAvatar?.name ?? "Avatar"}</strong>
+            <small>{showAvatarChoices ? "Ocultar opcoes" : "Trocar avatar"}</small>
+          </div>
+        </button>
+        {showAvatarChoices && <div className="avatar-choice-grid">
+          {game.avatarCatalog.map((avatar) => {
+            const unlocked = avatar.priceDiamonds === 0 || unlockedAvatarIds.includes(avatar.id);
+            const selected = game.character.avatarId === avatar.id;
+            return (
+              <button
+                type="button"
+                key={avatar.id}
+                className={`avatar-choice${selected ? " selected" : ""}${!unlocked ? " locked" : ""}`}
+                disabled={locked}
+                onClick={() => chooseAvatar(avatar, unlocked)}
+                title={unlocked ? avatar.name : `${avatar.name} - ${avatar.priceDiamonds} diamantes`}
+              >
+                <CharacterAvatar avatar={avatar} size={46} />
+                {!unlocked && <span className="avatar-lock"><Lock size={12} /></span>}
+                <span>{avatar.name}</span>
+                <small>
+                  {selected ? (
+                    "Em uso"
+                  ) : unlocked ? (
+                    "Usar"
+                  ) : (
+                    <>{avatar.priceDiamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></>
+                  )}
+                </small>
+              </button>
+            );
+          })}
+        </div>}
+      </section>
 
       <div className="stat-grid">
         <Metric icon={<Heart size={18} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
@@ -873,7 +1035,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         })}
         <div className="reset-actions">
           <button className="ghost-button" disabled={locked} onClick={() => socket.emit("attribute:reset", { method: "diamonds" })}>
-            Reset 20 diamantes
+            Reset 20 <Gem size={13} style={{ color: "var(--cyan)" }} />
           </button>
           <button className="ghost-button" disabled={locked} onClick={() => socket.emit("attribute:reset", { method: "scroll" })}>
             Usar memória
@@ -1455,7 +1617,10 @@ function MonarchPanel({ game }: { game: GameState }) {
                 <b>#{reward.rank}</b>
                 <div>
                   <strong><PlayerName playerId={reward.playerId} name={reward.name} /></strong>
-                  <span>{reward.experience.toLocaleString()} XP, {reward.gold.toLocaleString()} ouro{reward.diamonds ? `, ${reward.diamonds} diamantes` : ""}</span>
+                  <span>
+                    {reward.experience.toLocaleString()} XP, {reward.gold.toLocaleString()} ouro
+                    {reward.diamonds ? <> , {reward.diamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></> : null}
+                  </span>
                 </div>
               </article>
             ))}
@@ -1544,7 +1709,7 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
       <div className="talent-summary">
         <span>{game.derived.availableTalentPoints} pontos livres</span>
         <button className="ghost-button" onClick={() => socket.emit("talent:reset", { method: "diamonds" })}>
-          Resetar 25 diamantes
+          Resetar 25 <Gem size={13} style={{ color: "var(--cyan)" }} />
         </button>
         <button className="ghost-button" onClick={() => socket.emit("talent:reset", { method: "scroll" })}>
           Usar pergaminho
@@ -1619,7 +1784,7 @@ function GameShopPanel({ game }: { game: GameState }) {
             <div>
               <strong>{pack.name}</strong>
               <span>
-                {pack.diamonds} diamantes {pack.bonusLabel ? `- ${pack.bonusLabel}` : ""}
+                {pack.diamonds} <Gem size={13} style={{ color: "var(--cyan)" }} /> {pack.bonusLabel ? `- ${pack.bonusLabel}` : ""}
               </span>
               {pack.description && <small>{pack.description}</small>}
             </div>
@@ -1745,7 +1910,7 @@ function ClanPanel({ game }: { game: GameState }) {
           </button>
           {!levelOk || !diamondsOk ? (
             <p className="market-form-hint requirement-hint">
-              ⚠️ Requer nível {levelReq} {!levelOk && `(atual: ${game.character.level})`} e {diamondCost} diamantes {!diamondsOk && `(atual: ${game.character.diamonds})`}
+              ⚠️ Requer nível {levelReq} {!levelOk && `(atual: ${game.character.level})`} e {diamondCost} <Gem size={12} style={{ color: "var(--cyan)" }} /> {!diamondsOk && `(atual: ${game.character.diamonds})`}
             </p>
           ) : null}
         </div>
@@ -1903,7 +2068,7 @@ function ClanPanel({ game }: { game: GameState }) {
           <section className="clan-reset-panel">
             <div>
               <strong>Resetar benefícios</strong>
-              <span>Custa 1000 diamantes do líder e devolve 80% do gold e diamantes gastos para o tesouro do clã.</span>
+              <span>Custa 1000 <Gem size={12} style={{ color: "var(--cyan)" }} /> do líder e devolve 80% do gold e <Gem size={12} style={{ color: "var(--cyan)" }} /> gastos para o tesouro do clã.</span>
             </div>
             <button
               className="ghost-button"
@@ -3879,8 +4044,8 @@ function FloatingChat({
     }
   }, [privateTarget?.playerId]);
 
-  return (
-    <>
+  const chatContent = (
+    <div className="floating-chat-layer">
       <button className="floating-chat-button" title="Chat" onClick={() => setOpen(!open)}>
         <MessageCircle size={22} />
         {!open && unreadPrivate > 0 && <span>{Math.min(99, unreadPrivate)}</span>}
@@ -4031,8 +4196,10 @@ function FloatingChat({
           )}
         </aside>
       )}
-    </>
+    </div>
   );
+
+  return typeof document === "undefined" ? chatContent : createPortal(chatContent, document.body);
 }
 
 function CurrencyExchangeModal({ game, onClose }: { game: GameState; onClose: () => void }) {
@@ -4073,7 +4240,7 @@ function CurrencyExchangeModal({ game, onClose }: { game: GameState; onClose: ()
                 Trocar
               </button>
             </div>
-            <small className="muted">Saldo: {game.character.diamonds} diamantes</small>
+            <small className="muted">Saldo: {game.character.diamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></small>
           </section>
 
           <hr className="exchange-divider" />

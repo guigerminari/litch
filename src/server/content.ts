@@ -1,5 +1,6 @@
 import type {
   CityDefinition,
+  AvatarDefinition,
   ClanBenefitDefinition,
   ClanSuperBenefitDefinition,
   CountryDefinition,
@@ -16,6 +17,17 @@ export const STARTING_CITY_ID = "eldoria";
 
 export const TRAIN_TICKET_ID = "ticket_train";
 export const SHIP_TICKET_ID = "ticket_ship";
+
+export const AVATARS: AvatarDefinition[] = [
+  { id: "wanderer", name: "Viajante", icon: "user", accent: "linear-gradient(135deg, #8be9fd, #bd93f9)", priceDiamonds: 0 },
+  { id: "guardian", name: "Guardiao", icon: "shield", accent: "linear-gradient(135deg, #50fa7b, #8be9fd)", priceDiamonds: 0 },
+  { id: "duelist", name: "Duelista", icon: "swords", accent: "linear-gradient(135deg, #ff79c6, #bd93f9)", priceDiamonds: 25 },
+  { id: "ember", name: "Brasa Real", icon: "flame", accent: "linear-gradient(135deg, #ffb86c, #ff5555)", priceDiamonds: 40 },
+  { id: "arcane", name: "Arcano", icon: "sparkles", accent: "linear-gradient(135deg, #8be9fd, #f1fa8c)", priceDiamonds: 60 },
+  { id: "shadow", name: "Sombra", icon: "skull", accent: "linear-gradient(135deg, #44475a, #bd93f9)", priceDiamonds: 75 },
+  { id: "sovereign", name: "Soberano", icon: "crown", accent: "linear-gradient(135deg, #f1fa8c, #ff79c6)", priceDiamonds: 120 },
+  { id: "crystal", name: "Cristal", icon: "gem", accent: "linear-gradient(135deg, #8be9fd, #50fa7b)", priceDiamonds: 150 }
+];
 
 export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   "ticket_train": {
