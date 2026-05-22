@@ -29,6 +29,7 @@ export interface ItemStats extends Partial<Attributes> {
   heal?: number;
   healPercent?: number;
   energyPercent?: number;
+  energy?: number;
 }
 
 export interface ItemDefinition {

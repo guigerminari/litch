@@ -1631,6 +1631,16 @@ io.on("connection", (socket: AuthedSocket) => {
           stats.maxEnergy,
           character.currentEnergy + Math.ceil(stats.maxEnergy * definition.stats.energyPercent)
         );
+      } else if (definition.stats.heal) {
+        if (character.currentHp >= stats.maxHp) {
+          throw new Error("Sua vida já está cheia.");
+        }
+        character.currentHp = Math.min(stats.maxHp, character.currentHp + definition.stats.heal);
+      } else if (definition.stats.energy) {
+        if (character.currentEnergy >= stats.maxEnergy) {
+          throw new Error("Sua energia já está cheia.");
+        }
+        character.currentEnergy = Math.min(stats.maxEnergy, character.currentEnergy + definition.stats.energy);
       } else {
         throw new Error("Esta poção não tem efeito definido.");
       }

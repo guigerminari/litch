@@ -59,6 +59,7 @@ import type {
   TalentDefinition
 } from "../shared/types";
 import { RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
+import { experienceForNextLevel } from "../shared/progression";
 import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL } from "../shared/types";
 import cityMap from "./assets/city-map.svg";
 import { socket } from "./socket";
@@ -444,7 +445,7 @@ function Header({
   onRanking: () => void;
   onLogout: () => void;
 }) {
-  const nextXp = experienceForNextLevel(game.character.level);
+  const nextXp = Math.max(1, experienceForNextLevel(game.character.level));
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
   const hpProgress = Math.min(100, Math.round((game.character.currentHp / game.derived.maxHp) * 100));
   const energyProgress = Math.min(100, Math.round((game.character.currentEnergy / game.derived.maxEnergy) * 100));
@@ -520,7 +521,7 @@ function Header({
       <ResourceBar
         className="xp"
         icon={<Star size={15} style={{ color: "var(--purple)" }} />}
-        value={`${game.character.experience}/${nextXp}`}
+        value={`${formatCurrency(game.character.experience)}/${formatCurrency(nextXp)}`}
         progress={xpProgress}
       />
     </header>
@@ -4044,6 +4045,10 @@ function formatListingDate(value: number) {
 function formatCurrency(n: number): string {
   if (n < 9999) return n.toString();
   const tiers: Array<[number, string]> = [
+    [1e30, "no"],
+    [1e27, "oi"],
+    [1e24, "set"],
+    [1e21, "ses"],
     [1e18, "qui"],
     [1e15, "qua"],
     [1e12, "tri"],
