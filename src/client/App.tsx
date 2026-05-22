@@ -23,6 +23,7 @@ import {
   MessageCircle,
   ScrollText,
   Send,
+  Ship,
   Skull,
   Sparkles,
   Star,
@@ -106,6 +107,22 @@ type BattleHpChange = {
 const BATTLE_CUE_DURATION_MS = 680;
 const BATTLE_LOG_STEP_MS = 280;
 const BATTLE_RESULT_PAUSE_MS = 420;
+
+const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
+  eldoria: { x: 25, y: 55.5 },
+  ravenspire: { x: 36.5, y: 41.5 },
+  ironhold: { x: 29.5, y: 13.5 },
+  vila_de_valfria: { x: 31.5, y: 75.5 },
+  rosindale: { x: 63.5, y: 75.5 },
+  porto_sombrio: { x: 55.5, y: 28 },
+  necropole_de_morthaly: { x: 74.5, y: 33 }
+};
+
+const TRAVEL_COUNTRY_LABELS: Record<string, { x: number; y: number }> = {
+  aurevia: { x: 23, y: 25 },
+  valfria: { x: 49, y: 66 },
+  morthaly: { x: 77, y: 18 }
+};
 
 const viewLabels: Record<View, string> = {
   city: "Cidade",
@@ -2273,39 +2290,159 @@ function TravelPanel({ game }: { game: GameState }) {
   const currentCountryCities = game.cities.filter((city) => city.countryId === game.currentCountry.id);
   const trainTickets = countInventoryItem(game, TRAIN_TICKET_ID);
   const shipTickets = countInventoryItem(game, SHIP_TICKET_ID);
+  const mapCities = game.cities.filter((city) => TRAVEL_MAP_POINTS[city.id]);
+  const [selectedTravelCityId, setSelectedTravelCityId] = useState(game.character.cityId);
+  const getTravelRoute = (cityId: string) => {
+    const city = game.cities.find((entry) => entry.id === cityId);
+    if (!city) {
+      return null;
+    }
+
+    const sameCountry = game.currentCity.countryId === city.countryId;
+    const destinationCountry = game.countries.find((country) => country.id === city.countryId);
+    const portCity = game.cities.find((entry) => entry.id === destinationCountry?.portCityId) ?? null;
+    const blockedByForeignInterior = !sameCountry && !city.isPort;
+    const destinationCity = sameCountry
+      ? city
+      : city.isPort
+        ? city
+        : portCity ?? city;
+    const ticketCount = sameCountry ? trainTickets : shipTickets;
+    const ticketLabel = sameCountry
+      ? game.itemCatalog[TRAIN_TICKET_ID]?.name ?? "Ticket de Trem"
+      : game.itemCatalog[SHIP_TICKET_ID]?.name ?? "Ticket de Navio";
+    const current = city.id === game.character.cityId;
+    const locked = !current && (blockedByForeignInterior || ticketCount <= 0 || game.character.level < destinationCity.minLevel);
+    const reason = current
+      ? "Local atual"
+      : blockedByForeignInterior
+        ? `Viaje primeiro para ${portCity?.name ?? "o porto"}`
+        : game.character.level < destinationCity.minLevel
+        ? `Nv. ${destinationCity.minLevel}`
+        : ticketCount <= 0
+          ? `Sem ${ticketLabel}`
+          : sameCountry
+            ? "Viajar de trem"
+            : `Navio para ${destinationCity.name}`;
+    const actionLabel = current
+      ? "Voce esta aqui"
+      : blockedByForeignInterior
+        ? "Destino interno bloqueado"
+        : locked
+          ? "Viagem indisponivel"
+          : sameCountry
+            ? "Viajar com ticket de trem"
+            : `Viajar de navio para ${destinationCity.name}`;
+
+    return { city, destinationCity, destinationCountry, portCity, sameCountry, blockedByForeignInterior, current, locked, reason, actionLabel, ticketLabel };
+  };
+  const selectedTravelCity = game.cities.find((city) => city.id === selectedTravelCityId) ?? game.currentCity;
+  const selectedRoute = getTravelRoute(selectedTravelCity.id);
+
+  useEffect(() => {
+    if (!game.cities.some((city) => city.id === selectedTravelCityId)) {
+      setSelectedTravelCityId(game.character.cityId);
+    }
+  }, [game.character.cityId, game.cities, selectedTravelCityId]);
 
   return (
-    <section className="content-panel">
+    <section className="content-panel travel-panel">
       <PanelTitle icon={<MapPinned size={20} />} title="Viajar" />
       <div className="travel-ticket-summary">
         <span>{game.itemCatalog[TRAIN_TICKET_ID]?.name ?? "Ticket de Trem"}: <strong>{trainTickets}</strong></span>
         <span>{game.itemCatalog[SHIP_TICKET_ID]?.name ?? "Ticket de Navio"}: <strong>{shipTickets}</strong></span>
       </div>
 
-      <h3 className="city-group-title">Países</h3>
-      <div className="list-grid">
-        {game.countries.map((country) => {
-          const current = country.id === game.currentCountry.id;
-          const portCity = game.cities.find((city) => city.id === country.portCityId);
-          const locked = !current && (shipTickets <= 0 || !portCity || game.character.level < portCity.minLevel);
-          return (
-            <article className={current ? "entity-card current-city" : "entity-card"} key={country.id}>
-              <div>
-                <strong>{country.name}</strong>
-                <span>Porto: {portCity?.name ?? "indefinido"}</span>
-              </div>
-              <p>{country.description}</p>
-              <button
-                className="primary-button"
-                disabled={current || locked}
-                onClick={() => portCity && socket.emit("city:travel", { cityId: portCity.id })}
+      <div className="travel-map-card">
+        <div className="travel-map-frame">
+          <img src="/assets/locals/mapa-pais.png" alt="Mapa dos países Aurevia, Valfria e Morthaly" />
+          {game.countries.map((country) => {
+            const position = TRAVEL_COUNTRY_LABELS[country.id];
+            if (!position) return null;
+            return (
+              <span
+                className={country.id === game.currentCountry.id ? "travel-country-label current" : "travel-country-label"}
+                key={country.id}
+                style={{ left: `${position.x}%`, top: `${position.y}%` }}
               >
-                {current ? "País atual" : "Usar ticket de navio"}
+                {country.name}
+              </span>
+            );
+          })}
+          {mapCities.map((city) => {
+            const position = TRAVEL_MAP_POINTS[city.id];
+            const route = getTravelRoute(city.id);
+            if (!route) return null;
+            const classes = [
+              "travel-map-point",
+              selectedTravelCity.id === city.id ? "selected" : "",
+              route.current ? "current" : "",
+              route.locked ? "locked" : "",
+              city.isPort ? "port" : "",
+              route.sameCountry ? "land-route" : "sea-route"
+            ].filter(Boolean).join(" ");
+            return (
+              <button
+                className={classes}
+                key={city.id}
+                onClick={() => setSelectedTravelCityId(city.id)}
+                style={{ left: `${position.x}%`, top: `${position.y}%` }}
+                title={`${city.name} - ${route.reason}`}
+                type="button"
+              >
+                <span className="travel-map-icon">
+                  {city.isPort ? <Ship size={14} /> : <MapPinned size={14} />}
+                </span>
+                <span className="travel-map-name">
+                  <strong>{city.name}</strong>
+                </span>
               </button>
-            </article>
-          );
-        })}
+            );
+          })}
+        </div>
+        <div className="travel-map-caption">
+          <span>Rotas no mesmo país usam ticket de trem.</span>
+          <span>Rotas entre países usam ticket de navio e desembarcam no porto do destino.</span>
+        </div>
       </div>
+
+      {selectedRoute && (
+        <article className="travel-selection-card">
+          <div className="travel-selection-heading">
+            <span className={selectedTravelCity.isPort ? "travel-selection-kicker port" : "travel-selection-kicker"}>
+              {selectedTravelCity.isPort ? <Ship size={15} /> : <MapPinned size={15} />}
+              {selectedTravelCity.isPort ? "Porto" : "Cidade"}
+            </span>
+            <div>
+              <h3>{selectedTravelCity.name}</h3>
+              <small>{selectedRoute.destinationCountry?.name ?? game.currentCountry.name}</small>
+            </div>
+          </div>
+          <p>{selectedTravelCity.description}</p>
+          <div className="travel-selection-meta">
+            <span>Nivel minimo <strong>{selectedRoute.destinationCity.minLevel}</strong></span>
+            <span>{selectedRoute.sameCountry ? "Rota terrestre" : "Rota maritima"}</span>
+            <span>{selectedRoute.current ? "Atual" : selectedRoute.ticketLabel}</span>
+          </div>
+          {selectedRoute.blockedByForeignInterior && (
+            <p className="travel-selection-warning">
+              Para visitar cidades internas de outro pais, desembarque antes em {selectedRoute.portCity?.name ?? "seu porto"}.
+            </p>
+          )}
+          {!selectedRoute.sameCountry && !selectedRoute.blockedByForeignInterior && !selectedRoute.current && (
+            <p className="travel-selection-warning subtle">
+              A viagem entre paises usa navio e chega diretamente ao porto selecionado.
+            </p>
+          )}
+          <button
+            className="primary-button"
+            disabled={selectedRoute.current || selectedRoute.locked}
+            onClick={() => socket.emit("city:travel", { cityId: selectedRoute.destinationCity.id })}
+          >
+            {selectedRoute.actionLabel}
+          </button>
+        </article>
+      )}
 
       <h3 className="city-group-title">Cidades de {game.currentCountry.name}</h3>
       <div className="list-grid">

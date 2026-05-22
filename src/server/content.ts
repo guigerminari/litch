@@ -1399,6 +1399,12 @@ export const COUNTRIES: CountryDefinition[] = [
     name: "Valfria",
     description: "Pais frio de montanhas, ruinas espectrais e vilas isoladas.",
     portCityId: "vila_de_valfria"
+  },
+  {
+    id: "morthaly",
+    name: "Morthaly",
+    description: "Ilha necromantica de rochas negras, runas violetas e cidades tomadas por magia morta.",
+    portCityId: "porto_sombrio"
   }
 ];
 
@@ -2022,6 +2028,164 @@ export const CITIES: CityDefinition[] = [
       "oblivion_scroll",
       "memory_scroll"
     ]
+  },
+  {
+    "id": "porto_sombrio",
+    "countryId": "morthaly",
+    "name": "Porto Sombrio",
+    "minLevel": 30,
+    "travelCost": 180,
+    "description": "Cais de pedra negra onde navios atracam sob farois de chama violeta.",
+    "isPort": true,
+    "inhabitants": [
+      "Marechal Voss",
+      "Irma Velka",
+      "Orives Nulo",
+      "Barqueiro Naren"
+    ],
+    "npcs": {
+      "armorer": "Marechal Voss",
+      "apothecary": "Irma Velka",
+      "blacksmith": "Orives Nulo",
+      "alchemist": "Irma Velka",
+      "moneyChanger": "Barqueiro Naren"
+    },
+    "dungeonMonsterIds": [
+      "zombie_kraken_infected",
+      "spectral_dragon_old",
+      "zombie_drake_infected"
+    ],
+    "blacksmithRecipeIds": [
+      "forge_ember_blade",
+      "forge_guardian_mail"
+    ],
+    "blacksmithEnhancement": true,
+    "alchemistRecipeIds": [
+      "brew_major_health",
+      "brew_major_energy",
+      "bind_moon_amulet"
+    ],
+    "huntLocationIds": [
+      "morthaly_black_docks"
+    ],
+    "huntMonsterIds": [
+      "zombie_kraken_infected",
+      "zombie_lizard_infected",
+      "zombie_lizard",
+      "zombie_octopode_infected",
+      "zombie_octopode",
+      "zombie_hound_infected",
+      "zombie_hound",
+      "spectral_fish_old"
+    ],
+    "armorerItemIds": [
+      "armor_death",
+      "armor_dragon",
+      "armor_dhron",
+      "armor_erins",
+      "weapon_real_axe",
+      "weapon_triple_sword_2",
+      "weapon_triple_sword_3",
+      "weapon_vorgonax"
+    ],
+    "apothecaryItemIds": [
+      "misc_dungeon_key",
+      "misc_high_dungeon_key",
+      "scroll_magic_lands_parchment",
+      "potion_energy",
+      "potion_health",
+      "potion_mana",
+      "health_potion",
+      "energy_potion",
+      "major_health_potion",
+      "major_energy_potion",
+      "oblivion_scroll",
+      "memory_scroll"
+    ],
+    "moneyChangerItemIds": [
+      "ticket_train",
+      "ticket_ship",
+      "scroll_enhanced_parchment",
+      "scroll_fraddo_parchment",
+      "scroll_magic_lands_parchment",
+      "oblivion_scroll",
+      "memory_scroll"
+    ]
+  },
+  {
+    "id": "necropole_de_morthaly",
+    "countryId": "morthaly",
+    "name": "Necropole de Morthaly",
+    "minLevel": 40,
+    "travelCost": 220,
+    "description": "Cidade ritual erguida ao redor de torres violetas e cemiterios sem fim.",
+    "inhabitants": [
+      "Arquimago Kael",
+      "Vigilia Nox",
+      "Ferreiro Ossian",
+      "Sibilante Eron"
+    ],
+    "npcs": {
+      "armorer": "Vigilia Nox",
+      "apothecary": "Sibilante Eron",
+      "blacksmith": "Ferreiro Ossian",
+      "alchemist": "Arquimago Kael"
+    },
+    "dungeonMonsterIds": [
+      "spectral_dragon_old",
+      "spectral_hydra_3_old",
+      "zombie_drake_infected",
+      "skeleton_dragon"
+    ],
+    "blacksmithRecipeIds": [
+      "forge_ember_blade",
+      "forge_guardian_mail"
+    ],
+    "blacksmithEnhancement": true,
+    "alchemistRecipeIds": [
+      "brew_major_health",
+      "brew_major_energy",
+      "bind_moon_amulet"
+    ],
+    "huntLocationIds": [
+      "morthaly_runic_wastes",
+      "morthaly_lich_spire"
+    ],
+    "huntMonsterIds": [
+      "spectral_dragon_old",
+      "spectral_hydra_3_old",
+      "spectral_naga_old",
+      "spectral_spider_old",
+      "spectral_thing",
+      "spectral_worm",
+      "skeleton_dragon",
+      "zombie_drake_infected",
+      "zombie_ugly_thing_infected"
+    ],
+    "armorerItemIds": [
+      "armor_death",
+      "armor_dragon",
+      "armor_dhron",
+      "armor_erins",
+      "weapon_real_axe",
+      "weapon_triple_sword_2",
+      "weapon_triple_sword_3",
+      "weapon_vorgonax"
+    ],
+    "apothecaryItemIds": [
+      "misc_dungeon_key",
+      "misc_high_dungeon_key",
+      "scroll_magic_lands_parchment",
+      "potion_energy",
+      "potion_health",
+      "potion_mana",
+      "health_potion",
+      "energy_potion",
+      "major_health_potion",
+      "major_energy_potion",
+      "oblivion_scroll",
+      "memory_scroll"
+    ]
   }
 ];
 
@@ -2255,6 +2419,47 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
       "zombie_toad",
       "zombie_ugly_thing_infected",
       "zombie_ugly_thing"
+    ]
+  },
+  "morthaly_black_docks": {
+    "id": "morthaly_black_docks",
+    "cityId": "porto_sombrio",
+    "name": "Docas Negras",
+    "description": "Cais quebrados onde a mare traz mortos-vivos e ecos do mar profundo.",
+    "monsterIds": [
+      "zombie_kraken_infected",
+      "zombie_lizard_infected",
+      "zombie_lizard",
+      "zombie_octopode_infected",
+      "zombie_octopode",
+      "zombie_hound_infected",
+      "zombie_hound",
+      "spectral_fish_old"
+    ]
+  },
+  "morthaly_runic_wastes": {
+    "id": "morthaly_runic_wastes",
+    "cityId": "necropole_de_morthaly",
+    "name": "Ermos Runicos",
+    "description": "Campos de pedra negra marcados por sigilos violetas e espectros inquietos.",
+    "monsterIds": [
+      "spectral_naga_old",
+      "spectral_spider_old",
+      "spectral_thing",
+      "spectral_worm",
+      "zombie_ugly_thing_infected"
+    ]
+  },
+  "morthaly_lich_spire": {
+    "id": "morthaly_lich_spire",
+    "cityId": "necropole_de_morthaly",
+    "name": "Pinaculo do Lich",
+    "description": "Torres necromanticas onde dragoes espectrais circulam acima das criptas.",
+    "monsterIds": [
+      "spectral_dragon_old",
+      "spectral_hydra_3_old",
+      "skeleton_dragon",
+      "zombie_drake_infected"
     ]
   }
 };
