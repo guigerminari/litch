@@ -2310,7 +2310,7 @@ button:disabled {
 }
 
 .overview-grid {
-  display: flex;
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px;
 }
@@ -2338,7 +2338,7 @@ button:disabled {
 
 .option-card {
   min-height: 142px;
-  width: 142px;
+  width: 100%;
   display: grid;
   justify-items: start;
   align-content: space-between;
