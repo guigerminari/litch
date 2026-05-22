@@ -6,6 +6,7 @@ import type {
   AvatarSelectPayload,
   BattleActionPayload,
   Character,
+  ChangePasswordPayload,
   ClanBenefitBuyPayload,
   ClanChatSendPayload,
   ClanCreatePayload,
@@ -17,6 +18,7 @@ import type {
   CraftPayload,
   Currency,
   CurrencyExchangePayload,
+  DeveloperMessagePayload,
   DungeonStartPayload,
   EnhancePayload,
   ForgotPasswordPayload,
@@ -37,6 +39,7 @@ import type {
   PrivateSendPayload,
   QuestClaimPayload,
   QuestView,
+  ReferralClaimPayload,
   RegisterPayload,
   ResetPayload,
   SellPayload,
@@ -92,6 +95,9 @@ const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle",
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_AVATAR_ID = "wanderer";
+const REFERRAL_REWARD_LEVEL = 30;
+const REFERRAL_REWARD_GOLD = 30000;
+const REFERRAL_REWARD_DIAMONDS = 30;
 const ENHANCEMENT_GOLD_STEP = 10000;
 const ENHANCEMENT_CHANCE_STEP = 5;
 const ENHANCEMENT_MIN_CHANCE = 5;
@@ -248,6 +254,7 @@ function createCharacter(player: Player): Character {
     royalSealUntil: 0,
     avatarId: DEFAULT_AVATAR_ID,
     unlockedAvatarIds: AVATARS.filter((avatar) => avatar.priceDiamonds === 0).map((avatar) => avatar.id),
+    referralRewardsClaimedFor: [],
     monarchAttempts: { dayKey: "", count: 0 }
   };
 
@@ -277,6 +284,7 @@ function currentCharacter(playerId: string) {
   character.pveAutoUntil ??= 0;
   character.royalSealUntil ??= 0;
   character.unlockedAvatarIds ??= AVATARS.filter((avatar) => avatar.priceDiamonds === 0).map((avatar) => avatar.id);
+  character.referralRewardsClaimedFor ??= [];
   character.avatarId = AVATARS.some((avatar) => avatar.id === character.avatarId) ? character.avatarId : DEFAULT_AVATAR_ID;
   if (!character.unlockedAvatarIds.includes(DEFAULT_AVATAR_ID)) {
     character.unlockedAvatarIds.push(DEFAULT_AVATAR_ID);
@@ -317,7 +325,38 @@ function currentPlayer(playerId: string) {
     throw new Error("Jogador não encontrado.");
   }
   player.email ??= "";
+  ensureReferralCode(player);
   return player;
+}
+
+function buildReferralView(playerId: string) {
+  const player = currentPlayer(playerId);
+  const character = currentCharacter(playerId);
+  const claimed = new Set(character.referralRewardsClaimedFor ?? []);
+  const invitedFriends = Array.from(store.players.values())
+    .filter((candidate) => candidate.referredByPlayerId === playerId)
+    .map((candidate) => {
+      const invitedCharacter = store.characters.get(candidate.id);
+      const level = invitedCharacter?.level ?? 1;
+      return {
+        playerId: candidate.id,
+        name: invitedCharacter?.name ?? candidate.username,
+        level,
+        eligible: level >= REFERRAL_REWARD_LEVEL,
+        claimed: claimed.has(candidate.id)
+      };
+    })
+    .sort((a, b) => Number(a.claimed) - Number(b.claimed) || b.level - a.level || a.name.localeCompare(b.name));
+
+  return {
+    code: ensureReferralCode(player),
+    rewardLevel: REFERRAL_REWARD_LEVEL,
+    reward: {
+      gold: REFERRAL_REWARD_GOLD,
+      diamonds: REFERRAL_REWARD_DIAMONDS
+    },
+    invitedFriends
+  };
 }
 
 function serializeGameState(playerId: string): GameState {
@@ -358,6 +397,7 @@ function serializeGameState(playerId: string): GameState {
     currentCity,
     currentCountry,
     cityHuntLocations,
+    huntingLocations: Object.values(HUNTING_LOCATIONS),
     cityMonsters: Array.from(
       new Set([
         ...cityHuntLocations.flatMap((location) => location.monsterIds),
@@ -366,6 +406,7 @@ function serializeGameState(playerId: string): GameState {
     )
       .map((id) => MONSTERS[id])
       .filter(Boolean),
+    monsterCatalog: MONSTERS,
     itemCatalog: ITEM_CATALOG,
     avatarCatalog: AVATARS,
     activeBattle,
@@ -388,7 +429,8 @@ function serializeGameState(playerId: string): GameState {
     regenEnergyAmount,
     clanChatMessages,
     privateMessages,
-    onlinePlayers
+    onlinePlayers,
+    referrals: buildReferralView(playerId)
   };
 }
 
@@ -446,9 +488,38 @@ function normalizeRecoveryCode(value: string) {
   return value.trim().replace(/[\s-]+/g, "").toUpperCase();
 }
 
+function normalizeReferralCode(value: string) {
+  return value.trim().replace(/[\s-]+/g, "").toUpperCase();
+}
+
 function createRecoveryCode() {
   const raw = randomBytes(6).toString("hex").toUpperCase();
   return raw.match(/.{1,4}/g)?.join("-") ?? raw;
+}
+
+function createReferralCode(username: string, playerId: string) {
+  const prefix = username.replace(/[^a-z0-9]/gi, "").slice(0, 5).toUpperCase() || "LITCH";
+  return normalizeReferralCode(`${prefix}${playerId.slice(0, 6)}`);
+}
+
+function ensureReferralCode(player: Player) {
+  if (!player.referralCode) {
+    player.referralCode = createReferralCode(player.username, player.id);
+  }
+  return player.referralCode;
+}
+
+function findInviterByReferralCode(code: string) {
+  const normalized = normalizeReferralCode(code);
+  if (!normalized) {
+    return null;
+  }
+  for (const player of store.players.values()) {
+    if (ensureReferralCode(player) === normalized) {
+      return player;
+    }
+  }
+  return null;
 }
 
 function hashSecret(secret: string) {
@@ -472,6 +543,14 @@ function assertPassword(password: string) {
   if (password.length < PASSWORD_MIN_LENGTH) {
     throw new Error(`Use uma senha com pelo menos ${PASSWORD_MIN_LENGTH} caracteres.`);
   }
+}
+
+function accountForPlayer(playerId: string) {
+  const account = Array.from(store.accountsByEmail.values()).find((entry) => entry.playerId === playerId);
+  if (!account) {
+    throw new Error("Conta nao encontrada.");
+  }
+  return account;
 }
 
 function attachSocketSession(socket: AuthedSocket, playerId: string, sessionToken: string) {
@@ -1748,6 +1827,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const username = sanitizeName(String(payload.username ?? ""));
       const email = normalizeEmail(String(payload.email ?? ""));
       const password = String(payload.password ?? "");
+      const inviteCode = normalizeReferralCode(String(payload.inviteCode ?? ""));
       if (username.length < 3) {
         throw new Error("Use um nome com pelo menos 3 caracteres.");
       }
@@ -1764,8 +1844,19 @@ io.on("connection", (socket: AuthedSocket) => {
       if (usernameTaken) {
         throw new Error("Este nome de jogador ja esta em uso.");
       }
+      const inviter = inviteCode ? findInviterByReferralCode(inviteCode) : null;
+      if (inviteCode && !inviter) {
+        throw new Error("Codigo de convite invalido.");
+      }
 
-      const player: Player = { id: randomUUID(), username, email, createdAt: Date.now() };
+      const player: Player = {
+        id: randomUUID(),
+        username,
+        email,
+        createdAt: Date.now(),
+        referredByPlayerId: inviter?.id
+      };
+      player.referralCode = createReferralCode(username, player.id);
       const character = createCharacter(player);
       const recoveryCode = createRecoveryCode();
 
@@ -1809,6 +1900,25 @@ io.on("connection", (socket: AuthedSocket) => {
       const sessionToken = createSession(socket, account.playerId);
       socket.emit("auth:ok", { sessionToken, playerId: account.playerId, recoveryCode: nextRecoveryCode });
       broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("account:changePassword", (payload: ChangePasswordPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const account = accountForPlayer(playerId);
+      const currentPassword = String(payload.currentPassword ?? "");
+      const newPassword = String(payload.newPassword ?? "");
+      if (!verifySecret(currentPassword, account.passwordHash)) {
+        throw new Error("Senha atual invalida.");
+      }
+      assertPassword(newPassword);
+      account.passwordHash = hashSecret(newPassword);
+      account.passwordUpdatedAt = Date.now();
+      persistStoreSoon();
+      socket.emit("account:passwordChanged");
     } catch (error) {
       handleError(socket, error);
     }
@@ -2697,6 +2807,49 @@ io.on("connection", (socket: AuthedSocket) => {
         throw new Error("Jogador nao encontrado.");
       }
       socket.emit("player:profile", profile);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("referral:claim", (payload: ReferralClaimPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      const invitedPlayerId = String(payload.playerId ?? "");
+      const invitedPlayer = store.players.get(invitedPlayerId);
+      const invitedCharacter = store.characters.get(invitedPlayerId);
+      if (!invitedPlayer || invitedPlayer.referredByPlayerId !== playerId || !invitedCharacter) {
+        throw new Error("Convite nao encontrado.");
+      }
+      if (invitedCharacter.level < REFERRAL_REWARD_LEVEL) {
+        throw new Error(`O amigo precisa chegar ao nivel ${REFERRAL_REWARD_LEVEL}.`);
+      }
+      character.referralRewardsClaimedFor ??= [];
+      if (character.referralRewardsClaimedFor.includes(invitedPlayerId)) {
+        throw new Error("Recompensa ja resgatada.");
+      }
+      character.gold += REFERRAL_REWARD_GOLD;
+      character.diamonds += REFERRAL_REWARD_DIAMONDS;
+      character.referralRewardsClaimedFor.push(invitedPlayerId);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("developer:message", (payload: DeveloperMessagePayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const player = currentPlayer(playerId);
+      const subject = String(payload.subject ?? "").trim().replace(/\s+/g, " ").slice(0, 80);
+      const message = String(payload.message ?? "").trim().replace(/\s+/g, " ").slice(0, 1000);
+      if (!message) {
+        throw new Error("Escreva uma mensagem para enviar ao desenvolvedor.");
+      }
+      console.log(`[developer-message] ${player.username} <${player.email}> ${subject || "Sem assunto"}: ${message}`);
+      socket.emit("developer:message:ok");
     } catch (error) {
       handleError(socket, error);
     }

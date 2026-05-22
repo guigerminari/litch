@@ -92,6 +92,7 @@ export interface Character {
   royalSealUntil?: number;
   avatarId?: string;
   unlockedAvatarIds?: string[];
+  referralRewardsClaimedFor?: string[];
   monarchAttempts?: {
     dayKey: string;
     count: number;
@@ -116,6 +117,8 @@ export interface Player {
   username: string;
   email: string;
   createdAt: number;
+  referralCode?: string;
+  referredByPlayerId?: string;
 }
 
 export interface DerivedStats {
@@ -510,6 +513,24 @@ export interface ClanRankingEntry {
   diamonds: number;
 }
 
+export interface ReferralFriendView {
+  playerId: string;
+  name: string;
+  level: number;
+  eligible: boolean;
+  claimed: boolean;
+}
+
+export interface ReferralView {
+  code: string;
+  rewardLevel: number;
+  reward: {
+    gold: number;
+    diamonds: number;
+  };
+  invitedFriends: ReferralFriendView[];
+}
+
 export interface GameState {
   player: Player;
   character: Character;
@@ -521,7 +542,9 @@ export interface GameState {
   currentCity: CityDefinition;
   currentCountry: CountryDefinition;
   cityHuntLocations: HuntingLocationDefinition[];
+  huntingLocations: HuntingLocationDefinition[];
   cityMonsters: MonsterDefinition[];
+  monsterCatalog: Record<string, MonsterDefinition>;
   itemCatalog: Record<string, ItemDefinition>;
   avatarCatalog: AvatarDefinition[];
   activeBattle: BattleState | null;
@@ -555,6 +578,7 @@ export interface GameState {
   clanChatMessages: ChatMessage[];
   privateMessages: PrivateMessage[];
   onlinePlayers: Array<{ playerId: string; name: string }>;
+  referrals: ReferralView;
 }
 
 export interface ServerError {
@@ -565,6 +589,7 @@ export interface RegisterPayload {
   username: string;
   email: string;
   password: string;
+  inviteCode?: string;
 }
 
 export interface LoginPayload {
@@ -576,6 +601,16 @@ export interface ForgotPasswordPayload {
   email: string;
   recoveryCode: string;
   newPassword: string;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface DeveloperMessagePayload {
+  subject?: string;
+  message: string;
 }
 
 export interface AuthOkPayload {
@@ -655,6 +690,10 @@ export interface PrivateSendPayload {
 }
 
 export interface PlayerInspectPayload {
+  playerId: string;
+}
+
+export interface ReferralClaimPayload {
   playerId: string;
 }
 

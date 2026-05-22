@@ -3,8 +3,12 @@ import { createPortal } from "react-dom";
 import {
   ArrowLeftRight,
   Backpack,
+  BarChart3,
+  BookOpen,
   Castle,
+  CheckCircle2,
   Coins,
+  Copy,
   Crown,
   ChevronDown,
   ChevronRight,
@@ -15,6 +19,7 @@ import {
   Gem,
   Hammer,
   Heart,
+  Info,
   KeyRound,
   Lock,
   LogIn,
@@ -24,6 +29,7 @@ import {
   MessageCircle,
   ScrollText,
   Send,
+  Settings,
   Ship,
   Skull,
   Sparkles,
@@ -235,10 +241,13 @@ export function App() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [recoveryCode, setRecoveryCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [latestRecoveryCode, setLatestRecoveryCode] = useState<string | null>(null);
   const [view, setView] = useState<View>("city");
+  const [utilityModal, setUtilityModal] = useState<"settings" | "guide" | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(socket.connected);
   const [showDetails, setShowDetails] = useState(false);
@@ -265,6 +274,7 @@ export function App() {
         setLatestRecoveryCode(payload.recoveryCode);
       }
       setPassword("");
+      setInviteCode("");
       setNewPassword("");
       setRecoveryCode("");
     };
@@ -282,6 +292,16 @@ export function App() {
     const onPlayerProfile = (profile: PlayerPublicProfile) => {
       setPlayerProfiles((current) => ({ ...current, [profile.playerId]: profile }));
       setLoadingPlayerProfileId((current) => (current === profile.playerId ? null : current));
+    };
+
+    const onPasswordChanged = () => {
+      setNotice("Senha alterada com sucesso.");
+      window.setTimeout(() => setNotice(null), 3200);
+    };
+
+    const onDeveloperMessageOk = () => {
+      setNotice("Mensagem enviada ao desenvolvedor.");
+      window.setTimeout(() => setNotice(null), 3200);
     };
 
     const onError = (payload: { message: string }) => {
@@ -302,6 +322,8 @@ export function App() {
     socket.on("auth:logout", onAuthLogout);
     socket.on("game:state", onGameState);
     socket.on("player:profile", onPlayerProfile);
+    socket.on("account:passwordChanged", onPasswordChanged);
+    socket.on("developer:message:ok", onDeveloperMessageOk);
     socket.on("game:error", onError);
 
     if (socket.connected) {
@@ -315,6 +337,8 @@ export function App() {
       socket.off("auth:logout", onAuthLogout);
       socket.off("game:state", onGameState);
       socket.off("player:profile", onPlayerProfile);
+      socket.off("account:passwordChanged", onPasswordChanged);
+      socket.off("developer:message:ok", onDeveloperMessageOk);
       socket.off("game:error", onError);
     };
   }, []);
@@ -335,7 +359,7 @@ export function App() {
       return;
     }
     if (authMode === "register") {
-      socket.emit("auth:register", { username, email, password });
+      socket.emit("auth:register", { username, email, password, inviteCode });
       return;
     }
     socket.emit("auth:forgotPassword", { email, recoveryCode, newPassword });
@@ -381,6 +405,18 @@ export function App() {
                 autoComplete="username"
                 onChange={(event) => setUsername(event.target.value)}
                 placeholder="Ex: Arthen"
+              />
+            </label>
+          )}
+          {authMode === "register" && (
+            <label>
+              <span className="auth-label"><UserPlus size={15} /> Codigo de convite</span>
+              <input
+                value={inviteCode}
+                maxLength={24}
+                autoComplete="off"
+                onChange={(event) => setInviteCode(event.target.value)}
+                placeholder="Opcional"
               />
             </label>
           )}
@@ -470,6 +506,11 @@ export function App() {
   return (
     <main className={gameShellClass}>
       <PlayerActionContext.Provider value={{ currentPlayerId: game.player.id, openPlayerActions }}>
+        <UtilityStrip
+          onSettings={() => setUtilityModal("settings")}
+          onGuide={() => setUtilityModal("guide")}
+          onLogout={logout}
+        />
         <Header
           game={game}
           connected={connected}
@@ -478,7 +519,6 @@ export function App() {
           onGameShop={() => setView("gameShop")}
           onExchange={() => setShowExchange(true)}
           onRanking={() => setView("rankings")}
-          onLogout={logout}
         />
         <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
           <section className="city-stage">
@@ -496,6 +536,8 @@ export function App() {
         />
         {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
         {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
+        {utilityModal === "settings" && <SettingsModal game={game} onClose={() => setUtilityModal(null)} />}
+        {utilityModal === "guide" && <GuideModal game={game} onClose={() => setUtilityModal(null)} />}
         {selectedPlayer && (
           <PlayerActionModal
             player={selectedPlayer}
@@ -509,6 +551,7 @@ export function App() {
           />
         )}
         {latestRecoveryCode && <RecoveryCodeModal code={latestRecoveryCode} onClose={() => setLatestRecoveryCode(null)} />}
+        {notice && <Toast message={notice} kind="success" />}
         {error && <Toast message={error} />}
       </PlayerActionContext.Provider>
     </main>
@@ -632,6 +675,30 @@ function PlayerActionModal({
   );
 }
 
+function UtilityStrip({
+  onSettings,
+  onGuide,
+  onLogout
+}: {
+  onSettings: () => void;
+  onGuide: () => void;
+  onLogout: () => void;
+}) {
+  return (
+    <nav className="utility-strip" aria-label="Menu do jogador">
+      <button type="button" title="Configuracao" aria-label="Configuracao" onClick={onSettings}>
+        <Settings size={15} />
+      </button>
+      <button type="button" title="Guia" aria-label="Guia" onClick={onGuide}>
+        <BookOpen size={15} />
+      </button>
+      <button type="button" title="Logoff" aria-label="Logoff" onClick={onLogout}>
+        <LogOut size={15} />
+      </button>
+    </nav>
+  );
+}
+
 function Header({
   game,
   connected,
@@ -639,8 +706,7 @@ function Header({
   onDetails,
   onGameShop,
   onExchange,
-  onRanking,
-  onLogout
+  onRanking
 }: {
   game: GameState;
   connected: boolean;
@@ -649,7 +715,6 @@ function Header({
   onGameShop: () => void;
   onExchange: () => void;
   onRanking: () => void;
-  onLogout: () => void;
 }) {
   const nextXp = Math.max(1, experienceForNextLevel(game.character.level));
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
@@ -715,9 +780,6 @@ function Header({
           onClick={onRanking}
         >
           <Trophy size={17} style={{ color: "var(--gold)" }} />
-        </button>
-        <button className="stat-pill stat-action logout-action" title="Deslogar" aria-label="Deslogar" onClick={onLogout}>
-          <LogOut size={17} style={{ color: "var(--red)" }} />
         </button>
         <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Offline"}</span>
       </div>
@@ -811,6 +873,443 @@ function CharacterDrawer({ game, onClose }: { game: GameState; onClose: () => vo
         <CharacterPanel game={game} locked={Boolean(game.activeBattle)} />
       </aside>
     </div>
+  );
+}
+
+function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void }) {
+  const [tab, setTab] = useState<"account" | "password">("account");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [nextPassword, setNextPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [copied, setCopied] = useState(false);
+  const passwordReady = currentPassword.length >= 6 && nextPassword.length >= 6 && nextPassword === confirmPassword;
+  const pendingReferralRewards = game.referrals.invitedFriends.filter((friend) => friend.eligible && !friend.claimed).length;
+
+  const copyInviteCode = async () => {
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(game.referrals.code);
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
+  const changePassword = (event: FormEvent) => {
+    event.preventDefault();
+    if (!passwordReady) return;
+    socket.emit("account:changePassword", { currentPassword, newPassword: nextPassword });
+    setCurrentPassword("");
+    setNextPassword("");
+    setConfirmPassword("");
+  };
+
+  return (
+    <div className="drawer-backdrop" role="presentation" onClick={onClose}>
+      <section className="utility-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={20} />
+        </button>
+        <PanelTitle icon={<Settings size={20} />} title="Configuracao" />
+        <div className="utility-tabs">
+          <button className={tab === "account" ? "mini-tab active" : "mini-tab"} onClick={() => setTab("account")}>
+            Conta
+          </button>
+          <button className={tab === "password" ? "mini-tab active" : "mini-tab"} onClick={() => setTab("password")}>
+            Senha
+          </button>
+        </div>
+
+        {tab === "account" && (
+          <div className="utility-stack">
+            <section className="account-summary">
+              <div>
+                <span>Jogador</span>
+                <strong>{game.player.username}</strong>
+              </div>
+              <div>
+                <span>E-mail</span>
+                <strong>{game.player.email}</strong>
+              </div>
+              <div>
+                <span>Personagem</span>
+                <strong>{game.character.name} - Nv {game.character.level}</strong>
+              </div>
+              <div>
+                <span>Conta criada</span>
+                <strong>{new Date(game.player.createdAt).toLocaleDateString("pt-BR")}</strong>
+              </div>
+            </section>
+
+            <section className="invite-panel">
+              <div className="invite-header">
+                <div>
+                  <span className="eyebrow">Convide seus amigos</span>
+                  <h3>Recompensa no nivel {game.referrals.rewardLevel}</h3>
+                  <p>
+                    Quando um amigo cadastrado com seu codigo chegar ao nivel {game.referrals.rewardLevel}, voce pode resgatar
+                    {` ${formatCurrency(game.referrals.reward.gold)} ouro e ${game.referrals.reward.diamonds} `}
+                    <Gem size={13} style={{ color: "var(--cyan)" }} />.
+                  </p>
+                </div>
+                <strong className="invite-badge">{pendingReferralRewards} pronto(s)</strong>
+              </div>
+              <div className="invite-code-row">
+                <code>{game.referrals.code}</code>
+                <button className="ghost-button" type="button" onClick={copyInviteCode}>
+                  {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />} {copied ? "Copiado" : "Copiar"}
+                </button>
+              </div>
+              <div className="referral-list">
+                {game.referrals.invitedFriends.length === 0 && <p className="empty-state">Nenhum amigo vinculado ainda.</p>}
+                {game.referrals.invitedFriends.map((friend) => (
+                  <article className="referral-row" key={friend.playerId}>
+                    <div>
+                      <strong>{friend.name}</strong>
+                      <span>Nivel {friend.level}/{game.referrals.rewardLevel}</span>
+                    </div>
+                    <button
+                      className="ghost-button"
+                      disabled={!friend.eligible || friend.claimed}
+                      onClick={() => socket.emit("referral:claim", { playerId: friend.playerId })}
+                    >
+                      {friend.claimed ? "Resgatado" : friend.eligible ? "Resgatar" : "Aguardando"}
+                    </button>
+                  </article>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {tab === "password" && (
+          <form className="utility-form" onSubmit={changePassword}>
+            <label>
+              <span>Senha atual</span>
+              <input
+                type="password"
+                value={currentPassword}
+                minLength={6}
+                autoComplete="current-password"
+                onChange={(event) => setCurrentPassword(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>Nova senha</span>
+              <input
+                type="password"
+                value={nextPassword}
+                minLength={6}
+                autoComplete="new-password"
+                onChange={(event) => setNextPassword(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>Confirmar nova senha</span>
+              <input
+                type="password"
+                value={confirmPassword}
+                minLength={6}
+                autoComplete="new-password"
+                onChange={(event) => setConfirmPassword(event.target.value)}
+              />
+            </label>
+            {nextPassword && confirmPassword && nextPassword !== confirmPassword && (
+              <small className="form-warning">As senhas nao conferem.</small>
+            )}
+            <button className="primary-button" type="submit" disabled={!passwordReady}>
+              Alterar senha
+            </button>
+          </form>
+        )}
+      </section>
+    </div>
+  );
+}
+
+type GuideTab = "intro" | "rules" | "travel" | "world" | "combat" | "items" | "monsters" | "events" | "developer" | "stats";
+
+function GuideModal({ game, onClose }: { game: GameState; onClose: () => void }) {
+  const [tab, setTab] = useState<GuideTab>("intro");
+  const [worldFilter, setWorldFilter] = useState("");
+  const [itemFilter, setItemFilter] = useState("");
+  const [itemKind, setItemKind] = useState<"all" | ItemKind>("all");
+  const [selectedItemId, setSelectedItemId] = useState("");
+  const [monsterFilter, setMonsterFilter] = useState("");
+  const [monsterCity, setMonsterCity] = useState("all");
+  const [selectedMonsterId, setSelectedMonsterId] = useState("");
+  const [developerSubject, setDeveloperSubject] = useState("");
+  const [developerMessage, setDeveloperMessage] = useState("");
+  const countriesById = new Map(game.countries.map((country) => [country.id, country]));
+  const citiesById = new Map(game.cities.map((city) => [city.id, city]));
+  const allItems = Object.values(game.itemCatalog).sort((a, b) => a.price - b.price || a.name.localeCompare(b.name));
+  const filteredItems = allItems.filter((item) => {
+    const matchesKind = itemKind === "all" || item.kind === itemKind;
+    const term = itemFilter.trim().toLowerCase();
+    const matchesTerm = !term || item.name.toLowerCase().includes(term) || ITEM_KIND_LABELS[item.kind].toLowerCase().includes(term);
+    return matchesKind && matchesTerm;
+  });
+  const selectedItem = game.itemCatalog[selectedItemId] ?? filteredItems[0] ?? null;
+  const allMonsters = Object.values(game.monsterCatalog).sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
+  const filteredMonsters = allMonsters.filter((monster) => {
+    const city = citiesById.get(monster.cityId);
+    const country = city ? countriesById.get(city.countryId) : null;
+    const haystack = `${monster.name} ${city?.name ?? ""} ${country?.name ?? ""}`.toLowerCase();
+    const term = monsterFilter.trim().toLowerCase();
+    return (monsterCity === "all" || monster.cityId === monsterCity) && (!term || haystack.includes(term));
+  });
+  const selectedMonster = game.monsterCatalog[selectedMonsterId] ?? filteredMonsters[0] ?? null;
+  const worldTerm = worldFilter.trim().toLowerCase();
+  const visibleCities = game.cities.filter((city) => {
+    const country = countriesById.get(city.countryId);
+    const locations = game.huntingLocations.filter((location) => location.cityId === city.id);
+    const haystack = `${city.name} ${country?.name ?? ""} ${locations.map((location) => location.name).join(" ")}`.toLowerCase();
+    return !worldTerm || haystack.includes(worldTerm);
+  });
+
+  const sendDeveloperMessage = (event: FormEvent) => {
+    event.preventDefault();
+    if (!developerMessage.trim()) return;
+    socket.emit("developer:message", { subject: developerSubject, message: developerMessage });
+    setDeveloperSubject("");
+    setDeveloperMessage("");
+  };
+
+  const tabs: Array<{ id: GuideTab; label: string; icon: React.ReactNode }> = [
+    { id: "intro", label: "Inicio", icon: <Info size={14} /> },
+    { id: "rules", label: "Regras", icon: <ScrollText size={14} /> },
+    { id: "travel", label: "Viagens", icon: <MapPinned size={14} /> },
+    { id: "world", label: "Mundo", icon: <Castle size={14} /> },
+    { id: "combat", label: "Combate", icon: <Swords size={14} /> },
+    { id: "items", label: "Itens", icon: <Backpack size={14} /> },
+    { id: "monsters", label: "Monstros", icon: <Skull size={14} /> },
+    { id: "events", label: "Eventos", icon: <Crown size={14} /> },
+    { id: "developer", label: "Dev", icon: <Send size={14} /> },
+    { id: "stats", label: "Stats", icon: <BarChart3 size={14} /> }
+  ];
+
+  return (
+    <div className="drawer-backdrop" role="presentation" onClick={onClose}>
+      <section className="utility-modal guide-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={20} />
+        </button>
+        <PanelTitle icon={<BookOpen size={20} />} title="Guia do jogo" />
+        <div className="guide-tabs">
+          {tabs.map((entry) => (
+            <button key={entry.id} className={tab === entry.id ? "mini-tab active" : "mini-tab"} onClick={() => setTab(entry.id)}>
+              {entry.icon} {entry.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "intro" && (
+          <div className="guide-copy">
+            <h3>Comeco rapido</h3>
+            <p>Seu personagem nasce no cadastro com FOR, CON e AGI em 1. Evolua cacando monstros, distribua atributos, equipe arma, armadura e amuleto, e use ouro ou diamantes com cuidado.</p>
+            <p>Durante uma batalha, as acoes de jogo ficam bloqueadas. Voce ainda pode abrir inventario, detalhes do personagem e sair da conta.</p>
+          </div>
+        )}
+
+        {tab === "rules" && (
+          <div className="guide-list">
+            <article><strong>Inventario</strong><span>Itens empilhaveis ocupam um espaco por grupo. Equipamentos ocupam um espaco por instancia.</span></article>
+            <article><strong>Energia</strong><span>A energia maxima e CON + nivel. Cacar gasta energia igual ao nivel do monstro.</span></article>
+            <article><strong>Recuperacao</strong><span>A cada 2 minutos reais, vida e energia recuperam 10% mais bonus de talentos.</span></article>
+            <article><strong>Mercado</strong><span>Jogadores podem vender itens por ouro ou diamantes. Ofertas proprias podem ser canceladas.</span></article>
+          </div>
+        )}
+
+        {tab === "travel" && (
+          <div className="guide-list">
+            <article><strong>Entre cidades</strong><span>Use Ticket de Trem. A cidade tambem pode exigir nivel minimo.</span></article>
+            <article><strong>Entre paises</strong><span>Use Ticket de Navio. Ao chegar em outro pais, voce aporta na cidade portuaria.</span></article>
+            <article><strong>Cambista</strong><span>Fica apenas em portos e vende tickets e pergaminhos.</span></article>
+          </div>
+        )}
+
+        {tab === "world" && (
+          <div className="guide-catalog">
+            <div className="guide-filters">
+              <input value={worldFilter} onChange={(event) => setWorldFilter(event.target.value)} placeholder="Filtrar pais, cidade ou local" />
+            </div>
+            <div className="guide-world-list">
+              {visibleCities.map((city) => {
+                const country = countriesById.get(city.countryId);
+                const locations = game.huntingLocations.filter((location) => location.cityId === city.id);
+                return (
+                  <article key={city.id} className="guide-world-row">
+                    <div>
+                      <strong>{city.name}</strong>
+                      <span>{country?.name ?? "Pais desconhecido"} - Nivel minimo {city.minLevel}</span>
+                    </div>
+                    <p>{city.description}</p>
+                    <small>Locais: {locations.length ? locations.map((location) => location.name).join(", ") : "Nenhum"}</small>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {tab === "combat" && (
+          <div className="guide-list">
+            <article><strong>Vida</strong><span>Nivel * 50 + 2 * CON.</span></article>
+            <article><strong>Forca total</strong><span>Nivel * 10 + atributo FOR. Atributos de equipamentos e talentos entram nos calculos derivados.</span></article>
+            <article><strong>Dano</strong><span>FOR do atacante menos DEF do defensor, com minimo de 1 quando o golpe acerta.</span></article>
+            <article><strong>Agilidade</strong><span>Aumenta chance de critico e esquiva. Talentos podem melhorar dano critico e utilidade.</span></article>
+          </div>
+        )}
+
+        {tab === "items" && (
+          <div className="guide-catalog split">
+            <div className="guide-list-pane">
+              <div className="guide-filters">
+                <input value={itemFilter} onChange={(event) => setItemFilter(event.target.value)} placeholder="Filtrar item" />
+                <select value={itemKind} onChange={(event) => setItemKind(event.target.value as "all" | ItemKind)}>
+                  <option value="all">Todos</option>
+                  {Object.entries(ITEM_KIND_LABELS).map(([kind, label]) => (
+                    <option value={kind} key={kind}>{label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="guide-result-list">
+                {filteredItems.map((item) => (
+                  <button key={item.id} className={selectedItem?.id === item.id ? "guide-result active" : "guide-result"} onClick={() => setSelectedItemId(item.id)}>
+                    <ItemVisual item={item} className="guide-result-art" />
+                    <span>{item.name}</span>
+                    <small>{ITEM_KIND_LABELS[item.kind]}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+            {selectedItem && <GuideItemDetail item={selectedItem} />}
+          </div>
+        )}
+
+        {tab === "monsters" && (
+          <div className="guide-catalog split">
+            <div className="guide-list-pane">
+              <div className="guide-filters">
+                <input value={monsterFilter} onChange={(event) => setMonsterFilter(event.target.value)} placeholder="Filtrar monstro, cidade ou pais" />
+                <select value={monsterCity} onChange={(event) => setMonsterCity(event.target.value)}>
+                  <option value="all">Todas as cidades</option>
+                  {game.cities.map((city) => (
+                    <option value={city.id} key={city.id}>{city.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="guide-result-list">
+                {filteredMonsters.map((monster) => (
+                  <button key={monster.id} className={selectedMonster?.id === monster.id ? "guide-result active" : "guide-result"} onClick={() => setSelectedMonsterId(monster.id)}>
+                    <MonsterVisual monster={monster} className="guide-result-art" />
+                    <span>{monster.name}</span>
+                    <small>Nv {monster.level}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+            {selectedMonster && <GuideMonsterDetail monster={selectedMonster} game={game} />}
+          </div>
+        )}
+
+        {tab === "events" && (
+          <div className="guide-list">
+            <article><strong>Monarca</strong><span>{game.monarchEvent ? `${game.monarchEvent.name} esta ${game.monarchEvent.status}.` : "Evento ainda nao carregado."}</span></article>
+            <article><strong>Arena</strong><span>Batalhas PvP por turno. A fila atual tem {game.arenaQueueSize} jogador(es).</span></article>
+            <article><strong>Missoes</strong><span>Diarias concedem XP e ouro. Fixas concedem diamantes por progresso de longo prazo.</span></article>
+            <article><strong>Amigo do Rei</strong><span>Pacote especial com diamantes, tickets, PvE automatico e selo temporario no avatar.</span></article>
+          </div>
+        )}
+
+        {tab === "developer" && (
+          <form className="utility-form" onSubmit={sendDeveloperMessage}>
+            <label>
+              <span>Assunto</span>
+              <input value={developerSubject} onChange={(event) => setDeveloperSubject(event.target.value)} placeholder="Bug, sugestao ou duvida" />
+            </label>
+            <label>
+              <span>Mensagem</span>
+              <textarea value={developerMessage} onChange={(event) => setDeveloperMessage(event.target.value)} placeholder="Escreva sua mensagem direta ao desenvolvedor" />
+            </label>
+            <button className="primary-button" disabled={!developerMessage.trim()} type="submit">
+              <Send size={15} /> Enviar
+            </button>
+          </form>
+        )}
+
+        {tab === "stats" && (
+          <div className="guide-stat-grid">
+            <Metric icon={<Users size={17} />} label="Online" value={game.onlineCount} />
+            <Metric icon={<Castle size={17} />} label="Cidades" value={game.cities.length} />
+            <Metric icon={<MapPinned size={17} />} label="Paises" value={game.countries.length} />
+            <Metric icon={<Backpack size={17} />} label="Itens" value={Object.keys(game.itemCatalog).length} />
+            <Metric icon={<Skull size={17} />} label="Monstros" value={Object.keys(game.monsterCatalog).length} />
+            <Metric icon={<ShoppingBag size={17} />} label="Mercado" value={game.marketplaceListings.length} />
+            <Metric icon={<Users size={17} />} label="Clas" value={game.clanDirectory.length} />
+            <Metric icon={<Shield size={17} />} label="Fila arena" value={game.arenaQueueSize} />
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function GuideItemDetail({ item }: { item: ItemDefinition }) {
+  const statEntries = EQUIPMENT_STAT_KEYS
+    .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: item.stats[key] }))
+    .filter((entry) => entry.value !== undefined);
+
+  return (
+    <aside className="guide-detail-card">
+      <ItemVisual item={item} className="guide-detail-art" />
+      <div>
+        <span className="eyebrow">{ITEM_KIND_LABELS[item.kind]}</span>
+        <h3>{item.name}</h3>
+        <p>{item.description ?? "Sem descricao."}</p>
+      </div>
+      <div className="guide-detail-stats">
+        {item.slot && <span>Nivel minimo <strong>{item.minLevel}</strong></span>}
+        <span>Valor <strong>{formatCurrency(item.price)} ouro</strong></span>
+        {item.rarity && <span>Raridade <strong>{RARITY_LABELS[item.rarity]}</strong></span>}
+        {statEntries.map((entry) => (
+          <span key={entry.key}>{entry.label} <strong>+{entry.value}</strong></span>
+        ))}
+        {item.stats.healPercent && <span>Vida <strong>+{Math.round(item.stats.healPercent * 100)}%</strong></span>}
+        {item.stats.energyPercent && <span>Energia <strong>+{Math.round(item.stats.energyPercent * 100)}%</strong></span>}
+      </div>
+    </aside>
+  );
+}
+
+function GuideMonsterDetail({ monster, game }: { monster: GameState["cityMonsters"][number]; game: GameState }) {
+  const city = game.cities.find((entry) => entry.id === monster.cityId);
+  const country = city ? game.countries.find((entry) => entry.id === city.countryId) : null;
+
+  return (
+    <aside className="guide-detail-card">
+      <MonsterVisual monster={monster} className="guide-detail-art" />
+      <div>
+        <span className="eyebrow">{city?.name ?? "Cidade desconhecida"} - {country?.name ?? "Pais desconhecido"}</span>
+        <h3>{monster.name}</h3>
+      </div>
+      <div className="monster-stats">
+        <small title="Nivel"><Star size={13} /> {monster.level}</small>
+        <small title="Vida"><Heart size={13} /> {monster.maxHp}</small>
+        <small title="Forca"><Swords size={13} /> {monster.strength}</small>
+        <small title="Defesa"><Shield size={13} /> {monster.defense}</small>
+        <small title="Agilidade"><Crosshair size={13} /> {monster.agility}</small>
+        <small title="XP"><Sparkles size={13} /> {monster.experience}</small>
+        <small title="Ouro"><Coins size={13} /> {monster.gold}</small>
+      </div>
+      <div className="guide-detail-stats">
+        {monster.drops.length === 0 && <span>Drop <strong>Nenhum</strong></span>}
+        {monster.drops.map((drop) => (
+          <span key={drop.itemId}>
+            {game.itemCatalog[drop.itemId]?.name ?? drop.itemId}
+            <strong>{Math.round(drop.chance * 100)}%</strong>
+          </span>
+        ))}
+      </div>
+    </aside>
   );
 }
 
@@ -4518,8 +5017,8 @@ function RecoveryCodeModal({ code, onClose }: { code: string; onClose: () => voi
   );
 }
 
-function Toast({ message }: { message: string }) {
-  return <div className="toast">{message}</div>;
+function Toast({ message, kind = "error" }: { message: string; kind?: "error" | "success" }) {
+  return <div className={kind === "success" ? "toast success" : "toast"}>{message}</div>;
 }
 
 function isItemEquipped(game: GameState, instanceId: string) {
