@@ -1095,8 +1095,8 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     { id: "faq", label: "FAQ", icon: <Info size={14} /> },
     { id: "world", label: "Mundo", icon: <Castle size={14} /> },
     { id: "items", label: "Itens", icon: <Backpack size={14} /> },
-    { id: "monsters", label: "Monstros", icon: <Skull size={14} /> },
-    { id: "monarchs", label: "Monarcas", icon: <Crown style={{color: "var(--red)"}} size={14} /> },
+    { id: "monsters", label: "Monstros", icon: <Swords size={14} /> },
+    { id: "monarchs", label: "Monarcas", icon: <Skull style={{color: "var(--red)"}} size={14} /> },
     { id: "developer", label: "Dev", icon: <Send size={14} /> },
     { id: "stats", label: "Stats", icon: <BarChart3 size={14} /> }
   ];
@@ -2118,7 +2118,7 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   if (game.currentCountry.id === "morthaly" && game.monarchEvent) {
     actionOptions.push({
       view: "monarch",
-      icon: <Crown size={24} style={{ color: "var(--red)" }} />,
+      icon: <Skull size={24} style={{ color: "var(--red)" }} />,
       title: game.monarchEvent.isKing ? "Rei Lich" : "Monarca",
       value: game.monarchEvent.status === "active" ? `${game.monarchEvent.attemptsLimit - game.monarchEvent.attemptsUsed} entradas` : "Encerrado"
     });
@@ -2514,7 +2514,7 @@ function MonarchPanel({ game }: { game: GameState }) {
             <span>Chaves: <strong>{highKeys}</strong></span>
           </div>
           <button className="primary-button" disabled={!canStart} onClick={() => socket.emit("monarch:start")}>
-            {canStart ? "Enfrentar monarca" : blockedReason}
+            {canStart ? <><Swords size={17} /> Enfrentar monarca</> : blockedReason}
           </button>
         </div>
       </div>
@@ -2526,10 +2526,8 @@ function MonarchPanel({ game }: { game: GameState }) {
           {event.ranking.slice(0, 10).map((entry) => (
             <article className="ranking-row" key={entry.playerId}>
               <b>#{entry.rank}</b>
-              <div>
-                <strong><PlayerName playerId={entry.playerId} name={entry.name} /></strong>
-                <span>{entry.damage.toLocaleString()} dano</span>
-              </div>
+              <strong><PlayerName playerId={entry.playerId} name={entry.name} /></strong>
+              <span><Swords size={12} style={{ color: "var(--red)" }} /> {entry.damage.toLocaleString()}</span>
             </article>
           ))}
         </div>
