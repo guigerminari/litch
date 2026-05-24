@@ -348,14 +348,35 @@ function usePotionInBattle(
   }
 
   const definition = ITEM_CATALOG[inventoryItem.itemId];
-  if (!definition || definition.kind !== "potion" || !definition.stats.healPercent) {
+  if (!definition || definition.kind !== "potion") {
     throw new Error("Use uma poção de vida em combate.");
   }
 
-  const recovered = Math.ceil(participant.maxHp * definition.stats.healPercent);
-  participant.hp = Math.min(participant.maxHp, participant.hp + recovered);
+  let recovered = 0;
+  let recoveredResource: "vida" | "energia" = "vida";
+  if (definition.stats.healPercent !== undefined || definition.stats.heal !== undefined) {
+    if (participant.hp >= participant.maxHp) {
+      throw new Error("Sua vida ja esta cheia.");
+    }
+    recovered = definition.stats.healPercent !== undefined
+      ? Math.ceil(participant.maxHp * definition.stats.healPercent)
+      : definition.stats.heal ?? 0;
+    participant.hp = Math.min(participant.maxHp, participant.hp + recovered);
+  } else if (definition.stats.energyPercent !== undefined || definition.stats.energy !== undefined) {
+    const stats = deriveStats(character, ITEM_CATALOG);
+    if (character.currentEnergy >= stats.maxEnergy) {
+      throw new Error("Sua energia ja esta cheia.");
+    }
+    recoveredResource = "energia";
+    recovered = definition.stats.energyPercent !== undefined
+      ? Math.ceil(stats.maxEnergy * definition.stats.energyPercent)
+      : definition.stats.energy ?? 0;
+    character.currentEnergy = Math.min(stats.maxEnergy, character.currentEnergy + recovered);
+  } else {
+    throw new Error("Esta pocao nao tem efeito definido.");
+  }
   removeItem(character, inventoryItem.instanceId, 1);
-  battle.log.unshift(entry(`${character.name} usou ${definition.name} e recuperou ${recovered} de vida.`));
+  battle.log.unshift(entry(`${character.name} usou ${definition.name} e recuperou ${recovered} de ${recoveredResource}.`));
 }
 
 function resolveBattleFlow(battle: BattleState, actingCharacter: Character) {

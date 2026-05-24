@@ -2466,7 +2466,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
   "morthaly_lich_spire": {
     "id": "morthaly_lich_spire",
     "cityId": "necropole_de_morthaly",
-    "name": "Pinaculo do Lich",
+    "name": "Pináculo do Litch",
     "description": "Torres necromanticas onde dragoes espectrais circulam acima das criptas.",
     "monsterIds": [
       "spectral_dragon_old",

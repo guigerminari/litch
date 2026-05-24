@@ -124,9 +124,25 @@ type BattleHpChange = {
   delta: number;
 };
 
+type QuickPotionSlot = "health" | "energy";
+
+type QuickPotionPreferences = Record<QuickPotionSlot, string>;
+
+type PotionQuickOption = {
+  itemId: string;
+  definition: ItemDefinition;
+  inventoryItem: InventoryItem;
+  quantity: number;
+};
+
 const BATTLE_CUE_DURATION_MS = 680;
 const BATTLE_LOG_STEP_MS = 280;
 const BATTLE_RESULT_PAUSE_MS = 420;
+const QUICK_POTION_STORAGE_KEY = "litch:quick-potions";
+const DEFAULT_QUICK_POTION_PREFERENCES: QuickPotionPreferences = {
+  health: "",
+  energy: ""
+};
 
 const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
   eldoria: { x: 25, y: 55.5 },
@@ -228,14 +244,48 @@ type PlayerActionContextValue = {
   openPlayerActions: (player: PlayerReference) => void;
 };
 
+type QuickPotionContextValue = {
+  preferences: QuickPotionPreferences;
+  setPreference: (slot: QuickPotionSlot, itemId: string) => void;
+};
+
 const PlayerActionContext = createContext<PlayerActionContextValue | null>(null);
+const QuickPotionContext = createContext<QuickPotionContextValue | null>(null);
 
 function usePlayerActions() {
   return useContext(PlayerActionContext);
 }
 
+function useQuickPotionSettings() {
+  const context = useContext(QuickPotionContext);
+  if (!context) {
+    return {
+      preferences: DEFAULT_QUICK_POTION_PREFERENCES,
+      setPreference: () => {}
+    };
+  }
+  return context;
+}
+
+function readQuickPotionPreferences(): QuickPotionPreferences {
+  try {
+    const stored = localStorage.getItem(QUICK_POTION_STORAGE_KEY);
+    if (!stored) {
+      return DEFAULT_QUICK_POTION_PREFERENCES;
+    }
+    const parsed = JSON.parse(stored) as Partial<QuickPotionPreferences>;
+    return {
+      health: typeof parsed.health === "string" ? parsed.health : "",
+      energy: typeof parsed.energy === "string" ? parsed.energy : ""
+    };
+  } catch {
+    return DEFAULT_QUICK_POTION_PREFERENCES;
+  }
+}
+
 export function App() {
   const [game, setGame] = useState<GameState | null>(null);
+  const [quickPotionPreferences, setQuickPotionPreferences] = useState<QuickPotionPreferences>(readQuickPotionPreferences);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -350,6 +400,10 @@ export function App() {
     return () => clearInterval(id);
   }, [game?.nextRegenAt]);
 
+  useEffect(() => {
+    localStorage.setItem(QUICK_POTION_STORAGE_KEY, JSON.stringify(quickPotionPreferences));
+  }, [quickPotionPreferences]);
+
   const submitAuth = (event: FormEvent) => {
     event.preventDefault();
     setLatestRecoveryCode(null);
@@ -370,6 +424,10 @@ export function App() {
     localStorage.removeItem("litch:session");
     setGame(null);
     setAuthMode("login");
+  };
+
+  const setQuickPotionPreference = (slot: QuickPotionSlot, itemId: string) => {
+    setQuickPotionPreferences((current) => ({ ...current, [slot]: itemId }));
   };
 
   const canSubmitAuth =
@@ -504,7 +562,8 @@ export function App() {
 
   return (
     <main className={gameShellClass}>
-      <PlayerActionContext.Provider value={{ currentPlayerId: game.player.id, openPlayerActions }}>
+      <QuickPotionContext.Provider value={{ preferences: quickPotionPreferences, setPreference: setQuickPotionPreference }}>
+        <PlayerActionContext.Provider value={{ currentPlayerId: game.player.id, openPlayerActions }}>
         <Header
           game={game}
           regenMs={regenMs}
@@ -549,7 +608,8 @@ export function App() {
         {latestRecoveryCode && <RecoveryCodeModal code={latestRecoveryCode} onClose={() => setLatestRecoveryCode(null)} />}
         {notice && <Toast message={notice} kind="success" />}
         {error && <Toast message={error} />}
-      </PlayerActionContext.Provider>
+        </PlayerActionContext.Provider>
+      </QuickPotionContext.Provider>
     </main>
   );
 }
@@ -1196,7 +1256,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
             <p>
               E no centro de tudo, em uma fortaleza sepultada sob a capital de Duskwood, ele despertou.
             </p>
-            <h2>O Rei Lich</h2>
+            <h2>O Rei Litch</h2>
             <p>
               Seus olhos ardiam com luz violeta. Suas vestes rasgadas pareciam feitas da própria noite.
               Em uma das mãos, carregava um cajado imponente, coroado por pedras arcanas e ossos de reis vencidos.
@@ -1215,7 +1275,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               Aqueles que tombaram se levantaram novamente, agora servindo ao trono dos mortos.
             </p>
             <p>
-              E então, diante de suas legiões, o Rei Lich apagou o nome antigo do reino.
+              E então, diante de suas legiões, o Rei Litch apagou o nome antigo do reino.
             </p>
             <p>
               Duskwood não existia mais.
@@ -1224,7 +1284,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               Em seu lugar nasceu <strong>Morthaly</strong>, a Coroa dos Mortos.
             </p>
             <p>
-              Das torres negras de sua nova capital, o Rei Lich enviou sua declaração aos outros países.
+              Das torres negras de sua nova capital, o Rei Litch enviou sua declaração aos outros países.
               Não foi escrita em tinta, mas em cinzas. Não foi entregue por mensageiros vivos,
               mas por corvos de ossos e sombras.
             </p>
@@ -1284,7 +1344,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
             </p>
             <p>
               Lutar contra os mortos-vivos que cruzam as fronteiras.<br/>
-              Lutar contra os generais do Rei Lich.<br/>
+              Lutar contra os generais do Rei Litch.<br/>
               Lutar contra as fortalezas profanadas, as criptas abertas e as hordas que não conhecem cansaço.<br/>
               Lutar até que Morthaly recue.<br/>
               Lutar até que os vivos possam dormir sem temer que seus ancestrais batam à porta durante a noite.
@@ -1293,7 +1353,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               Mas essa guerra não será vencida em um único dia.
             </p>
             <p>
-              O Rei Lich é antigo. Seus generais são poderosos.
+              O Rei Litch é antigo. Seus generais são poderosos.
               Seus exércitos crescem a cada batalha.
               Cada derrota alimenta sua marcha.
               Cada cidade perdida se torna mais uma peça em seu império de ossos.
@@ -1325,7 +1385,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               você esteja pronto para marchar até o coração do reino morto.
             </p>
             <p>
-              Talvez um dia você encare os generais do Rei Lich.<br/>
+              Talvez um dia você encare os generais do Rei Litch.<br/>
               Talvez um dia atravesse os portões negros de Morthaly.<br/>
               Talvez um dia suba os degraus do trono profanado.<br/>
               Talvez um dia olhe nos olhos violetas do Rei dos Mortos e prove que a humanidade
@@ -1520,7 +1580,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               <article><strong>Entrada</strong><span>O evento dos Monarcas acontece em Morthaly. Para entrar, o recruta usa Chaves Altas e respeita o limite diario de tentativas.</span></article>
               <article><strong>Objetivo</strong><span>Todos os participantes atacam o mesmo chefe global. O dano fica registrado no ranking do evento.</span></article>
               <article><strong>Recompensas</strong><span>Ao final, participantes recebem XP e ouro conforme dano/ranking. Quando o chefe e derrotado, os 3 melhores tambem recebem diamantes.</span></article>
-              <article><strong>Rei Lich</strong><span>No fim de semana, o Rei Lich substitui os generais e triplica as recompensas do evento.</span></article>
+              <article><strong>Rei Litch</strong><span>No fim de semana, o Rei Litch substitui os generais e triplica as recompensas do evento.</span></article>
               <article><strong>Status atual</strong><span>{game.monarchEvent ? `${game.monarchEvent.name} está ${game.monarchEvent.status}.` : "Evento ainda não carregado."}</span></article>
             </section>
             <section className="monarch-general-grid">
@@ -1792,9 +1852,10 @@ function CharacterAvatar({
 function CharacterPanel({ game, locked = false }: { game: GameState; locked?: boolean }) {
   const [pending, setPending] = useState<Attributes>({ strength: 0, constitution: 0, agility: 0 });
   const [showAvatarChoices, setShowAvatarChoices] = useState(false);
+  const { preferences } = useQuickPotionSettings();
   const pendingTotal = pending.strength + pending.constitution + pending.agility;
-  const healthPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.healPercent);
-  const energyPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.energyPercent);
+  const healthPotion = getQuickPotionOption(game, preferences, "health");
+  const energyPotion = getQuickPotionOption(game, preferences, "energy");
   const royalSealActive = isRoyalSealActive(game);
   const autoPveActive = isAutoPveActive(game);
   const currentAvatar = getCurrentAvatar(game);
@@ -1907,14 +1968,16 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           <button
             className="ghost-button potion-btn"
             disabled={locked || !healthPotion || game.character.currentHp >= game.derived.maxHp}
-            onClick={() => healthPotion && socket.emit("inventory:use", { instanceId: healthPotion.instanceId })}
+            title={healthPotion?.definition.name ?? "Nenhuma pocao de vida"}
+            onClick={() => healthPotion && socket.emit("inventory:use", { instanceId: healthPotion.inventoryItem.instanceId })}
           >
             <Heart size={14} /> Vida {healthPotion ? `x${healthPotion.quantity}` : "x0"}
           </button>
           <button
             className="ghost-button potion-btn"
             disabled={locked || !energyPotion || game.character.currentEnergy >= game.derived.maxEnergy}
-            onClick={() => energyPotion && socket.emit("inventory:use", { instanceId: energyPotion.instanceId })}
+            title={energyPotion?.definition.name ?? "Nenhuma pocao de energia"}
+            onClick={() => energyPotion && socket.emit("inventory:use", { instanceId: energyPotion.inventoryItem.instanceId })}
           >
             <Zap size={14} /> Energia {energyPotion ? `x${energyPotion.quantity}` : "x0"}
           </button>
@@ -2117,7 +2180,7 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
     actionOptions.push({
       view: "monarch",
       icon: <Skull size={24} style={{ color: "var(--red)" }} />,
-      title: game.monarchEvent.isKing ? "Rei Lich" : "Monarca",
+      title: game.monarchEvent.isKing ? "Rei Litch" : "Monarca",
       value: game.monarchEvent.status === "active" ? `${game.monarchEvent.attemptsLimit - game.monarchEvent.attemptsUsed} entradas` : "Encerrado"
     });
   }
@@ -2502,7 +2565,7 @@ function MonarchPanel({ game }: { game: GameState }) {
           <h2>{event.name}</h2>
           <p>
             Cada dano causado por qualquer recruta reduz a vida global do monarca em tempo real.
-            {event.isKing ? " As recompensas do Rei Lich sao triplicadas." : ""}
+            {event.isKing ? " As recompensas do Rei Litch sao triplicadas." : ""}
           </p>
           <div className="monarch-hp">
             <div className="hp-bar">
@@ -3490,8 +3553,61 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
   );
 }
 
+function QuickPotionSelector({ game }: { game: GameState }) {
+  const { preferences, setPreference } = useQuickPotionSettings();
+  const healthOptions = getPotionOptions(game, "health");
+  const energyOptions = getPotionOptions(game, "energy");
+  const selectedHealth = getQuickPotionOption(game, preferences, "health");
+  const selectedEnergy = getQuickPotionOption(game, preferences, "energy");
+
+  if (healthOptions.length === 0 && energyOptions.length === 0) {
+    return null;
+  }
+
+  const renderSelect = (
+    slot: QuickPotionSlot,
+    icon: React.ReactNode,
+    label: string,
+    options: PotionQuickOption[],
+    selected: PotionQuickOption | null
+  ) => (
+    <label className="quick-potion-field">
+      <span>{icon} {label}</span>
+      <select
+        value={selected?.itemId ?? ""}
+        disabled={options.length === 0}
+        onChange={(event) => setPreference(slot, event.target.value)}
+      >
+        {options.length === 0 ? (
+          <option value="">Nenhuma</option>
+        ) : (
+          options.map((option) => (
+            <option key={option.itemId} value={option.itemId}>
+              {option.definition.name} x{option.quantity} - {getPotionEffectLabel(option.definition, slot)}
+            </option>
+          ))
+        )}
+      </select>
+    </label>
+  );
+
+  return (
+    <section className="quick-potion-settings">
+      <div>
+        <strong>Uso rapido</strong>
+        <small>Escolha qual pocao os atalhos de batalha e detalhes vao consumir.</small>
+      </div>
+      <div className="quick-potion-fields">
+        {renderSelect("health", <Heart size={14} />, "Vida", healthOptions, selectedHealth)}
+        {renderSelect("energy", <Zap size={14} />, "Energia", energyOptions, selectedEnergy)}
+      </div>
+    </section>
+  );
+}
+
 function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBattle?: () => void }) {
   const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null);
+  const { preferences, setPreference } = useQuickPotionSettings();
   const battleLocked = game.activeBattle?.status === "active";
 
   // Build flat slot list: unequipped equipment (1 slot each) + stackable items (1 slot per unique itemId)
@@ -3530,6 +3646,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
           Voltar à batalha
         </button>
       )}
+      <QuickPotionSelector game={game} />
       <div className="inventory-grid">
         {slots.map((slot, index) => {
           if (!slot) {
@@ -3600,6 +3717,22 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
                 }}
               >
                 Usar
+              </button>
+            )}
+            {selectedItem.kind === "potion" && isPotionForQuickSlot(selectedItem, "health") && (
+              <button
+                className={preferences.health === selectedItem.id ? "ghost-button selected-quick-potion" : "ghost-button"}
+                onClick={() => setPreference("health", selectedItem.id)}
+              >
+                <Heart size={14} /> {preferences.health === selectedItem.id ? "Atalho de vida" : "Definir vida"}
+              </button>
+            )}
+            {selectedItem.kind === "potion" && isPotionForQuickSlot(selectedItem, "energy") && (
+              <button
+                className={preferences.energy === selectedItem.id ? "ghost-button selected-quick-potion" : "ghost-button"}
+                onClick={() => setPreference("energy", selectedItem.id)}
+              >
+                <Zap size={14} /> {preferences.energy === selectedItem.id ? "Atalho de energia" : "Definir energia"}
               </button>
             )}
             {selectedItem.slot && !selectedEquipped && (
@@ -4345,7 +4478,10 @@ function BattlePanel({ game }: { game: GameState }) {
   const me = displayedParticipants.find((participant) => participant.ownerPlayerId === game.player.id);
   const opponent = displayedParticipants.find((participant) => participant.id !== me?.id);
   const myTurn = battle.turnParticipantId === me?.id;
-  const firstPotion = game.character.inventory.find((item) => game.itemCatalog[item.itemId]?.stats.healPercent);
+  const { preferences } = useQuickPotionSettings();
+  const healthPotion = getQuickPotionOption(game, preferences, "health");
+  const energyPotion = getQuickPotionOption(game, preferences, "energy");
+  const firstPotion = healthPotion?.inventoryItem ?? null;
   const autoPveActive = isAutoPveActive(game);
   const canUseAutoPve = (battle.mode === "pve" || battle.mode === "dungeon") && autoPveActive;
   const rematchMonsterId = getBattleMonsterId(battle);
@@ -4624,6 +4760,11 @@ function BattlePanel({ game }: { game: GameState }) {
             damageCue={battleCue?.kind === "damage" && battleCue.defenderId === me.id ? battleCue : null}
           />
         )}
+        {me && opponent && (
+          <div className="battle-versus" aria-hidden="true">
+            <Swords size={24} />
+          </div>
+        )}
         {opponent && (
           <CombatantCard
             participant={opponent}
@@ -4643,6 +4784,16 @@ function BattlePanel({ game }: { game: GameState }) {
           <span>{monarchHitsLeft === 1 ? "hit" : "hits"}</span>
         </div>
       )}
+      {battle.status === "active" && (
+        <BattlePotionDock
+          battleId={battle.id}
+          healthPotion={healthPotion}
+          energyPotion={energyPotion}
+          canAct={myTurn && !animationsPending}
+          hpFull={game.character.currentHp >= game.derived.maxHp}
+          energyFull={game.character.currentEnergy >= game.derived.maxEnergy}
+        />
+      )}
       <div className="battle-actions">
         {battle.status === "active" ? (
           <>
@@ -4654,7 +4805,7 @@ function BattlePanel({ game }: { game: GameState }) {
               <Swords size={13} /> Atacar
             </button>
             <button
-              className="ghost-button"
+              className="ghost-button battle-inline-potion"
               disabled={!myTurn || !firstPotion || animationsPending}
               onClick={() =>
                 socket.emit("battle:action", {
@@ -4668,7 +4819,7 @@ function BattlePanel({ game }: { game: GameState }) {
               <AssetImage style={{ width: 27 }} src={"assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} /> 
               <span style={{verticalAlign: "super"}}>Usar poção de vida</span>
             </button>
-            <button className="danger-button" disabled={animationsPending} onClick={() => socket.emit("battle:flee")}>
+            <button className="danger-button battle-flee-button" disabled={animationsPending} onClick={() => socket.emit("battle:flee")}>
               Fugir
             </button>
             {canUseAutoPve && (
@@ -4738,6 +4889,70 @@ function BattlePanel({ game }: { game: GameState }) {
         ))}
       </div>
     </section>
+  );
+}
+
+function BattlePotionDock({
+  battleId,
+  healthPotion,
+  energyPotion,
+  canAct,
+  hpFull,
+  energyFull
+}: {
+  battleId: string;
+  healthPotion: PotionQuickOption | null;
+  energyPotion: PotionQuickOption | null;
+  canAct: boolean;
+  hpFull: boolean;
+  energyFull: boolean;
+}) {
+  const usePotion = (potion: PotionQuickOption | null) => {
+    if (!potion) {
+      return;
+    }
+    socket.emit("battle:action", {
+      battleId,
+      action: "usePotion",
+      instanceId: potion.inventoryItem.instanceId
+    });
+  };
+
+  return (
+    <aside className="battle-potion-dock" aria-label="Pocoes de batalha">
+      <button
+        className="battle-potion-button health"
+        disabled={!canAct || !healthPotion || hpFull}
+        title={healthPotion?.definition.name ?? "Nenhuma pocao de vida"}
+        onClick={() => usePotion(healthPotion)}
+      >
+        {healthPotion ? (
+          <ItemVisual item={healthPotion.definition} className="battle-potion-visual" quantity={healthPotion.quantity} />
+        ) : (
+          <span className="battle-potion-visual empty"><Heart size={18} /></span>
+        )}
+        <span>
+          <strong>Vida</strong>
+          <small>{healthPotion ? getPotionEffectLabel(healthPotion.definition, "health") : "x0"}</small>
+        </span>
+      </button>
+      <button
+        className="battle-potion-button energy"
+        disabled={!canAct || !energyPotion || energyFull}
+        title={energyPotion?.definition.name ?? "Nenhuma pocao de energia"}
+        onClick={() => usePotion(energyPotion)}
+      >
+        {energyPotion ? (
+          <ItemVisual item={energyPotion.definition} className="battle-potion-visual" quantity={energyPotion.quantity} />
+        ) : (
+          <span className="battle-potion-visual empty"><Zap size={18} /></span>
+        )}
+        <span>
+          <strong>Energia</strong>
+          <small>{energyPotion ? getPotionEffectLabel(energyPotion.definition, "energy") : "x0"}</small>
+        </span>
+      </button>
+    </aside>
   );
 }
 
@@ -4864,6 +5079,7 @@ function getBattleLogKind(text: string) {
   const lower = text.toLowerCase();
   if (lower.includes("causou")) return lower.includes("crítico") || lower.includes("critico") || lower.includes("crã") ? "critical" : "damage";
   if (lower.includes("esquivou")) return "dodge";
+  if (lower.includes("energia") && (lower.includes("usou") || lower.includes("recuperou"))) return "energy";
   if (lower.includes("usou") || lower.includes("recuperou")) return "heal";
   if (lower.includes("venceu")) return "victory";
   if (lower.includes("fugiu")) return "flee";
@@ -4877,6 +5093,7 @@ function getBattleLogIcon(text: string) {
   if (kind === "critical") return <Flame size={15} />;
   if (kind === "damage") return <Swords size={15} />;
   if (kind === "dodge") return <Crosshair size={15} />;
+  if (kind === "energy") return <Zap size={15} />;
   if (kind === "heal") return <Heart size={15} />;
   if (kind === "victory") return <Trophy size={15} />;
   if (kind === "flee") return <ArrowLeftRight size={15} />;
@@ -5466,6 +5683,53 @@ function countInventoryItem(game: GameState, itemId: string) {
   return game.character.inventory
     .filter((item) => item.itemId === itemId)
     .reduce((total, item) => total + item.quantity, 0);
+}
+
+function isPotionForQuickSlot(item: ItemDefinition | undefined, slot: QuickPotionSlot): item is ItemDefinition {
+  if (!item || item.kind !== "potion") {
+    return false;
+  }
+  if (slot === "health") {
+    return item.stats.healPercent !== undefined || item.stats.heal !== undefined;
+  }
+  return item.stats.energyPercent !== undefined || item.stats.energy !== undefined;
+}
+
+function getPotionOptions(game: GameState, slot: QuickPotionSlot): PotionQuickOption[] {
+  const optionsByItemId = new Map<string, PotionQuickOption>();
+  for (const inventoryItem of game.character.inventory) {
+    const definition = game.itemCatalog[inventoryItem.itemId];
+    if (!isPotionForQuickSlot(definition, slot)) {
+      continue;
+    }
+    const current = optionsByItemId.get(inventoryItem.itemId);
+    if (current) {
+      current.quantity += inventoryItem.quantity;
+    } else {
+      optionsByItemId.set(inventoryItem.itemId, {
+        itemId: inventoryItem.itemId,
+        definition,
+        inventoryItem,
+        quantity: inventoryItem.quantity
+      });
+    }
+  }
+  return Array.from(optionsByItemId.values());
+}
+
+function getQuickPotionOption(game: GameState, preferences: QuickPotionPreferences, slot: QuickPotionSlot) {
+  const options = getPotionOptions(game, slot);
+  return options.find((option) => option.itemId === preferences[slot]) ?? options[0] ?? null;
+}
+
+function getPotionEffectLabel(item: ItemDefinition, slot: QuickPotionSlot) {
+  if (slot === "health") {
+    if (item.stats.healPercent !== undefined) return `${Math.round(item.stats.healPercent * 100)}%`;
+    if (item.stats.heal !== undefined) return `+${item.stats.heal}`;
+  }
+  if (item.stats.energyPercent !== undefined) return `${Math.round(item.stats.energyPercent * 100)}%`;
+  if (item.stats.energy !== undefined) return `+${item.stats.energy}`;
+  return "-";
 }
 
 function getEnhancementLevel(inventoryItem?: { enhancementLevel?: number } | null) {

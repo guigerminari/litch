@@ -27,6 +27,7 @@ import type {
   GameShopPurchasePayload,
   HuntStartPayload,
   InventoryItem,
+  ItemDefinition,
   LoginPayload,
   MarketBuyPayload,
   MarketCreatePayload,
@@ -180,7 +181,7 @@ const MONARCH_SCHEDULE = [
   },
   {
     id: "rei-lich",
-    name: "Rei Lich",
+    name: "Rei Litch",
     title: "Monarca do Fim de Semana",
     imageUrl: "/assets/monarchs/rei-lich.png",
     level: 50,
@@ -721,6 +722,18 @@ function potionDiamondReward(target: number) {
   if (target >= 100) return 45;
   if (target >= 50) return 22;
   return 5;
+}
+
+function recordPotionProgress(character: Character, definition: ItemDefinition | null | undefined) {
+  if (!definition || definition.kind !== "potion") {
+    return;
+  }
+  if (definition.stats.healPercent !== undefined || definition.stats.heal !== undefined) {
+    character.questProgress.healthPotionsUsed += 1;
+  }
+  if (definition.stats.energyPercent !== undefined || definition.stats.energy !== undefined) {
+    character.questProgress.energyPotionsUsed += 1;
+  }
 }
 
 function fixedCounterQuest(
@@ -2151,12 +2164,7 @@ io.on("connection", (socket: AuthedSocket) => {
         throw new Error("Esta poção não tem efeito definido.");
       }
       removeItem(character, item.instanceId, 1);
-      if (definition.stats.healPercent) {
-        character.questProgress.healthPotionsUsed += 1;
-      }
-      if (definition.stats.energyPercent) {
-        character.questProgress.energyPotionsUsed += 1;
-      }
+      recordPotionProgress(character, definition);
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -2526,8 +2534,8 @@ io.on("connection", (socket: AuthedSocket) => {
         } else {
           syncMonarchBattles(event, { sourceBattleId: battle.id, sourceName: character.name, damage });
         }
-        if (payload.action === "usePotion" && potionDefinition?.stats.healPercent) {
-          character.questProgress.healthPotionsUsed += 1;
+        if (payload.action === "usePotion") {
+          recordPotionProgress(character, potionDefinition);
         }
         syncBattleVitals(battle.id);
         broadcastWorldState();
@@ -2538,8 +2546,8 @@ io.on("connection", (socket: AuthedSocket) => {
       } else {
         takeBattleTurn(battle, character, payload.action, payload.instanceId);
       }
-      if (payload.action === "usePotion" && potionDefinition?.stats.healPercent) {
-        character.questProgress.healthPotionsUsed += 1;
+      if (payload.action === "usePotion") {
+        recordPotionProgress(character, potionDefinition);
       }
       applyBattleProgress(character, playerId, battle, wasActive);
       const playerIds = syncBattleVitals(battle.id);
