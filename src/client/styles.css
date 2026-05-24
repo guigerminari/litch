@@ -2665,7 +2665,6 @@ button:disabled {
 .equip-item-visual {
   width: 42px;
   height: 42px;
-  border-radius: 8px;
   flex-shrink: 0;
 }
 
@@ -2726,6 +2725,12 @@ button:disabled {
 .sell-list {
   display: grid;
   gap: 10px;
+}
+
+.list-grid.monster-battle-list {
+  grid-template-columns: 1fr;
+  margin: 0 auto;
+  max-width: 520px;
 }
 
 .inventory-return {
@@ -3023,11 +3028,11 @@ button:disabled {
 
 .asset-qty {
   position: absolute;
-  right: 5px;
-  bottom: 5px;
+  right: -3px;
+  bottom: -3px;
   padding: 2px 5px;
   border-radius: 999px;
-  background: rgba(25, 26, 33, 0.94);
+  background: rgba(25, 26, 33, 0.26);
   color: var(--gold);
   font-size: 0.7rem;
   font-weight: 800;
@@ -3035,12 +3040,9 @@ button:disabled {
 
 .asset-enhancement {
   position: absolute;
-  left: 5px;
-  top: 5px;
+  right: -6px;
+  top: -3px;
   padding: 2px 6px;
-  border: 1px solid rgba(80, 250, 123, 0.42);
-  border-radius: 999px;
-  background: rgba(25, 26, 33, 0.94);
   color: var(--green);
   font-size: 0.7rem;
   font-weight: 900;
@@ -3066,8 +3068,35 @@ button:disabled {
 }
 
 .monster-card {
-  grid-template-columns: 76px minmax(0, 1fr);
+  grid-template-columns: 64px minmax(0, 1fr) auto;
   align-items: center;
+  column-gap: 10px;
+  row-gap: 4px;
+}
+
+.monster-card .entity-art {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 56px;
+  align-self: center;
+  justify-self: start;
+}
+
+.monster-card > div:not(.monster-stats) {
+  grid-column: 2;
+  align-self: end;
+  min-width: 0;
+}
+
+.monster-card > div:not(.monster-stats) strong {
+  display: block;
+  line-height: 1.1;
+}
+
+.monster-card > div:not(.monster-stats) span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
 }
 
 .entity-art {
@@ -3078,11 +3107,31 @@ button:disabled {
 }
 
 .monster-card .monster-stats {
-  display:flex;
+  display: flex;
+  grid-column: 2;
+  grid-row: 2;
+  gap: 6px;
+  align-self: start;
+}
+
+.monster-card .monster-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  grid-column: 2;
+  grid-row: 3;
+  margin-top: -1px;
 }
 
 .monster-card .primary-button {
-  grid-column: 1 / -1;
+  grid-column: 3;
+  grid-row: 1 / span 3;
+  min-height: 36px;
+  padding: 0 10px;
+  align-self: center;
+  white-space: nowrap;
 }
 
 .item-card.image-card {
@@ -6007,12 +6056,6 @@ button:disabled {
   background: color-mix(in srgb, var(--theme-accent) 20%, transparent);
 }
 
-.asset-enhancement {
-  border-color: rgba(82, 216, 155, 0.4);
-  background: rgba(16, 13, 26, 0.94);
-  color: var(--green);
-}
-
 .branching-list::before,
 .clan-benefit-tree::before {
   background: linear-gradient(var(--theme-accent), color-mix(in srgb, var(--theme-accent-2) 50%, transparent));
@@ -6563,20 +6606,12 @@ button:disabled {
     border-radius: 10px;
   }
 
-  .monster-card,
   .item-card.image-card {
     grid-template-columns: 1fr;
   }
 
-  .entity-art,
-  .monster-card .monster-stats,
-  .monster-card .primary-button,
   .item-card.image-card > small,
   .item-card.image-card > button {
     grid-column: 1;
-  }
-
-  .entity-art {
-    grid-row: auto;
   }
 }

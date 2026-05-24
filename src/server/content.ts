@@ -199,7 +199,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_bone": {
     "id": "material_bone",
@@ -209,7 +209,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_celena": {
     "id": "material_celena",
@@ -219,7 +219,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_chimera_jewell": {
     "id": "material_chimera_jewell",
@@ -229,7 +229,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_dark_magic_rune": {
     "id": "material_dark_magic_rune",
@@ -239,7 +239,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 22,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_dark_residue": {
     "id": "material_dark_residue",
@@ -249,7 +249,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 22,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_dexerity_jewell": {
     "id": "material_dexerity_jewell",
@@ -259,7 +259,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 22,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_dragon_essence": {
     "id": "material_dragon_essence",
@@ -269,7 +269,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 22,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_dragon_jewell": {
     "id": "material_dragon_jewell",
@@ -279,7 +279,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_dragon_nail": {
     "id": "material_dragon_nail",
@@ -289,7 +289,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_dragons_tooth": {
     "id": "material_dragons_tooth",
@@ -299,7 +299,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_energy_jewell": {
     "id": "material_energy_jewell",
@@ -309,7 +309,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_eran_fragment": {
     "id": "material_eran_fragment",
@@ -319,7 +319,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 36,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_green_coin": {
     "id": "material_green_coin",
@@ -329,7 +329,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 36,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_gromin_mycelium": {
     "id": "material_gromin_mycelium",
@@ -339,7 +339,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 36,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_herb": {
     "id": "material_herb",
@@ -349,7 +349,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 36,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_laede_fragment": {
     "id": "material_laede_fragment",
@@ -359,7 +359,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 43,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_magic_essence": {
     "id": "material_magic_essence",
@@ -369,7 +369,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 43,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_midran": {
     "id": "material_midran",
@@ -379,7 +379,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 43,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_mycelium_fungus": {
     "id": "material_mycelium_fungus",
@@ -389,7 +389,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 43,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_mysterious_jewell": {
     "id": "material_mysterious_jewell",
@@ -399,7 +399,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 6,
     "price": 50,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_old_stone": {
     "id": "material_old_stone",
@@ -409,7 +409,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 6,
     "price": 50,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_purple_coin": {
     "id": "material_purple_coin",
@@ -419,7 +419,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 6,
     "price": 50,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_spectre_fragment": {
     "id": "material_spectre_fragment",
@@ -429,7 +429,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 6,
     "price": 50,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_spectre_jewell": {
     "id": "material_spectre_jewell",
@@ -439,7 +439,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 7,
     "price": 57,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_stone_fragment": {
     "id": "material_stone_fragment",
@@ -449,7 +449,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 7,
     "price": 57,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_strenght_jewell": {
     "id": "material_strenght_jewell",
@@ -459,7 +459,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 7,
     "price": 57,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "material_udania": {
     "id": "material_udania",
@@ -469,7 +469,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 7,
     "price": 57,
     "stats": {},
-    "description": "Material de criacao e aprimoramento."
+    "description": "Material de criação e aprimoramento."
   },
   "misc_doemia": {
     "id": "misc_doemia",
@@ -733,7 +733,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "misc_stone_craft": {
     "id": "misc_stone_craft",
-    "name": "Pedra de Criacao",
+    "name": "Pedra de Criação",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/stone-craft.png",
     "minLevel": 6,
@@ -741,69 +741,105 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Item variado usado em receitas, chaves e eventos."
   },
-  "potion_energy": {
-    "id": "potion_energy",
-    "name": "Pocao de Energia",
+  "energy_potion": {
+    "id": "energy_potion",
+    "name": "Poção de Energia",
     "kind": "potion",
-    "imageUrl": "/assets/items/potions/energy.png",
+    "imageUrl": "/assets/items/potions/energy-30.png",
     "minLevel": 1,
-    "price": 24,
+    "price": 3000,
     "stats": {
       "energyPercent": 0.3
     },
     "description": "Recupera 30% da energia maxima"
   },
-  "potion_health": {
-    "id": "potion_health",
-    "name": "Pocao de Vida",
+  "energy_potion_light": {
+    "id": "energy_potion_light",
+    "name": "Poção de Energia Leve",
     "kind": "potion",
-    "imageUrl": "/assets/items/potions/health.png",
+    "imageUrl": "/assets/items/potions/energy-light.png",
     "minLevel": 1,
-    "price": 18,
+    "price": 30,
+    "stats": {
+      "energy": 6
+    },
+    "description": "Recupera 6 de energia"
+  },
+  "energy_potion_medium": {
+    "id": "energy_potion_medium",
+    "name": "Poção de Energia Media",
+    "kind": "potion",
+    "imageUrl": "/assets/items/potions/energy-medium.png",
+    "minLevel": 1,
+    "price": 400,
+    "stats": {
+      "energy": 50
+    },
+    "description": "Recupera 50 de energia"
+  },
+  "energy_potion_high": {
+    "id": "energy_potion_high",
+    "name": "Poção de Energia Alta",
+    "kind": "potion",
+    "imageUrl": "/assets/items/potions/energy-high.png",
+    "minLevel": 1,
+    "price": 5000,
+    "stats": {
+      "energy": 400
+    },
+    "description": "Recupera 400 de energia"
+  },
+  "health_potion": {
+    "id": "health_potion",
+    "name": "Poção de Vida",
+    "kind": "potion",
+    "imageUrl": "/assets/items/potions/health-30.png",
+    "minLevel": 1,
+    "price": 3000,
     "stats": {
       "healPercent": 0.3
     },
     "description": "Recupera 30% da vida maxima"
   },
-  "potion_health_light": {
-    "id": "potion_health_light",
-    "name": "Pocao de Vida Leve",
+  "health_potion_light": {
+    "id": "health_potion_light",
+    "name": "Poção de Vida Leve",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-light.png",
     "minLevel": 1,
-    "price": 18,
+    "price": 30,
     "stats": {
-      "heal": 20
+      "heal": 30
     },
-    "description": "Recupera 20 de vida"
+    "description": "Recupera 30 de vida"
   },
-  "potion_health_medium": {
-    "id": "potion_health_medium",
-    "name": "Pocao de Vida Media",
+  "health_potion_medium": {
+    "id": "health_potion_medium",
+    "name": "Poção de Vida Media",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-medium.png",
     "minLevel": 1,
-    "price": 18,
-    "stats": {
-      "heal": 100
-    },
-    "description": "Recupera 100 de vida"
-  },
-  "potion_health_high": {
-    "id": "potion_health_high",
-    "name": "Pocao de Vida Alta",
-    "kind": "potion",
-    "imageUrl": "/assets/items/potions/health-high.png",
-    "minLevel": 1,
-    "price": 18,
+    "price": 400,
     "stats": {
       "heal": 300
     },
     "description": "Recupera 300 de vida"
   },
+  "health_potion_high": {
+    "id": "health_potion_high",
+    "name": "Poção de Vida Alta",
+    "kind": "potion",
+    "imageUrl": "/assets/items/potions/health-high.png",
+    "minLevel": 1,
+    "price": 5000,
+    "stats": {
+      "heal": 3000
+    },
+    "description": "Recupera 3000 de vida"
+  },
   "potion_mana": {
     "id": "potion_mana",
-    "name": "Pocao de Mana",
+    "name": "Poção de Mana",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/mana.png",
     "minLevel": 1,
@@ -1099,9 +1135,9 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   "novice_amulet": {
     "id": "novice_amulet",
     "name": "Amuleto do Aprendiz",
-    "kind": "amulet",
+    "kind": "amulet", 
     "slot": "amulet",
-    "imageUrl": "/assets/items/misc/dragon_stone.png",
+    "imageUrl": "/assets/items/amulet/bone_gray.png",
     "minLevel": 1,
     "price": 70,
     "stats": {
@@ -1111,14 +1147,15 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "hunter_charm": {
     "id": "hunter_charm",
-    "name": "Talisma do Cacador",
+    "name": "Talisma do Caçador",
     "kind": "amulet",
     "slot": "amulet",
-    "imageUrl": "/assets/items/misc/kaede_stone.png",
-    "minLevel": 4,
+    "imageUrl": "/assets/items/amulet/cylinder_gray.png",
+    "minLevel": 10,
     "price": 160,
     "stats": {
-      "agility": 5,
+      "agility": 3,
+      "constitution": 3,
       "strength": 2
     }
   },
@@ -1153,46 +1190,100 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Amuleto Lunar",
     "kind": "amulet",
     "slot": "amulet",
-    "imageUrl": "/assets/items/misc/dragon_stone.png",
-    "minLevel": 8,
+    "imageUrl": "/assets/items/amulet/stone_2_blue.png",
+    "minLevel": 25,
     "price": 420,
     "stats": {
-      "agility": 8,
-      "constitution": 3,
-      "strength": 3
+      "agility": 7,
+      "constitution": 4
     }
   },
-  "health_potion": {
-    "id": "health_potion",
-    "name": "Pocao de Vida",
-    "kind": "potion",
-    "imageUrl": "/assets/items/potions/health.png",
-    "minLevel": 1,
-    "price": 18,
+  "acid_amulet": {
+    "id": "acid_amulet",
+    "name": "Amuleto Ácido",
+    "kind": "amulet",
+    "slot": "amulet",
+    "imageUrl": "/assets/items/amulet/stone_2_green.png",
+    "minLevel": 25,
+    "price": 420,
     "stats": {
-      "healPercent": 0.3
-    },
-    "description": "Recupera 30% da vida maxima"
+      "strength": 5,
+      "defense": 10
+    }
   },
-  "energy_potion": {
-    "id": "energy_potion",
-    "name": "Pocao de Energia",
-    "kind": "potion",
-    "imageUrl": "/assets/items/potions/energy.png",
-    "minLevel": 1,
-    "price": 24,
+  "crystal_white_amulet": {
+    "id": "crystal_white_amulet",
+    "name": "Amuleto de Cristal Branco",
+    "kind": "amulet",
+    "slot": "amulet",
+    "imageUrl": "/assets/items/amulet/crystal_white.png",
+    "minLevel": 45,
+    "price": 4200,
     "stats": {
-      "energyPercent": 0.3
-    },
-    "description": "Recupera 30% da energia maxima"
+      "agility": 35
+    }
+  },
+  "celtic_yellow_amulet": {
+    "id": "celtic_yellow_amulet",
+    "name": "Amuleto Celta",
+    "kind": "amulet",
+    "slot": "amulet",
+    "imageUrl": "/assets/items/amulet/celtic_yellow.png",
+    "minLevel": 45,
+    "price": 4200,
+    "stats": {
+      "strength": 45,
+      "constitution": 20
+    }
+  },
+  "celtic_magenta_amulet": {
+    "id": "celtic_magenta_amulet",
+    "name": "Amuleto Divino",
+    "kind": "amulet",
+    "slot": "amulet",
+    "imageUrl": "/assets/items/amulet/stone_3_magenta.png",
+    "minLevel": 55,
+    "price": 4200,
+    "stats": {
+      "defense": 65,
+      "constitution": 35
+    }
+  },
+  "celtic_orange_amulet": {
+    "id": "celtic_orange_amulet",
+    "name": "Amuleto Pentagonal",
+    "kind": "amulet",
+    "slot": "amulet",
+    "imageUrl": "/assets/items/amulet/penta_orange.png",
+    "minLevel": 65,
+    "price": 4200,
+    "stats": {
+      "agility": 75,
+      "strength": 55,
+    }
+  },
+  "celtic_cyan_amulet": {
+    "id": "celtic_cyan_amulet",
+    "name": "Amuleto Ciano",
+    "kind": "amulet",
+    "slot": "amulet",
+    "imageUrl": "/assets/items/amulet/ring_cyan.png",
+    "minLevel": 75,
+    "price": 4200,
+    "stats": {
+      "agility": 80,
+      "strength": 80,
+      "defense": 80,
+      "constitution": 80
+    }
   },
   "major_health_potion": {
     "id": "major_health_potion",
-    "name": "Pocao Vital Rara",
+    "name": "Poção Vital Rara",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health.png",
     "minLevel": 5,
-    "price": 95,
+    "price": 6000,
     "stats": {
       "healPercent": 0.55
     },
@@ -1200,11 +1291,11 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "major_energy_potion": {
     "id": "major_energy_potion",
-    "name": "Pocao Energetica Rara",
+    "name": "Poção Energetica Rara",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy.png",
     "minLevel": 5,
-    "price": 110,
+    "price": 6000,
     "stats": {
       "energyPercent": 0.55
     },
@@ -1519,23 +1610,10 @@ export const CITIES: CityDefinition[] = [
       "guardian_mail"
     ],
     "apothecaryItemIds": [
-      "misc_doemia",
-      "misc_dragon_stone",
-      "misc_dungeon_key",
-      "scroll_enhanced_parchment",
       "misc_eran",
-      "misc_erins_chest_1",
-      "misc_erins_chest_2",
-      "misc_erins_chest_3",
-      "misc_erins_chest",
       "scroll_fraddo_parchment",
-      "potion_energy",
-      "potion_health",
-      "potion_mana",
-      "health_potion",
-      "energy_potion",
-      "oblivion_scroll",
-      "memory_scroll"
+      "energy_potion_light",
+      "health_potion_light"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -1626,33 +1704,11 @@ export const CITIES: CityDefinition[] = [
       "moon_amulet"
     ],
     "apothecaryItemIds": [
-      "misc_doemia",
-      "misc_dragon_stone",
-      "misc_dungeon_key",
-      "scroll_enhanced_parchment",
       "misc_eran",
-      "misc_erins_chest_1",
-      "misc_erins_chest_2",
-      "misc_erins_chest_3",
-      "misc_erins_chest",
-      "scroll_fraddo_parchment",
-      "misc_herb_bitter",
-      "misc_herb_moss",
-      "misc_herb_rustic",
-      "misc_high_dungeon_key",
-      "misc_hozir_box",
-      "misc_kaede_stone",
-      "misc_laede",
-      "scroll_magic_lands_parchment",
-      "misc_maginia",
-      "misc_misc_phial",
-      "potion_energy",
-      "potion_health",
-      "potion_mana",
-      "health_potion",
-      "energy_potion",
-      "oblivion_scroll",
-      "memory_scroll"
+      "energy_potion_light",
+      "energy_potion_medium",
+      "health_potion_light",
+      "health_potion_medium"
     ]
   },
   {
@@ -1757,46 +1813,15 @@ export const CITIES: CityDefinition[] = [
       "moon_amulet"
     ],
     "apothecaryItemIds": [
-      "misc_doemia",
-      "misc_dragon_stone",
-      "misc_dungeon_key",
-      "scroll_enhanced_parchment",
       "misc_eran",
-      "misc_erins_chest_1",
-      "misc_erins_chest_2",
-      "misc_erins_chest_3",
-      "misc_erins_chest",
-      "scroll_fraddo_parchment",
-      "misc_herb_bitter",
-      "misc_herb_moss",
-      "misc_herb_rustic",
-      "misc_high_dungeon_key",
-      "misc_hozir_box",
-      "misc_kaede_stone",
-      "misc_laede",
-      "scroll_magic_lands_parchment",
-      "misc_maginia",
-      "misc_misc_phial",
-      "misc_ressu",
-      "misc_seed_bitter",
-      "misc_seed_moss",
-      "misc_seed_mycelium_fungus",
-      "misc_seed_rustic",
-      "misc_serlen",
-      "misc_stone_craft",
       "material_old_stone",
       "material_eran_fragment",
       "material_celena",
       "material_midran",
-      "potion_energy",
-      "potion_health",
-      "potion_mana",
-      "health_potion",
-      "energy_potion",
-      "major_health_potion",
-      "major_energy_potion",
-      "oblivion_scroll",
-      "memory_scroll"
+      "energy_potion_light",
+      "energy_potion_medium",
+      "health_potion_light",
+      "health_potion_medium"
     ]
   },
   {
@@ -1914,46 +1939,17 @@ export const CITIES: CityDefinition[] = [
       "weapon_vorgonax"
     ],
     "apothecaryItemIds": [
-      "misc_doemia",
-      "misc_dragon_stone",
-      "misc_dungeon_key",
-      "scroll_enhanced_parchment",
       "misc_eran",
-      "misc_erins_chest_1",
-      "misc_erins_chest_2",
-      "misc_erins_chest_3",
-      "misc_erins_chest",
-      "scroll_fraddo_parchment",
-      "misc_herb_bitter",
-      "misc_herb_moss",
-      "misc_herb_rustic",
-      "misc_high_dungeon_key",
-      "misc_hozir_box",
-      "misc_kaede_stone",
       "misc_laede",
-      "scroll_magic_lands_parchment",
-      "misc_maginia",
-      "misc_misc_phial",
-      "misc_ressu",
-      "misc_seed_bitter",
-      "misc_seed_moss",
-      "misc_seed_mycelium_fungus",
-      "misc_seed_rustic",
-      "misc_serlen",
       "misc_stone_craft",
       "material_old_stone",
       "material_eran_fragment",
       "material_celena",
       "material_midran",
-      "potion_energy",
-      "potion_health",
-      "potion_mana",
-      "health_potion",
-      "energy_potion",
-      "major_health_potion",
-      "major_energy_potion",
-      "oblivion_scroll",
-      "memory_scroll"
+      "energy_potion_light",
+      "energy_potion_medium",
+      "health_potion_light",
+      "health_potion_medium",
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -2035,49 +2031,25 @@ export const CITIES: CityDefinition[] = [
       "weapon_real_axe",
       "weapon_triple_sword_2",
       "weapon_triple_sword_3",
-      "weapon_vorgonax"
+      "weapon_vorgonax",
+      "acid_amulet"
     ],
     "apothecaryItemIds": [
       "misc_doemia",
       "misc_dragon_stone",
-      "misc_dungeon_key",
-      "scroll_enhanced_parchment",
       "misc_eran",
-      "misc_erins_chest_1",
-      "misc_erins_chest_2",
-      "misc_erins_chest_3",
-      "misc_erins_chest",
-      "scroll_fraddo_parchment",
       "misc_herb_bitter",
-      "misc_herb_moss",
-      "misc_herb_rustic",
-      "misc_high_dungeon_key",
-      "misc_hozir_box",
-      "misc_kaede_stone",
-      "misc_laede",
-      "scroll_magic_lands_parchment",
       "misc_maginia",
-      "misc_misc_phial",
-      "misc_ressu",
-      "misc_seed_bitter",
-      "misc_seed_moss",
-      "misc_seed_mycelium_fungus",
-      "misc_seed_rustic",
       "misc_serlen",
       "misc_stone_craft",
       "material_old_stone",
       "material_eran_fragment",
       "material_celena",
       "material_midran",
-      "potion_energy",
-      "potion_health",
-      "potion_mana",
-      "health_potion",
-      "energy_potion",
-      "major_health_potion",
-      "major_energy_potion",
-      "oblivion_scroll",
-      "memory_scroll"
+      "energy_potion_medium",
+      "energy_potion_high",
+      "health_potion_medium",
+      "health_potion_high"
     ]
   },
   {
@@ -2144,15 +2116,13 @@ export const CITIES: CityDefinition[] = [
       "misc_dungeon_key",
       "misc_high_dungeon_key",
       "scroll_magic_lands_parchment",
-      "potion_energy",
-      "potion_health",
-      "potion_mana",
-      "health_potion",
       "energy_potion",
-      "major_health_potion",
-      "major_energy_potion",
-      "oblivion_scroll",
-      "memory_scroll"
+      "health_potion",
+      "potion_mana",
+      "health_potion_medium",
+      "health_potion_high",
+      "energy_potion_medium",
+      "energy_potion_high"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -2222,21 +2192,14 @@ export const CITIES: CityDefinition[] = [
       "weapon_real_axe",
       "weapon_triple_sword_2",
       "weapon_triple_sword_3",
-      "weapon_vorgonax"
+      "weapon_vorgonax",
+      "celtic_cyan_amulet"
     ],
     "apothecaryItemIds": [
       "misc_dungeon_key",
       "misc_high_dungeon_key",
-      "scroll_magic_lands_parchment",
-      "potion_energy",
-      "potion_health",
-      "potion_mana",
-      "health_potion",
-      "energy_potion",
-      "major_health_potion",
-      "major_energy_potion",
-      "oblivion_scroll",
-      "memory_scroll"
+      "energy_potion_high",
+      "health_potion_high"
     ]
   }
 ];
@@ -2577,7 +2540,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 187.65,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.3
       },
       {
@@ -2654,7 +2617,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 429.75,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.3
       },
       {
@@ -2731,7 +2694,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 747.15,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.3
       },
       {
@@ -2812,7 +2775,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1167.15,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -2885,7 +2848,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1724.55,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3031,7 +2994,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3451.5,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3108,7 +3071,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 4750.2,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3131,7 +3094,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 5267.85,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3177,7 +3140,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 6474.6,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3200,7 +3163,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 7177.05,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3227,7 +3190,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 7934.7,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3250,7 +3213,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 8782.05,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       }
     ]
@@ -3269,7 +3232,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 9698.7,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3292,7 +3255,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 10720.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3315,7 +3278,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 11829,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3338,7 +3301,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 13063.05,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       }
     ]
@@ -3357,7 +3320,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 14405.25,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3411,7 +3374,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 17519.85,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       }
     ]
@@ -3430,7 +3393,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 19321.5,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3453,7 +3416,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 21285.15,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3480,7 +3443,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 23462.7,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3503,7 +3466,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 25838.85,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3526,7 +3489,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 28471.2,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3599,7 +3562,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 38004.6,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3622,7 +3585,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 41850.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       }
     ]
@@ -3641,7 +3604,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 46061.1,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.26
       },
       {
@@ -3668,7 +3631,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 50710.95,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3695,7 +3658,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 55803.6,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3722,7 +3685,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 61426.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -3741,7 +3704,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 67590,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3764,7 +3727,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 74389.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3787,7 +3750,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 81847.05,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3810,7 +3773,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 90070.5,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -3852,7 +3815,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 109040.7,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -3871,7 +3834,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 119959.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3898,7 +3861,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 131991.9,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3921,7 +3884,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 145202.55,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -3940,7 +3903,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 159757.5,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -3963,7 +3926,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 175743.15,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -4009,7 +3972,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 212690.7,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4032,7 +3995,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 233992.05,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4055,7 +4018,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 257395.2,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4078,7 +4041,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 283164.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4101,7 +4064,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 311484.6,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4124,7 +4087,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 342659.85,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -4166,7 +4129,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 414642.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4189,7 +4152,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 456105.15,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4212,7 +4175,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 501737.4,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4235,7 +4198,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 551906.55,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4258,7 +4221,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 607118.1,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4285,7 +4248,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 667823.25,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -4304,7 +4267,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 734624.7,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4331,7 +4294,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 808076.85,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -4373,7 +4336,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 977778.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -4392,7 +4355,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1075570.95,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       }
     ]
@@ -4411,7 +4374,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1183112.1,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4438,7 +4401,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1301435.25,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4488,7 +4451,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1574725.65,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4511,7 +4474,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1732177.8,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4534,7 +4497,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1905403.95,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4557,7 +4520,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2095919.1,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.34
       },
       {
@@ -4580,7 +4543,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2305514.55,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       }
     ]
@@ -4599,7 +4562,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2536040.25,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       }
     ]
@@ -4618,7 +4581,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2789645.1,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4641,7 +4604,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3068579.25,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4687,7 +4650,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3712947.75,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       }
     ]
@@ -4706,7 +4669,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 4084240.2,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       }
     ]
@@ -4725,7 +4688,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 4492627.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4779,7 +4742,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 5436034.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4802,7 +4765,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 5979628.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4825,7 +4788,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 6577548,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4867,7 +4830,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 7958774.4,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4890,7 +4853,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 8754639.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4913,7 +4876,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 9630053.1,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4967,7 +4930,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 11652291.9,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -4990,7 +4953,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 12817502.25,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       }
     ]
@@ -5009,7 +4972,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 14099196.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5055,7 +5018,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 17059941.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5078,7 +5041,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 18765909.9,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5101,7 +5064,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 20642437.05,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5128,7 +5091,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 22706652.3,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5178,7 +5141,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 27474943.8,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       }
     ]
@@ -5197,7 +5160,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 30222366.45,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5224,7 +5187,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 33244567.35,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5278,7 +5241,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 40225805.25,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {
@@ -5301,7 +5264,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 44248307.4,
     "drops": [
       {
-        "itemId": "potion_health",
+        "itemId": "health_potion",
         "chance": 0.42
       },
       {

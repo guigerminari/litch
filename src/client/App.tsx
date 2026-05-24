@@ -2248,7 +2248,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
         </div>
       )}
       {station === "blacksmith" && game.currentCity.blacksmithEnhancement && <EquipmentEnhancementPanel game={game} />}
-      <div className="list-grid">
+      <div className="list-grid monster-battle-list">
         {recipes.length === 0 && <p className="empty-state">Nenhuma receita disponível nesta cidade.</p>}
         {recipes.map((recipe) => {
           const result = game.itemCatalog[recipe.resultItemId];
@@ -2427,7 +2427,7 @@ function DungeonPanel({ game }: { game: GameState }) {
   return (
     <section className="content-panel">
       <PanelTitle icon={<Star size={20} />} title="Masmorra" />
-      <div className="list-grid">
+      <div className="list-grid monster-battle-list">
         {dungeonMonsters.length === 0 && <p className="empty-state">Não há masmorra nesta cidade.</p>}
         {dungeonMonsters.map((monster) => {
           const energyCost = monster.level + 1;
@@ -3344,7 +3344,7 @@ function HuntPanel({ game }: { game: GameState }) {
           <span>{selectedLocation.description}</span>
         </div>
       )}
-      <div className="list-grid">
+      <div className="list-grid monster-battle-list">
         {monsters.length === 0 && <p className="empty-state">Nenhum local de caça disponível nesta cidade.</p>}
         {monsters.map((monster) => {
           const blocked = game.character.currentHp <= 0 || game.character.currentEnergy < monster.level;
@@ -3353,16 +3353,15 @@ function HuntPanel({ game }: { game: GameState }) {
               <MonsterVisual monster={monster} className="entity-art" />
               <div>
                 <strong>{monster.name}</strong>
-                <span>Nível {monster.level}</span>
+                <span>Nv {monster.level}</span>
               </div>
               <div className="monster-stats">
                 <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>
                 <small title="Forca"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
                 <small title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {monster.defense}</small>
                 <small title="Agilidade"><Crosshair size={13} style={{ color: "var(--yellow)" }} /> {monster.agility}</small>
-                <small title="XP"><Star size={13} style={{ color: "var(--gold)" }} /> {monster.experience}</small>
-                
               </div>
+              <small className="monster-xp" title="XP do monstro"><Star size={13} style={{ color: "var(--gold)" }} /> {monster.experience}</small>
               <button
                 className="atack-button primary-button"
                 disabled={blocked}
