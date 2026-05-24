@@ -1865,7 +1865,6 @@ export const CITIES: CityDefinition[] = [
       "forge_ember_blade",
       "forge_guardian_mail"
     ],
-    "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
       "brew_major_health",
       "brew_major_energy",
@@ -2083,7 +2082,6 @@ export const CITIES: CityDefinition[] = [
       "forge_ember_blade",
       "forge_guardian_mail"
     ],
-    "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
       "brew_major_health",
       "brew_major_energy",

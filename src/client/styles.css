@@ -2984,6 +2984,23 @@ button:disabled {
   color: var(--red);
 }
 
+.enhancement-warning {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(201, 78, 107, 0.28);
+  border-radius: 8px;
+  background: rgba(201, 78, 107, 0.08);
+  color: var(--red);
+  font-size: 0.84rem;
+}
+
+.enhancement-warning svg {
+  flex: 0 0 auto;
+}
+
 .enhancement-boost {
   display: grid;
   gap: 10px;

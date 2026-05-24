@@ -50,6 +50,15 @@ import type {
 } from "../shared/types";
 import { RARITY_PRICE_MULTIPLIER } from "../shared/rarity";
 import {
+  ENHANCEMENT_CREATION_STONE_BONUS,
+  ENHANCEMENT_GOLD_STEP,
+  ENHANCEMENT_ITEMS,
+  canEnhanceLevelInCountry,
+  describeEnhancementLevelRange,
+  getEnhancementBaseChance,
+  getEnhancementMaterialQuantity
+} from "../shared/enhancement";
+import {
   CITIES,
   AVATARS,
   CLAN_BENEFITS,
@@ -98,22 +107,11 @@ const DEFAULT_AVATAR_ID = "wanderer";
 const REFERRAL_REWARD_LEVEL = 30;
 const REFERRAL_REWARD_GOLD = 30000;
 const REFERRAL_REWARD_DIAMONDS = 30;
-const ENHANCEMENT_GOLD_STEP = 10000;
-const ENHANCEMENT_CHANCE_STEP = 5;
-const ENHANCEMENT_MIN_CHANCE = 5;
-const ENHANCEMENT_CREATION_STONE_BONUS = 3;
 const MORTHALY_COUNTRY_ID = "morthaly";
 const MONARCH_ACCESS_KEY_ID = "misc_high_dungeon_key";
 const MONARCH_DAILY_ATTEMPT_LIMIT = 10;
 const MONARCH_EXPIRED_REWARD_RATE = 0.15;
 const MONARCH_KING_REWARD_MULTIPLIER = 3;
-const ENHANCEMENT_ITEMS = {
-  oldStone: "material_old_stone",
-  eranStone: "misc_eran",
-  celena: "material_celena",
-  midran: "material_midran",
-  creationStone: "misc_stone_craft"
-} as const;
 const MONARCH_SCHEDULE = [
   {
     id: "monday",
@@ -1581,23 +1579,20 @@ type EnhancementRequirement = {
   quantity: number;
 };
 
-function getEnhancementBaseChance(nextLevel: number) {
-  return Math.max(ENHANCEMENT_MIN_CHANCE, 100 - (nextLevel - 1) * ENHANCEMENT_CHANCE_STEP);
-}
-
 function getEnhancementRequirements(nextLevel: number, creationStones: number): EnhancementRequirement[] {
+  const materialQuantity = getEnhancementMaterialQuantity(nextLevel);
   const requirements: EnhancementRequirement[] = [
-    { itemId: ENHANCEMENT_ITEMS.oldStone, quantity: nextLevel }
+    { itemId: ENHANCEMENT_ITEMS.oldStone, quantity: materialQuantity }
   ];
 
   if (nextLevel >= 4) {
-    requirements.push({ itemId: ENHANCEMENT_ITEMS.eranStone, quantity: 1 });
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.eranStone, quantity: materialQuantity });
   }
   if (nextLevel >= 6) {
-    requirements.push({ itemId: ENHANCEMENT_ITEMS.celena, quantity: 1 });
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.celena, quantity: materialQuantity });
   }
   if (nextLevel >= 9) {
-    requirements.push({ itemId: ENHANCEMENT_ITEMS.midran, quantity: 1 });
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.midran, quantity: materialQuantity });
   }
   if (creationStones > 0) {
     requirements.push({ itemId: ENHANCEMENT_ITEMS.creationStone, quantity: creationStones });
@@ -1640,6 +1635,9 @@ function enhanceEquipment(character: Character, payload: EnhancePayload) {
   }
 
   const plan = getEnhancementPlan(inventoryItem, payload.creationStones);
+  if (!canEnhanceLevelInCountry(city.countryId, plan.nextLevel)) {
+    throw new Error(`Este ferreiro aprimora apenas equipamentos de ${describeEnhancementLevelRange(city.countryId)}.`);
+  }
   if (character.gold < plan.goldCost) {
     throw new Error("Ouro insuficiente para o servico.");
   }

@@ -73,6 +73,15 @@ import type {
 import { RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
 import { experienceForNextLevel } from "../shared/progression";
 import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL, MONARCH_BATTLE_ATTACK_LIMIT } from "../shared/types";
+import {
+  ENHANCEMENT_CREATION_STONE_BONUS,
+  ENHANCEMENT_GOLD_STEP,
+  ENHANCEMENT_ITEMS,
+  canEnhanceLevelInCountry,
+  describeEnhancementLevelRange,
+  getEnhancementBaseChance,
+  getEnhancementMaterialQuantity
+} from "../shared/enhancement";
 import { socket } from "./socket";
 
 type View =
@@ -196,18 +205,7 @@ const RARITY_COLORS: Record<Rarity, string> = {
   legendary: "#ff9102"
 };
 
-const ENHANCEMENT_GOLD_STEP = 10000;
 const ENHANCEMENT_STAT_STEP = 0.2;
-const ENHANCEMENT_CHANCE_STEP = 5;
-const ENHANCEMENT_MIN_CHANCE = 5;
-const ENHANCEMENT_CREATION_STONE_BONUS = 3;
-const ENHANCEMENT_ITEMS = {
-  oldStone: "material_old_stone",
-  eranStone: "material_eran_fragment",
-  celena: "material_celena",
-  midran: "material_midran",
-  creationStone: "misc_stone_craft"
-} as const;
 const TRAIN_TICKET_ID = "ticket_train";
 const SHIP_TICKET_ID = "ticket_ship";
 const BRAND_ICON_URL = "/assets/brand/litch-logo-square-512x512.png";
@@ -2289,12 +2287,13 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
   const selectedEntry = equipmentItems.find((entry) => entry.instanceId === selectedInstanceId) ?? null;
   const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
   const plan = selectedEntry ? getEnhancementPlanForUi(game, selectedEntry, creationStones) : null;
+  const rangeLabel = describeEnhancementLevelRange(game.currentCountry.id);
   const currentStats = selectedItem && selectedEntry ? getEnhancedItemStats(selectedItem, selectedEntry) : null;
   const nextStats = selectedItem && selectedEntry && plan
     ? getEnhancedItemStats(selectedItem, { ...selectedEntry, enhancementLevel: plan.nextLevel })
     : null;
   const requirementsMet = Boolean(plan?.requirements.every((requirement) => countInventoryItem(game, requirement.itemId) >= requirement.quantity));
-  const canEnhance = Boolean(selectedEntry && selectedItem && plan && requirementsMet && game.character.gold >= plan.goldCost);
+  const canEnhance = Boolean(selectedEntry && selectedItem && plan?.allowed && requirementsMet && game.character.gold >= plan.goldCost);
 
   useEffect(() => {
     if (!equipmentItems.some((entry) => entry.instanceId === selectedInstanceId)) {
@@ -2315,7 +2314,7 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
           <Hammer size={18} />
           <div>
             <strong>Aprimorar equipamento</strong>
-            <span>Nenhum equipamento no inventario.</span>
+            <span>Este ferreiro trabalha de {rangeLabel}. Nenhum equipamento no inventario.</span>
           </div>
         </div>
       </section>
@@ -2328,7 +2327,7 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
         <Hammer size={18} />
         <div>
           <strong>Aprimorar equipamento</strong>
-          <span>+20% nos atributos por aprimoramento. Falha consome servico e materiais.</span>
+          <span>Este ferreiro trabalha de {rangeLabel}. +20% nos atributos por aprimoramento.</span>
         </div>
       </div>
 
@@ -2388,6 +2387,13 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
             })}
           </div>
 
+          {!plan.allowed && (
+            <div className="enhancement-warning">
+              <Info size={15} />
+              <span>{plan.blockReason}</span>
+            </div>
+          )}
+
           <div className="enhancement-boost">
             <label>
               <span>Pedras de Criacao (+{ENHANCEMENT_CREATION_STONE_BONUS}% cada)</span>
@@ -2409,6 +2415,7 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
           <button
             className="primary-button"
             disabled={!canEnhance}
+            title={plan.allowed ? "Aprimorar equipamento" : plan.blockReason}
             onClick={() => socket.emit("blacksmith:enhance", { instanceId: selectedEntry.instanceId, creationStones: plan.creationStones })}
           >
             Aprimorar
@@ -5500,22 +5507,19 @@ function getEnhancedItemStats(item: ItemDefinition, inventoryItem?: { enhancemen
   };
 }
 
-function getEnhancementBaseChance(nextLevel: number) {
-  return Math.max(ENHANCEMENT_MIN_CHANCE, 100 - (nextLevel - 1) * ENHANCEMENT_CHANCE_STEP);
-}
-
 function getEnhancementRequirements(nextLevel: number, creationStones: number) {
-  const requirements = [
-    { itemId: ENHANCEMENT_ITEMS.oldStone, quantity: nextLevel }
+  const materialQuantity = getEnhancementMaterialQuantity(nextLevel);
+  const requirements: Array<{ itemId: string; quantity: number }> = [
+    { itemId: ENHANCEMENT_ITEMS.oldStone, quantity: materialQuantity }
   ];
   if (nextLevel >= 4) {
-    requirements.push({ itemId: ENHANCEMENT_ITEMS.eranStone, quantity: 1 });
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.eranStone, quantity: materialQuantity });
   }
   if (nextLevel >= 6) {
-    requirements.push({ itemId: ENHANCEMENT_ITEMS.celena, quantity: 1 });
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.celena, quantity: materialQuantity });
   }
   if (nextLevel >= 9) {
-    requirements.push({ itemId: ENHANCEMENT_ITEMS.midran, quantity: 1 });
+    requirements.push({ itemId: ENHANCEMENT_ITEMS.midran, quantity: materialQuantity });
   }
   if (creationStones > 0) {
     requirements.push({ itemId: ENHANCEMENT_ITEMS.creationStone, quantity: creationStones });
@@ -5530,6 +5534,8 @@ function getEnhancementPlanForUi(game: GameState, inventoryItem: InventoryItem, 
   const maxCreationStones = Math.min(countInventoryItem(game, ENHANCEMENT_ITEMS.creationStone), maxUsefulCreationStones);
   const creationStones = Math.max(0, Math.min(maxCreationStones, Math.floor(requestedCreationStones || 0)));
   const successChance = Math.min(100, baseChance + creationStones * ENHANCEMENT_CREATION_STONE_BONUS);
+  const rangeLabel = describeEnhancementLevelRange(game.currentCountry.id);
+  const allowed = canEnhanceLevelInCountry(game.currentCountry.id, nextLevel);
 
   return {
     nextLevel,
@@ -5538,6 +5544,9 @@ function getEnhancementPlanForUi(game: GameState, inventoryItem: InventoryItem, 
     creationStones,
     maxCreationStones,
     successChance,
+    allowed,
+    rangeLabel,
+    blockReason: allowed ? "" : `Este ferreiro aprimora apenas equipamentos de ${rangeLabel}.`,
     requirements: getEnhancementRequirements(nextLevel, creationStones)
   };
 }
