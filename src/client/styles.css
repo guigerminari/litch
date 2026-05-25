@@ -2034,20 +2034,45 @@ button:disabled {
   font-size: 0.86rem;
 }
 
-.travel-ticket-summary span {
+.travel-ticket-chip {
   display: inline-flex;
-  gap: 5px;
+  gap: 8px;
   align-items: center;
-  padding: 6px 9px;
+  padding: 5px 10px 5px 5px;
   border: 1px solid rgba(241, 250, 140, 0.24);
-  border-radius: 999px;
+  border-radius: 14px;
   background: rgba(241, 250, 140, 0.07);
   color: var(--muted);
   font-size: 0.84rem;
 }
 
-.travel-ticket-summary strong {
+.travel-ticket-copy {
+  display: grid;
+  gap: 1px;
+  line-height: 1.1;
+}
+
+.travel-ticket-copy small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.travel-ticket-summary strong,
+.travel-ticket-copy strong {
   color: var(--gold);
+}
+
+.travel-ticket-visual {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(220, 203, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(11, 9, 18, 0.46);
+}
+
+.travel-ticket-visual img {
+  padding: 5px;
 }
 
 .travel-panel {
@@ -2276,13 +2301,32 @@ button:disabled {
   gap: 8px;
 }
 
-.travel-selection-meta span {
+.travel-selection-meta > span {
   padding: 6px 9px;
   border: 1px solid rgba(220, 203, 255, 0.1);
   border-radius: 999px;
   background: rgba(11, 9, 18, 0.42);
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.travel-ticket-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.travel-ticket-mini-visual {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(220, 203, 255, 0.12);
+  border-radius: 7px;
+  background: rgba(11, 9, 18, 0.42);
+}
+
+.travel-ticket-mini-visual img {
+  padding: 3px;
 }
 
 .travel-selection-meta strong {
@@ -6547,7 +6591,7 @@ button:disabled {
 
 .royal-seal,
 .royal-status,
-.travel-ticket-summary span {
+.travel-ticket-chip {
   border-color: rgba(216, 178, 74, 0.3);
   background: rgba(216, 178, 74, 0.06);
   color: var(--gold);
@@ -6567,7 +6611,7 @@ button:disabled {
 }
 
 .hunt-location-banner span,
-.travel-ticket-summary span,
+.travel-ticket-chip,
 .clan-reset-panel span,
 .clan-bonus-summary span {
   color: var(--muted);

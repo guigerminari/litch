@@ -4121,6 +4121,8 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 
 function TravelPanel({ game }: { game: GameState }) {
   const currentCountryCities = game.cities.filter((city) => city.countryId === game.currentCountry.id);
+  const trainTicket = game.itemCatalog[TRAIN_TICKET_ID];
+  const shipTicket = game.itemCatalog[SHIP_TICKET_ID];
   const trainTickets = countInventoryItem(game, TRAIN_TICKET_ID);
   const shipTickets = countInventoryItem(game, SHIP_TICKET_ID);
   const mapCities = game.cities.filter((city) => TRAVEL_MAP_POINTS[city.id]);
@@ -4140,10 +4142,10 @@ function TravelPanel({ game }: { game: GameState }) {
       : city.isPort
         ? city
         : portCity ?? city;
+    const ticketId = sameCountry ? TRAIN_TICKET_ID : SHIP_TICKET_ID;
+    const ticketDefinition = game.itemCatalog[ticketId];
     const ticketCount = sameCountry ? trainTickets : shipTickets;
-    const ticketLabel = sameCountry
-      ? game.itemCatalog[TRAIN_TICKET_ID]?.name ?? "Ticket de Trem"
-      : game.itemCatalog[SHIP_TICKET_ID]?.name ?? "Ticket de Navio";
+    const ticketLabel = ticketDefinition?.name ?? (sameCountry ? "Ticket de Trem" : "Ticket de Navio");
     const current = city.id === game.character.cityId;
     const locked = !current && (blockedByForeignInterior || ticketCount <= 0 || game.character.level < destinationCity.minLevel);
     const reason = current
@@ -4167,7 +4169,7 @@ function TravelPanel({ game }: { game: GameState }) {
             ? "Viajar com ticket de trem"
             : `Viajar de navio para ${destinationCity.name}`;
 
-    return { city, destinationCity, destinationCountry, portCity, sameCountry, blockedByForeignInterior, current, locked, reason, actionLabel, ticketLabel };
+    return { city, destinationCity, destinationCountry, portCity, sameCountry, blockedByForeignInterior, current, locked, reason, actionLabel, ticketLabel, ticketDefinition };
   };
   const selectedTravelCity = game.cities.find((city) => city.id === selectedTravelCityId) ?? game.currentCity;
   const selectedRoute = getTravelRoute(selectedTravelCity.id);
@@ -4182,8 +4184,20 @@ function TravelPanel({ game }: { game: GameState }) {
     <section className="content-panel travel-panel">
       <PanelTitle icon={<MapPinned size={20} />} title="Viajar" />
       <div className="travel-ticket-summary">
-        <span>{game.itemCatalog[TRAIN_TICKET_ID]?.name ?? "Ticket de Trem"}: <strong>{trainTickets}</strong></span>
-        <span>{game.itemCatalog[SHIP_TICKET_ID]?.name ?? "Ticket de Navio"}: <strong>{shipTickets}</strong></span>
+        <span className="travel-ticket-chip">
+          {trainTicket ? <ItemVisual item={trainTicket} className="travel-ticket-visual" /> : <MapPinned size={16} />}
+          <span className="travel-ticket-copy">
+            <small>{trainTicket?.name ?? "Ticket de Trem"}</small>
+            <strong>{trainTickets}</strong>
+          </span>
+        </span>
+        <span className="travel-ticket-chip">
+          {shipTicket ? <ItemVisual item={shipTicket} className="travel-ticket-visual" /> : <Ship size={16} />}
+          <span className="travel-ticket-copy">
+            <small>{shipTicket?.name ?? "Ticket de Navio"}</small>
+            <strong>{shipTickets}</strong>
+          </span>
+        </span>
       </div>
 
       <div className="travel-map-card">
@@ -4255,7 +4269,12 @@ function TravelPanel({ game }: { game: GameState }) {
           <div className="travel-selection-meta">
             <span>Nível mínimo <strong>{selectedRoute.destinationCity.minLevel}</strong></span>
             <span>{selectedRoute.sameCountry ? "Rota terrestre" : "Rota marítima"}</span>
-            <span>{selectedRoute.current ? "Atual" : selectedRoute.ticketLabel}</span>
+            <span className="travel-ticket-meta">
+              {!selectedRoute.current && selectedRoute.ticketDefinition && (
+                <ItemVisual item={selectedRoute.ticketDefinition} className="travel-ticket-mini-visual" />
+              )}
+              {selectedRoute.current ? "Atual" : selectedRoute.ticketLabel}
+            </span>
           </div>
           {selectedRoute.blockedByForeignInterior && (
             <p className="travel-selection-warning">
@@ -5783,13 +5802,14 @@ function CurrencyExchangeModal({ game, onClose }: { game: GameState; onClose: ()
 }
 
 function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; fallback: React.ReactNode; style?: React.CSSProperties }) {
-  const [failed, setFailed] = useState(false);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const hasFailed = Boolean(src && failedSrc === src);
 
-  if (!src || failed) {
+  if (!src || hasFailed) {
     return <span className="asset-fallback" aria-hidden="true" style={style}>{fallback}</span>;
   }
 
-  return <img style={style} src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
+  return <img key={src} style={style} src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailedSrc(src)} />;
 }
 
 function ItemVisual({
