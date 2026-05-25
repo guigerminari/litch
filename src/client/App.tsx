@@ -194,6 +194,11 @@ const viewLabels: Record<View, string> = {
 };
 
 const attributes: AttributeKey[] = ["strength", "constitution", "agility"];
+const ATTRIBUTE_RELEVANCE: Record<AttributeKey, string> = {
+  strength: "Aumenta o impacto dos ataques e ajuda a encerrar combates mais rapido.",
+  constitution: "Aumenta sua sobrevivencia, dando mais folego para batalhas longas.",
+  agility: "Melhora sua chance de agir com precisao, evitar golpes e causar acertos decisivos."
+};
 const CLAN_CREST_OPTIONS = ["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"] as const;
 
 const ITEM_KIND_LABELS: Record<ItemKind, string> = {
@@ -798,12 +803,24 @@ function Header({
   const regenSecsRemainder = regenSecs % 60;
   const timerLabel = `${regenMins}:${String(regenSecsRemainder).padStart(2, "0")}`;
   const royalSealActive = isRoyalSealActive(game);
+  const hasGrowthPoints = game.character.unspentAttributePoints > 0 || game.derived.availableTalentPoints > 0;
+  const growthPointLabels = [
+    game.character.unspentAttributePoints > 0 ? `${game.character.unspentAttributePoints} ponto(s) de atributo` : "",
+    game.derived.availableTalentPoints > 0 ? `${game.derived.availableTalentPoints} ponto(s) de talento` : ""
+  ].filter(Boolean);
 
   return (
     <header className="topbar">
       <div className="topbar-profile">
         <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
-          <CharacterAvatar avatar={getCurrentAvatar(game)} size={42} royal={royalSealActive} className="character-chip-avatar" />
+          <CharacterAvatar
+            avatar={getCurrentAvatar(game)}
+            size={42}
+            royal={royalSealActive}
+            className="character-chip-avatar"
+            alert={hasGrowthPoints}
+            alertLabel={growthPointLabels.join(" e ") || "Pontos para distribuir"}
+          />
           <strong>{game.character.name}</strong>
           <small>Nv {game.character.level}</small>
           <small className="character-chip-clan">
@@ -1844,21 +1861,26 @@ function CharacterAvatar({
   avatar,
   size = 72,
   royal = false,
-  className = ""
+  className = "",
+  alert = false,
+  alertLabel = "Pontos para distribuir"
 }: {
   avatar?: AvatarDefinition;
   size?: number;
   royal?: boolean;
   className?: string;
+  alert?: boolean;
+  alertLabel?: string;
 }) {
   return (
     <span
       className={`profile-avatar ${className}`}
       style={{ width: size, height: size, background: avatar?.accent }}
-      title={avatar?.name}
+      title={alert ? alertLabel : avatar?.name}
     >
       {getAvatarIcon(avatar?.icon ?? "user", Math.max(18, Math.floor(size * 0.48)))}
       {royal && <i className="royal-seal-mini"><Crown size={Math.max(9, Math.floor(size * 0.16))} /></i>}
+      {alert && <i className="profile-avatar-alert-dot" aria-label={alertLabel} />}
     </span>
   );
 }
@@ -1874,6 +1896,8 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
   const autoPveActive = isAutoPveActive(game);
   const currentAvatar = getCurrentAvatar(game);
   const unlockedAvatarIds = game.character.unlockedAvatarIds ?? [];
+  const hpProgress = Math.min(100, Math.round((game.character.currentHp / game.derived.maxHp) * 100));
+  const energyProgress = Math.min(100, Math.round((game.character.currentEnergy / game.derived.maxEnergy) * 100));
   const changePending = (key: AttributeKey, delta: number) => {
     setPending((current) => {
       const nextValue = Math.max(0, current[key] + delta);
@@ -1963,6 +1987,21 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         </div>}
       </section>
 
+      <section className="character-resource-bars" aria-label="Recursos do personagem">
+        <ResourceBar
+          className="life"
+          icon={<Heart size={15} style={{ color: "var(--red)" }} />}
+          value={`${game.character.currentHp}/${game.derived.maxHp}`}
+          progress={hpProgress}
+        />
+        <ResourceBar
+          className="energy"
+          icon={<Zap size={15} style={{ color: "var(--green)" }} />}
+          value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
+          progress={energyProgress}
+        />
+      </section>
+
       <div className="stat-grid">
         <Metric icon={<Heart size={18} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
         <Metric icon={<Zap size={18} />} label="Energia" value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`} />
@@ -1980,20 +2019,36 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         <h3>Poções</h3>
         <div className="potion-actions">
           <button
-            className="ghost-button potion-btn"
+            className="battle-potion-button health"
             disabled={locked || !healthPotion || game.character.currentHp >= game.derived.maxHp}
             title={healthPotion?.definition.name ?? "Nenhuma pocao de vida"}
             onClick={() => healthPotion && socket.emit("inventory:use", { instanceId: healthPotion.inventoryItem.instanceId })}
           >
-            <Heart size={14} /> Vida {healthPotion ? `x${healthPotion.quantity}` : "x0"}
+            {healthPotion ? (
+              <ItemVisual item={healthPotion.definition} className="battle-potion-visual" quantity={healthPotion.quantity} />
+            ) : (
+              <span className="battle-potion-visual empty"><Heart size={18} /></span>
+            )}
+            <span>
+              <strong>Vida</strong>
+              <small>{healthPotion ? getPotionEffectLabel(healthPotion.definition, "health") : "x0"}</small>
+            </span>
           </button>
           <button
-            className="ghost-button potion-btn"
+            className="battle-potion-button energy"
             disabled={locked || !energyPotion || game.character.currentEnergy >= game.derived.maxEnergy}
             title={energyPotion?.definition.name ?? "Nenhuma pocao de energia"}
             onClick={() => energyPotion && socket.emit("inventory:use", { instanceId: energyPotion.inventoryItem.instanceId })}
           >
-            <Zap size={14} /> Energia {energyPotion ? `x${energyPotion.quantity}` : "x0"}
+            {energyPotion ? (
+              <ItemVisual item={energyPotion.definition} className="battle-potion-visual" quantity={energyPotion.quantity} />
+            ) : (
+              <span className="battle-potion-visual empty"><Zap size={18} /></span>
+            )}
+            <span>
+              <strong>Energia</strong>
+              <small>{energyPotion ? getPotionEffectLabel(energyPotion.definition, "energy") : "x0"}</small>
+            </span>
           </button>
         </div>
       </section>
@@ -2053,8 +2108,11 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           </div>
           {attributes.map((attribute) => (
             <div className="allocator" key={attribute}>
-              <span>{ATTRIBUTE_LABEL[attribute]}</span>
-              <div>
+              <span className="allocator-copy">
+                <strong>{ATTRIBUTE_LABEL[attribute]}</strong>
+                <small>{ATTRIBUTE_RELEVANCE[attribute]}</small>
+              </span>
+              <div className="allocator-controls">
                 <IconButton label={`Remover ${ATTRIBUTE_LABEL[attribute]}`} onClick={() => changePending(attribute, -1)}>
                   -
                 </IconButton>

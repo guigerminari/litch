@@ -107,7 +107,7 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
     (defenseSuperActive ? 0.1 : 0);
 
   return {
-    maxHp: Math.floor((character.level * 50 + 2 * attributes.constitution) * (1 + maxHpBonusPercent)),
+    maxHp: Math.floor((character.level * 20 + 3 * attributes.constitution) * (1 + maxHpBonusPercent)),
     maxEnergy:
       10 +
       attributes.constitution +

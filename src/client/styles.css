@@ -1224,6 +1224,18 @@ button:disabled {
   color: var(--gold);
 }
 
+.profile-avatar-alert-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--bg-secondary);
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 10px rgba(185, 74, 89, 0.45);
+}
+
 .character-chip strong,
 .character-chip small {
   width: 100%;
@@ -1579,6 +1591,10 @@ button:disabled {
   margin-bottom: -10px;
 }
 
+.character-resource-bars {
+  display: grid;
+}
+
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1613,8 +1629,8 @@ button:disabled {
 
 .potion-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+  grid-template-columns: auto auto;
 }
 
 .quick-potion-settings {
@@ -1719,10 +1735,28 @@ button:disabled {
   font-size: 1.4rem;
 }
 
-.allocator div {
+.allocator-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.allocator-copy strong {
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+.allocator-copy small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.25;
+}
+
+.allocator-controls {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .icon-button,
@@ -2752,13 +2786,6 @@ button:disabled {
 
 .attr-label svg {
   color: var(--gold);
-}
-
-/* Potion buttons with icon */
-.potion-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 
 /* Talent categories side by side */
@@ -6547,7 +6574,8 @@ button:disabled {
   }
 
   .resource-bar strong {
-    font-size: 0.68rem;
+    font-size: 0.6rem;
+    font-weight: 500;
   }
 
   .regen-hint {

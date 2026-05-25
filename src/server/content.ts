@@ -2763,20 +2763,16 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Boneco Encantado",
     "imageUrl": "/assets/monsters/clay_golem.png",
     "level": 1,
-    "maxHp": 35,
-    "strength": 8,
+    "maxHp": 30,
+    "strength": 10,
     "defense": 0,
     "agility": 0,
-    "experience": 39.3,
-    "gold": 58.95,
+    "experience": 39,
+    "gold": 58.5,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.3
-      },
-      {
-        "itemId": "weapon_insane_axe",
-        "chance": 1
       }
     ]
   },
@@ -2786,15 +2782,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Rato da Floresta",
     "imageUrl": "/assets/monsters/grey_rat.png",
     "level": 2,
-    "maxHp": 45,
-    "strength": 10,
+    "maxHp": 62,
+    "strength": 22,
     "defense": 1,
     "agility": 2,
-    "experience": 78.8,
-    "gold": 118.2,
+    "experience": 81.7,
+    "gold": 122.55,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.22
       },
       {
@@ -2809,15 +2805,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Aberracao",
     "imageUrl": "/assets/monsters/aberr.png",
     "level": 3,
-    "maxHp": 78,
-    "strength": 19,
+    "maxHp": 92,
+    "strength": 32,
     "defense": 2,
     "agility": 2,
-    "experience": 125.1,
-    "gold": 187.65,
+    "experience": 127.8,
+    "gold": 191.7,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.3
       },
       {
@@ -2832,12 +2828,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Anaconda",
     "imageUrl": "/assets/monsters/anaconda_new.png",
     "level": 4,
-    "maxHp": 78,
-    "strength": 19,
+    "maxHp": 125,
+    "strength": 45,
     "defense": 2,
-    "agility": 3,
-    "experience": 172.2,
-    "gold": 258.3,
+    "agility": 5,
+    "experience": 179.7,
+    "gold": 269.55,
     "drops": [
       {
         "itemId": "material_bone",
@@ -2859,12 +2855,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lobo Cinzento",
     "imageUrl": "/assets/monsters/grey-wolf.png",
     "level": 5,
-    "maxHp": 75,
-    "strength": 18,
+    "maxHp": 155,
+    "strength": 55,
     "defense": 3,
     "agility": 5,
-    "experience": 223.1,
-    "gold": 334.65,
+    "experience": 234.8,
+    "gold": 352.2,
     "drops": [
       {
         "itemId": "wolf_pelt",
@@ -2886,15 +2882,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Guarda de Anubis",
     "imageUrl": "/assets/monsters/anubis_guard.png",
     "level": 6,
-    "maxHp": 126,
-    "strength": 30,
+    "maxHp": 187,
+    "strength": 67,
     "defense": 5,
-    "agility": 4,
-    "experience": 286.5,
-    "gold": 429.75,
+    "agility": 7,
+    "experience": 296.6,
+    "gold": 444.9,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.3
       },
       {
@@ -2909,12 +2905,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Mamba Negra",
     "imageUrl": "/assets/monsters/black_mamba_new.png",
     "level": 7,
-    "maxHp": 126,
-    "strength": 30,
+    "maxHp": 219,
+    "strength": 79,
     "defense": 5,
-    "agility": 5,
-    "experience": 348.6,
-    "gold": 522.9,
+    "agility": 9,
+    "experience": 363.2,
+    "gold": 544.8,
     "drops": [
       {
         "itemId": "material_bone",
@@ -2936,12 +2932,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Bandido da Estrada",
     "imageUrl": "/assets/monsters/human-bandit.png",
     "level": 8,
-    "maxHp": 130,
-    "strength": 34,
+    "maxHp": 248,
+    "strength": 88,
     "defense": 6,
     "agility": 8,
-    "experience": 417.8,
-    "gold": 626.7,
+    "experience": 435,
+    "gold": 652.5,
     "drops": [
       {
         "itemId": "iron_sword",
@@ -2963,15 +2959,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lodo Marrom",
     "imageUrl": "/assets/monsters/brown_ooze.png",
     "level": 9,
-    "maxHp": 177,
-    "strength": 41,
+    "maxHp": 282,
+    "strength": 102,
     "defense": 7,
-    "agility": 6,
-    "experience": 498.1,
-    "gold": 747.15,
+    "agility": 12,
+    "experience": 515.3,
+    "gold": 772.95,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.3
       },
       {
@@ -2990,12 +2986,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Demonio Centauro",
     "imageUrl": "/assets/monsters/centaur_demon.png",
     "level": 10,
-    "maxHp": 177,
-    "strength": 41,
+    "maxHp": 310,
+    "strength": 110,
     "defense": 7,
-    "agility": 7,
-    "experience": 580.2,
-    "gold": 870.3,
+    "agility": 10,
+    "experience": 600.7,
+    "gold": 901.05,
     "drops": [
       {
         "itemId": "material_bone",
@@ -3017,12 +3013,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Javali Espinhoso",
     "imageUrl": "/assets/monsters/grey-bear.png",
     "level": 11,
-    "maxHp": 180,
-    "strength": 42,
+    "maxHp": 342,
+    "strength": 122,
     "defense": 10,
-    "agility": 4,
-    "experience": 671.6,
-    "gold": 1007.4,
+    "agility": 12,
+    "experience": 696.6,
+    "gold": 1044.9,
     "drops": [
       {
         "itemId": "energy_potion",
@@ -3044,15 +3040,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Golem de Argila",
     "imageUrl": "/assets/monsters/clay_golem.png",
     "level": 12,
-    "maxHp": 231,
-    "strength": 52,
+    "maxHp": 371,
+    "strength": 131,
     "defense": 10,
-    "agility": 8,
-    "experience": 778.1,
-    "gold": 1167.15,
+    "agility": 11,
+    "experience": 800.3,
+    "gold": 1200.45,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3067,12 +3063,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Goblin Amaldicoado",
     "imageUrl": "/assets/monsters/cursed-goblin.png",
     "level": 13,
-    "maxHp": 231,
-    "strength": 52,
+    "maxHp": 403,
+    "strength": 143,
     "defense": 10,
-    "agility": 9,
-    "experience": 888.2,
-    "gold": 1332.3,
+    "agility": 13,
+    "experience": 914.9,
+    "gold": 1372.35,
     "drops": [
       {
         "itemId": "material_bone",
@@ -3090,12 +3086,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Elemental da Danacao",
     "imageUrl": "/assets/monsters/damnation_elemental.png",
     "level": 14,
-    "maxHp": 290,
-    "strength": 63,
+    "maxHp": 433,
+    "strength": 153,
     "defense": 13,
-    "agility": 3,
-    "experience": 1015.9,
-    "gold": 1523.85,
+    "agility": 13,
+    "experience": 1040.2,
+    "gold": 1560.3,
     "drops": [
       {
         "itemId": "material_bone",
@@ -3117,15 +3113,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Ciclope da Danacao",
     "imageUrl": "/assets/monsters/damnation_cyclops.png",
     "level": 15,
-    "maxHp": 290,
-    "strength": 63,
+    "maxHp": 466,
+    "strength": 166,
     "defense": 13,
-    "agility": 11,
-    "experience": 1149.7,
-    "gold": 1724.55,
+    "agility": 16,
+    "experience": 1178.1,
+    "gold": 1767.15,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3140,12 +3136,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Golem da Danacao",
     "imageUrl": "/assets/monsters/damnation_golem.png",
     "level": 16,
-    "maxHp": 351,
-    "strength": 74,
+    "maxHp": 495,
+    "strength": 175,
     "defense": 15,
-    "agility": 4,
-    "experience": 1302.4,
-    "gold": 1953.6,
+    "agility": 15,
+    "experience": 1328,
+    "gold": 1992,
     "drops": [
       {
         "itemId": "material_stone_fragment",
@@ -3167,12 +3163,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Harpia da Danacao",
     "imageUrl": "/assets/monsters/damnation_harpy.png",
     "level": 17,
-    "maxHp": 351,
-    "strength": 74,
+    "maxHp": 524,
+    "strength": 184,
     "defense": 15,
-    "agility": 5,
-    "experience": 1463.5,
-    "gold": 2195.25,
+    "agility": 14,
+    "experience": 1492.7,
+    "gold": 2239.05,
     "drops": [
       {
         "itemId": "material_stone_fragment",
@@ -3190,12 +3186,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Golem de Brasa",
     "imageUrl": "/assets/monsters/damnation_golem.png",
     "level": 18,
-    "maxHp": 380,
-    "strength": 78,
+    "maxHp": 560,
+    "strength": 200,
     "defense": 24,
-    "agility": 3,
-    "experience": 1643.5,
-    "gold": 2465.25,
+    "agility": 20,
+    "experience": 1675.4,
+    "gold": 2513.1,
     "drops": [
       {
         "itemId": "ember_core",
@@ -3213,12 +3209,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Mumia da Danacao",
     "imageUrl": "/assets/monsters/damnation_mummy.png",
     "level": 19,
-    "maxHp": 417,
-    "strength": 85,
+    "maxHp": 588,
+    "strength": 208,
     "defense": 18,
-    "agility": 6,
-    "experience": 1842.6,
-    "gold": 2763.9,
+    "agility": 18,
+    "experience": 1873.2,
+    "gold": 2809.8,
     "drops": [
       {
         "itemId": "material_dark_residue",
@@ -3236,12 +3232,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Orc da Danacao",
     "imageUrl": "/assets/monsters/damnation_orc.png",
     "level": 20,
-    "maxHp": 417,
-    "strength": 85,
+    "maxHp": 617,
+    "strength": 217,
     "defense": 18,
-    "agility": 7,
-    "experience": 2056.7,
-    "gold": 3085.05,
+    "agility": 17,
+    "experience": 2090.9,
+    "gold": 3136.35,
     "drops": [
       {
         "itemId": "material_stone_fragment",
@@ -3263,15 +3259,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Escorpiao da Danacao",
     "imageUrl": "/assets/monsters/damnation_scorpion.png",
     "level": 21,
-    "maxHp": 486,
-    "strength": 96,
+    "maxHp": 649,
+    "strength": 229,
     "defense": 20,
-    "agility": 8,
-    "experience": 2301,
-    "gold": 3451.5,
+    "agility": 19,
+    "experience": 2331.7,
+    "gold": 3497.55,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3290,12 +3286,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Serpente da Danacao",
     "imageUrl": "/assets/monsters/damnation_snake.png",
     "level": 22,
-    "maxHp": 486,
-    "strength": 96,
+    "maxHp": 681,
+    "strength": 241,
     "defense": 20,
-    "agility": 9,
-    "experience": 2560.1,
-    "gold": 3840.15,
+    "agility": 21,
+    "experience": 2595.3,
+    "gold": 3892.95,
     "drops": [
       {
         "itemId": "material_dark_residue",
@@ -3313,12 +3309,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Serpe da Caverna",
     "imageUrl": "/assets/monsters/demon_dragon.png",
     "level": 23,
-    "maxHp": 470,
-    "strength": 98,
+    "maxHp": 713,
+    "strength": 253,
     "defense": 18,
-    "agility": 16,
-    "experience": 2844.2,
-    "gold": 4266.3,
+    "agility": 23,
+    "experience": 2884.7,
+    "gold": 4327.05,
     "drops": [
       {
         "itemId": "hunter_charm",
@@ -3340,15 +3336,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Aranha da Danacao",
     "imageUrl": "/assets/monsters/damnation_spider.png",
     "level": 24,
-    "maxHp": 558,
-    "strength": 107,
+    "maxHp": 745,
+    "strength": 265,
     "defense": 23,
-    "agility": 10,
-    "experience": 3166.8,
-    "gold": 4750.2,
+    "agility": 25,
+    "experience": 3202.8,
+    "gold": 4804.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3363,15 +3359,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Troll da Danacao",
     "imageUrl": "/assets/monsters/damnation_troll.png",
     "level": 25,
-    "maxHp": 558,
-    "strength": 107,
+    "maxHp": 772,
+    "strength": 272,
     "defense": 23,
-    "agility": 11,
-    "experience": 3511.9,
-    "gold": 5267.85,
+    "agility": 22,
+    "experience": 3550.9,
+    "gold": 5326.35,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3390,15 +3386,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Chapeu-da-morte",
     "imageUrl": "/assets/monsters/deathcap.png",
     "level": 26,
-    "maxHp": 635,
-    "strength": 118,
+    "maxHp": 805,
+    "strength": 285,
     "defense": 26,
-    "agility": 4,
-    "experience": 3899.3,
-    "gold": 5848.95,
+    "agility": 25,
+    "experience": 3935.1,
+    "gold": 5902.65,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.26
       }
     ]
@@ -3406,18 +3402,18 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "deep_dwarf": {
     "id": "deep_dwarf",
     "cityId": "ravenspire",
-    "name": "Anão das Profundezas",
+    "name": "Anao das Profundezas",
     "imageUrl": "/assets/monsters/deep-dwarf.png",
     "level": 27,
-    "maxHp": 635,
-    "strength": 118,
+    "maxHp": 836,
+    "strength": 296,
     "defense": 26,
-    "agility": 5,
-    "experience": 4316.4,
-    "gold": 6474.6,
+    "agility": 26,
+    "experience": 4356.4,
+    "gold": 6534.6,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3432,15 +3428,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Demonio Bareon",
     "imageUrl": "/assets/monsters/demon_bareon.png",
     "level": 28,
-    "maxHp": 714,
-    "strength": 129,
+    "maxHp": 870,
+    "strength": 310,
     "defense": 28,
-    "agility": 6,
-    "experience": 4784.7,
-    "gold": 7177.05,
+    "agility": 30,
+    "experience": 4820.8,
+    "gold": 7231.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3459,15 +3455,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Gigante Demoniaco do Deserto",
     "imageUrl": "/assets/monsters/demon_desert_giant.png",
     "level": 29,
-    "maxHp": 714,
-    "strength": 129,
+    "maxHp": 902,
+    "strength": 322,
     "defense": 28,
-    "agility": 7,
-    "experience": 5289.8,
-    "gold": 7934.7,
+    "agility": 32,
+    "experience": 5330.4,
+    "gold": 7995.6,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3482,15 +3478,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Dragao Demoniaco",
     "imageUrl": "/assets/monsters/demon_dragon.png",
     "level": 30,
-    "maxHp": 798,
-    "strength": 140,
+    "maxHp": 929,
+    "strength": 329,
     "defense": 31,
-    "agility": 8,
-    "experience": 5854.7,
-    "gold": 8782.05,
+    "agility": 29,
+    "experience": 5888.8,
+    "gold": 8833.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       }
     ]
@@ -3501,15 +3497,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Elefante Demoniaco",
     "imageUrl": "/assets/monsters/demoniac_elephant.png",
     "level": 31,
-    "maxHp": 798,
-    "strength": 140,
+    "maxHp": 965,
+    "strength": 345,
     "defense": 31,
-    "agility": 9,
-    "experience": 6465.8,
-    "gold": 9698.7,
+    "agility": 35,
+    "experience": 6505.6,
+    "gold": 9758.4,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3524,15 +3520,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lobo Demoniaco",
     "imageUrl": "/assets/monsters/demoniac_wolf.png",
     "level": 32,
-    "maxHp": 885,
-    "strength": 151,
+    "maxHp": 994,
+    "strength": 354,
     "defense": 33,
-    "agility": 10,
-    "experience": 7146.9,
-    "gold": 10720.35,
+    "agility": 34,
+    "experience": 7180.5,
+    "gold": 10770.75,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3547,15 +3543,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Gigante do Deserto",
     "imageUrl": "/assets/monsters/desert_giant.png",
     "level": 33,
-    "maxHp": 885,
-    "strength": 151,
+    "maxHp": 1023,
+    "strength": 363,
     "defense": 33,
-    "agility": 11,
-    "experience": 7886,
-    "gold": 11829,
+    "agility": 33,
+    "experience": 7923.2,
+    "gold": 11884.8,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3570,15 +3566,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Verme do Deserto",
     "imageUrl": "/assets/monsters/desert_worm.png",
     "level": 34,
-    "maxHp": 975,
-    "strength": 162,
+    "maxHp": 1056,
+    "strength": 376,
     "defense": 36,
-    "agility": 4,
-    "experience": 8708.7,
-    "gold": 13063.05,
+    "agility": 36,
+    "experience": 8741.4,
+    "gold": 13112.1,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       }
     ]
@@ -3589,15 +3585,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Andarilho do Deserto",
     "imageUrl": "/assets/monsters/desert_walker.png",
     "level": 35,
-    "maxHp": 975,
-    "strength": 162,
+    "maxHp": 1086,
+    "strength": 386,
     "defense": 36,
-    "agility": 12,
-    "experience": 9603.5,
-    "gold": 14405.25,
+    "agility": 36,
+    "experience": 9639.4,
+    "gold": 14459.1,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3616,15 +3612,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Orc de Dorrene",
     "imageUrl": "/assets/monsters/dorrene_orc.png",
     "level": 36,
-    "maxHp": 1070,
-    "strength": 173,
+    "maxHp": 1117,
+    "strength": 397,
     "defense": 39,
-    "agility": 6,
-    "experience": 10597.8,
-    "gold": 15896.7,
+    "agility": 37,
+    "experience": 10628,
+    "gold": 15942,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.26
       },
       {
@@ -3643,15 +3639,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Serpente de Dorrene",
     "imageUrl": "/assets/monsters/dorrene_snake.png",
     "level": 37,
-    "maxHp": 1070,
-    "strength": 173,
+    "maxHp": 1150,
+    "strength": 410,
     "defense": 39,
-    "agility": 7,
-    "experience": 11679.9,
-    "gold": 17519.85,
+    "agility": 40,
+    "experience": 11714.9,
+    "gold": 17572.35,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       }
     ]
@@ -3662,15 +3658,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Coelho de Pascoa",
     "imageUrl": "/assets/monsters/easter_bunny.png",
     "level": 38,
-    "maxHp": 1167,
-    "strength": 184,
+    "maxHp": 1179,
+    "strength": 419,
     "defense": 41,
-    "agility": 8,
-    "experience": 12881,
-    "gold": 19321.5,
+    "agility": 39,
+    "experience": 12908.8,
+    "gold": 19363.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3685,15 +3681,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Escorpiao Imperador",
     "imageUrl": "/assets/monsters/emperor_scorpion.png",
     "level": 39,
-    "maxHp": 1167,
-    "strength": 184,
+    "maxHp": 1210,
+    "strength": 430,
     "defense": 41,
-    "agility": 9,
-    "experience": 14190.1,
-    "gold": 21285.15,
+    "agility": 40,
+    "experience": 14222.1,
+    "gold": 21333.15,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3712,15 +3708,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Olho da Devastacao",
     "imageUrl": "/assets/monsters/eye_of_devastation_new.png",
     "level": 40,
-    "maxHp": 1269,
-    "strength": 195,
+    "maxHp": 1238,
+    "strength": 438,
     "defense": 44,
-    "agility": 10,
-    "experience": 15641.8,
-    "gold": 23462.7,
+    "agility": 38,
+    "experience": 15665.8,
+    "gold": 23498.7,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3735,15 +3731,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Formiga Gigante",
     "imageUrl": "/assets/monsters/giant_ant.png",
     "level": 41,
-    "maxHp": 1269,
-    "strength": 195,
+    "maxHp": 1250,
+    "strength": 430,
     "defense": 44,
-    "agility": 11,
-    "experience": 17225.9,
-    "gold": 25838.85,
+    "agility": 20,
+    "experience": 17248.4,
+    "gold": 25872.6,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3758,15 +3754,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lagartixa Gigante",
     "imageUrl": "/assets/monsters/giant_gecko.png",
     "level": 42,
-    "maxHp": 1374,
-    "strength": 206,
+    "maxHp": 1307,
+    "strength": 467,
     "defense": 46,
-    "agility": 12,
-    "experience": 18980.8,
-    "gold": 28471.2,
+    "agility": 47,
+    "experience": 19003.7,
+    "gold": 28505.55,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3785,15 +3781,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Sanguessuga Gigante",
     "imageUrl": "/assets/monsters/giant_leech.png",
     "level": 43,
-    "maxHp": 1374,
-    "strength": 206,
+    "maxHp": 1339,
+    "strength": 479,
     "defense": 46,
-    "agility": 13,
-    "experience": 20897.9,
-    "gold": 31346.85,
+    "agility": 49,
+    "experience": 20925.3,
+    "gold": 31387.95,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.26
       },
       {
@@ -3812,15 +3808,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Escorpiao Gigante",
     "imageUrl": "/assets/monsters/giant_scorpion.png",
     "level": 44,
-    "maxHp": 1482,
-    "strength": 217,
+    "maxHp": 1372,
+    "strength": 492,
     "defense": 49,
-    "agility": 5,
-    "experience": 23017.3,
-    "gold": 34525.95,
+    "agility": 52,
+    "experience": 23038.5,
+    "gold": 34557.75,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.26
       }
     ]
@@ -3831,15 +3827,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Esporo Gigante",
     "imageUrl": "/assets/monsters/giant_spore.png",
     "level": 45,
-    "maxHp": 1482,
-    "strength": 217,
+    "maxHp": 1398,
+    "strength": 498,
     "defense": 49,
-    "agility": 6,
-    "experience": 25336.4,
-    "gold": 38004.6,
+    "agility": 48,
+    "experience": 25360.3,
+    "gold": 38040.45,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3854,15 +3850,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Sapo Gigante",
     "imageUrl": "/assets/monsters/giant_toad.png",
     "level": 46,
-    "maxHp": 1595,
-    "strength": 228,
+    "maxHp": 1431,
+    "strength": 511,
     "defense": 52,
-    "agility": 8,
-    "experience": 27900.3,
-    "gold": 41850.45,
+    "agility": 51,
+    "experience": 27916.5,
+    "gold": 41874.75,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       }
     ]
@@ -3873,15 +3869,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Rato Cinzento",
     "imageUrl": "/assets/monsters/grey_rat.png",
     "level": 47,
-    "maxHp": 1595,
-    "strength": 228,
+    "maxHp": 1459,
+    "strength": 519,
     "defense": 52,
-    "agility": 9,
-    "experience": 30707.4,
-    "gold": 46061.1,
+    "agility": 49,
+    "experience": 30726.9,
+    "gold": 46090.35,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.26
       },
       {
@@ -3900,15 +3896,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Urso Cinzento",
     "imageUrl": "/assets/monsters/grey-bear.png",
     "level": 48,
-    "maxHp": 1710,
-    "strength": 239,
+    "maxHp": 1499,
+    "strength": 539,
     "defense": 54,
-    "agility": 10,
-    "experience": 33807.3,
-    "gold": 50710.95,
+    "agility": 59,
+    "experience": 33821.1,
+    "gold": 50731.65,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -3927,15 +3923,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lobo Cinzento",
     "imageUrl": "/assets/monsters/grey-wolf.png",
     "level": 49,
-    "maxHp": 1710,
-    "strength": 239,
+    "maxHp": 1521,
+    "strength": 541,
     "defense": 54,
-    "agility": 11,
-    "experience": 37202.4,
-    "gold": 55803.6,
+    "agility": 51,
+    "experience": 37217.7,
+    "gold": 55826.55,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -3954,15 +3950,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Serpente Guardiã",
     "imageUrl": "/assets/monsters/guardian_serpent.png",
     "level": 50,
-    "maxHp": 1830,
-    "strength": 250,
+    "maxHp": 1553,
+    "strength": 553,
     "defense": 57,
-    "agility": 12,
-    "experience": 40950.9,
-    "gold": 61426.35,
+    "agility": 53,
+    "experience": 40957.6,
+    "gold": 61436.4,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -3973,15 +3969,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lagarto Infernal",
     "imageUrl": "/assets/monsters/hell_lizard.png",
     "level": 51,
-    "maxHp": 1830,
-    "strength": 250,
+    "maxHp": 1582,
+    "strength": 562,
     "defense": 57,
-    "agility": 13,
-    "experience": 45060,
-    "gold": 67590,
+    "agility": 52,
+    "experience": 45070.3,
+    "gold": 67605.45,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -3996,15 +3992,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Verme Infernal",
     "imageUrl": "/assets/monsters/hell_worm.png",
     "level": 52,
-    "maxHp": 1953,
-    "strength": 261,
+    "maxHp": 1613,
+    "strength": 573,
     "defense": 59,
-    "agility": 6,
-    "experience": 49592.9,
-    "gold": 74389.35,
+    "agility": 53,
+    "experience": 49594.8,
+    "gold": 74392.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4019,15 +4015,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Salamandra Infernal",
     "imageUrl": "/assets/monsters/hell_salamander.png",
     "level": 53,
-    "maxHp": 1953,
-    "strength": 261,
+    "maxHp": 1635,
+    "strength": 575,
     "defense": 59,
-    "agility": 14,
-    "experience": 54564.7,
-    "gold": 81847.05,
+    "agility": 45,
+    "experience": 54567.4,
+    "gold": 81851.1,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4042,15 +4038,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Gigante da Colina",
     "imageUrl": "/assets/monsters/hill_giant_new.png",
     "level": 54,
-    "maxHp": 2079,
-    "strength": 272,
+    "maxHp": 1663,
+    "strength": 583,
     "defense": 62,
-    "agility": 7,
-    "experience": 60047,
-    "gold": 90070.5,
+    "agility": 43,
+    "experience": 60040.1,
+    "gold": 90060.15,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4061,12 +4057,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Bandido Humano",
     "imageUrl": "/assets/monsters/human-bandit.png",
     "level": 55,
-    "maxHp": 2079,
-    "strength": 272,
+    "maxHp": 1721,
+    "strength": 621,
     "defense": 62,
-    "agility": 8,
-    "experience": 66062.1,
-    "gold": 99093.15,
+    "agility": 71,
+    "experience": 66067.5,
+    "gold": 99101.25,
     "drops": [
       {
         "itemId": "major_health_potion",
@@ -4084,15 +4080,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Serpente Infernal",
     "imageUrl": "/assets/monsters/infernal_serpent.png",
     "level": 56,
-    "maxHp": 2210,
-    "strength": 283,
+    "maxHp": 1755,
+    "strength": 635,
     "defense": 65,
-    "agility": 10,
-    "experience": 72693.8,
-    "gold": 109040.7,
+    "agility": 75,
+    "experience": 72690,
+    "gold": 109035,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4103,15 +4099,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Geleia",
     "imageUrl": "/assets/monsters/jelly.png",
     "level": 57,
-    "maxHp": 2210,
-    "strength": 283,
+    "maxHp": 1791,
+    "strength": 651,
     "defense": 65,
-    "agility": 11,
-    "experience": 79972.9,
-    "gold": 119959.35,
+    "agility": 81,
+    "experience": 79974.8,
+    "gold": 119962.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4130,15 +4126,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Gigante de Joree",
     "imageUrl": "/assets/monsters/joree_giant.png",
     "level": 58,
-    "maxHp": 2343,
-    "strength": 294,
+    "maxHp": 1796,
+    "strength": 636,
     "defense": 67,
-    "agility": 12,
-    "experience": 87994.6,
-    "gold": 131991.9,
+    "agility": 56,
+    "experience": 87978.5,
+    "gold": 131967.75,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4153,15 +4149,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Planta de Joree",
     "imageUrl": "/assets/monsters/joree_plant.png",
     "level": 59,
-    "maxHp": 2343,
-    "strength": 294,
+    "maxHp": 1823,
+    "strength": 643,
     "defense": 67,
-    "agility": 13,
-    "experience": 96801.7,
-    "gold": 145202.55,
+    "agility": 53,
+    "experience": 96788.6,
+    "gold": 145182.9,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4172,15 +4168,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Andarilho de Joree",
     "imageUrl": "/assets/monsters/joree_walker.png",
     "level": 60,
-    "maxHp": 2481,
-    "strength": 305,
+    "maxHp": 1871,
+    "strength": 671,
     "defense": 70,
-    "agility": 14,
-    "experience": 106505,
-    "gold": 159757.5,
+    "agility": 71,
+    "experience": 106486.3,
+    "gold": 159729.45,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4195,15 +4191,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Rato de Laboratorio Oculto",
     "imageUrl": "/assets/monsters/labrat_unseen.png",
     "level": 61,
-    "maxHp": 2481,
-    "strength": 305,
+    "maxHp": 1889,
+    "strength": 669,
     "defense": 70,
-    "agility": 15,
-    "experience": 117162.1,
-    "gold": 175743.15,
+    "agility": 59,
+    "experience": 117143.7,
+    "gold": 175715.55,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4214,15 +4210,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Mumia",
     "imageUrl": "/assets/monsters/mummy.png",
     "level": 62,
-    "maxHp": 2622,
-    "strength": 316,
+    "maxHp": 1918,
+    "strength": 678,
     "defense": 72,
-    "agility": 7,
-    "experience": 128898.7,
-    "gold": 193348.05,
+    "agility": 58,
+    "experience": 128869.6,
+    "gold": 193304.4,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.34
       },
       {
@@ -4241,15 +4237,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Ogro Mago",
     "imageUrl": "/assets/monsters/ogre_mage.png",
     "level": 63,
-    "maxHp": 2622,
-    "strength": 316,
+    "maxHp": 1935,
+    "strength": 675,
     "defense": 72,
-    "agility": 8,
-    "experience": 141793.8,
-    "gold": 212690.7,
+    "agility": 45,
+    "experience": 141764.7,
+    "gold": 212647.05,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4264,15 +4260,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Ogro",
     "imageUrl": "/assets/monsters/ogre.png",
     "level": 64,
-    "maxHp": 2766,
-    "strength": 327,
+    "maxHp": 1981,
+    "strength": 701,
     "defense": 75,
-    "agility": 9,
-    "experience": 155994.7,
-    "gold": 233992.05,
+    "agility": 61,
+    "experience": 155958.8,
+    "gold": 233938.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4287,15 +4283,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Cavaleiro Orc",
     "imageUrl": "/assets/monsters/orc_knight.png",
     "level": 65,
-    "maxHp": 2766,
-    "strength": 327,
+    "maxHp": 2018,
+    "strength": 718,
     "defense": 75,
-    "agility": 10,
-    "experience": 171596.8,
-    "gold": 257395.2,
+    "agility": 68,
+    "experience": 171566.9,
+    "gold": 257350.35,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4310,15 +4306,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Guerreiro Orc",
     "imageUrl": "/assets/monsters/orc_warrior.png",
     "level": 66,
-    "maxHp": 2915,
-    "strength": 338,
+    "maxHp": 2046,
+    "strength": 726,
     "defense": 78,
-    "agility": 12,
-    "experience": 188776.3,
-    "gold": 283164.45,
+    "agility": 66,
+    "experience": 188733.6,
+    "gold": 283100.4,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4333,15 +4329,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Orc",
     "imageUrl": "/assets/monsters/orc.png",
     "level": 67,
-    "maxHp": 2915,
-    "strength": 338,
+    "maxHp": 2077,
+    "strength": 737,
     "defense": 78,
-    "agility": 13,
-    "experience": 207656.4,
-    "gold": 311484.6,
+    "agility": 67,
+    "experience": 207617.9,
+    "gold": 311426.85,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4356,15 +4352,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Massa Pulsante",
     "imageUrl": "/assets/monsters/pulsating_lump.png",
     "level": 68,
-    "maxHp": 3066,
-    "strength": 349,
+    "maxHp": 2108,
+    "strength": 748,
     "defense": 80,
-    "agility": 14,
-    "experience": 228439.9,
-    "gold": 342659.85,
+    "agility": 68,
+    "experience": 228389.4,
+    "gold": 342584.1,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4375,15 +4371,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Aranha de Costas Vermelhas",
     "imageUrl": "/assets/monsters/redback_new.png",
     "level": 69,
-    "maxHp": 3066,
-    "strength": 349,
+    "maxHp": 2139,
+    "strength": 759,
     "defense": 80,
-    "agility": 15,
-    "experience": 251284,
-    "gold": 376926,
+    "agility": 69,
+    "experience": 251237.7,
+    "gold": 376856.55,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.34
       },
       {
@@ -4398,15 +4394,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Salamandra Flamejante",
     "imageUrl": "/assets/monsters/salamander_firebrand.png",
     "level": 70,
-    "maxHp": 3222,
-    "strength": 360,
+    "maxHp": 2172,
+    "strength": 772,
     "defense": 83,
-    "agility": 8,
-    "experience": 276428.3,
-    "gold": 414642.45,
+    "agility": 72,
+    "experience": 276370.9,
+    "gold": 414556.35,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4421,15 +4417,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Troll de Pedra",
     "imageUrl": "/assets/monsters/rock_troll.png",
     "level": 71,
-    "maxHp": 3222,
-    "strength": 360,
+    "maxHp": 2204,
+    "strength": 784,
     "defense": 83,
-    "agility": 16,
-    "experience": 304070.1,
-    "gold": 456105.15,
+    "agility": 74,
+    "experience": 304016.5,
+    "gold": 456024.75,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4444,15 +4440,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Salamandra",
     "imageUrl": "/assets/monsters/salamander.png",
     "level": 72,
-    "maxHp": 3381,
-    "strength": 371,
+    "maxHp": 2233,
+    "strength": 793,
     "defense": 85,
-    "agility": 9,
-    "experience": 334491.6,
-    "gold": 501737.4,
+    "agility": 73,
+    "experience": 334425.4,
+    "gold": 501638.1,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4467,15 +4463,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Elemental de Areia",
     "imageUrl": "/assets/monsters/sand_elemental.png",
     "level": 73,
-    "maxHp": 3381,
-    "strength": 371,
+    "maxHp": 2261,
+    "strength": 801,
     "defense": 85,
-    "agility": 10,
-    "experience": 367937.7,
-    "gold": 551906.55,
+    "agility": 71,
+    "experience": 367874.8,
+    "gold": 551812.2,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4490,15 +4486,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Aranha de Areia",
     "imageUrl": "/assets/monsters/sand_spider.png",
     "level": 74,
-    "maxHp": 3543,
-    "strength": 382,
+    "maxHp": 2297,
+    "strength": 817,
     "defense": 88,
-    "agility": 11,
-    "experience": 404745.4,
-    "gold": 607118.1,
+    "agility": 77,
+    "experience": 404670.9,
+    "gold": 607006.3500000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4517,15 +4513,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Morcego Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_bat.png",
     "level": 75,
-    "maxHp": 3543,
-    "strength": 382,
+    "maxHp": 2328,
+    "strength": 828,
     "defense": 88,
-    "agility": 12,
-    "experience": 445215.5,
-    "gold": 667823.25,
+    "agility": 78,
+    "experience": 445145.2,
+    "gold": 667717.8,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4536,15 +4532,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Centauro Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_centaur.png",
     "level": 76,
-    "maxHp": 3710,
-    "strength": 393,
+    "maxHp": 2360,
+    "strength": 840,
     "defense": 91,
-    "agility": 14,
-    "experience": 489749.8,
-    "gold": 734624.7,
+    "agility": 80,
+    "experience": 489666.1,
+    "gold": 734499.1499999999,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       },
       {
@@ -4563,15 +4559,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Dragao Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_dragon.png",
     "level": 77,
-    "maxHp": 3710,
-    "strength": 393,
+    "maxHp": 2386,
+    "strength": 846,
     "defense": 91,
-    "agility": 15,
-    "experience": 538717.9,
-    "gold": 808076.85,
+    "agility": 76,
+    "experience": 538636.9,
+    "gold": 807955.3500000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4582,15 +4578,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Naga Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_naga.png",
     "level": 78,
-    "maxHp": 3879,
-    "strength": 404,
+    "maxHp": 2417,
+    "strength": 857,
     "defense": 93,
-    "agility": 16,
-    "experience": 592601.2,
-    "gold": 888901.8,
+    "agility": 77,
+    "experience": 592506.4,
+    "gold": 888759.6000000001,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.34
       },
       {
@@ -4605,15 +4601,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Quadrupede Esqueleto Grande",
     "imageUrl": "/assets/monsters/skeleton_quadruped_large_new.png",
     "level": 79,
-    "maxHp": 3879,
-    "strength": 404,
+    "maxHp": 2450,
+    "strength": 870,
     "defense": 93,
-    "agility": 17,
-    "experience": 651852.3,
-    "gold": 977778.45,
+    "agility": 80,
+    "experience": 651762.3,
+    "gold": 977643.4500000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4624,15 +4620,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Quadrupede Esqueleto Pequeno",
     "imageUrl": "/assets/monsters/skeleton_quadruped_small.png",
     "level": 80,
-    "maxHp": 4053,
-    "strength": 415,
+    "maxHp": 2479,
+    "strength": 879,
     "defense": 96,
-    "agility": 9,
-    "experience": 717047.3,
-    "gold": 1075570.95,
+    "agility": 79,
+    "experience": 716943.3,
+    "gold": 1075414.9500000002,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_light",
         "chance": 0.34
       }
     ]
@@ -4643,15 +4639,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Serpente Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_snake.png",
     "level": 81,
-    "maxHp": 4053,
-    "strength": 415,
+    "maxHp": 2509,
+    "strength": 889,
     "defense": 96,
-    "agility": 10,
-    "experience": 788741.4,
-    "gold": 1183112.1,
+    "agility": 79,
+    "experience": 788641.3,
+    "gold": 1182961.9500000002,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.34
       },
       {
@@ -4670,15 +4666,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Coisa Feia Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_ugly_thing.png",
     "level": 82,
-    "maxHp": 4230,
-    "strength": 426,
+    "maxHp": 2539,
+    "strength": 899,
     "defense": 98,
-    "agility": 11,
-    "experience": 867623.5,
-    "gold": 1301435.25,
+    "agility": 79,
+    "experience": 867508.5,
+    "gold": 1301262.75,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.34
       },
       {
@@ -4693,15 +4689,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Formiga Espectral Antiga",
     "imageUrl": "/assets/monsters/spectral_ant_old.png",
     "level": 83,
-    "maxHp": 4230,
-    "strength": 426,
+    "maxHp": 2569,
+    "strength": 909,
     "defense": 98,
-    "agility": 12,
-    "experience": 954373.6,
-    "gold": 1431560.4,
+    "agility": 79,
+    "experience": 954262.5,
+    "gold": 1431393.75,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.34
       },
       {
@@ -4720,15 +4716,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Morcego Espectral Antigo",
     "imageUrl": "/assets/monsters/spectral_bat_old.png",
     "level": 84,
-    "maxHp": 4410,
-    "strength": 437,
+    "maxHp": 2608,
+    "strength": 928,
     "defense": 101,
-    "agility": 13,
-    "experience": 1049817.1,
-    "gold": 1574725.65,
+    "agility": 88,
+    "experience": 1049693.5,
+    "gold": 1574540.25,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.34
       },
       {
@@ -4743,15 +4739,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Abelha Espectral Antiga",
     "imageUrl": "/assets/monsters/spectral_bee_old.png",
     "level": 85,
-    "maxHp": 4410,
-    "strength": 437,
+    "maxHp": 2638,
+    "strength": 938,
     "defense": 101,
-    "agility": 14,
-    "experience": 1154785.2,
-    "gold": 1732177.8,
+    "agility": 88,
+    "experience": 1154665.5,
+    "gold": 1731998.25,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.34
       },
       {
@@ -4766,15 +4762,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Centauro Espectral Antigo",
     "imageUrl": "/assets/monsters/spectral_centaur_old.png",
     "level": 86,
-    "maxHp": 4595,
-    "strength": 448,
+    "maxHp": 2668,
+    "strength": 948,
     "defense": 104,
-    "agility": 16,
-    "experience": 1270269.3,
-    "gold": 1905403.95,
+    "agility": 88,
+    "experience": 1270133.8,
+    "gold": 1905200.7000000002,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.34
       },
       {
@@ -4789,15 +4785,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Dragao Espectral Antigo",
     "imageUrl": "/assets/monsters/spectral_dragon_old.png",
     "level": 87,
-    "maxHp": 4595,
-    "strength": 448,
+    "maxHp": 2698,
+    "strength": 958,
     "defense": 104,
-    "agility": 17,
-    "experience": 1397279.4,
-    "gold": 2095919.1,
+    "agility": 88,
+    "experience": 1397147.8,
+    "gold": 2095721.7000000002,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.34
       },
       {
@@ -4812,15 +4808,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Hidra Espectral Antiga",
     "imageUrl": "/assets/monsters/spectral_hydra_3_old.png",
     "level": 88,
-    "maxHp": 4782,
-    "strength": 459,
+    "maxHp": 2727,
+    "strength": 967,
     "defense": 106,
-    "agility": 10,
-    "experience": 1537009.7,
-    "gold": 2305514.55,
+    "agility": 87,
+    "experience": 1536862.7,
+    "gold": 2305294.05,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       }
     ]
@@ -4831,15 +4827,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Peixe Espectral Antigo",
     "imageUrl": "/assets/monsters/spectral_fish_old.png",
     "level": 89,
-    "maxHp": 4782,
-    "strength": 459,
+    "maxHp": 2760,
+    "strength": 980,
     "defense": 106,
-    "agility": 18,
-    "experience": 1690693.5,
-    "gold": 2536040.25,
+    "agility": 90,
+    "experience": 1690550.6,
+    "gold": 2535825.9000000004,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       }
     ]
@@ -4850,15 +4846,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Naga Espectral Antiga",
     "imageUrl": "/assets/monsters/spectral_naga_old.png",
     "level": 90,
-    "maxHp": 4974,
-    "strength": 470,
+    "maxHp": 2793,
+    "strength": 993,
     "defense": 109,
-    "agility": 11,
-    "experience": 1859763.4,
-    "gold": 2789645.1,
+    "agility": 93,
+    "experience": 1859605.8,
+    "gold": 2789408.7,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -4873,15 +4869,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Quadrupede Espectral Pequeno Antigo",
     "imageUrl": "/assets/monsters/spectral_quadruped_small_old.png",
     "level": 91,
-    "maxHp": 4974,
-    "strength": 470,
+    "maxHp": 2825,
+    "strength": 1005,
     "defense": 109,
-    "agility": 12,
-    "experience": 2045719.5,
-    "gold": 3068579.25,
+    "agility": 95,
+    "experience": 2045566.4,
+    "gold": 3068349.5999999996,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -4896,15 +4892,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Serpente Espectral Antiga",
     "imageUrl": "/assets/monsters/spectral_snake_old.png",
     "level": 92,
-    "maxHp": 5169,
-    "strength": 481,
+    "maxHp": 2849,
+    "strength": 1009,
     "defense": 111,
-    "agility": 13,
-    "experience": 2250292.4,
-    "gold": 3375438.6,
+    "agility": 89,
+    "experience": 2250120.8,
+    "gold": 3375181.1999999997,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -4919,15 +4915,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Aranha Espectral Antiga",
     "imageUrl": "/assets/monsters/spectral_spider_old.png",
     "level": 93,
-    "maxHp": 5169,
-    "strength": 481,
+    "maxHp": 2881,
+    "strength": 1021,
     "defense": 111,
-    "agility": 14,
-    "experience": 2475298.5,
-    "gold": 3712947.75,
+    "agility": 91,
+    "experience": 2475131.4,
+    "gold": 3712697.0999999996,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       }
     ]
@@ -4938,15 +4934,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Coisa Espectral",
     "imageUrl": "/assets/monsters/spectral_thing.png",
     "level": 94,
-    "maxHp": 5367,
-    "strength": 492,
+    "maxHp": 2913,
+    "strength": 1033,
     "defense": 114,
-    "agility": 15,
-    "experience": 2722826.8,
-    "gold": 4084240.2,
+    "agility": 93,
+    "experience": 2722643.3,
+    "gold": 4083964.9499999997,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       }
     ]
@@ -4957,15 +4953,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Verme Espectral",
     "imageUrl": "/assets/monsters/spectral_worm.png",
     "level": 95,
-    "maxHp": 5367,
-    "strength": 492,
+    "maxHp": 2941,
+    "strength": 1041,
     "defense": 114,
-    "agility": 16,
-    "experience": 2995084.9,
-    "gold": 4492627.35,
+    "agility": 91,
+    "experience": 2994904.7,
+    "gold": 4492357.050000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -4984,15 +4980,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Ogro de Duas Cabecas",
     "imageUrl": "/assets/monsters/two_headed_ogre.png",
     "level": 96,
-    "maxHp": 5570,
-    "strength": 503,
+    "maxHp": 2969,
+    "strength": 1049,
     "defense": 117,
-    "agility": 18,
-    "experience": 3294590.8,
-    "gold": 4941886.2,
+    "agility": 89,
+    "experience": 3294392.4,
+    "gold": 4941588.6,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5011,15 +5007,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Vibora",
     "imageUrl": "/assets/monsters/viper.png",
     "level": 97,
-    "maxHp": 5570,
-    "strength": 503,
+    "maxHp": 2990,
+    "strength": 1050,
     "defense": 117,
-    "agility": 19,
-    "experience": 3624022.9,
-    "gold": 5436034.35,
+    "agility": 80,
+    "experience": 3623825.7,
+    "gold": 5435738.550000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -5034,15 +5030,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Aranha-Lobo",
     "imageUrl": "/assets/monsters/wolf_spider_new.png",
     "level": 98,
-    "maxHp": 5775,
-    "strength": 514,
+    "maxHp": 3021,
+    "strength": 1061,
     "defense": 119,
-    "agility": 11,
-    "experience": 3986418.9,
-    "gold": 5979628.35,
+    "agility": 81,
+    "experience": 3986205.2,
+    "gold": 5979307.800000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -5057,15 +5053,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Aranha-Lobo Antiga",
     "imageUrl": "/assets/monsters/wolf_spider_old.png",
     "level": 99,
-    "maxHp": 5775,
-    "strength": 514,
+    "maxHp": 3059,
+    "strength": 1079,
     "defense": 119,
-    "agility": 12,
-    "experience": 4385032,
-    "gold": 6577548,
+    "agility": 89,
+    "experience": 4384824.6,
+    "gold": 6577236.899999999,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -5080,15 +5076,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Caranguejo Zumbi",
     "imageUrl": "/assets/monsters/zombie_crab.png",
     "level": 100,
-    "maxHp": 5985,
-    "strength": 525,
+    "maxHp": 3099,
+    "strength": 1099,
     "defense": 122,
-    "agility": 13,
-    "experience": 4823528.5,
-    "gold": 7235292.75,
+    "agility": 99,
+    "experience": 4823305.9,
+    "gold": 7234958.850000001,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       }
     ]
@@ -5099,15 +5095,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Draco Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_drake_infected.png",
     "level": 101,
-    "maxHp": 5985,
-    "strength": 525,
+    "maxHp": 3130,
+    "strength": 1110,
     "defense": 122,
-    "agility": 14,
-    "experience": 5305849.6,
-    "gold": 7958774.4,
+    "agility": 100,
+    "experience": 5305631.2,
+    "gold": 7958446.800000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -5122,15 +5118,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Draco Zumbi",
     "imageUrl": "/assets/monsters/zombie_drake.png",
     "level": 102,
-    "maxHp": 6198,
-    "strength": 536,
+    "maxHp": 3161,
+    "strength": 1121,
     "defense": 124,
-    "agility": 15,
-    "experience": 5836426.3,
-    "gold": 8754639.45,
+    "agility": 101,
+    "experience": 5836189.7,
+    "gold": 8754284.55,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -5145,15 +5141,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Cao Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_hound_infected.png",
     "level": 103,
-    "maxHp": 6198,
-    "strength": 536,
+    "maxHp": 3192,
+    "strength": 1132,
     "defense": 124,
-    "agility": 16,
-    "experience": 6420035.4,
-    "gold": 9630053.1,
+    "agility": 102,
+    "experience": 6419803,
+    "gold": 9629704.5,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_medium",
         "chance": 0.42
       },
       {
@@ -5172,15 +5168,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Cao Zumbi",
     "imageUrl": "/assets/monsters/zombie_hound.png",
     "level": 104,
-    "maxHp": 6414,
-    "strength": 547,
+    "maxHp": 3223,
+    "strength": 1143,
     "defense": 127,
-    "agility": 17,
-    "experience": 7062028.5,
-    "gold": 10593042.75,
+    "agility": 103,
+    "experience": 7061777.6,
+    "gold": 10592666.399999999,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5199,15 +5195,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Cabeca de Kraken Zumbi",
     "imageUrl": "/assets/monsters/zombie_kraken_head.png",
     "level": 105,
-    "maxHp": 6414,
-    "strength": 547,
+    "maxHp": 3254,
+    "strength": 1154,
     "defense": 127,
-    "agility": 18,
-    "experience": 7768194.6,
-    "gold": 11652291.9,
+    "agility": 104,
+    "experience": 7767947.9,
+    "gold": 11651921.850000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5222,15 +5218,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lagarto Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_lizard_infected.png",
     "level": 106,
-    "maxHp": 6635,
-    "strength": 558,
+    "maxHp": 3285,
+    "strength": 1165,
     "defense": 130,
-    "agility": 12,
-    "experience": 8545001.5,
-    "gold": 12817502.25,
+    "agility": 105,
+    "experience": 8544736.5,
+    "gold": 12817104.75,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       }
     ]
@@ -5241,15 +5237,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Kraken Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_kraken_infected.png",
     "level": 107,
-    "maxHp": 6635,
-    "strength": 558,
+    "maxHp": 3316,
+    "strength": 1176,
     "defense": 130,
-    "agility": 20,
-    "experience": 9399464.3,
-    "gold": 14099196.45,
+    "agility": 106,
+    "experience": 9399202.8,
+    "gold": 14098804.200000001,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5264,15 +5260,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Lagarto Zumbi",
     "imageUrl": "/assets/monsters/zombie_lizard.png",
     "level": 108,
-    "maxHp": 6858,
-    "strength": 569,
+    "maxHp": 3347,
+    "strength": 1187,
     "defense": 132,
-    "agility": 13,
-    "experience": 10339395.2,
-    "gold": 15509092.8,
+    "agility": 107,
+    "experience": 10339115.3,
+    "gold": 15508672.950000001,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5287,15 +5283,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Octopode Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_octopode_infected.png",
     "level": 109,
-    "maxHp": 6858,
-    "strength": 569,
+    "maxHp": 3378,
+    "strength": 1198,
     "defense": 132,
-    "agility": 14,
-    "experience": 11373294.3,
-    "gold": 17059941.45,
+    "agility": 108,
+    "experience": 11373018.6,
+    "gold": 17059527.9,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5310,15 +5306,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Octopode Zumbi",
     "imageUrl": "/assets/monsters/zombie_octopode.png",
     "level": 110,
-    "maxHp": 7086,
-    "strength": 580,
+    "maxHp": 3409,
+    "strength": 1209,
     "defense": 135,
-    "agility": 15,
-    "experience": 12510606.6,
-    "gold": 18765909.9,
+    "agility": 109,
+    "experience": 12510311.2,
+    "gold": 18765466.799999997,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5333,15 +5329,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Ogro Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_ogre_infected.png",
     "level": 111,
-    "maxHp": 7086,
-    "strength": 580,
+    "maxHp": 3440,
+    "strength": 1220,
     "defense": 135,
-    "agility": 16,
-    "experience": 13761624.7,
-    "gold": 20642437.05,
+    "agility": 110,
+    "experience": 13761333.5,
+    "gold": 20642000.25,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5360,15 +5356,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Ogro Zumbi",
     "imageUrl": "/assets/monsters/zombie_ogre.png",
     "level": 112,
-    "maxHp": 7317,
-    "strength": 591,
+    "maxHp": 3471,
+    "strength": 1231,
     "defense": 137,
-    "agility": 17,
-    "experience": 15137768.2,
-    "gold": 22706652.3,
+    "agility": 111,
+    "experience": 15137457,
+    "gold": 22706185.5,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5383,15 +5379,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Rato Zumbi",
     "imageUrl": "/assets/monsters/zombie_rat.png",
     "level": 113,
-    "maxHp": 7317,
-    "strength": 591,
+    "maxHp": 3502,
+    "strength": 1242,
     "defense": 137,
-    "agility": 18,
-    "experience": 16651499.3,
-    "gold": 24977248.95,
+    "agility": 112,
+    "experience": 16651192.3,
+    "gold": 24976788.450000003,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5410,15 +5406,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Zumbi Pequeno",
     "imageUrl": "/assets/monsters/zombie_small.png",
     "level": 114,
-    "maxHp": 7551,
-    "strength": 602,
+    "maxHp": 3533,
+    "strength": 1253,
     "defense": 140,
-    "agility": 19,
-    "experience": 18316629.2,
-    "gold": 27474943.8,
+    "agility": 113,
+    "experience": 18316301.9,
+    "gold": 27474452.849999998,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       }
     ]
@@ -5429,15 +5425,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Sapo Zumbi",
     "imageUrl": "/assets/monsters/zombie_toad.png",
     "level": 115,
-    "maxHp": 7551,
-    "strength": 602,
+    "maxHp": 3564,
+    "strength": 1264,
     "defense": 140,
-    "agility": 20,
-    "experience": 20148244.3,
-    "gold": 30222366.45,
+    "agility": 114,
+    "experience": 20147921.2,
+    "gold": 30221881.799999997,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5456,15 +5452,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Tartaruga Zumbi Infectada",
     "imageUrl": "/assets/monsters/zombie_turtle_infected.png",
     "level": 116,
-    "maxHp": 7790,
-    "strength": 613,
+    "maxHp": 3595,
+    "strength": 1275,
     "defense": 143,
-    "agility": 13,
-    "experience": 22163044.9,
-    "gold": 33244567.35,
+    "agility": 115,
+    "experience": 22162701.8,
+    "gold": 33244052.700000003,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5483,15 +5479,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Tartaruga Zumbi",
     "imageUrl": "/assets/monsters/zombie_turtle.png",
     "level": 117,
-    "maxHp": 7790,
-    "strength": 613,
+    "maxHp": 3626,
+    "strength": 1286,
     "defense": 143,
-    "agility": 14,
-    "experience": 24379299,
-    "gold": 36568948.5,
+    "agility": 116,
+    "experience": 24378960.1,
+    "gold": 36568440.150000006,
     "drops": [
       {
-        "itemId": "major_health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5510,15 +5506,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Coisa Feia Zumbi Infectada",
     "imageUrl": "/assets/monsters/zombie_ugly_thing_infected.png",
     "level": 118,
-    "maxHp": 8031,
-    "strength": 624,
+    "maxHp": 3657,
+    "strength": 1297,
     "defense": 145,
-    "agility": 15,
-    "experience": 26817203.5,
-    "gold": 40225805.25,
+    "agility": 117,
+    "experience": 26816843.6,
+    "gold": 40225265.400000006,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
@@ -5533,15 +5529,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Coisa Feia Zumbi",
     "imageUrl": "/assets/monsters/zombie_ugly_thing.png",
     "level": 119,
-    "maxHp": 8031,
-    "strength": 624,
+    "maxHp": 3688,
+    "strength": 1308,
     "defense": 145,
-    "agility": 16,
-    "experience": 29498871.6,
-    "gold": 44248307.4,
+    "agility": 118,
+    "experience": 29498515.9,
+    "gold": 44247773.849999994,
     "drops": [
       {
-        "itemId": "health_potion",
+        "itemId": "health_potion_high",
         "chance": 0.42
       },
       {
