@@ -1132,6 +1132,7 @@ button:disabled {
 }
 
 .utility-strip button {
+  position: relative;
   width: 26px;
   height: 26px;
   display: grid;
@@ -1225,6 +1226,7 @@ button:disabled {
 }
 
 .stat-action {
+  position: relative;
   color: var(--text);
 }
 
@@ -1297,6 +1299,19 @@ button:disabled {
   box-shadow: 0 0 10px rgba(185, 74, 89, 0.45);
 }
 
+.attention-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--bg-secondary);
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 10px rgba(185, 74, 89, 0.45);
+  pointer-events: none;
+}
+
 .character-chip strong,
 .character-chip small {
   width: 100%;
@@ -1326,9 +1341,19 @@ button:disabled {
   align-items: center;
   gap: 10px;
   padding: 10px;
-  border: 1px solid rgba(189, 147, 249, 0.3);
-  border-radius: 8px;
-  background: rgba(189, 147, 249, 0.07);
+}
+
+.character-clan-info.compact {
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 9px;
+  gap: 8px;
+}
+
+.character-clan-info.compact .character-clan-crest {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
 }
 
 .character-clan-crest {
@@ -1431,6 +1456,66 @@ button:disabled {
   border-radius: 50%;
   background: rgba(25, 26, 33, 0.88);
   color: var(--gold);
+}
+
+.avatar-picker-backdrop,
+.reset-choice-backdrop {
+  z-index: 70;
+}
+
+.avatar-picker-modal,
+.reset-choice-modal {
+  width: min(520px, calc(100vw - 32px));
+}
+
+.avatar-picker-heading,
+.reset-choice-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.avatar-picker-heading h2,
+.reset-choice-heading h2 {
+  margin: 0;
+}
+
+.avatar-picker-heading small,
+.reset-choice-heading small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.avatar-choice-grid.modal {
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  max-height: min(54vh, 480px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.reset-choice-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.reset-method-button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 58px;
+  text-align: left;
+}
+
+.reset-method-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reset-method-copy small {
+  color: var(--muted);
 }
 
 .resource-stack {
@@ -1608,6 +1693,29 @@ button:disabled {
   margin: 0 auto;
 }
 
+.character-identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.character-identity-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  grid-auto-flow: column;
+}
+
+.character-identity-copy h2,
+.character-identity-copy p {
+  margin: 0;
+}
+
+.character-no-clan {
+  color: var(--muted);
+}
+
 .avatar-ring {
   width: 76px;
   height: 76px;
@@ -1616,6 +1724,21 @@ button:disabled {
   color: var(--ink);
   border-radius: 50%;
   background: conic-gradient(from 45deg, var(--purple), var(--pink), var(--cyan), var(--purple));
+}
+
+.avatar-ring-button {
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.avatar-ring-button:disabled {
+  cursor: not-allowed;
+}
+
+.avatar-ring-button:focus-visible {
+  outline: 2px solid var(--purple-2);
+  outline-offset: 4px;
 }
 
 .royal-seal {
@@ -1649,7 +1772,7 @@ button:disabled {
 }
 
 .character-panel h2 {
-  margin-bottom: -10px;
+  margin: 0;
 }
 
 .character-resource-bars {
@@ -1743,6 +1866,34 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 8px;
+}
+
+.reset-trigger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.reset-scroll-visual {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+}
+
+.reset-scroll-visual img {
+  padding: 2px !important;
+}
+
+.reset-scroll-visual.large {
+  width: 46px;
+  height: 46px;
+}
+
+.reset-scroll-visual.large img {
+  padding: 6px;
 }
 
 .compact-section {
@@ -2142,47 +2293,35 @@ button:disabled {
 .travel-map-point {
   position: absolute;
   z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 34px;
-  max-width: min(170px, 26vw);
-  padding: 6px 8px;
-  border: 1px solid rgba(220, 203, 255, 0.16);
-  border-radius: 999px;
-  background: rgba(16, 13, 26, 0.84);
-  color: var(--text);
-  text-align: left;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: center;
   transform: translate(-50%, -50%);
-  box-shadow: 0 10px 24px rgba(3, 2, 8, 0.36);
-  backdrop-filter: blur(8px);
+  box-shadow: none;
 }
 
 .travel-map-point:not(:disabled):hover {
-  border-color: var(--line-active);
-  background: rgba(33, 27, 49, 0.94);
-  box-shadow: 0 0 24px rgba(124, 77, 255, 0.14), 0 10px 24px rgba(3, 2, 8, 0.36);
+  color: var(--text);
   transform: translate(-50%, calc(-50% - 2px));
 }
 
 .travel-map-point.selected {
-  border-color: rgba(220, 203, 255, 0.42);
-  background: rgba(124, 77, 255, 0.28);
-  box-shadow: 0 0 24px rgba(124, 77, 255, 0.22), 0 10px 24px rgba(3, 2, 8, 0.36);
+  color: var(--text);
 }
 
 .travel-map-point.locked {
   color: var(--muted);
-  filter: saturate(0.76);
+  filter: saturate(0.74);
+  opacity: 0.78;
 }
 
 .travel-map-point.current {
-  border-color: rgba(82, 216, 155, 0.46);
-  background: rgba(12, 38, 31, 0.82);
-}
-
-.travel-map-point.sea-route:not(.current) {
-  border-color: rgba(82, 224, 196, 0.24);
+  color: var(--text);
 }
 
 .travel-map-point.port .travel-map-icon {
@@ -2191,49 +2330,42 @@ button:disabled {
 }
 
 .travel-map-icon {
-  width: 24px;
-  height: 24px;
-  flex: 0 0 24px;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
   display: inline-grid;
   place-items: center;
-  border: 1px solid rgba(157, 107, 255, 0.5);
+  border: 1px solid rgba(157, 107, 255, 0.46);
   border-radius: 50%;
-  background: rgba(11, 9, 18, 0.72);
+  background: rgb(11, 9, 18);
   color: var(--lavender);
-  box-shadow: 0 0 14px rgba(124, 77, 255, 0.32);
+  box-shadow: 0 0 12px rgba(124, 77, 255, 0.24);
+}
+
+.travel-map-point.selected .travel-map-icon {
+  border-color: rgba(220, 203, 255, 0.72);
+  box-shadow: 0 0 18px rgba(124, 77, 255, 0.35);
+}
+
+.travel-map-point.current .travel-map-icon {
+  border-color: rgba(82, 216, 155, 0.56);
+  box-shadow: 0 0 18px rgba(82, 216, 155, 0.26);
+}
+
+.travel-map-point.locked .travel-map-icon {
+  box-shadow: none;
 }
 
 .travel-map-name {
-  display: grid;
-  gap: 1px;
+  max-width: min(130px, 20vw);
   min-width: 0;
-}
-
-.travel-map-name strong,
-.travel-map-name small,
-.travel-map-name b {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.travel-map-name strong {
-  color: var(--text);
-  font-size: 0.78rem;
-}
-
-.travel-map-name small {
-  color: var(--muted);
-  font-size: 0.68rem;
-}
-
-.travel-map-name b {
-  color: var(--lavender);
-  font-size: 0.66rem;
-}
-
-.travel-map-point.locked .travel-map-name b {
-  color: var(--danger);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(8, 6, 15, 0.72);
 }
 
 .travel-selection-card {
@@ -2314,16 +2446,59 @@ button:disabled {
 }
 
 .travel-ticket-mini-visual {
-  width: 22px;
-  height: 22px;
+  width: 31px;
+  height: 20px;
   flex: 0 0 auto;
-  border: 1px solid rgba(220, 203, 255, 0.12);
-  border-radius: 7px;
-  background: rgba(11, 9, 18, 0.42);
+  align-content: center;
 }
 
 .travel-ticket-mini-visual img {
-  padding: 3px;
+  padding: 3px !important;
+}
+
+.travel-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.travel-action-label {
+  min-width: 0;
+  text-align: left;
+}
+
+.travel-action-ticket {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 3px 8px 3px 4px;
+  color: var(--gold);
+}
+
+.travel-action-ticket-visual {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  align-content: center;
+}
+
+.travel-action-ticket strong {
+  position: relative;
+  left: -21px;
+  bottom: -17px;
+  padding: 2px 5px;
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.travel-action-ticket-visual img {
+  padding: 2px !important;
 }
 
 .travel-selection-meta strong {
@@ -2342,6 +2517,25 @@ button:disabled {
   border-color: rgba(82, 224, 196, 0.18);
   background: rgba(82, 224, 196, 0.05);
   color: var(--muted);
+}
+
+.travel-city-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 72;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(8, 6, 15, 0.68);
+  backdrop-filter: blur(8px);
+}
+
+.travel-city-modal {
+  position: relative;
+  width: min(560px, calc(100vw - 24px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 16px;
 }
 
 .monarch-panel {
@@ -3204,6 +3398,7 @@ button:disabled {
   display: grid;
   place-items: center;
   overflow: hidden;
+  align-content: center;
 }
 
 .asset-frame img {
@@ -6594,7 +6789,6 @@ button:disabled {
   color: var(--gold);
 }
 
-.character-clan-info,
 .character-clan-crest,
 .attribute-box,
 .hunt-location-banner,

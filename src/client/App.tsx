@@ -148,14 +148,18 @@ type PotionQuickOption = {
   quantity: number;
 };
 
+type FirstClickNoticeKey = "exchange" | "diamonds" | "ranking" | "guide";
+
 const BATTLE_CUE_DURATION_MS = 680;
 const BATTLE_LOG_STEP_MS = 280;
 const BATTLE_RESULT_PAUSE_MS = 420;
 const QUICK_POTION_STORAGE_KEY = "litch:quick-potions";
+const FIRST_CLICK_NOTICE_STORAGE_PREFIX = "litch:first-click-notice";
 const DEFAULT_QUICK_POTION_PREFERENCES: QuickPotionPreferences = {
   health: "",
   energy: ""
 };
+const FIRST_CLICK_NOTICE_KEYS: FirstClickNoticeKey[] = ["exchange", "diamonds", "ranking", "guide"];
 
 const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
   eldoria: { x: 25, y: 55.5 },
@@ -255,6 +259,11 @@ const RARITY_COLORS: Record<Rarity, string> = {
 const ENHANCEMENT_STAT_STEP = 0.2;
 const TRAIN_TICKET_ID = "ticket_train";
 const SHIP_TICKET_ID = "ticket_ship";
+const MEMORY_SCROLL_ID = "memory_scroll";
+const OBLIVION_SCROLL_ID = "oblivion_scroll";
+const ATTRIBUTE_RESET_DIAMOND_COST = 20;
+const TALENT_RESET_DIAMOND_COST = 25;
+const AVATAR_OPTIONS_SEEN_STORAGE_PREFIX = "litch:avatar-options-seen";
 const BRAND_ICON_URL = "/assets/brand/litch-logo-square-512x512.png";
 const BRAND_WORDMARK_URL = "/assets/brand/litch-1500x1500.png";
 const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
@@ -314,9 +323,38 @@ function readQuickPotionPreferences(): QuickPotionPreferences {
   }
 }
 
+function getFirstClickNoticeStorageKey(playerId: string, key: FirstClickNoticeKey) {
+  return `${FIRST_CLICK_NOTICE_STORAGE_PREFIX}:${playerId}:${key}`;
+}
+
+function readFirstClickNoticeSeen(playerId: string) {
+  return FIRST_CLICK_NOTICE_KEYS.reduce<Record<FirstClickNoticeKey, boolean>>((seen, key) => {
+    try {
+      seen[key] = localStorage.getItem(getFirstClickNoticeStorageKey(playerId, key)) === "1";
+    } catch {
+      seen[key] = false;
+    }
+    return seen;
+  }, { exchange: false, diamonds: false, ranking: false, guide: false });
+}
+
+function markFirstClickNoticeSeen(playerId: string, key: FirstClickNoticeKey) {
+  try {
+    localStorage.setItem(getFirstClickNoticeStorageKey(playerId, key), "1");
+  } catch {
+    // Local storage can be unavailable in private browsing or strict embeds.
+  }
+}
+
 export function App() {
   const [game, setGame] = useState<GameState | null>(null);
   const [quickPotionPreferences, setQuickPotionPreferences] = useState<QuickPotionPreferences>(readQuickPotionPreferences);
+  const [firstClickNoticeSeen, setFirstClickNoticeSeen] = useState<Record<FirstClickNoticeKey, boolean>>({
+    exchange: false,
+    diamonds: false,
+    ranking: false,
+    guide: false
+  });
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -434,6 +472,13 @@ export function App() {
   useEffect(() => {
     localStorage.setItem(QUICK_POTION_STORAGE_KEY, JSON.stringify(quickPotionPreferences));
   }, [quickPotionPreferences]);
+
+  useEffect(() => {
+    if (!game) {
+      return;
+    }
+    setFirstClickNoticeSeen(readFirstClickNoticeSeen(game.player.id));
+  }, [game?.player.id]);
 
   const submitAuth = (event: FormEvent) => {
     event.preventDefault();
@@ -590,6 +635,10 @@ export function App() {
     setShowChat(true);
     setSelectedPlayer(null);
   };
+  const clearFirstClickNotice = (key: FirstClickNoticeKey) => {
+    markFirstClickNoticeSeen(game.player.id, key);
+    setFirstClickNoticeSeen((current) => ({ ...current, [key]: true }));
+  };
 
   return (
     <main className={gameShellClass}>
@@ -599,12 +648,30 @@ export function App() {
           game={game}
           regenMs={regenMs}
           onDetails={() => setShowDetails(true)}
-          onGameShop={() => setView("gameShop")}
-          onExchange={() => setShowExchange(true)}
-          onRanking={() => setView("rankings")}
+          onGameShop={() => {
+            clearFirstClickNotice("diamonds");
+            setView("gameShop");
+          }}
+          onExchange={() => {
+            clearFirstClickNotice("exchange");
+            setShowExchange(true);
+          }}
+          onRanking={() => {
+            clearFirstClickNotice("ranking");
+            setView("rankings");
+          }}
           onSettings={() => setUtilityModal("settings")}
-          onGuide={() => setUtilityModal("guide")}
+          onGuide={() => {
+            clearFirstClickNotice("guide");
+            setUtilityModal("guide");
+          }}
           onLogout={logout}
+          firstClickNotices={{
+            exchange: !firstClickNoticeSeen.exchange,
+            diamonds: !firstClickNoticeSeen.diamonds,
+            ranking: !firstClickNoticeSeen.ranking,
+            guide: !firstClickNoticeSeen.guide
+          }}
         />
         <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
           <section className="city-stage">
@@ -808,11 +875,13 @@ function PlayerActionModal({
 function UtilityStrip({
   onSettings,
   onGuide,
-  onLogout
+  onLogout,
+  guideNotice
 }: {
   onSettings: () => void;
   onGuide: () => void;
   onLogout: () => void;
+  guideNotice?: boolean;
 }) {
   return (
     <nav className="utility-strip" aria-label="Menu do jogador">
@@ -821,6 +890,7 @@ function UtilityStrip({
       </button>
       <button type="button" title="Guia" aria-label="Guia" onClick={onGuide}>
         <BookOpen size={15} />
+        {guideNotice && <span className="attention-dot" aria-hidden="true" />}
       </button>
       <button type="button" title="Logoff" aria-label="Logoff" onClick={onLogout}>
         <LogOut size={15} />
@@ -838,7 +908,8 @@ function Header({
   onRanking,
   onSettings,
   onGuide,
-  onLogout
+  onLogout,
+  firstClickNotices
 }: {
   game: GameState;
   regenMs: number;
@@ -849,6 +920,7 @@ function Header({
   onSettings: () => void;
   onGuide: () => void;
   onLogout: () => void;
+  firstClickNotices: Record<FirstClickNoticeKey, boolean>;
 }) {
   const nextXp = Math.max(1, experienceForNextLevel(game.character.level));
   const xpProgress = Math.min(100, Math.round((game.character.experience / nextXp) * 100));
@@ -893,10 +965,12 @@ function Header({
           <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
             <Coins size={17} style={{ color: "var(--gold)" }} />
             <strong>{formatCurrency(game.character.gold)}</strong>
+            {firstClickNotices.exchange && <span className="attention-dot" aria-hidden="true" />}
           </button>
           <button className="stat-pill stat-action" onClick={onGameShop} title="Loja do Jogo">
             <Gem size={17} style={{ color: "var(--cyan)" }} />
             <strong>{formatCurrency(game.character.diamonds)}</strong>
+            {firstClickNotices.diamonds && <span className="attention-dot" aria-hidden="true" />}
           </button>
           <button
             className="stat-pill stat-action"
@@ -904,9 +978,10 @@ function Header({
             onClick={onRanking}
           >
             <Trophy size={17} style={{ color: "var(--gold)" }} />
+            {firstClickNotices.ranking && <span className="attention-dot" aria-hidden="true" />}
           </button>
-          
-          <UtilityStrip onSettings={onSettings} onGuide={onGuide} onLogout={onLogout} />
+
+          <UtilityStrip onSettings={onSettings} onGuide={onGuide} onLogout={onLogout} guideNotice={firstClickNotices.guide} />
         </div>
         <div className="resource-stack">
           <ResourceBar
@@ -1992,9 +2067,31 @@ function CharacterAvatar({
   );
 }
 
+function readAvatarOptionsSeen(playerId: string) {
+  try {
+    return window.localStorage.getItem(`${AVATAR_OPTIONS_SEEN_STORAGE_PREFIX}:${playerId}`) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markAvatarOptionsSeen(playerId: string) {
+  try {
+    window.localStorage.setItem(`${AVATAR_OPTIONS_SEEN_STORAGE_PREFIX}:${playerId}`, "1");
+  } catch {
+    // Local storage can be unavailable in private browsing or strict embeds.
+  }
+}
+
+function ResetScrollIcon({ item, className = "" }: { item?: ItemDefinition; className?: string }) {
+  return item ? <ItemVisual item={item} className={`reset-scroll-visual ${className}`} /> : <ScrollText size={16} />;
+}
+
 function CharacterPanel({ game, locked = false }: { game: GameState; locked?: boolean }) {
   const [pending, setPending] = useState<Attributes>({ strength: 0, constitution: 0, agility: 0 });
   const [showAvatarChoices, setShowAvatarChoices] = useState(false);
+  const [resetModal, setResetModal] = useState<"attributes" | "talents" | null>(null);
+  const [avatarOptionsSeen, setAvatarOptionsSeen] = useState(() => readAvatarOptionsSeen(game.player.id));
   const { preferences } = useQuickPotionSettings();
   const pendingTotal = pending.strength + pending.constitution + pending.agility;
   const healthPotion = getQuickPotionOption(game, preferences, "health");
@@ -2003,8 +2100,14 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
   const autoPveActive = isAutoPveActive(game);
   const currentAvatar = getCurrentAvatar(game);
   const unlockedAvatarIds = game.character.unlockedAvatarIds ?? [];
+  const memoryScroll = game.itemCatalog[MEMORY_SCROLL_ID];
   const hpProgress = Math.min(100, Math.round((game.character.currentHp / game.derived.maxHp) * 100));
   const energyProgress = Math.min(100, Math.round((game.character.currentEnergy / game.derived.maxEnergy) * 100));
+
+  useEffect(() => {
+    setAvatarOptionsSeen(readAvatarOptionsSeen(game.player.id));
+  }, [game.player.id]);
+
   const changePending = (key: AttributeKey, delta: number) => {
     setPending((current) => {
       const nextValue = Math.max(0, current[key] + delta);
@@ -2018,81 +2121,71 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
     socket.emit("character:allocate", pending);
     setPending({ strength: 0, constitution: 0, agility: 0 });
   };
+  const openAvatarModal = () => {
+    if (locked) {
+      return;
+    }
+    if (!avatarOptionsSeen) {
+      markAvatarOptionsSeen(game.player.id);
+      setAvatarOptionsSeen(true);
+    }
+    setShowAvatarChoices(true);
+  };
   const chooseAvatar = (avatar: AvatarDefinition, unlocked: boolean) => {
     if (locked) {
       return;
     }
     if (avatar.id === game.character.avatarId) {
-      setShowAvatarChoices((current) => !current);
+      setShowAvatarChoices(false);
       return;
     }
     if (!unlocked && !window.confirm(`Comprar ${avatar.name} por ${avatar.priceDiamonds} diamantes?`)) {
       return;
     }
     socket.emit("character:avatar", { avatarId: avatar.id });
+    setShowAvatarChoices(false);
   };
 
   return (
     <aside className="side-panel character-panel">
-      <div className="avatar-ring">
-        <CharacterAvatar avatar={currentAvatar} size={76} royal={royalSealActive} />
-      </div>
-      <h2>{game.character.name}</h2>
-      <p className="muted">Nível {game.character.level} — {game.currentCity.name}</p>
+      <header className="character-identity">
+        <button
+          className="avatar-ring avatar-ring-button"
+          type="button"
+          disabled={locked}
+          onClick={openAvatarModal}
+          title="Alterar avatar"
+        >
+          <CharacterAvatar
+            avatar={currentAvatar}
+            size={76}
+            royal={royalSealActive}
+            alert={!avatarOptionsSeen}
+            alertLabel="Veja as opções de avatar"
+          />
+        </button>
+        <div className="character-identity-copy">
+          <div>
+            <h2>{game.character.name}</h2>
+            <p className="muted">Nível {game.character.level}</p>
+          </div>
+
+          {game.clan ? (
+            <div className="character-clan-info compact">
+              <span className="character-clan-crest">{getClanCrestIcon(game.clan.icon, 18)}</span>
+              <div>
+                <strong>{game.clan.name}</strong>
+                <small>Nível {game.clan.level} - {game.clan.leaderPlayerId === game.player.id ? "Líder do clã" : "Membro do clã"}</small>
+              </div>
+            </div>
+          ) : ""}
+        </div>
+      </header>
       {autoPveActive && (
         <p className="royal-status">
           <Crown size={14} /> Amigo do Rei ativo ate {formatListingDate(game.character.pveAutoUntil ?? 0)}
         </p>
       )}
-      {game.clan && (
-        <div className="character-clan-info">
-          <span className="character-clan-crest">{getClanCrestIcon(game.clan.icon, 18)}</span>
-          <div>
-            <strong>{game.clan.name}</strong>
-            <small>Nível {game.clan.level} - {game.clan.leaderPlayerId === game.player.id ? "Líder do clã" : "Membro do clã"}</small>
-          </div>
-        </div>
-      )}
-
-      <section className="compact-section avatar-section">
-        <h3>Avatar</h3>
-        <button className="current-avatar-card" type="button" disabled={locked} onClick={() => setShowAvatarChoices((current) => !current)}>
-          <CharacterAvatar avatar={currentAvatar} size={54} royal={royalSealActive} />
-          <div>
-            <strong>{currentAvatar?.name ?? "Avatar"}</strong>
-            <small>{showAvatarChoices ? "Ocultar opções" : "Trocar avatar"}</small>
-          </div>
-        </button>
-        {showAvatarChoices && <div className="avatar-choice-grid">
-          {game.avatarCatalog.map((avatar) => {
-            const unlocked = avatar.priceDiamonds === 0 || unlockedAvatarIds.includes(avatar.id);
-            const selected = game.character.avatarId === avatar.id;
-            return (
-              <button
-                type="button"
-                key={avatar.id}
-                className={`avatar-choice${selected ? " selected" : ""}${!unlocked ? " locked" : ""}`}
-                disabled={locked}
-                onClick={() => chooseAvatar(avatar, unlocked)}
-                title={unlocked ? avatar.name : `${avatar.name} - ${avatar.priceDiamonds} diamantes`}
-              >
-                <CharacterAvatar avatar={avatar} size={46} />
-                {!unlocked && <span className="avatar-lock"><Lock size={12} /></span>}
-                <span>{avatar.name}</span>
-                <small>
-                  {selected ? (
-                    "Em uso"
-                  ) : unlocked ? (
-                    "Usar"
-                  ) : (
-                    <>{avatar.priceDiamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></>
-                  )}
-                </small>
-              </button>
-            );
-          })}
-        </div>}
-      </section>
 
       <section className="character-resource-bars" aria-label="Recursos do personagem">
         <ResourceBar
@@ -2198,11 +2291,9 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           );
         })}
         <div className="reset-actions">
-          <button className="ghost-button" disabled={locked} onClick={() => socket.emit("attribute:reset", { method: "diamonds" })}>
-            Reset 20 <Gem size={13} style={{ color: "var(--cyan)" }} />
-          </button>
-          <button className="ghost-button" disabled={locked} onClick={() => socket.emit("attribute:reset", { method: "scroll" })}>
-            Usar memória
+          <button className="ghost-button reset-trigger-button" disabled={locked} onClick={() => setResetModal("attributes")}>
+            <ResetScrollIcon item={memoryScroll} />
+            Resetar Pontos de Atributo
           </button>
         </div>
       </section>
@@ -2238,9 +2329,147 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
 
       <section className="compact-section">
         <h3>Talentos</h3>
-        <TalentTreeView game={game} compact />
+        <TalentTreeView game={game} compact locked={locked} onRequestReset={() => setResetModal("talents")} />
       </section>
+
+      {showAvatarChoices && (
+        <AvatarPickerModal
+          game={game}
+          currentAvatar={currentAvatar}
+          unlockedAvatarIds={unlockedAvatarIds}
+          royalSealActive={royalSealActive}
+          locked={locked}
+          onChoose={chooseAvatar}
+          onClose={() => setShowAvatarChoices(false)}
+        />
+      )}
+
+      {resetModal && (
+        <ResetChoiceModal game={game} target={resetModal} onClose={() => setResetModal(null)} />
+      )}
     </aside>
+  );
+}
+
+function AvatarPickerModal({
+  game,
+  currentAvatar,
+  unlockedAvatarIds,
+  royalSealActive,
+  locked,
+  onChoose,
+  onClose
+}: {
+  game: GameState;
+  currentAvatar?: AvatarDefinition;
+  unlockedAvatarIds: string[];
+  royalSealActive: boolean;
+  locked: boolean;
+  onChoose: (avatar: AvatarDefinition, unlocked: boolean) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="drawer-backdrop avatar-picker-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal avatar-picker-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <div className="avatar-picker-heading">
+          <CharacterAvatar avatar={currentAvatar} size={58} royal={royalSealActive} />
+          <div>
+            <h2>Alterar avatar</h2>
+            <small>Escolha um visual desbloqueado ou compre uma opção premium.</small>
+          </div>
+        </div>
+        <div className="avatar-choice-grid modal">
+          {game.avatarCatalog.map((avatar) => {
+            const unlocked = avatar.priceDiamonds === 0 || unlockedAvatarIds.includes(avatar.id);
+            const selected = game.character.avatarId === avatar.id;
+            return (
+              <button
+                type="button"
+                key={avatar.id}
+                className={`avatar-choice${selected ? " selected" : ""}${!unlocked ? " locked" : ""}`}
+                disabled={locked}
+                onClick={() => onChoose(avatar, unlocked)}
+                title={unlocked ? avatar.name : `${avatar.name} - ${avatar.priceDiamonds} diamantes`}
+              >
+                <CharacterAvatar avatar={avatar} size={46} />
+                {!unlocked && <span className="avatar-lock"><Lock size={12} /></span>}
+                <span>{avatar.name}</span>
+                <small>
+                  {selected ? (
+                    "Em uso"
+                  ) : unlocked ? (
+                    "Usar"
+                  ) : (
+                    <>{avatar.priceDiamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></>
+                  )}
+                </small>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ResetChoiceModal({
+  game,
+  target,
+  onClose
+}: {
+  game: GameState;
+  target: "attributes" | "talents";
+  onClose: () => void;
+}) {
+  const isAttributeReset = target === "attributes";
+  const scrollId = isAttributeReset ? MEMORY_SCROLL_ID : OBLIVION_SCROLL_ID;
+  const scroll = game.itemCatalog[scrollId];
+  const scrollCount = countInventoryItem(game, scrollId);
+  const diamondCost = isAttributeReset ? ATTRIBUTE_RESET_DIAMOND_COST : TALENT_RESET_DIAMOND_COST;
+  const eventName = isAttributeReset ? "attribute:reset" : "talent:reset";
+  const title = isAttributeReset ? "Resetar atributos" : "Resetar talentos";
+  const description = isAttributeReset
+    ? "Escolha como recuperar seus pontos de atributo."
+    : "Escolha como recuperar seus pontos de talento.";
+  const emitReset = (method: "scroll" | "diamonds") => {
+    socket.emit(eventName, { method });
+    onClose();
+  };
+
+  return (
+    <div className="drawer-backdrop reset-choice-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal reset-choice-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <div className="reset-choice-heading">
+          <ResetScrollIcon item={scroll} className="large" />
+          <div>
+            <h2>{title}</h2>
+            <small>{description}</small>
+          </div>
+        </div>
+        <div className="reset-choice-actions">
+          <button className="ghost-button reset-method-button" disabled={scrollCount <= 0} onClick={() => emitReset("scroll")}>
+            <ResetScrollIcon item={scroll} />
+            <span className="reset-method-copy">
+              <strong>Usar pergaminho</strong>
+              <small>{scroll?.name ?? "Pergaminho"} x{scrollCount}</small>
+            </span>
+          </button>
+          <button className="ghost-button reset-method-button" disabled={game.character.diamonds < diamondCost} onClick={() => emitReset("diamonds")}>
+            <Gem size={22} style={{ color: "var(--cyan)" }} />
+            <span className="reset-method-copy">
+              <strong>Usar diamantes</strong>
+              <small>{diamondCost} diamantes disponíveis: {game.character.diamonds}</small>
+            </span>
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -2366,7 +2595,7 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   const actionOptions: CityOption[] = [
     { view: "agency", icon: <BriefcaseBusiness size={24} />, title: "Agência", value: workValue }
   ];
-  
+
   if (game.currentCountry.id === "morthaly" && game.monarchEvent) {
     actionOptions.push({
       view: "monarch",
@@ -3044,7 +3273,17 @@ function ClanRankingList({ entries }: { entries: ClanRankingEntry[] }) {
   );
 }
 
-function TalentTreeView({ game, compact = false }: { game: GameState; compact?: boolean }) {
+function TalentTreeView({
+  game,
+  compact = false,
+  locked = false,
+  onRequestReset
+}: {
+  game: GameState;
+  compact?: boolean;
+  locked?: boolean;
+  onRequestReset?: () => void;
+}) {
   const categories: Array<{ id: TalentCategory; title: string }> = [
     { id: "offensive", title: "Ofensivo" },
     { id: "defensive", title: "Defensivo" },
@@ -3057,16 +3296,15 @@ function TalentTreeView({ game, compact = false }: { game: GameState; compact?: 
   const selectedLocked = Boolean(selectedTalent?.requires && selectedRequiredRank <= 0);
   const selectedMaxed = Boolean(selectedTalent && selectedRank >= selectedTalent.maxRank);
   const canAfford = Boolean(selectedTalent) && game.derived.availableTalentPoints >= selectedTalent!.costPerRank;
+  const oblivionScroll = game.itemCatalog[OBLIVION_SCROLL_ID];
 
   return (
     <div className={compact ? "talents-panel compact-talents" : "talents-panel"}>
       <div className="talent-summary">
         <span>{game.derived.availableTalentPoints} pontos livres</span>
-        <button className="ghost-button" onClick={() => socket.emit("talent:reset", { method: "diamonds" })}>
-          Resetar 25 <Gem size={13} style={{ color: "var(--cyan)" }} />
-        </button>
-        <button className="ghost-button" onClick={() => socket.emit("talent:reset", { method: "scroll" })}>
-          Usar pergaminho
+        <button className="ghost-button reset-trigger-button" disabled={locked} onClick={onRequestReset}>
+          <ResetScrollIcon item={oblivionScroll} />
+          Resetar Pontos de Talento
         </button>
       </div>
       <div className="talent-categories">
@@ -3433,7 +3671,7 @@ function ClanPanel({ game }: { game: GameState }) {
                 }
               }}
             >
-              Resetar
+              Resetar Pontos de Atributos
             </button>
           </section>
         </>
@@ -4120,13 +4358,12 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 }
 
 function TravelPanel({ game }: { game: GameState }) {
-  const currentCountryCities = game.cities.filter((city) => city.countryId === game.currentCountry.id);
   const trainTicket = game.itemCatalog[TRAIN_TICKET_ID];
   const shipTicket = game.itemCatalog[SHIP_TICKET_ID];
   const trainTickets = countInventoryItem(game, TRAIN_TICKET_ID);
   const shipTickets = countInventoryItem(game, SHIP_TICKET_ID);
   const mapCities = game.cities.filter((city) => TRAVEL_MAP_POINTS[city.id]);
-  const [selectedTravelCityId, setSelectedTravelCityId] = useState(game.character.cityId);
+  const [travelModalCityId, setTravelModalCityId] = useState<string | null>(null);
   const getTravelRoute = (cityId: string) => {
     const city = game.cities.find((entry) => entry.id === cityId);
     if (!city) {
@@ -4169,16 +4406,16 @@ function TravelPanel({ game }: { game: GameState }) {
             ? "Viajar com ticket de trem"
             : `Viajar de navio para ${destinationCity.name}`;
 
-    return { city, destinationCity, destinationCountry, portCity, sameCountry, blockedByForeignInterior, current, locked, reason, actionLabel, ticketLabel, ticketDefinition };
+    return { city, destinationCity, destinationCountry, portCity, sameCountry, blockedByForeignInterior, current, locked, reason, actionLabel, ticketLabel, ticketDefinition, ticketCount };
   };
-  const selectedTravelCity = game.cities.find((city) => city.id === selectedTravelCityId) ?? game.currentCity;
-  const selectedRoute = getTravelRoute(selectedTravelCity.id);
+  const selectedTravelCity = travelModalCityId ? game.cities.find((city) => city.id === travelModalCityId) ?? null : null;
+  const selectedRoute = selectedTravelCity ? getTravelRoute(selectedTravelCity.id) : null;
 
   useEffect(() => {
-    if (!game.cities.some((city) => city.id === selectedTravelCityId)) {
-      setSelectedTravelCityId(game.character.cityId);
+    if (travelModalCityId && !game.cities.some((city) => city.id === travelModalCityId)) {
+      setTravelModalCityId(null);
     }
-  }, [game.character.cityId, game.cities, selectedTravelCityId]);
+  }, [game.cities, travelModalCityId]);
 
   return (
     <section className="content-panel travel-panel">
@@ -4222,7 +4459,7 @@ function TravelPanel({ game }: { game: GameState }) {
             if (!route) return null;
             const classes = [
               "travel-map-point",
-              selectedTravelCity.id === city.id ? "selected" : "",
+              travelModalCityId === city.id ? "selected" : "",
               route.current ? "current" : "",
               route.locked ? "locked" : "",
               city.isPort ? "port" : "",
@@ -4232,7 +4469,7 @@ function TravelPanel({ game }: { game: GameState }) {
               <button
                 className={classes}
                 key={city.id}
-                onClick={() => setSelectedTravelCityId(city.id)}
+                onClick={() => setTravelModalCityId(city.id)}
                 style={{ left: `${position.x}%`, top: `${position.y}%` }}
                 title={`${city.name} - ${route.reason}`}
                 type="button"
@@ -4240,9 +4477,7 @@ function TravelPanel({ game }: { game: GameState }) {
                 <span className="travel-map-icon">
                   {city.isPort ? <Ship size={14} /> : <MapPinned size={14} />}
                 </span>
-                <span className="travel-map-name">
-                  <strong>{city.name}</strong>
-                </span>
+                <span className="travel-map-name">{city.name}</span>
               </button>
             );
           })}
@@ -4254,71 +4489,55 @@ function TravelPanel({ game }: { game: GameState }) {
       </div>
 
       {selectedRoute && (
-        <article className="travel-selection-card">
-          <div className="travel-selection-heading">
-            <span className={selectedTravelCity.isPort ? "travel-selection-kicker port" : "travel-selection-kicker"}>
-              {selectedTravelCity.isPort ? <Ship size={15} /> : <MapPinned size={15} />}
-              {selectedTravelCity.isPort ? "Porto" : "Cidade"}
-            </span>
-            <div>
-              <h3>{selectedTravelCity.name}</h3>
-              <small>{selectedRoute.destinationCountry?.name ?? game.currentCountry.name}</small>
-            </div>
-          </div>
-          <p>{selectedTravelCity.description}</p>
-          <div className="travel-selection-meta">
-            <span>Nível mínimo <strong>{selectedRoute.destinationCity.minLevel}</strong></span>
-            <span>{selectedRoute.sameCountry ? "Rota terrestre" : "Rota marítima"}</span>
-            <span className="travel-ticket-meta">
-              {!selectedRoute.current && selectedRoute.ticketDefinition && (
-                <ItemVisual item={selectedRoute.ticketDefinition} className="travel-ticket-mini-visual" />
-              )}
-              {selectedRoute.current ? "Atual" : selectedRoute.ticketLabel}
-            </span>
-          </div>
-          {selectedRoute.blockedByForeignInterior && (
-            <p className="travel-selection-warning">
-              Para visitar cidades internas de outro país, desembarque antes em {selectedRoute.portCity?.name ?? "seu porto"}.
-            </p>
-          )}
-          {!selectedRoute.sameCountry && !selectedRoute.blockedByForeignInterior && !selectedRoute.current && (
-            <p className="travel-selection-warning subtle">
-              A viagem entre países usa navio e chega diretamente ao porto selecionado.
-            </p>
-          )}
-          <button
-            className="primary-button"
-            disabled={selectedRoute.current || selectedRoute.locked}
-            onClick={() => socket.emit("city:travel", { cityId: selectedRoute.destinationCity.id })}
-          >
-            {selectedRoute.actionLabel}
-          </button>
-        </article>
-      )}
-
-      <h3 className="city-group-title">Cidades de {game.currentCountry.name}</h3>
-      <div className="list-grid">
-        {currentCountryCities.map((city) => {
-          const current = city.id === game.character.cityId;
-          const locked = !current && (trainTickets <= 0 || game.character.level < city.minLevel);
-          return (
-            <article className={current ? "entity-card current-city" : "entity-card"} key={city.id}>
+        <div className="travel-city-modal-backdrop" role="presentation" onClick={() => setTravelModalCityId(null)}>
+          <article className="travel-selection-card travel-city-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+            <button className="close-button" title="Fechar" onClick={() => setTravelModalCityId(null)}>
+              <X size={18} />
+            </button>
+            <div className="travel-selection-heading">
+              <span className={selectedTravelCity?.isPort ? "travel-selection-kicker port" : "travel-selection-kicker"}>
+                {selectedTravelCity?.isPort ? <Ship size={15} /> : <MapPinned size={15} />}
+                {selectedTravelCity?.isPort ? "Porto" : "Cidade"}
+              </span>
               <div>
-                <strong>{city.name}{city.isPort ? " (Porto)" : ""}</strong>
-                <span>Nível mínimo {city.minLevel}</span>
+                <h3>{selectedTravelCity?.name}</h3>
+                <small>{selectedRoute.destinationCountry?.name ?? game.currentCountry.name}</small>
               </div>
-              <p>{city.description}</p>
-              <button
-                className="primary-button"
-                disabled={current || locked}
-                onClick={() => socket.emit("city:travel", { cityId: city.id })}
-              >
-                {current ? "Atual" : "Usar ticket de trem"}
-              </button>
-            </article>
-          );
-        })}
-      </div>
+            </div>
+            <p>{selectedTravelCity?.description}</p>
+            <div className="travel-selection-meta">
+              <span>Nível mínimo <strong>{selectedRoute.destinationCity.minLevel}</strong></span>
+              <span>{selectedRoute.sameCountry ? "Rota terrestre" : "Rota marítima"}</span>
+            </div>
+            {selectedRoute.blockedByForeignInterior && (
+              <p className="travel-selection-warning">
+                Para visitar cidades internas de outro país, desembarque antes em {selectedRoute.portCity?.name ?? "seu porto"}.
+              </p>
+            )}
+            {!selectedRoute.sameCountry && !selectedRoute.blockedByForeignInterior && !selectedRoute.current && (
+              <p className="travel-selection-warning subtle">
+                A viagem entre países usa navio e chega diretamente ao porto selecionado.
+              </p>
+            )}
+            <button
+              className="primary-button travel-action-button"
+              disabled={selectedRoute.current || selectedRoute.locked}
+              onClick={() => {
+                socket.emit("city:travel", { cityId: selectedRoute.destinationCity.id });
+                setTravelModalCityId(null);
+              }}
+            >
+              <span className="travel-action-label">{selectedRoute.actionLabel}</span>
+              {!selectedRoute.current && selectedRoute.ticketDefinition && (
+                <span className="travel-action-ticket" aria-label={`${selectedRoute.ticketCount} ${selectedRoute.ticketLabel}`}>
+                  <ItemVisual item={selectedRoute.ticketDefinition} className="travel-action-ticket-visual" />
+                  <strong>x{selectedRoute.ticketCount}</strong>
+                </span>
+              )}
+            </button>
+          </article>
+        </div>
+      )}
     </section>
   );
 }
@@ -4747,7 +4966,7 @@ function MarketListingModal({
     item.slot || !game.character.inventory.some((inventoryItem) => inventoryItem.itemId === listing.item.itemId)
       ? game.inventoryUsed < game.inventoryCapacity
       : true;
-  const canBuy = 
+  const canBuy =
     (listing.currency === "gold" ? game.character.gold >= listing.price : game.character.diamonds >= listing.price) &&
     canReceiveListing;
   return (
@@ -4766,7 +4985,7 @@ function MarketListingModal({
             </div>
           )}
           <p className="market-modal-desc">{item.description}</p>
-          
+
           <div className="market-subtle-meta">
             <span>Vendedor <b><PlayerName playerId={listing.sellerPlayerId} name={listing.sellerName} /></b></span>
             <span>NPC <b>{formatCurrency(getNpcSellValue(item, listing.item))} ouro</b></span>
@@ -5194,7 +5413,7 @@ function BattlePanel({ game }: { game: GameState }) {
               }
               style={{padding: "3px 12px"}}
             >
-              <AssetImage style={{ width: 27 }} src={"assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} /> 
+              <AssetImage style={{ width: 27 }} src={"assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} />
               <span style={{verticalAlign: "super"}}>Usar poção de vida</span>
             </button>
             <button className="danger-button battle-flee-button" disabled={animationsPending} onClick={() => socket.emit("battle:flee")}>
