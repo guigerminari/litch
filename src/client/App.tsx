@@ -620,6 +620,7 @@ export function App() {
           privateTarget={privateChatTarget}
           setPrivateTarget={setPrivateChatTarget}
         />
+        <FloatingAgencyNotice game={game} onOpenAgency={() => setView("agency")} />
         {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
         {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
         {utilityModal === "settings" && <SettingsModal game={game} onClose={() => setUtilityModal(null)} />}
@@ -662,6 +663,48 @@ function PlayerName({ playerId, name, className }: PlayerReference & { className
     >
       {name}
     </button>
+  );
+}
+
+function FloatingAgencyNotice({ game, onOpenAgency }: { game: GameState; onOpenAgency: () => void }) {
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const activeWorkReady = isWorkReady(game.character.activeWork, now);
+  const readyBonuses = getClaimableWorkBonuses(game, now);
+  const totalRewards = (activeWorkReady ? 1 : 0) + readyBonuses.length;
+
+  if (totalRewards <= 0 || typeof document === "undefined") {
+    return null;
+  }
+
+  const detail =
+    activeWorkReady && readyBonuses.length > 0
+      ? "Serviço e bônus disponíveis"
+      : activeWorkReady
+        ? "Serviço concluído"
+        : readyBonuses.length === 1
+          ? "Bônus de aptidão disponível"
+          : `${readyBonuses.length} bônus de aptidão disponíveis`;
+
+  return createPortal(
+    <div className={`floating-agency-layer country-${game.currentCountry.id}${game.activeBattle ? " in-battle" : ""}`}>
+      <button className="floating-agency-button" type="button" onClick={onOpenAgency}>
+        <span className="floating-agency-icon">
+          {activeWorkReady ? <BriefcaseBusiness size={20} /> : <Sparkles size={20} />}
+        </span>
+        <span>
+          <strong>Ir à Agência</strong>
+          <small>{detail}</small>
+        </span>
+        {totalRewards > 1 && <b>{totalRewards}</b>}
+      </button>
+    </div>,
+    document.body
   );
 }
 
@@ -6004,18 +6047,24 @@ function countInventoryItem(game: GameState, itemId: string) {
 
 function renderWorkReward(game: GameState, reward: WorkReward): React.ReactNode[] {
   const entries: React.ReactNode[] = [];
-  if (reward.experience) entries.push(<span key="xp"><Star size={13} /> {formatCurrency(reward.experience)} XP</span>);
-  if (reward.gold) entries.push(<span key="gold"><Coins size={13} /> {formatCurrency(reward.gold)} gold</span>);
-  if (reward.diamonds) entries.push(<span key="diamonds"><Gem size={13} /> {formatCurrency(reward.diamonds)} diamantes</span>);
-  if (reward.attributePoints) entries.push(<span key="attributes"><Sparkles size={13} /> {reward.attributePoints} ponto atributo</span>);
+  if (reward.experience) entries.push(<span className="work-reward-chip" key="xp"><Star size={13} style={{ color: "var(--purple)"}} /> {formatCurrency(reward.experience)} XP</span>);
+  if (reward.gold) entries.push(<span className="work-reward-chip" key="gold"><Coins size={13} style={{ color: "var(--gold)"}} /> {formatCurrency(reward.gold)} gold</span>);
+  if (reward.diamonds) entries.push(<span className="work-reward-chip" key="diamonds"><Gem size={13} style={{ color: "var(--cyan)"}} /> {formatCurrency(reward.diamonds)} diamantes</span>);
+  if (reward.attributePoints) entries.push(<span className="work-reward-chip" key="attributes"><Sparkles size={13} style={{ color: "var(--green)"}} /> {reward.attributePoints} ponto atributo</span>);
   for (const item of reward.items ?? []) {
+    const definition = game.itemCatalog[item.itemId];
     entries.push(
-      <span key={item.itemId}>
-        <Backpack size={13} /> {game.itemCatalog[item.itemId]?.name ?? item.itemId} x{item.quantity}
+      <span className="work-reward-chip work-reward-item" key={item.itemId}>
+        {definition ? (
+          <ItemVisual item={definition} className="work-reward-item-visual" />
+        ) : (
+          <Backpack size={13} />
+        )}
+        <span className="work-reward-text">{definition?.name ?? item.itemId} x{item.quantity}</span>
       </span>
     );
   }
-  return entries.length > 0 ? entries : [<span key="none">Sem recompensa direta</span>];
+  return entries.length > 0 ? entries : [<span className="work-reward-chip" key="none">Sem recompensa direta</span>];
 }
 
 function getTimedProgress(startedAt: number, endsAt: number, now: number) {
@@ -6030,16 +6079,16 @@ function getWorkAssignmentMinutes(activeWork: NonNullable<GameState["character"]
 function formatWorkMinutes(minutes: number) {
   const normalized = Math.max(0, Math.round(minutes));
   if (normalized < 60) {
-    return `${normalized}min`;
+    return `${normalized}m`;
   }
   const hours = Math.floor(normalized / 60);
   const remainingMinutes = normalized % 60;
-  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}min` : `${hours}h`;
+  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
 }
 
 function formatAptitudeHours(hours: number) {
   if (hours > 0 && hours < 1) {
-    return `${Math.round(hours * 60)}min`;
+    return `${Math.round(hours * 60)}m`;
   }
   return `${Number.isInteger(hours) ? hours : hours.toFixed(1)}h`;
 }
@@ -6065,6 +6114,13 @@ function isWorkBonusReady(game: GameState, service: WorkServiceDefinition, now =
     return false;
   }
   return now >= getWorkBonusReadyAt(game, service);
+}
+
+function getClaimableWorkBonuses(game: GameState, now = Date.now()) {
+  return game.workServices.filter((service) => {
+    const aptitude = game.character.workAptitudes?.[service.id] ?? getDefaultWorkAptitude();
+    return aptitude.level >= service.bonus.level && isWorkBonusReady(game, service, now);
+  });
 }
 
 function isPotionForQuickSlot(item: ItemDefinition | undefined, slot: QuickPotionSlot): item is ItemDefinition {

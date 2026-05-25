@@ -37,6 +37,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "ticket",
     "minLevel": 1,
     "price": 80,
+    "imageUrl": "/assets/items/misc/train-ticket.png",
     "stats": {},
     "description": "Usado para viajar entre cidades do mesmo país."
   },
@@ -45,6 +46,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Ticket de Navio",
     "kind": "ticket",
     "minLevel": 1,
+    "imageUrl": "/assets/items/misc/ship-ticket.png",
     "price": 250,
     "stats": {},
     "description": "Usado para viajar entre países. A chegada sempre acontece na cidade porto."
