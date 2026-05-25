@@ -234,11 +234,11 @@ const DAILY_MISSIONS = [
 ];
 
 const DAILY_EXTRA_MISSIONS = [
-  { id: "daily-work-1", category: "work" as const, title: "Expediente arcano", description: "Conclua 1 servico de trabalho hoje.", progressKey: "dailyWorkServicesCompleted" as const, target: 1, reward: { experience: 160, gold: 90 } },
-  { id: "daily-work-3", category: "work" as const, title: "Turno dobrado", description: "Conclua 3 servicos de trabalho hoje.", progressKey: "dailyWorkServicesCompleted" as const, target: 3, reward: { experience: 360, gold: 210 } },
+  { id: "daily-work-1", category: "work" as const, title: "Expediente arcano", description: "Conclua 1 serviço de trabalho hoje.", progressKey: "dailyWorkServicesCompleted" as const, target: 1, reward: { experience: 160, gold: 90 } },
+  { id: "daily-work-3", category: "work" as const, title: "Turno dobrado", description: "Conclua 3 serviços de trabalho hoje.", progressKey: "dailyWorkServicesCompleted" as const, target: 3, reward: { experience: 360, gold: 210 } },
   { id: "daily-monarch-1", category: "monarch" as const, title: "Chamado de Morthaly", description: "Enfrente o monarca do dia 1 vez.", progressKey: "dailyMonarchBattles" as const, target: 1, reward: { experience: 420, diamonds: 2 } },
   { id: "daily-arena-1", category: "arena" as const, title: "Sangue na arena", description: "Dispute 1 batalha de Arena hoje.", progressKey: "dailyArenaBattles" as const, target: 1, reward: { experience: 180, gold: 120 } },
-  { id: "daily-arena-win-1", category: "arena" as const, title: "Gloria da Arena", description: "Venca 1 batalha de Arena hoje.", progressKey: "dailyArenaWins" as const, target: 1, reward: { experience: 320, diamonds: 1 } }
+  { id: "daily-arena-win-1", category: "arena" as const, title: "Glória da Arena", description: "Vença 1 batalha de Arena hoje.", progressKey: "dailyArenaWins" as const, target: 1, reward: { experience: 320, diamonds: 1 } }
 ];
 
 loadPersistentStore();
@@ -781,7 +781,7 @@ function buildQuests(character: Character) {
     ...WORK_MISSION_TARGETS.map((target) =>
       fixedCounterQuest(
         `work-service-${target}`,
-        `Conclua ${target} servicos de trabalho`,
+        `Conclua ${target} serviços de trabalho`,
         progress.workServicesCompleted,
         target,
         fixedActivityDiamondReward(target),
@@ -814,7 +814,7 @@ function buildQuests(character: Character) {
     ...ARENA_WIN_MISSION_TARGETS.map((target) =>
       fixedCounterQuest(
         `arena-win-${target}`,
-        `Venca ${target} batalhas de Arena`,
+        `Vença ${target} batalhas de Arena`,
         character.arenaWins,
         target,
         fixedActivityDiamondReward(target) + 1,
@@ -989,7 +989,7 @@ function ensureNotInBattle(character: Character) {
 
 function ensureNotWorking(character: Character) {
   if (isWorkInProgress(character.activeWork)) {
-    throw new Error("Voce esta trabalhando. Conclua ou abandone o servico antes desta acao.");
+    throw new Error("Você está trabalhando. Conclua ou abandone o serviço antes desta ação.");
   }
 }
 
@@ -1031,7 +1031,7 @@ function getCharacterCountryId(character: Character) {
 function getWorkService(serviceId: string): WorkServiceDefinition {
   const service = WORK_SERVICES.find((entry) => entry.id === serviceId);
   if (!service) {
-    throw new Error("Servico indisponivel.");
+    throw new Error("Serviço indisponível.");
   }
   return service;
 }
@@ -1071,13 +1071,13 @@ function grantWorkReward(character: Character, reward: WorkReward) {
 
 function startWork(character: Character, payload: WorkStartPayload) {
   if (character.activeWork) {
-    throw new Error(isWorkReady(character.activeWork) ? "Receba a recompensa do servico atual antes de iniciar outro." : "Voce ja esta trabalhando.");
+    throw new Error(isWorkReady(character.activeWork) ? "Receba a recompensa do serviço atual antes de iniciar outro." : "Você já está trabalhando.");
   }
 
   const service = getWorkService(String(payload.serviceId ?? ""));
   const countryId = getCharacterCountryId(character);
   if (service.countryId !== countryId) {
-    throw new Error("Este servico pertence a agencia de outro pais.");
+    throw new Error("Este serviço pertence à agência de outro país.");
   }
 
   const requestedMinutes = payload.minutes ?? (payload.hours ?? 0) * 60;
@@ -1095,13 +1095,13 @@ function startWork(character: Character, payload: WorkStartPayload) {
 function claimWork(character: Character) {
   const activeWork = character.activeWork;
   if (!activeWork) {
-    throw new Error("Nao ha servico em andamento.");
+    throw new Error("Não há serviço em andamento.");
   }
   if (!isWorkReady(activeWork)) {
-    throw new Error("O expediente ainda nao terminou.");
+    throw new Error("O expediente ainda não terminou.");
   }
   if (activeWork.countryId !== getCharacterCountryId(character)) {
-    throw new Error("Volte a agencia do pais do servico para receber.");
+    throw new Error("Volte à agência do país do serviço para receber.");
   }
 
   const service = getWorkService(activeWork.serviceId);
@@ -1126,7 +1126,7 @@ function claimWork(character: Character) {
 
 function abandonWork(character: Character) {
   if (!character.activeWork) {
-    throw new Error("Nao ha servico em andamento.");
+    throw new Error("Não há serviço em andamento.");
   }
   character.activeWork = null;
 }
@@ -1135,16 +1135,16 @@ function claimWorkBonus(character: Character, payload: WorkBonusClaimPayload) {
   const service = getWorkService(String(payload.serviceId ?? ""));
   const aptitude = character.workAptitudes?.[service.id] ?? getDefaultWorkAptitude();
   if (aptitude.level < service.bonus.level) {
-    throw new Error(`Aptidao nivel ${service.bonus.level} necessaria.`);
+    throw new Error(`Aptidão nível ${service.bonus.level} necessária.`);
   }
   if (!service.bonus.periodicReward || !service.bonus.periodicHours) {
-    throw new Error("Este bonus nao possui recompensa resgatavel.");
+    throw new Error("Este bônus não possui recompensa resgatável.");
   }
   const now = Date.now();
   const lastClaim = character.workBonusClaims?.[service.id] ?? 0;
   const nextClaimAt = lastClaim + service.bonus.periodicHours * 60 * 60 * 1000;
   if (lastClaim > 0 && now < nextClaimAt) {
-    throw new Error("Este bonus ainda nao esta pronto para resgate.");
+    throw new Error("Este bônus ainda não está pronto para resgate.");
   }
   character.workBonusClaims ??= {};
   character.workBonusClaims[service.id] = now;
@@ -1270,7 +1270,7 @@ function syncMonarchBattles(event: MonarchEventState, options?: { sourceBattleId
         createdAt: Date.now(),
         text:
           event.status === "defeated"
-            ? `${event.name} foi derrotado pelos herois de Morthaly.`
+            ? `${event.name} foi derrotado pelos heróis de Morthaly.`
             : `${event.name} desapareceu com a troca do dia.`
       });
     }
@@ -1588,10 +1588,10 @@ function createClan(character: Character, name: string, icon?: string) {
     throw new Error("Você já participa de um clã.");
   }
   if (character.level < CLAN_CREATE_MIN_LEVEL) {
-    throw new Error(`Você precisa estar no nível ${CLAN_CREATE_MIN_LEVEL} para criar um cla.`);
+    throw new Error(`Você precisa estar no nível ${CLAN_CREATE_MIN_LEVEL} para criar um clã.`);
   }
   if (character.diamonds < CLAN_CREATE_DIAMOND_COST) {
-    throw new Error(`Criar um cla custa ${CLAN_CREATE_DIAMOND_COST} diamantes.`);
+    throw new Error(`Criar um clã custa ${CLAN_CREATE_DIAMOND_COST} diamantes.`);
   }
   const normalized = normalizeClanName(name);
   if (normalized.length < 3) {
@@ -1784,13 +1784,13 @@ function buyClanBenefit(character: Character, benefitId: string) {
 function resetClanBenefits(character: Character) {
   const clan = character.clanId ? store.clans.get(character.clanId) : null;
   if (!clan) {
-    throw new Error("Você não participa de um cla.");
+    throw new Error("Você não participa de um clã.");
   }
   if (clan.leaderPlayerId !== character.playerId) {
-    throw new Error("Apenas o lider pode resetar os beneficios.");
+    throw new Error("Apenas o líder pode resetar os benefícios.");
   }
   if (character.diamonds < CLAN_BENEFIT_RESET_DIAMOND_COST) {
-    throw new Error(`Resetar beneficios custa ${CLAN_BENEFIT_RESET_DIAMOND_COST} diamantes.`);
+    throw new Error(`Resetar benefícios custa ${CLAN_BENEFIT_RESET_DIAMOND_COST} diamantes.`);
   }
 
   const spent = CLAN_BENEFITS.reduce(
@@ -1838,7 +1838,7 @@ function selectAvatar(character: Character, avatarId: string) {
       character.unlockedAvatarIds.push(avatar.id);
     } else {
       if (character.diamonds < avatar.priceDiamonds) {
-        throw new Error(`Sao necessarios ${avatar.priceDiamonds} diamantes para comprar este avatar.`);
+        throw new Error(`São necessários ${avatar.priceDiamonds} diamantes para comprar este avatar.`);
       }
       character.diamonds -= avatar.priceDiamonds;
       character.unlockedAvatarIds.push(avatar.id);
@@ -1849,7 +1849,7 @@ function selectAvatar(character: Character, avatarId: string) {
 
 function grantPackageStack(character: Character, itemId: string, quantity: number) {
   if (!ITEM_CATALOG[itemId]) {
-    throw new Error("Item de pacote invalido.");
+    throw new Error("Item de pacote inválido.");
   }
   const stack = character.inventory.find((item) => item.itemId === itemId);
   if (stack) {
@@ -1984,7 +1984,7 @@ function enhanceEquipment(character: Character, payload: EnhancePayload) {
     throw new Error(`Este ferreiro aprimora apenas equipamentos de ${describeEnhancementLevelRange(city.countryId)}.`);
   }
   if (character.gold < plan.goldCost) {
-    throw new Error("Ouro insuficiente para o servico.");
+    throw new Error("Ouro insuficiente para o serviço.");
   }
   for (const requirement of plan.requirements) {
     if (countItem(character, requirement.itemId) < requirement.quantity) {
@@ -2016,7 +2016,7 @@ function enhanceEquipment(character: Character, payload: EnhancePayload) {
 function grantInventoryEntry(character: Character, item: InventoryItem) {
   const definition = ITEM_CATALOG[item.itemId];
   if (!definition) {
-    throw new Error("Item invalido.");
+    throw new Error("Item inválido.");
   }
 
   if (!definition.slot) {
@@ -2025,7 +2025,7 @@ function grantInventoryEntry(character: Character, item: InventoryItem) {
   }
 
   if (!hasCapacity(character, 1)) {
-    throw new Error("Inventario cheio.");
+    throw new Error("Inventário cheio.");
   }
 
   character.inventory.push({
@@ -2186,17 +2186,17 @@ io.on("connection", (socket: AuthedSocket) => {
       }
       assertPassword(password);
       if (store.accountsByEmail.has(email)) {
-        throw new Error("Ja existe uma conta com este e-mail.");
+        throw new Error("Já existe uma conta com este e-mail.");
       }
       const usernameTaken = Array.from(store.players.values()).some(
         (player) => player.username.toLowerCase() === username.toLowerCase()
       );
       if (usernameTaken) {
-        throw new Error("Este nome de recruta ja está em uso.");
+        throw new Error("Este nome de recruta já está em uso.");
       }
       const inviter = inviteCode ? findInviterByReferralCode(inviteCode) : null;
       if (inviteCode && !inviter) {
-        throw new Error("Codigo de convite invalido.");
+        throw new Error("Código de convite inválido.");
       }
 
       const player: Player = {
@@ -2235,7 +2235,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const newPassword = String(payload.newPassword ?? "");
       const account = store.accountsByEmail.get(email);
       if (!account || !verifySecret(recoveryCode, account.recoveryCodeHash)) {
-        throw new Error("E-mail ou codigo de recuperacao invalido.");
+        throw new Error("E-mail ou código de recuperação inválido.");
       }
       assertPassword(newPassword);
 
@@ -2342,7 +2342,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const currentCity = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
       const sameCountry = currentCity.countryId === city.countryId;
       if (!sameCountry && isWorkInProgress(character.activeWork)) {
-        throw new Error("Voce esta trabalhando e nao pode viajar para outro pais.");
+        throw new Error("Você está trabalhando e não pode viajar para outro país.");
       }
       const destinationCountry = COUNTRIES.find((country) => country.id === city.countryId);
       if (!sameCountry && !city.isPort) {
@@ -2822,11 +2822,11 @@ io.on("connection", (socket: AuthedSocket) => {
 
       const event = ensureMonarchEvent();
       if (event.status !== "active" || event.currentHp <= 0) {
-        throw new Error("O monarca de hoje ja foi encerrado.");
+        throw new Error("O monarca de hoje já foi encerrado.");
       }
       const attempts = event.attemptsByPlayer[playerId] ?? 0;
       if (attempts >= MONARCH_DAILY_ATTEMPT_LIMIT) {
-        throw new Error("Limite diario de 10 confrontos contra o monarca atingido.");
+        throw new Error("Limite diário de 10 confrontos contra o monarca atingido.");
       }
       if (countItem(character, MONARCH_ACCESS_KEY_ID) < 1) {
         throw new Error(`Você precisa de 1 ${ITEM_CATALOG[MONARCH_ACCESS_KEY_ID]?.name ?? "chave"}.`);
@@ -2909,7 +2909,7 @@ io.on("connection", (socket: AuthedSocket) => {
         }
         const event = ensureMonarchEvent();
         if (event.status !== "active") {
-          throw new Error("O monarca de hoje ja foi encerrado.");
+          throw new Error("O monarca de hoje já foi encerrado.");
         }
         const beforeHp = event.currentHp;
         const result = takeMonarchBattleTurn(battle, character, event.currentHp, payload.action, payload.instanceId);
@@ -3229,7 +3229,7 @@ io.on("connection", (socket: AuthedSocket) => {
       }
       character.referralRewardsClaimedFor ??= [];
       if (character.referralRewardsClaimedFor.includes(invitedPlayerId)) {
-        throw new Error("Recompensa ja resgatada.");
+        throw new Error("Recompensa já resgatada.");
       }
       character.gold += REFERRAL_REWARD_GOLD;
       character.diamonds += REFERRAL_REWARD_DIAMONDS;

@@ -194,7 +194,7 @@ export function takeMonarchBattleTurn(
   potionInstanceId?: string
 ) {
   if (battle.status !== "active") {
-    throw new Error("A batalha ja terminou.");
+    throw new Error("A batalha já terminou.");
   }
 
   const participant = battle.participants.find((entry) => entry.ownerPlayerId === character.playerId);
@@ -281,10 +281,10 @@ export function takeBattleTurn(
 
 export function takeAutoPveTurn(battle: BattleState, character: Character) {
   if (battle.mode !== "pve" && battle.mode !== "dungeon") {
-    throw new Error("Batalha automatica está disponível apenas no PvE.");
+    throw new Error("Batalha automática está disponível apenas no PvE.");
   }
   if ((character.pveAutoUntil ?? 0) <= Date.now()) {
-    throw new Error("O beneficio de batalha PvE automatica expirou.");
+    throw new Error("O benefício de batalha PvE automática expirou.");
   }
 
   const participant = battle.participants.find((entry) => entry.ownerPlayerId === character.playerId);
@@ -299,7 +299,7 @@ export function takeAutoPveTurn(battle: BattleState, character: Character) {
   }
 
   if (battle.status === "active" && turns >= 80) {
-    battle.log.unshift(entry("Batalha automatica pausada para evitar um combate infinito."));
+    battle.log.unshift(entry("Batalha automática pausada para evitar um combate infinito."));
   }
 }
 
@@ -356,7 +356,7 @@ function usePotionInBattle(
   let recoveredResource: "vida" | "energia" = "vida";
   if (definition.stats.healPercent !== undefined || definition.stats.heal !== undefined) {
     if (participant.hp >= participant.maxHp) {
-      throw new Error("Sua vida ja esta cheia.");
+      throw new Error("Sua vida já está cheia.");
     }
     recovered = definition.stats.healPercent !== undefined
       ? Math.ceil(participant.maxHp * definition.stats.healPercent)
@@ -365,7 +365,7 @@ function usePotionInBattle(
   } else if (definition.stats.energyPercent !== undefined || definition.stats.energy !== undefined) {
     const stats = deriveStats(character, ITEM_CATALOG);
     if (character.currentEnergy >= stats.maxEnergy) {
-      throw new Error("Sua energia ja esta cheia.");
+      throw new Error("Sua energia já está cheia.");
     }
     recoveredResource = "energia";
     recovered = definition.stats.energyPercent !== undefined
@@ -373,7 +373,7 @@ function usePotionInBattle(
       : definition.stats.energy ?? 0;
     character.currentEnergy = Math.min(stats.maxEnergy, character.currentEnergy + recovered);
   } else {
-    throw new Error("Esta pocao nao tem efeito definido.");
+    throw new Error("Esta poção não tem efeito definido.");
   }
   removeItem(character, inventoryItem.instanceId, 1);
   battle.log.unshift(entry(`${character.name} usou ${definition.name} e recuperou ${recovered} de ${recoveredResource}.`));

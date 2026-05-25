@@ -258,8 +258,8 @@ const SHIP_TICKET_ID = "ticket_ship";
 const BRAND_ICON_URL = "/assets/brand/litch-logo-square-512x512.png";
 const BRAND_WORDMARK_URL = "/assets/brand/litch-1500x1500.png";
 const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
-  strength: "Forca",
-  constitution: "Constituicao",
+  strength: "Força",
+  constitution: "Constituição",
   agility: "Agilidade",
   defense: "Defesa"
 };
@@ -498,7 +498,7 @@ export function App() {
           )}
           {authMode === "register" && (
             <label>
-              <span className="auth-label"><UserPlus size={15} /> Codigo de convite</span>
+              <span className="auth-label"><UserPlus size={15} /> Código de convite</span>
               <input
                 value={inviteCode}
                 maxLength={24}
@@ -515,13 +515,13 @@ export function App() {
               value={email}
               autoComplete="email"
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="voce@email.com"
+              placeholder="seu@email.com"
             />
           </label>
           {authMode === "forgot" ? (
             <>
               <label>
-                <span className="auth-label"><KeyRound size={15} /> Codigo de recuperacao</span>
+                <span className="auth-label"><KeyRound size={15} /> Código de recuperação</span>
                 <input
                   value={recoveryCode}
                   autoComplete="one-time-code"
@@ -537,7 +537,7 @@ export function App() {
                   minLength={6}
                   autoComplete="new-password"
                   onChange={(event) => setNewPassword(event.target.value)}
-                  placeholder="Minimo de 6 caracteres"
+                  placeholder="Mínimo de 6 caracteres"
                 />
               </label>
             </>
@@ -550,13 +550,13 @@ export function App() {
                 minLength={6}
                 autoComplete={authMode === "register" ? "new-password" : "current-password"}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="Minimo de 6 caracteres"
+                placeholder="Mínimo de 6 caracteres"
               />
             </label>
           )}
           {latestRecoveryCode && (
             <div className="recovery-card">
-              <span>Codigo de recuperacao</span>
+              <span>Código de recuperação</span>
               <code>{latestRecoveryCode}</code>
             </div>
           )}
@@ -703,9 +703,9 @@ function PlayerActionModal({
             <span className="eyebrow">Recruta</span>
             <h2>{profile?.name ?? player.name}</h2>
             {profile ? (
-              <small>Nivel {profile.level} - {profile.online ? "Online" : "Offline"} - {profile.cityName}, {profile.countryName}</small>
+              <small>Nível {profile.level} - {profile.online ? "Online" : "Offline"} - {profile.cityName}, {profile.countryName}</small>
             ) : (
-              <small>{loading ? "Carregando perfil..." : "Perfil publico"}</small>
+              <small>{loading ? "Carregando perfil..." : "Perfil público"}</small>
             )}
           </div>
         </div>
@@ -726,13 +726,13 @@ function PlayerActionModal({
                 <span>{getClanCrestIcon(profile.clanIcon ?? "shield", 18)}</span>
                 <div>
                   <strong>{profile.clanName}</strong>
-                  <small>Cla nível {profile.clanLevel ?? 0}</small>
+                  <small>Clã nível {profile.clanLevel ?? 0}</small>
                 </div>
               </div>
             )}
             <div className="player-profile-grid">
-              <div><span>Nivel</span><strong>{profile.level}</strong></div>
-              <div><span>Cla</span><strong>{profile.clanName ? `Nv ${profile.clanLevel ?? 0}` : "Sem cla"}</strong></div>
+              <div><span>Nível</span><strong>{profile.level}</strong></div>
+              <div><span>Clã</span><strong>{profile.clanName ? `Nv ${profile.clanLevel ?? 0}` : "Sem clã"}</strong></div>
               <div><span>Arena</span><strong>{profile.arenaWins}V/{profile.arenaLosses}D</strong></div>
               <div><span>Masmorras</span><strong>{profile.dungeonClears}</strong></div>
             </div>
@@ -773,7 +773,7 @@ function UtilityStrip({
 }) {
   return (
     <nav className="utility-strip" aria-label="Menu do jogador">
-      <button type="button" title="Configuracao" aria-label="Configuracao" onClick={onSettings}>
+      <button type="button" title="Configuração" aria-label="Configuração" onClick={onSettings}>
         <Settings size={15} />
       </button>
       <button type="button" title="Guia" aria-label="Guia" onClick={onGuide}>
@@ -1012,7 +1012,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
         <button className="close-button" title="Fechar" onClick={onClose}>
           <X size={20} />
         </button>
-        <PanelTitle icon={<Settings size={20} />} title="Configuracao" />
+        <PanelTitle icon={<Settings size={20} />} title="Configuração" />
         <div className="utility-tabs">
           <button className={tab === "account" ? "mini-tab active" : "mini-tab"} onClick={() => setTab("account")}>
             Conta
@@ -1049,7 +1049,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
                   <span className="eyebrow">Convide seus amigos</span>
                   <h3>Recompensa no nível {game.referrals.rewardLevel}</h3>
                   <p>
-                    Quando um amigo cadastrado com seu codigo chegar ao nível {game.referrals.rewardLevel}, você pode resgatar
+                    Quando um amigo cadastrado com seu código chegar ao nível {game.referrals.rewardLevel}, você pode resgatar
                     {` ${formatCurrency(game.referrals.reward.gold)} ouro e ${game.referrals.reward.diamonds} `}
                     <Gem size={13} style={{ color: "var(--cyan)" }} />.
                   </p>
@@ -1068,7 +1068,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
                   <article className="referral-row" key={friend.playerId}>
                     <div>
                       <strong>{friend.name}</strong>
-                      <span>Nivel {friend.level}/{game.referrals.rewardLevel}</span>
+                      <span>Nível {friend.level}/{game.referrals.rewardLevel}</span>
                     </div>
                     <button
                       className="ghost-button"
@@ -1199,7 +1199,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   };
 
   const tabs: Array<{ id: GuideTab; label: string; icon: React.ReactNode }> = [
-    { id: "history", label: "Historia", icon: <BookOpen size={14} /> },
+    { id: "history", label: "História", icon: <BookOpen size={14} /> },
     { id: "faq", label: "FAQ", icon: <Info size={14} /> },
     { id: "world", label: "Mundo", icon: <Castle size={14} /> },
     { id: "work", label: "Trabalhos", icon: <BriefcaseBusiness size={14} /> },
@@ -1464,37 +1464,37 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
           <div className="faq-list">
             <section className="faq-section">
               <h3>Primeiros passos</h3>
-              <article><strong>Como meu personagem começa?</strong><span>Ao criar a conta, o personagem ja nasce com FOR, CON e AGI em 1, arma de treino, algumas poções e inventario limitado.</span></article>
-              <article><strong>O que devo fazer primeiro?</strong><span>Entre em Caca, escolha um local da cidade e enfrente monstros adequados ao seu nível para ganhar XP, ouro e possiveis drops.</span></article>
-              <article><strong>O que fica bloqueado em batalha?</strong><span>Durante a batalha, a maioria das ações fica bloqueada. Você ainda pode abrir inventario, detalhes do personagem e sair da conta.</span></article>
+              <article><strong>Como meu personagem começa?</strong><span>Ao criar a conta, o personagem já nasce com FOR, CON e AGI em 1, arma de treino, algumas poções e inventário limitado.</span></article>
+              <article><strong>O que devo fazer primeiro?</strong><span>Entre em Caça, escolha um local da cidade e enfrente monstros adequados ao seu nível para ganhar XP, ouro e possíveis drops.</span></article>
+              <article><strong>O que fica bloqueado em batalha?</strong><span>Durante a batalha, a maioria das ações fica bloqueada. Você ainda pode abrir inventário, detalhes do personagem e sair da conta.</span></article>
             </section>
 
             <section className="faq-section">
               <h3>Regras e recursos</h3>
-              <article><strong>Como funciona o inventario?</strong><span>Itens que não sao equipamentos ficam agrupados. Equipamentos ocupam espacos individuais, pois podem ter raridade e aprimoramento.</span></article>
-              <article><strong>Como recupero vida e energia?</strong><span>A cada 2 minutos reais você recupera 10%, com bonus de talentos. Poções tambem recuperam 30% de vida ou energia.</span></article>
-              <article><strong>Como a energia limita a caca?</strong><span>A energia maxima e CON + nível. Cada batalha PvE consome energia igual ao nível do monstro.</span></article>
+              <article><strong>Como funciona o inventário?</strong><span>Itens que não são equipamentos ficam agrupados. Equipamentos ocupam espaços individuais, pois podem ter raridade e aprimoramento.</span></article>
+              <article><strong>Como recupero vida e energia?</strong><span>A cada 2 minutos reais você recupera 10%, com bônus de talentos. Poções também recuperam 30% de vida ou energia.</span></article>
+              <article><strong>Como a energia limita a caça?</strong><span>A energia máxima é CON + nível. Cada batalha PvE consome energia igual ao nível do monstro.</span></article>
             </section>
 
             <section className="faq-section">
               <h3>Viagens</h3>
-              <article><strong>Como viajo entre cidades?</strong><span>Use Ticket de Trem. Algumas cidades tambem exigem nível minimo para entrada.</span></article>
-              <article><strong>Como viajo entre paises?</strong><span>Use Ticket de Navio. Ao chegar em outro pais, você aporta na cidade porto daquele pais.</span></article>
-              <article><strong>Onde compro tickets e pergaminhos?</strong><span>No Cambista, que fica apenas em cidades porto. Ele vende tickets e e o unico NPC que vende pergaminhos.</span></article>
+              <article><strong>Como viajo entre cidades?</strong><span>Use Ticket de Trem. Algumas cidades também exigem nível mínimo para entrada.</span></article>
+              <article><strong>Como viajo entre países?</strong><span>Use Ticket de Navio. Ao chegar em outro país, você aporta na cidade porto daquele país.</span></article>
+              <article><strong>Onde compro tickets e pergaminhos?</strong><span>No Cambista, que fica apenas em cidades porto. Ele vende tickets e é o único NPC que vende pergaminhos.</span></article>
             </section>
 
             <section className="faq-section">
               <h3>Combate</h3>
-              <article><strong>Como a vida e calculada?</strong><span>Vida maxima: nível * 50 + 2 * CON, somando bonus de equipamentos, talentos e beneficios.</span></article>
-              <article><strong>Como o dano e calculado?</strong><span>O dano base e FOR do atacante menos DEF do defensor, com minimo de 1 quando o ataque acerta.</span></article>
-              <article><strong>Para que serve AGI?</strong><span>AGI aumenta chance de critico e esquiva. Ela tambem conversa bem com talentos ofensivos e defensivos.</span></article>
+              <article><strong>Como a vida é calculada?</strong><span>Vida máxima: nível * 50 + 2 * CON, somando bônus de equipamentos, talentos e benefícios.</span></article>
+              <article><strong>Como o dano é calculado?</strong><span>O dano base é FOR do atacante menos DEF do defensor, com mínimo de 1 quando o ataque acerta.</span></article>
+              <article><strong>Para que serve AGI?</strong><span>AGI aumenta chance de crítico e esquiva. Ela também conversa bem com talentos ofensivos e defensivos.</span></article>
             </section>
 
             <section className="faq-section highlighted">
               <h3>Diamantes e Amigo do Rei</h3>
-              <article><strong>Quando vale comprar diamantes?</strong><span>Diamantes aceleram resets, criacao de cla, compra de avatares premium e trocas por ouro quando você precisa agir rapido no mercado.</span></article>
-              <article><strong>O que e Amigo do Rei?</strong><span>E um pacote em destaque da Loja do Jogo com 200 diamantes, 100 tickets de trem, 30 tickets de navio, PvE automatico por 1 mes e selo do rei no avatar por 1 mes.</span></article>
-              <article><strong>Por que o PvE automatico ajuda?</strong><span>Ele reduz repeticao em sessoes longas de caca, ideal para farmar XP, gold e drops enquanto você foca em mercado, cla e progresso.</span></article>
+              <article><strong>Quando vale comprar diamantes?</strong><span>Diamantes aceleram resets, criação de clã, compra de avatares premium e trocas por ouro quando você precisa agir rápido no mercado.</span></article>
+              <article><strong>O que é Amigo do Rei?</strong><span>É um pacote em destaque da Loja do Jogo com 200 diamantes, 100 tickets de trem, 30 tickets de navio, PvE automático por 1 mês e selo do rei no avatar por 1 mês.</span></article>
+              <article><strong>Por que o PvE automático ajuda?</strong><span>Ele reduz repetição em sessões longas de caça, ideal para farmar XP, gold e drops enquanto você foca em mercado, clã e progresso.</span></article>
             </section>
           </div>
         )}
@@ -1502,7 +1502,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
         {tab === "world" && (
           <div className="guide-catalog">
             <div className="guide-filters">
-              <input value={worldFilter} onChange={(event) => setWorldFilter(event.target.value)} placeholder="Filtrar pais, cidade ou local" />
+              <input value={worldFilter} onChange={(event) => setWorldFilter(event.target.value)} placeholder="Filtrar país, cidade ou local" />
             </div>
             <div className="guide-country-list">
               {countryGroups.map(({ country, cities }) => (
@@ -1513,7 +1513,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                   <div className="guide-country-content">
                     <div className="guide-country-heading">
                       <div>
-                        <span className="eyebrow">Pais</span>
+                        <span className="eyebrow">País</span>
                         <h3>{country.name}</h3>
                       </div>
                       {country.id === "morthaly" && <strong className="monarch-home-badge">Sede dos Monarcas</strong>}
@@ -1527,7 +1527,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                             <div className="guide-city-heading">
                               <div>
                                 <strong>{city.name}</strong>
-                                <span>Nivel minimo {city.minLevel}{city.isPort ? " - Porto" : ""}</span>
+                                <span>Nível mínimo {city.minLevel}{city.isPort ? " - Porto" : ""}</span>
                               </div>
                               {city.countryId === "morthaly" && <small>Rotas do evento Monarca passam por Morthaly.</small>}
                             </div>
@@ -1574,7 +1574,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                   </div>
                 </article>
               ))}
-              {countryGroups.length === 0 && <p className="empty-state">Nenhum pais, cidade ou local encontrado.</p>}
+              {countryGroups.length === 0 && <p className="empty-state">Nenhum país, cidade ou local encontrado.</p>}
             </div>
           </div>
         )}
@@ -1582,19 +1582,19 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
         {tab === "work" && (
           <div className="guide-work-list">
             <section className="guide-list">
-              <article><strong>Como funciona</strong><span>Agencias existem em todas as cidades. Voce escolhe um servico, define o tempo de trabalho e volta quando o expediente terminar para receber.</span></article>
-              <article><strong>Bloqueios</strong><span>Enquanto trabalha, o personagem nao pode batalhar, viajar para outro pais ou iniciar outro servico. Abandonar cancela toda recompensa daquele expediente.</span></article>
-              <article><strong>Aptidao</strong><span>Cada servico tem nivel proprio de aptidao. Quanto mais voce trabalha nele, maior a recompensa e mais perto fica do bonus especial.</span></article>
-              <article><strong>Tempo</strong><span>Servicos curtos pagam melhor proporcionalmente, mas servicos raros e valiosos podem exigir turnos mais longos.</span></article>
+              <article><strong>Como funciona</strong><span>Agências existem em todas as cidades. Você escolhe um serviço, define o tempo de trabalho e volta quando o expediente terminar para receber.</span></article>
+              <article><strong>Bloqueios</strong><span>Enquanto trabalha, o personagem não pode batalhar, viajar para outro país ou iniciar outro serviço. Abandonar cancela toda recompensa daquele expediente.</span></article>
+              <article><strong>Aptidão</strong><span>Cada serviço tem nível próprio de aptidão. Quanto mais você trabalha nele, maior a recompensa e mais perto fica do bônus especial.</span></article>
+              <article><strong>Tempo</strong><span>Serviços curtos pagam melhor proporcionalmente, mas serviços raros e valiosos podem exigir turnos mais longos.</span></article>
             </section>
             {workGroups.map(({ country, services }) => (
               <section className="guide-work-country" key={country.id}>
                 <div className="guide-work-country-head">
                   <div>
-                    <span className="eyebrow">Pais</span>
+                    <span className="eyebrow">País</span>
                     <h3>{country.name}</h3>
                   </div>
-                  <small>{services.length} servicos</small>
+                  <small>{services.length} serviços</small>
                 </div>
                 <p>{country.description}</p>
                 <div className="guide-work-grid">
@@ -1612,7 +1612,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                         {renderWorkReward(game, service.rewardsPerHour)}
                       </div>
                       <div className="work-bonus">
-                        <strong>Bonus Nv. {service.bonus.level}</strong>
+                        <strong>Bônus Nv. {service.bonus.level}</strong>
                         <span>{service.bonus.description}</span>
                       </div>
                     </article>
@@ -1649,7 +1649,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
         {tab === "monsters" && (
           <div className="guide-catalog">
             <div className="guide-filters">
-              <input value={monsterFilter} onChange={(event) => setMonsterFilter(event.target.value)} placeholder="Filtrar monstro, cidade ou pais" />
+              <input value={monsterFilter} onChange={(event) => setMonsterFilter(event.target.value)} placeholder="Filtrar monstro, cidade ou país" />
               <select value={monsterCity} onChange={(event) => setMonsterCity(event.target.value)}>
                 <option value="all">Todas as cidades</option>
                 {game.cities.map((city) => (
@@ -1672,9 +1672,9 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
         {tab === "monarchs" && (
           <div className="monarch-guide">
             <section className="guide-list">
-              <article><strong>Entrada</strong><span>O evento dos Monarcas acontece em Morthaly. Para entrar, o recruta usa Chaves Altas e respeita o limite diario de tentativas.</span></article>
+              <article><strong>Entrada</strong><span>O evento dos Monarcas acontece em Morthaly. Para entrar, o recruta usa Chaves Altas e respeita o limite diário de tentativas.</span></article>
               <article><strong>Objetivo</strong><span>Todos os participantes atacam o mesmo chefe global. O dano fica registrado no ranking do evento.</span></article>
-              <article><strong>Recompensas</strong><span>Ao final, participantes recebem XP e ouro conforme dano/ranking. Quando o chefe e derrotado, os 3 melhores tambem recebem diamantes.</span></article>
+              <article><strong>Recompensas</strong><span>Ao final, participantes recebem XP e ouro conforme dano/ranking. Quando o chefe e derrotado, os 3 melhores também recebem diamantes.</span></article>
               <article><strong>Rei Litch</strong><span>No fim de semana, o Rei Litch substitui os generais e triplica as recompensas do evento.</span></article>
               <article><strong>Status atual</strong><span>{game.monarchEvent ? `${game.monarchEvent.name} está ${game.monarchEvent.status}.` : "Evento ainda não carregado."}</span></article>
             </section>
@@ -1688,7 +1688,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                     <small>Nv {general.level} - {general.maxHp.toLocaleString()} vida</small>
                   </div>
                   <div className="monster-stats">
-                    <small title="Forca"><Swords size={13} /> {general.strength}</small>
+                    <small title="Força"><Swords size={13} /> {general.strength}</small>
                     <small title="Defesa"><Shield size={13} /> {general.defense}</small>
                     <small title="Agilidade"><Crosshair size={13} /> {general.agility}</small>
                     <small title="XP"><Sparkles size={13} /> {general.experience.toLocaleString()}</small>
@@ -1704,12 +1704,12 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
           <form className="utility-form" onSubmit={sendDeveloperMessage}>
             <div className="guide-copy developer-copy">
               <h3>Fale com o desenvolvedor</h3>
-              <p>Obrigado por jogar e testar Litch. Cada bug reportado, sugestao de balanceamento e comentario sobre a experiencia ajuda a deixar o jogo mais vivo, justo e divertido.</p>
+              <p>Obrigado por jogar e testar Litch. Cada bug reportado, sugestão de balanceamento e comentário sobre a experiência ajuda a deixar o jogo mais vivo, justo e divertido.</p>
               <p>Use este canal para contar o que travou seu progresso, qual sistema ficou confuso, que item parece forte demais ou que ideia você gostaria de ver no mundo.</p>
             </div>
             <label>
               <span>Assunto</span>
-              <input value={developerSubject} onChange={(event) => setDeveloperSubject(event.target.value)} placeholder="Bug, sugestao ou duvida" />
+              <input value={developerSubject} onChange={(event) => setDeveloperSubject(event.target.value)} placeholder="Bug, sugestão ou dúvida" />
             </label>
             <label>
               <span>Mensagem</span>
@@ -1755,10 +1755,10 @@ function GuideItemDetail({ item, game, onClose }: { item: ItemDefinition; game: 
         <div>
           <span className="eyebrow">{ITEM_KIND_LABELS[item.kind]}</span>
           <h3>{item.name}</h3>
-          <p>{item.description ?? "Sem descricao."}</p>
+          <p>{item.description ?? "Sem descrição."}</p>
         </div>
         <div className="guide-detail-stats">
-          {item.slot && <span>Nivel minimo <strong>{item.minLevel}</strong></span>}
+          {item.slot && <span>Nível mínimo <strong>{item.minLevel}</strong></span>}
           <span>Valor <strong>{formatCurrency(item.price)} ouro</strong></span>
           {item.rarity && <span>Raridade <strong>{RARITY_LABELS[item.rarity]}</strong></span>}
           {statEntries.map((entry) => (
@@ -1796,7 +1796,7 @@ function GuideItemDetail({ item, game, onClose }: { item: ItemDefinition; game: 
                   <User size={20} />
                   <div>
                     <strong>{vendor.name}</strong>
-                    <span>{vendor.role} - {vendor.city.name}, {vendor.country?.name ?? "Pais desconhecido"}</span>
+                    <span>{vendor.role} - {vendor.city.name}, {vendor.country?.name ?? "País desconhecido"}</span>
                   </div>
                 </article>
               ))}
@@ -1820,13 +1820,13 @@ function GuideMonsterDetail({ monster, game, onClose }: { monster: GameState["ci
         </button>
         <MonsterVisual monster={monster} className="guide-detail-art" />
         <div>
-          <span className="eyebrow">{city?.name ?? "Cidade desconhecida"} - {country?.name ?? "Pais desconhecido"}</span>
+          <span className="eyebrow">{city?.name ?? "Cidade desconhecida"} - {country?.name ?? "País desconhecido"}</span>
           <h3>{monster.name}</h3>
         </div>
         <div className="monster-stats">
-          <small title="Nivel"><Star size={13} /> {monster.level}</small>
+          <small title="Nível"><Star size={13} /> {monster.level}</small>
           <small title="Vida"><Heart size={13} /> {monster.maxHp}</small>
-          <small title="Forca"><Swords size={13} /> {monster.strength}</small>
+          <small title="Força"><Swords size={13} /> {monster.strength}</small>
           <small title="Defesa"><Shield size={13} /> {monster.defense}</small>
           <small title="Agilidade"><Crosshair size={13} /> {monster.agility}</small>
           <small title="XP"><Sparkles size={13} /> {monster.experience}</small>
@@ -1869,7 +1869,7 @@ function getItemVendors(game: GameState, itemId: string) {
       vendors.push({ city, country, role: "Armeiro", name: city.npcs.armorer });
     }
     if (city.apothecaryItemIds.includes(itemId)) {
-      vendors.push({ city, country, role: "Boticario", name: city.npcs.apothecary });
+      vendors.push({ city, country, role: "Boticário", name: city.npcs.apothecary });
     }
     if ((city.moneyChangerItemIds ?? []).includes(itemId) && city.npcs.moneyChanger) {
       vendors.push({ city, country, role: "Cambista", name: city.npcs.moneyChanger });
@@ -1883,7 +1883,7 @@ function formatNpcRole(role: string) {
     case "armorer":
       return "Armeiro";
     case "apothecary":
-      return "Boticario";
+      return "Boticário";
     case "blacksmith":
       return "Ferreiro";
     case "alchemist":
@@ -2006,7 +2006,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           <span className="character-clan-crest">{getClanCrestIcon(game.clan.icon, 18)}</span>
           <div>
             <strong>{game.clan.name}</strong>
-            <small>Nivel {game.clan.level} - {game.clan.leaderPlayerId === game.player.id ? "Lider do cla" : "Membro do cla"}</small>
+            <small>Nível {game.clan.level} - {game.clan.leaderPlayerId === game.player.id ? "Líder do clã" : "Membro do clã"}</small>
           </div>
         </div>
       )}
@@ -2085,7 +2085,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           <button
             className="battle-potion-button health"
             disabled={locked || !healthPotion || game.character.currentHp >= game.derived.maxHp}
-            title={healthPotion?.definition.name ?? "Nenhuma pocao de vida"}
+            title={healthPotion?.definition.name ?? "Nenhuma poção de vida"}
             onClick={() => healthPotion && socket.emit("inventory:use", { instanceId: healthPotion.inventoryItem.instanceId })}
           >
             {healthPotion ? (
@@ -2101,7 +2101,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           <button
             className="battle-potion-button energy"
             disabled={locked || !energyPotion || game.character.currentEnergy >= game.derived.maxEnergy}
-            title={energyPotion?.definition.name ?? "Nenhuma pocao de energia"}
+            title={energyPotion?.definition.name ?? "Nenhuma poção de energia"}
             onClick={() => energyPotion && socket.emit("inventory:use", { instanceId: energyPotion.inventoryItem.instanceId })}
           >
             {energyPotion ? (
@@ -2321,7 +2321,7 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   }
 
   const actionOptions: CityOption[] = [
-    { view: "agency", icon: <BriefcaseBusiness size={24} />, title: "Agencia", value: workValue }
+    { view: "agency", icon: <BriefcaseBusiness size={24} />, title: "Agência", value: workValue }
   ];
   
   if (game.currentCountry.id === "morthaly" && game.monarchEvent) {
@@ -2378,12 +2378,12 @@ function AgencyPanel({ game }: { game: GameState }) {
   const activeService = activeWork ? game.workServices.find((service) => service.id === activeWork.serviceId) ?? null : null;
   const activeReady = isWorkReady(activeWork, now);
   const activeInCountry = !activeWork || activeWork.countryId === game.currentCountry.id;
-  const currentCountryName = game.countries.find((country) => country.id === activeWork?.countryId)?.name ?? "outro pais";
+  const currentCountryName = game.countries.find((country) => country.id === activeWork?.countryId)?.name ?? "outro país";
   const activeWorkMinutes = activeWork ? getWorkAssignmentMinutes(activeWork) : 0;
 
   return (
     <section className="content-panel agency-panel">
-      <PanelTitle icon={<BriefcaseBusiness size={20} />} title={`Agencia de ${game.currentCountry.name}`} />
+      <PanelTitle icon={<BriefcaseBusiness size={20} />} title={`Agência de ${game.currentCountry.name}`} />
       <p className="agency-intro">{game.currentCountry.description}</p>
 
       {activeWork && activeService && (
@@ -2469,7 +2469,7 @@ function AgencyPanel({ game }: { game: GameState }) {
                 {renderWorkReward(game, reward)}
               </div>
               <div className={bonusUnlocked ? "work-bonus unlocked" : "work-bonus"}>
-                <strong>Bonus Nv. {service.bonus.level}</strong>
+                <strong>Bônus Nv. {service.bonus.level}</strong>
                 <span>{service.bonus.description}</span>
                 {service.bonus.periodicReward && bonusUnlocked && (
                   <button
@@ -2477,7 +2477,7 @@ function AgencyPanel({ game }: { game: GameState }) {
                     disabled={!periodicReady}
                     onClick={() => socket.emit("work:claimBonus", { serviceId: service.id })}
                   >
-                    {periodicReady ? "Resgatar bonus" : `Pronto em ${formatDuration(getWorkBonusReadyAt(game, service) - now)}`}
+                    {periodicReady ? "Resgatar bônus" : `Pronto em ${formatDuration(getWorkBonusReadyAt(game, service) - now)}`}
                   </button>
                 )}
               </div>
@@ -2508,7 +2508,7 @@ function MissionsPanel({ game }: { game: GameState }) {
   return (
     <section className="content-panel missions-panel">
       <PanelTitle icon={<ScrollText size={20} />} title="Missões" />
-      <div className="quest-filter-tabs" role="tablist" aria-label="Filtros de missoes">
+      <div className="quest-filter-tabs" role="tablist" aria-label="Filtros de missões">
         {filters.map((filter) => {
           const count = filter === "all" ? allQuests.length : allQuests.filter((quest) => quest.category === filter).length;
           return (
@@ -2524,7 +2524,7 @@ function MissionsPanel({ game }: { game: GameState }) {
         })}
       </div>
       {filteredCount === 0 ? (
-        <p className="empty-state">Nenhuma missao neste filtro.</p>
+        <p className="empty-state">Nenhuma missão neste filtro.</p>
       ) : (
         <>
           <QuestSection title="Diárias" quests={dailyQuests} />
@@ -2693,7 +2693,7 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
           <Hammer size={18} />
           <div>
             <strong>Aprimorar equipamento</strong>
-            <span>Este ferreiro trabalha de {rangeLabel}. Nenhum equipamento no inventario.</span>
+            <span>Este ferreiro trabalha de {rangeLabel}. Nenhum equipamento no inventário.</span>
           </div>
         </div>
       </section>
@@ -2730,7 +2730,7 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
             <ItemVisual item={selectedItem} className="enhancement-item-visual" enhancementLevel={selectedEntry.enhancementLevel} rarity={selectedEntry.rarity} />
             <div>
               <strong>{formatInventoryItemName(selectedItem, selectedEntry)}</strong>
-              <span>Proximo: +{plan.nextLevel}</span>
+              <span>Próximo: +{plan.nextLevel}</span>
             </div>
           </div>
 
@@ -2775,7 +2775,7 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
 
           <div className="enhancement-boost">
             <label>
-              <span>Pedras de Criacao (+{ENHANCEMENT_CREATION_STONE_BONUS}% cada)</span>
+              <span>Pedras de Criação (+{ENHANCEMENT_CREATION_STONE_BONUS}% cada)</span>
               <input
                 type="number"
                 min={0}
@@ -2827,7 +2827,7 @@ function DungeonPanel({ game }: { game: GameState }) {
               <MonsterVisual monster={monster} className="entity-art" />
               <div className="monster-stats">
                 <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>
-                <small title="Forca"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
+                <small title="Força"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
                 <small title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {monster.defense}</small>
                 <small title="Agilidade"><Crosshair size={13} style={{ color: "var(--gold)" }} /> {monster.agility}</small>
                 <small title="Energia"><Zap size={13} style={{ color: "var(--yellow)" }} /> {energyCost}</small>
@@ -2864,9 +2864,9 @@ function MonarchPanel({ game }: { game: GameState }) {
       : event.status !== "active"
         ? "Evento encerrado"
         : attemptsLeft <= 0
-          ? "Limite diario atingido"
+          ? "Limite diário atingido"
           : highKeys <= 0
-            ? "Precisa de Chave de Masmorra Avancada"
+            ? "Precisa de Chave de Masmorra Avançada"
             : game.character.currentHp <= 0
               ? "Recupere sua vida"
               : "";
@@ -2881,7 +2881,7 @@ function MonarchPanel({ game }: { game: GameState }) {
           <h2>{event.name}</h2>
           <p>
             Cada dano causado por qualquer recruta reduz a vida global do monarca em tempo real.
-            {event.isKing ? " As recompensas do Rei Litch sao triplicadas." : ""}
+            {event.isKing ? " As recompensas do Rei Litch são triplicadas." : ""}
           </p>
           <div className="monarch-hp">
             <div className="hp-bar">
@@ -2890,8 +2890,8 @@ function MonarchPanel({ game }: { game: GameState }) {
             <strong>{event.currentHp.toLocaleString()} / {event.maxHp.toLocaleString()} vida</strong>
           </div>
           <div className="monster-stats">
-            <small title="Nivel"><Star size={13} /> {event.level}</small>
-            <small title="Forca"><Swords size={13} /> {event.strength}</small>
+            <small title="Nível"><Star size={13} /> {event.level}</small>
+            <small title="Força"><Swords size={13} /> {event.strength}</small>
             <small title="Defesa"><Shield size={13} /> {event.defense}</small>
             <small title="Agilidade"><Crosshair size={13} /> {event.agility}</small>
           </div>
@@ -2989,7 +2989,7 @@ function ClanRankingList({ entries }: { entries: ClanRankingEntry[] }) {
               <span className="clan-directory-crest">{getClanCrestIcon(entry.icon)}</span>
               <div className="clan-leader-main">
                 <span>{entry.name}</span>
-                <small className="clan-leader-clickable">Lider: <PlayerName playerId={entry.leaderPlayerId} name={entry.leaderName} /></small>
+                <small className="clan-leader-clickable">Líder: <PlayerName playerId={entry.leaderPlayerId} name={entry.leaderName} /></small>
                 <small>Líder: {entry.leaderName}</small>
               </div>
             </div>
@@ -3228,7 +3228,7 @@ function ClanPanel({ game }: { game: GameState }) {
         {showCreateForm && (levelOk && diamondsOk) && (
           <form className="market-form clan-create-form" onSubmit={createClan}>
             <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome do clã" maxLength={28} autoFocus />
-            <div className="crest-picker" aria-label="Brasao do cla">
+            <div className="crest-picker" aria-label="Brasão do clã">
               {CLAN_CREST_OPTIONS.map((icon) => (
                 <button
                   type="button"
@@ -3255,7 +3255,7 @@ function ClanPanel({ game }: { game: GameState }) {
                 <span className="clan-directory-crest">{getClanCrestIcon(entry.icon)}</span>
                 <div className="clan-leader-main">
                   <strong>{entry.name}</strong>
-                  <span className="clan-leader-clickable">Lider: <PlayerName playerId={entry.leaderPlayerId} name={entry.leaderName} /> - Nv {entry.level}</span>
+                  <span className="clan-leader-clickable">Líder: <PlayerName playerId={entry.leaderPlayerId} name={entry.leaderName} /> - Nv {entry.level}</span>
                   <span>Líder: {entry.leaderName} - Nv {entry.level}</span>
                 </div>
                 <b>{entry.memberCount}/{entry.memberCapacity}</b>
@@ -3358,7 +3358,7 @@ function ClanPanel({ game }: { game: GameState }) {
               <span>Altere o nome e o brasão do clã.</span>
             </div>
             <input value={editName} onChange={(event) => setEditName(event.target.value)} maxLength={28} placeholder="Nome do clã" />
-            <div className="crest-picker" aria-label="Brasao do cla">
+            <div className="crest-picker" aria-label="Brasão do clã">
               {CLAN_CREST_OPTIONS.map((icon) => (
                 <button
                   type="button"
@@ -3385,7 +3385,7 @@ function ClanPanel({ game }: { game: GameState }) {
               className="ghost-button"
               disabled={game.character.diamonds < 1000 || clan.level <= 0}
               onClick={() => {
-                if (window.confirm("Resetar todos os beneficios do cla por 1000 diamantes?")) {
+                if (window.confirm("Resetar todos os benefícios do clã por 1000 diamantes?")) {
                   socket.emit("clan:benefit:reset");
                 }
               }}
@@ -3497,7 +3497,7 @@ function ClanSuperBenefits({ game }: { game: GameState }) {
     <section className="clan-super-benefits">
       <div className="clan-super-title">
         <Crown size={18} />
-        <h3>Super-beneficios</h3>
+        <h3>Super-benefícios</h3>
       </div>
       <div className="clan-super-grid">
         {game.clanSuperBenefits.map((benefit) => {
@@ -3537,14 +3537,14 @@ function getClanBonusSummary(game: GameState) {
     },
     {
       id: "crit",
-      label: "Critico",
+      label: "Crítico",
       value: (ranks.clan_crit_1 ?? 0) * 0.5 + (ranks.clan_crit_2 ?? 0) * 0.5 + (combatSuperActive ? 3 : 0),
       suffix: "%",
       icon: <Crosshair size={15} />
     },
     {
       id: "crit-damage",
-      label: "Dano critico",
+      label: "Dano crítico",
       value: combatSuperActive ? 20 : 0,
       suffix: "%",
       icon: <Swords size={15} />
@@ -3607,7 +3607,7 @@ function getClanBonusSummary(game: GameState) {
     },
     {
       id: "inventory",
-      label: "Inventario",
+      label: "Inventário",
       value:
         (ranks.clan_inventory_1 ?? 0) * 2 +
         (ranks.clan_inventory_2 ?? 0) * 3 +
@@ -3632,8 +3632,8 @@ function ClanBonusSummary({ game }: { game: GameState }) {
   return (
     <section className="clan-bonus-summary">
       <div>
-        <strong>Total de bonus adquiridos</strong>
-        <span>{bonuses.length ? "Soma dos ranks comprados pelo cla." : "Nenhum beneficio comprado ainda."}</span>
+        <strong>Total de bônus adquiridos</strong>
+        <span>{bonuses.length ? "Soma dos ranks comprados pelo clã." : "Nenhum benefício comprado ainda."}</span>
       </div>
       {bonuses.length > 0 && (
         <div className="clan-bonus-list">
@@ -3743,7 +3743,7 @@ function HuntPanel({ game }: { game: GameState }) {
               </div>
               <div className="monster-stats">
                 <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>
-                <small title="Forca"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
+                <small title="Força"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
                 <small title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {monster.defense}</small>
                 <small title="Agilidade"><Crosshair size={13} style={{ color: "var(--yellow)" }} /> {monster.agility}</small>
               </div>
@@ -3910,8 +3910,8 @@ function QuickPotionSelector({ game }: { game: GameState }) {
   return (
     <section className="quick-potion-settings">
       <div>
-        <strong>Uso rapido</strong>
-        <small>Escolha qual pocao os atalhos de batalha e detalhes vao consumir.</small>
+        <strong>Uso rápido</strong>
+        <small>Escolha qual poção os atalhos de batalha e detalhes vão consumir.</small>
       </div>
       <div className="quick-potion-fields">
         {renderSelect("health", <Heart size={14} />, "Vida", healthOptions, selectedHealth)}
@@ -4210,18 +4210,18 @@ function TravelPanel({ game }: { game: GameState }) {
           </div>
           <p>{selectedTravelCity.description}</p>
           <div className="travel-selection-meta">
-            <span>Nivel minimo <strong>{selectedRoute.destinationCity.minLevel}</strong></span>
-            <span>{selectedRoute.sameCountry ? "Rota terrestre" : "Rota maritima"}</span>
+            <span>Nível mínimo <strong>{selectedRoute.destinationCity.minLevel}</strong></span>
+            <span>{selectedRoute.sameCountry ? "Rota terrestre" : "Rota marítima"}</span>
             <span>{selectedRoute.current ? "Atual" : selectedRoute.ticketLabel}</span>
           </div>
           {selectedRoute.blockedByForeignInterior && (
             <p className="travel-selection-warning">
-              Para visitar cidades internas de outro pais, desembarque antes em {selectedRoute.portCity?.name ?? "seu porto"}.
+              Para visitar cidades internas de outro país, desembarque antes em {selectedRoute.portCity?.name ?? "seu porto"}.
             </p>
           )}
           {!selectedRoute.sameCountry && !selectedRoute.blockedByForeignInterior && !selectedRoute.current && (
             <p className="travel-selection-warning subtle">
-              A viagem entre paises usa navio e chega diretamente ao porto selecionado.
+              A viagem entre países usa navio e chega diretamente ao porto selecionado.
             </p>
           )}
           <button
@@ -5235,11 +5235,11 @@ function BattlePotionDock({
   };
 
   return (
-    <aside className="battle-potion-dock" aria-label="Pocoes de batalha">
+    <aside className="battle-potion-dock" aria-label="Poções de batalha">
       <button
         className="battle-potion-button health"
         disabled={!canAct || !healthPotion || hpFull}
-        title={healthPotion?.definition.name ?? "Nenhuma pocao de vida"}
+        title={healthPotion?.definition.name ?? "Nenhuma poção de vida"}
         onClick={() => usePotion(healthPotion)}
       >
         {healthPotion ? (
@@ -5255,7 +5255,7 @@ function BattlePotionDock({
       <button
         className="battle-potion-button energy"
         disabled={!canAct || !energyPotion || energyFull}
-        title={energyPotion?.definition.name ?? "Nenhuma pocao de energia"}
+        title={energyPotion?.definition.name ?? "Nenhuma poção de energia"}
         onClick={() => usePotion(energyPotion)}
       >
         {energyPotion ? (
@@ -5334,7 +5334,7 @@ function CombatantCard({
         {participant.hp}/{participant.maxHp} vida
       </small>
       <div className="combat-stat-row">
-        <span title="Forca"><Swords size={13} style={{ color: "var(--purple)" }} /> {participant.strength}</span>
+        <span title="Força"><Swords size={13} style={{ color: "var(--purple)" }} /> {participant.strength}</span>
         <span title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {participant.defense}</span>
         <span title="Agilidade"><Crosshair size={13} style={{ color: "var(--gold)" }} /> {participant.agility}</span>
       </div>
@@ -5393,7 +5393,8 @@ function parseBattleHpChange(text: string, participants: BattleParticipant[]): B
 
 function getBattleLogKind(text: string) {
   const lower = text.toLowerCase();
-  if (lower.includes("causou")) return lower.includes("crítico") || lower.includes("critico") || lower.includes("crã") ? "critical" : "damage";
+  const plain = lower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (lower.includes("causou")) return plain.includes("critico") ? "critical" : "damage";
   if (lower.includes("esquivou")) return "dodge";
   if (lower.includes("energia") && (lower.includes("usou") || lower.includes("recuperou"))) return "energy";
   if (lower.includes("usou") || lower.includes("recuperou")) return "heal";
@@ -5851,10 +5852,10 @@ function ShopItemModal({
 
           {item.slot && (
             <div className="market-modal-stats">
-              <h4>Bonus</h4>
+              <h4>Bônus</h4>
               <div className="stat-list">
-                {item.stats.strength && <div><span>Forca</span> <strong>+{item.stats.strength}</strong></div>}
-                {item.stats.constitution && <div><span>Constituicao</span> <strong>+{item.stats.constitution}</strong></div>}
+                {item.stats.strength && <div><span>Força</span> <strong>+{item.stats.strength}</strong></div>}
+                {item.stats.constitution && <div><span>Constituição</span> <strong>+{item.stats.constitution}</strong></div>}
                 {item.stats.agility && <div><span>Agilidade</span> <strong>+{item.stats.agility}</strong></div>}
                 {item.stats.defense && <div><span>Defesa</span> <strong>+{item.stats.defense}</strong></div>}
               </div>
@@ -5877,7 +5878,7 @@ function ShopItemModal({
 
           {item.slot && item.minLevel > 1 && (
             <div className={item.minLevel > game.character.level ? "market-modal-requirement unmet" : "market-modal-requirement"}>
-              Nivel minimo: {item.minLevel} {item.minLevel > game.character.level && "(não alcancado)"}
+              Nível mínimo: {item.minLevel} {item.minLevel > game.character.level && "(não alcançado)"}
             </div>
           )}
 
@@ -5973,8 +5974,8 @@ function RecoveryCodeModal({ code, onClose }: { code: string; onClose: () => voi
           <X size={20} />
         </button>
         <KeyRound size={28} />
-        <h2>Codigo de recuperacao</h2>
-        <p>Guarde este codigo para redefinir sua senha depois.</p>
+        <h2>Código de recuperação</h2>
+        <p>Guarde este código para redefinir sua senha depois.</p>
         <code>{code}</code>
         <button className="primary-button" onClick={onClose}>Entendi</button>
       </div>
@@ -6224,7 +6225,7 @@ function getNpcShopBlockedReason(game: GameState, item: ItemDefinition, quantity
     return "Ouro insuficiente";
   }
   if (!canReceiveShopItem(game, item)) {
-    return "Inventario cheio";
+    return "Inventário cheio";
   }
   return null;
 }

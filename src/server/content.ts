@@ -21,7 +21,7 @@ export const SHIP_TICKET_ID = "ticket_ship";
 
 export const AVATARS: AvatarDefinition[] = [
   { id: "wanderer", name: "Viajante", icon: "user", accent: "linear-gradient(135deg, #8be9fd, #bd93f9)", priceDiamonds: 0 },
-  { id: "guardian", name: "Guardiao", icon: "shield", accent: "linear-gradient(135deg, #50fa7b, #8be9fd)", priceDiamonds: 0 },
+  { id: "guardian", name: "Guardião", icon: "shield", accent: "linear-gradient(135deg, #50fa7b, #8be9fd)", priceDiamonds: 0 },
   { id: "duelist", name: "Duelista", icon: "swords", accent: "linear-gradient(135deg, #ff79c6, #bd93f9)", priceDiamonds: 25 },
   { id: "ember", name: "Brasa Real", icon: "flame", accent: "linear-gradient(135deg, #ffb86c, #ff5555)", priceDiamonds: 40 },
   { id: "arcane", name: "Arcano", icon: "sparkles", accent: "linear-gradient(135deg, #8be9fd, #f1fa8c)", priceDiamonds: 60 },
@@ -38,7 +38,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 80,
     "stats": {},
-    "description": "Usado para viajar entre cidades do mesmo pais."
+    "description": "Usado para viajar entre cidades do mesmo país."
   },
   "ticket_ship": {
     "id": "ticket_ship",
@@ -47,7 +47,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 250,
     "stats": {},
-    "description": "Usado para viajar entre paises. A chegada sempre acontece na cidade porto."
+    "description": "Usado para viajar entre países. A chegada sempre acontece na cidade porto."
   },
   "armor_leather": {
     "id": "armor_leather",
@@ -77,7 +77,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "armor_mystic": {
     "id": "armor_mystic",
-    "name": "Armadura Mistica",
+    "name": "Armadura Mística",
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/02-mystic.png",
@@ -103,7 +103,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "armor_cursed": {
     "id": "armor_cursed",
-    "name": "Armadura Amaldicoada",
+    "name": "Armadura Amaldiçoada",
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/04-cursed.png",
@@ -116,7 +116,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "armor_justice": {
     "id": "armor_justice",
-    "name": "Armadura da Justica",
+    "name": "Armadura da Justiça",
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/05-justice.png",
@@ -155,7 +155,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "armor_dragon": {
     "id": "armor_dragon",
-    "name": "Armadura de Dragao",
+    "name": "Armadura de Dragão",
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/114-dragon.png",
@@ -264,7 +264,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "material_dragon_essence": {
     "id": "material_dragon_essence",
-    "name": "Essencia de Dragao",
+    "name": "Essência de Dragão",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dragon_essence.png",
     "minLevel": 2,
@@ -274,7 +274,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "material_dragon_jewell": {
     "id": "material_dragon_jewell",
-    "name": "Joia de Dragao",
+    "name": "Joia de Dragão",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dragon_jewell.png",
     "minLevel": 3,
@@ -284,7 +284,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "material_dragon_nail": {
     "id": "material_dragon_nail",
-    "name": "Garra de Dragao",
+    "name": "Garra de Dragão",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dragon_nail.png",
     "minLevel": 3,
@@ -294,7 +294,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "material_dragons_tooth": {
     "id": "material_dragons_tooth",
-    "name": "Dente de Dragao",
+    "name": "Dente de Dragão",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dragons_tooth.png",
     "minLevel": 3,
@@ -364,7 +364,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "material_magic_essence": {
     "id": "material_magic_essence",
-    "name": "Essencia Magica",
+    "name": "Essência Mágica",
     "kind": "material",
     "imageUrl": "/assets/items/materials/magic_essence.png",
     "minLevel": 5,
@@ -454,7 +454,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "material_strenght_jewell": {
     "id": "material_strenght_jewell",
-    "name": "Joia de Forca",
+    "name": "Joia de Força",
     "kind": "material",
     "imageUrl": "/assets/items/materials/strenght_jewell.png",
     "minLevel": 7,
@@ -484,7 +484,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "misc_dragon_stone": {
     "id": "misc_dragon_stone",
-    "name": "Pedra de Dragao",
+    "name": "Pedra de Dragão",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/dragon_stone.png",
     "minLevel": 1,
@@ -594,7 +594,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "misc_herb_rustic": {
     "id": "misc_herb_rustic",
-    "name": "Erva Rustica",
+    "name": "Erva Rústica",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/herb_rustic.png",
     "minLevel": 3,
@@ -604,7 +604,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "misc_high_dungeon_key": {
     "id": "misc_high_dungeon_key",
-    "name": "Chave de Masmorra Avancada",
+    "name": "Chave de Masmorra Avançada",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/high-dungeon-key.png",
     "minLevel": 3,
@@ -644,7 +644,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "scroll_magic_lands_parchment": {
     "id": "scroll_magic_lands_parchment",
-    "name": "Pergaminho das Terras Magicas",
+    "name": "Pergaminho das Terras Mágicas",
     "kind": "scroll",
     "imageUrl": "/assets/items/misc/magic-lands-parchment.png",
     "minLevel": 4,
@@ -714,7 +714,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "misc_seed_rustic": {
     "id": "misc_seed_rustic",
-    "name": "Semente Rustica",
+    "name": "Semente Rústica",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/seed_rustic.png",
     "minLevel": 5,
@@ -752,7 +752,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energyPercent": 0.3
     },
-    "description": "Recupera 30% da energia maxima"
+    "description": "Recupera 30% da energia máxima"
   },
   "energy_potion_light": {
     "id": "energy_potion_light",
@@ -800,7 +800,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "healPercent": 0.3
     },
-    "description": "Recupera 30% da vida maxima"
+    "description": "Recupera 30% da vida máxima"
   },
   "health_potion_light": {
     "id": "health_potion_light",
@@ -848,7 +848,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energyPercent": 0.2
     },
-    "description": "Recupera 20% da energia maxima"
+    "description": "Recupera 20% da energia máxima"
   },
   "weapon_assassin_sword": {
     "id": "weapon_assassin_sword",
@@ -963,7 +963,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_greatsword_2": {
     "id": "weapon_greatsword_2",
-    "name": "Espadao 2",
+    "name": "Espadão 2",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/greatsword_2.png",
@@ -975,7 +975,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_greatsword_4": {
     "id": "weapon_greatsword_4",
-    "name": "Espadao 4",
+    "name": "Espadão 4",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/greatsword_4.png",
@@ -1175,7 +1175,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "guardian_mail": {
     "id": "guardian_mail",
-    "name": "Cota do Guardiao",
+    "name": "Cota do Guardião",
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/05-justice.png",
@@ -1288,11 +1288,11 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "healPercent": 0.55
     },
-    "description": "Recupera 55% da vida maxima"
+    "description": "Recupera 55% da vida máxima"
   },
   "major_energy_potion": {
     "id": "major_energy_potion",
-    "name": "Poção Energetica Rara",
+    "name": "Poção Energética Rara",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy.png",
     "minLevel": 5,
@@ -1300,7 +1300,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energyPercent": 0.55
     },
-    "description": "Recupera 55% da energia maxima"
+    "description": "Recupera 55% da energia máxima"
   },
   "oblivion_scroll": {
     "id": "oblivion_scroll",
@@ -1314,7 +1314,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "memory_scroll": {
     "id": "memory_scroll",
-    "name": "Pergaminho da Memoria",
+    "name": "Pergaminho da Memória",
     "kind": "scroll",
     "imageUrl": "/assets/items/misc/fraddo-parchment.png",
     "minLevel": 1,
@@ -1330,7 +1330,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 18,
     "stats": {},
-    "description": "Material comum de caca"
+    "description": "Material comum de caça"
   },
   "ember_core": {
     "id": "ember_core",
@@ -1465,7 +1465,7 @@ export const DIAMOND_PACKAGES: GameShopPackage[] = [
     diamonds: 200,
     priceLabel: "R$ 49,90",
     bonusLabel: "100 tickets de trem, 30 tickets de navio, auto PvE e selo real por 30 dias",
-    description: "Pacote especial com diamantes, tickets e privilegios reais temporarios.",
+    description: "Pacote especial com diamantes, tickets e privilégios reais temporários.",
     featured: true
   },
   { id: "diamonds_30", name: "Bolsa pequena", diamonds: 30, priceLabel: "R$ 4,90" },
@@ -1485,21 +1485,21 @@ export const CLAN_BENEFITS: ClanBenefitDefinition[] = [
   { id: "clan_gold_1", category: "prosperity", name: "Tesouraria comum", description: "+2% gold por rank", maxRank: 5, costPerRank: { gold: 70000, diamonds: 20 }, requires: "clan_xp_1" },
   { id: "clan_drop_1", category: "prosperity", name: "Partilha de espólios", description: "+1,5% drop por rank", maxRank: 4, costPerRank: { gold: 98000, diamonds: 40 }, requires: "clan_gold_1" },
   { id: "clan_energy_1", category: "prosperity", name: "Rotas seguras", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 120000, diamonds: 60 }, requires: "clan_drop_1", icon: "energy" },
-  { id: "clan_members_1", category: "prosperity", name: "Alojamentos", description: "+2 membros no limite do cla por rank", maxRank: 15, costPerRank: { gold: 145000, diamonds: 70 }, requires: "clan_energy_1", icon: "members" },
-  { id: "clan_inventory_1", category: "prosperity", name: "Deposito compartilhado", description: "+2 espacos de inventario para cada membro por rank", maxRank: 10, costPerRank: { gold: 170000, diamonds: 80 }, requires: "clan_members_1", icon: "inventory" },
+  { id: "clan_members_1", category: "prosperity", name: "Alojamentos", description: "+2 membros no limite do clã por rank", maxRank: 15, costPerRank: { gold: 145000, diamonds: 70 }, requires: "clan_energy_1", icon: "members" },
+  { id: "clan_inventory_1", category: "prosperity", name: "Depósito compartilhado", description: "+2 espaços de inventário para cada membro por rank", maxRank: 10, costPerRank: { gold: 170000, diamonds: 80 }, requires: "clan_members_1", icon: "inventory" },
   { id: "clan_xp_2", category: "prosperity", name: "Mapas de campanha", description: "+2% XP por rank", maxRank: 4, costPerRank: { gold: 210000, diamonds: 100 }, requires: "clan_inventory_1", icon: "xp" },
   { id: "clan_gold_2", category: "prosperity", name: "Contratos mercantes", description: "+1,5% gold por rank", maxRank: 4, costPerRank: { gold: 250000, diamonds: 120 }, requires: "clan_xp_2", icon: "gold" },
   { id: "clan_drop_2", category: "prosperity", name: "Batedores de tesouro", description: "+1% drop por rank", maxRank: 4, costPerRank: { gold: 300000, diamonds: 140 }, requires: "clan_gold_2", icon: "drop" },
-  { id: "clan_members_2", category: "prosperity", name: "Casas anexas", description: "+3 membros no limite do cla por rank", maxRank: 10, costPerRank: { gold: 360000, diamonds: 160 }, requires: "clan_drop_2", icon: "members" },
-  { id: "clan_inventory_2", category: "prosperity", name: "Armazem maior", description: "+3 espacos de inventario para cada membro por rank", maxRank: 5, costPerRank: { gold: 430000, diamonds: 180 }, requires: "clan_members_2", icon: "inventory" },
-  { id: "clan_energy_2", category: "prosperity", name: "Logistica superior", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 520000, diamonds: 220 }, requires: "clan_inventory_2", icon: "energy" },
-  { id: "clan_members_3", category: "prosperity", name: "Distrito do cla", description: "+5 membros no limite do cla por rank", maxRank: 4, costPerRank: { gold: 650000, diamonds: 280 }, requires: "clan_energy_2", icon: "members" },
-  { id: "clan_inventory_3", category: "prosperity", name: "Cofres expedicionarios", description: "+5 espacos de inventario para cada membro por rank", maxRank: 4, costPerRank: { gold: 780000, diamonds: 340 }, requires: "clan_members_3", icon: "inventory" },
+  { id: "clan_members_2", category: "prosperity", name: "Casas anexas", description: "+3 membros no limite do clã por rank", maxRank: 10, costPerRank: { gold: 360000, diamonds: 160 }, requires: "clan_drop_2", icon: "members" },
+  { id: "clan_inventory_2", category: "prosperity", name: "Armazém maior", description: "+3 espaços de inventário para cada membro por rank", maxRank: 5, costPerRank: { gold: 430000, diamonds: 180 }, requires: "clan_members_2", icon: "inventory" },
+  { id: "clan_energy_2", category: "prosperity", name: "Logística superior", description: "+1 energia por rank", maxRank: 3, costPerRank: { gold: 520000, diamonds: 220 }, requires: "clan_inventory_2", icon: "energy" },
+  { id: "clan_members_3", category: "prosperity", name: "Distrito do clã", description: "+5 membros no limite do clã por rank", maxRank: 4, costPerRank: { gold: 650000, diamonds: 280 }, requires: "clan_energy_2", icon: "members" },
+  { id: "clan_inventory_3", category: "prosperity", name: "Cofres expedicionários", description: "+5 espaços de inventário para cada membro por rank", maxRank: 4, costPerRank: { gold: 780000, diamonds: 340 }, requires: "clan_members_3", icon: "inventory" },
   { id: "clan_damage_3", category: "combat", name: "Ordem de ataque", description: "+1% dano por rank", maxRank: 5, costPerRank: { gold: 190000, diamonds: 80 }, requires: "clan_damage_2", icon: "damage" },
-  { id: "clan_crit_2", category: "combat", name: "Tatica de flanco", description: "+0,5% critico por rank", maxRank: 4, costPerRank: { gold: 220000, diamonds: 10 }, requires: "clan_damage_3", icon: "crit" },
-  { id: "clan_damage_4", category: "combat", name: "Legiao ofensiva", description: "+1,5% dano por rank", maxRank: 3, costPerRank: { gold: 320000, diamonds: 14 }, requires: "clan_crit_2", icon: "damage" },
+  { id: "clan_crit_2", category: "combat", name: "Tática de flanco", description: "+0,5% crítico por rank", maxRank: 4, costPerRank: { gold: 220000, diamonds: 10 }, requires: "clan_damage_3", icon: "crit" },
+  { id: "clan_damage_4", category: "combat", name: "Legião ofensiva", description: "+1,5% dano por rank", maxRank: 3, costPerRank: { gold: 320000, diamonds: 14 }, requires: "clan_crit_2", icon: "damage" },
   { id: "clan_guard_2", category: "defense", name: "Escudos jurados", description: "+1 defesa por rank", maxRank: 5, costPerRank: { gold: 155000, diamonds: 6 }, requires: "clan_dodge_1", icon: "defense" },
-  { id: "clan_vitality_2", category: "defense", name: "Enfermaria do cla", description: "+1,5% vida por rank", maxRank: 5, costPerRank: { gold: 190000, diamonds: 8 }, requires: "clan_guard_2", icon: "life" },
+  { id: "clan_vitality_2", category: "defense", name: "Enfermaria do clã", description: "+1,5% vida por rank", maxRank: 5, costPerRank: { gold: 190000, diamonds: 8 }, requires: "clan_guard_2", icon: "life" },
   { id: "clan_dodge_2", category: "defense", name: "Passos de patrulha", description: "+0,5% esquiva por rank", maxRank: 4, costPerRank: { gold: 260000, diamonds: 12 }, requires: "clan_vitality_2", icon: "dodge" }
 ];
 
@@ -1508,7 +1508,7 @@ export const CLAN_SUPER_BENEFITS: ClanSuperBenefitDefinition[] = [
     id: "super_combat",
     category: "combat",
     name: "Mandato de Guerra",
-    description: "Ativo com todos os ranks de Combate: +10% dano, +3% critico e +20% dano critico.",
+    description: "Ativo com todos os ranks de Combate: +10% dano, +3% crítico e +20% dano crítico.",
     icon: "damage"
   },
   {
@@ -1522,7 +1522,7 @@ export const CLAN_SUPER_BENEFITS: ClanSuperBenefitDefinition[] = [
     id: "super_prosperity",
     category: "prosperity",
     name: "Guilda Real",
-    description: "Ativo com todos os ranks de Prosperidade: +10% XP, +10% gold, +5% drop, +5 energia, +10 inventario e +10 membros no cla.",
+    description: "Ativo com todos os ranks de Prosperidade: +10% XP, +10% gold, +5% drop, +5 energia, +10 inventário e +10 membros no clã.",
     icon: "gold"
   }
 ];
@@ -1538,14 +1538,14 @@ export const COUNTRIES: CountryDefinition[] = [
   {
     id: "valfria",
     name: "Valfria",
-    description: "Pais frio de montanhas, ruinas espectrais e vilas isoladas.",
+    description: "País frio de montanhas, ruínas espectrais e vilas isoladas.",
     portCityId: "vila_de_valfria",
     imageUrl: "/assets/locals/valfria.png"
   },
   {
     id: "morthaly",
     name: "Morthaly",
-    description: "Ilha necromantica de rochas negras, runas violetas e cidades tomadas por magia morta.",
+    description: "Ilha necromântica de rochas negras, runas violetas e cidades tomadas por magia morta.",
     portCityId: "porto_sombrio",
     imageUrl: "/assets/locals/morthaly.png"
   }
@@ -1596,7 +1596,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     },
     bonus: {
       level: 6,
-      description: "Bracos de minerador: +2 Forca permanente.",
+      description: "Braços de minerador: +2 Força permanente.",
       attributes: { strength: 2 }
     }
   },
@@ -1604,7 +1604,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     id: "aurevia_tower_watch",
     countryId: "aurevia",
     name: "Vigia na torre",
-    specialty: "Vigilancia de estradas",
+    specialty: "Vigilância de estradas",
     description: "Observe as estradas antigas e sinalize movimentos suspeitos antes que alcancem as vilas.",
     minMinutes: 30,
     maxMinutes: 360,
@@ -1646,7 +1646,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
   {
     id: "valfria_tavern_waiter",
     countryId: "valfria",
-    name: "Garcom na taverna",
+    name: "Garçom na taverna",
     specialty: "Hospitalidade fria",
     description: "Sirva viajantes exaustos, negocie gorjetas e mantenha a lareira acesa.",
     minMinutes: 20,
@@ -1670,7 +1670,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     countryId: "valfria",
     name: "Ajudar os feridos no hospital",
     specialty: "Cuidado e alquimia prática",
-    description: "Troque faixas, carregue macas e auxilie boticarios em uma rotina silenciosa.",
+    description: "Troque faixas, carregue macas e auxilie boticários em uma rotina silenciosa.",
     minMinutes: 60,
     maxMinutes: 480,
     minuteOptions: [60, 120, 240, 360, 480],
@@ -1683,7 +1683,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     },
     bonus: {
       level: 4,
-      description: "Kit do hospital: resgate 2 pocoes de vida medias a cada 24 horas.",
+      description: "Kit do hospital: resgate 2 poções de vida médias a cada 24 horas.",
       periodicHours: 24,
       periodicReward: { items: [{ itemId: "health_potion_medium", quantity: 2 }] }
     }
@@ -1693,7 +1693,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     countryId: "valfria",
     name: "Treinar filho de um nobre",
     specialty: "Etiqueta marcial",
-    description: "Ensine postura, disciplina e sobrevivencia basica a herdeiros protegidos demais.",
+    description: "Ensine postura, disciplina e sobrevivência básica a herdeiros protegidos demais.",
     minMinutes: 240,
     maxMinutes: 720,
     minuteOptions: [240, 360, 480, 720],
@@ -1716,7 +1716,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     countryId: "valfria",
     name: "Patrulhar os passos gelados",
     specialty: "Escolta nas montanhas",
-    description: "Abra caminho entre nevoa e neve para caravanas que atravessam Valfria.",
+    description: "Abra caminho entre névoa e neve para caravanas que atravessam Valfria.",
     minMinutes: 180,
     maxMinutes: 600,
     minuteOptions: [180, 300, 420, 600],
@@ -1729,7 +1729,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     },
     bonus: {
       level: 5,
-      description: "Passo firme: +1 Constituicao permanente.",
+      description: "Passo firme: +1 Constituição permanente.",
       attributes: { constitution: 1 }
     }
   },
@@ -1738,7 +1738,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     countryId: "morthaly",
     name: "Limpar esgotos assombrados",
     specialty: "Serviços perigosos",
-    description: "Remova lodo necrotico e lacre pequenos ninhos de mortos inquietos sob as ruas.",
+    description: "Remova lodo necrótico e lacre pequenos ninhos de mortos inquietos sob as ruas.",
     minMinutes: 45,
     maxMinutes: 480,
     minuteOptions: [45, 90, 120, 240, 360, 480],
@@ -1751,14 +1751,14 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     },
     bonus: {
       level: 4,
-      description: "Pulmoes de cripta: +2 Constituicao permanente.",
+      description: "Pulmões de cripta: +2 Constituição permanente.",
       attributes: { constitution: 2 }
     }
   },
   {
     id: "morthaly_necropolis_watch",
     countryId: "morthaly",
-    name: "Vigia na muralha da necropole",
+    name: "Vigia na muralha da necrópole",
     specialty: "Defesa contra mortos",
     description: "Segure a linha quando sombras se mexem fora das torres violetas.",
     minMinutes: 180,
@@ -1773,7 +1773,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     },
     bonus: {
       level: 5,
-      description: "Disciplina sombria: +1 Forca e +1 Constituicao permanentes.",
+      description: "Disciplina sombria: +1 Força e +1 Constituição permanentes.",
       attributes: { strength: 1, constitution: 1 }
     }
   },
@@ -1781,8 +1781,8 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     id: "morthaly_rune_catalog",
     countryId: "morthaly",
     name: "Catalogar runas mortas",
-    specialty: "Pesquisa necromantica",
-    description: "Copie runas instaveis antes que elas mudem de forma. Serviço raro e bem pago.",
+    specialty: "Pesquisa necromântica",
+    description: "Copie runas instáveis antes que elas mudem de forma. Serviço raro e bem pago.",
     minMinutes: 360,
     maxMinutes: 840,
     minuteOptions: [360, 480, 600, 840],
@@ -1799,7 +1799,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     },
     bonus: {
       level: 7,
-      description: "Memoria runica: +6% XP em todas as fontes.",
+      description: "Memória rúnica: +6% XP em todas as fontes.",
       xpBonusPercent: 0.06
     }
   },
@@ -1807,7 +1807,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     id: "morthaly_shadow_caravan",
     countryId: "morthaly",
     name: "Escolta de caravanas sombrias",
-    specialty: "Logistica entre ilhas",
+    specialty: "Logística entre ilhas",
     description: "Proteja cargas raras entre portos negros. Turnos longos, recompensa alta.",
     minMinutes: 480,
     maxMinutes: 960,
@@ -1914,7 +1914,7 @@ export const CITIES: CityDefinition[] = [
       "Garrik Aco-Negro",
       "Selene Vidro-Rubro",
       "Doran Bigorna",
-      "Capita Havel"
+      "Capitã Havel"
     ],
     "npcs": {
       "armorer": "Garrik Aco-Negro",
@@ -2336,7 +2336,7 @@ export const CITIES: CityDefinition[] = [
     "name": "Porto Sombrio",
     "minLevel": 30,
     "travelCost": 180,
-    "description": "Cais de pedra negra onde navios atracam sob farois de chama violeta.",
+    "description": "Cais de pedra negra onde navios atracam sob faróis de chama violeta.",
     "isPort": true,
     "inhabitants": [
       "Marechal Voss",
@@ -2414,10 +2414,10 @@ export const CITIES: CityDefinition[] = [
   {
     "id": "necropole_de_morthaly",
     "countryId": "morthaly",
-    "name": "Necropole de Morthaly",
+    "name": "Necrópole de Morthaly",
     "minLevel": 40,
     "travelCost": 220,
-    "description": "Cidade ritual erguida ao redor de torres violetas e cemiterios sem fim.",
+    "description": "Cidade ritual erguida ao redor de torres violetas e cemitérios sem fim.",
     "inhabitants": [
       "Arquimago Kael",
       "Vigilia Nox",
@@ -2497,7 +2497,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "id": "eldoria_old_woods",
     "cityId": "eldoria",
     "name": "Bosque Antigo",
-    "description": "Trilhas fechadas tomadas por criaturas venenosas e guardioes antigos.",
+    "description": "Trilhas fechadas tomadas por criaturas venenosas e guardiões antigos.",
     "monsterIds": [
       "aberr",
       "anaconda_new",
@@ -2602,7 +2602,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "id": "ironhold_giant_valley",
     "cityId": "ironhold",
     "name": "Vale dos Gigantes",
-    "description": "Desfiladeiros onde ogros, gigantes e bandidos disputam territorio.",
+    "description": "Desfiladeiros onde ogros, gigantes e bandidos disputam território.",
     "monsterIds": [
       "hill_giant_new",
       "human_bandit",
@@ -2702,7 +2702,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "id": "rosindale_zombie_quarter",
     "cityId": "rosindale",
     "name": "Bairro dos Mortos",
-    "description": "Ruas vazias ocupadas por mortos-vivos de varias formas.",
+    "description": "Ruas vazias ocupadas por mortos-vivos de várias formas.",
     "monsterIds": [
       "zombie_ogre_infected",
       "zombie_ogre",
@@ -2717,7 +2717,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "id": "morthaly_black_docks",
     "cityId": "porto_sombrio",
     "name": "Docas Negras",
-    "description": "Cais quebrados onde a mare traz mortos-vivos e ecos do mar profundo.",
+    "description": "Cais quebrados onde a maré traz mortos-vivos e ecos do mar profundo.",
     "monsterIds": [
       "zombie_kraken_infected",
       "zombie_lizard_infected",
@@ -2732,7 +2732,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
   "morthaly_runic_wastes": {
     "id": "morthaly_runic_wastes",
     "cityId": "necropole_de_morthaly",
-    "name": "Ermos Runicos",
+    "name": "Ermos Rúnicos",
     "description": "Campos de pedra negra marcados por sigilos violetas e espectros inquietos.",
     "monsterIds": [
       "spectral_naga_old",
@@ -2746,7 +2746,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "id": "morthaly_lich_spire",
     "cityId": "necropole_de_morthaly",
     "name": "Pináculo do Litch",
-    "description": "Torres necromanticas onde dragoes espectrais circulam acima das criptas.",
+    "description": "Torres necromânticas onde dragões espectrais circulam acima das criptas.",
     "monsterIds": [
       "spectral_dragon_old",
       "spectral_hydra_3_old",
@@ -2802,7 +2802,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "aberr": {
     "id": "aberr",
     "cityId": "eldoria",
-    "name": "Aberracao",
+    "name": "Aberração",
     "imageUrl": "/assets/monsters/aberr.png",
     "level": 3,
     "maxHp": 92,
@@ -3060,7 +3060,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "cursed_goblin": {
     "id": "cursed_goblin",
     "cityId": "eldoria",
-    "name": "Goblin Amaldicoado",
+    "name": "Goblin Amaldiçoado",
     "imageUrl": "/assets/monsters/cursed-goblin.png",
     "level": 13,
     "maxHp": 403,
@@ -3083,7 +3083,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_elemental": {
     "id": "damnation_elemental",
     "cityId": "eldoria",
-    "name": "Elemental da Danacao",
+    "name": "Elemental da Danação",
     "imageUrl": "/assets/monsters/damnation_elemental.png",
     "level": 14,
     "maxHp": 433,
@@ -3110,7 +3110,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_cyclops": {
     "id": "damnation_cyclops",
     "cityId": "eldoria",
-    "name": "Ciclope da Danacao",
+    "name": "Ciclope da Danação",
     "imageUrl": "/assets/monsters/damnation_cyclops.png",
     "level": 15,
     "maxHp": 466,
@@ -3133,7 +3133,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_golem": {
     "id": "damnation_golem",
     "cityId": "ravenspire",
-    "name": "Golem da Danacao",
+    "name": "Golem da Danação",
     "imageUrl": "/assets/monsters/damnation_golem.png",
     "level": 16,
     "maxHp": 495,
@@ -3160,7 +3160,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_harpy": {
     "id": "damnation_harpy",
     "cityId": "ravenspire",
-    "name": "Harpia da Danacao",
+    "name": "Harpia da Danação",
     "imageUrl": "/assets/monsters/damnation_harpy.png",
     "level": 17,
     "maxHp": 524,
@@ -3206,7 +3206,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_mummy": {
     "id": "damnation_mummy",
     "cityId": "ravenspire",
-    "name": "Mumia da Danacao",
+    "name": "Múmia da Danação",
     "imageUrl": "/assets/monsters/damnation_mummy.png",
     "level": 19,
     "maxHp": 588,
@@ -3229,7 +3229,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_orc": {
     "id": "damnation_orc",
     "cityId": "ravenspire",
-    "name": "Orc da Danacao",
+    "name": "Orc da Danação",
     "imageUrl": "/assets/monsters/damnation_orc.png",
     "level": 20,
     "maxHp": 617,
@@ -3256,7 +3256,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_scorpion": {
     "id": "damnation_scorpion",
     "cityId": "ravenspire",
-    "name": "Escorpiao da Danacao",
+    "name": "Escorpião da Danação",
     "imageUrl": "/assets/monsters/damnation_scorpion.png",
     "level": 21,
     "maxHp": 649,
@@ -3283,7 +3283,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_snake": {
     "id": "damnation_snake",
     "cityId": "ravenspire",
-    "name": "Serpente da Danacao",
+    "name": "Serpente da Danação",
     "imageUrl": "/assets/monsters/damnation_snake.png",
     "level": 22,
     "maxHp": 681,
@@ -3333,7 +3333,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_spider": {
     "id": "damnation_spider",
     "cityId": "ravenspire",
-    "name": "Aranha da Danacao",
+    "name": "Aranha da Danação",
     "imageUrl": "/assets/monsters/damnation_spider.png",
     "level": 24,
     "maxHp": 745,
@@ -3356,7 +3356,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "damnation_troll": {
     "id": "damnation_troll",
     "cityId": "ravenspire",
-    "name": "Troll da Danacao",
+    "name": "Troll da Danação",
     "imageUrl": "/assets/monsters/damnation_troll.png",
     "level": 25,
     "maxHp": 772,
@@ -3402,7 +3402,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "deep_dwarf": {
     "id": "deep_dwarf",
     "cityId": "ravenspire",
-    "name": "Anao das Profundezas",
+    "name": "Anão das Profundezas",
     "imageUrl": "/assets/monsters/deep-dwarf.png",
     "level": 27,
     "maxHp": 836,
@@ -3452,7 +3452,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "demon_desert_giant": {
     "id": "demon_desert_giant",
     "cityId": "ravenspire",
-    "name": "Gigante Demoniaco do Deserto",
+    "name": "Gigante Demoníaco do Deserto",
     "imageUrl": "/assets/monsters/demon_desert_giant.png",
     "level": 29,
     "maxHp": 902,
@@ -3475,7 +3475,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "demon_dragon": {
     "id": "demon_dragon",
     "cityId": "ravenspire",
-    "name": "Dragao Demoniaco",
+    "name": "Dragão Demoníaco",
     "imageUrl": "/assets/monsters/demon_dragon.png",
     "level": 30,
     "maxHp": 929,
@@ -3494,7 +3494,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "demoniac_elephant": {
     "id": "demoniac_elephant",
     "cityId": "ravenspire",
-    "name": "Elefante Demoniaco",
+    "name": "Elefante Demoníaco",
     "imageUrl": "/assets/monsters/demoniac_elephant.png",
     "level": 31,
     "maxHp": 965,
@@ -3517,7 +3517,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "demoniac_wolf": {
     "id": "demoniac_wolf",
     "cityId": "ravenspire",
-    "name": "Lobo Demoniaco",
+    "name": "Lobo Demoníaco",
     "imageUrl": "/assets/monsters/demoniac_wolf.png",
     "level": 32,
     "maxHp": 994,
@@ -3678,7 +3678,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "emperor_scorpion": {
     "id": "emperor_scorpion",
     "cityId": "ironhold",
-    "name": "Escorpiao Imperador",
+    "name": "Escorpião Imperador",
     "imageUrl": "/assets/monsters/emperor_scorpion.png",
     "level": 39,
     "maxHp": 1210,
@@ -3705,7 +3705,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "eye_of_devastation_new": {
     "id": "eye_of_devastation_new",
     "cityId": "ironhold",
-    "name": "Olho da Devastacao",
+    "name": "Olho da Devastação",
     "imageUrl": "/assets/monsters/eye_of_devastation_new.png",
     "level": 40,
     "maxHp": 1238,
@@ -3805,7 +3805,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "giant_scorpion": {
     "id": "giant_scorpion",
     "cityId": "ironhold",
-    "name": "Escorpiao Gigante",
+    "name": "Escorpião Gigante",
     "imageUrl": "/assets/monsters/giant_scorpion.png",
     "level": 44,
     "maxHp": 1372,
@@ -4188,7 +4188,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "labrat_unseen": {
     "id": "labrat_unseen",
     "cityId": "ironhold",
-    "name": "Rato de Laboratorio Oculto",
+    "name": "Rato de Laboratório Oculto",
     "imageUrl": "/assets/monsters/labrat_unseen.png",
     "level": 61,
     "maxHp": 1889,
@@ -4207,7 +4207,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "mummy": {
     "id": "mummy",
     "cityId": "ironhold",
-    "name": "Mumia",
+    "name": "Múmia",
     "imageUrl": "/assets/monsters/mummy.png",
     "level": 62,
     "maxHp": 1918,
@@ -4556,7 +4556,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "skeleton_dragon": {
     "id": "skeleton_dragon",
     "cityId": "vila_de_valfria",
-    "name": "Dragao Esqueleto",
+    "name": "Dragão Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_dragon.png",
     "level": 77,
     "maxHp": 2386,
@@ -4782,7 +4782,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "spectral_dragon_old": {
     "id": "spectral_dragon_old",
     "cityId": "vila_de_valfria",
-    "name": "Dragao Espectral Antigo",
+    "name": "Dragão Espectral Antigo",
     "imageUrl": "/assets/monsters/spectral_dragon_old.png",
     "level": 87,
     "maxHp": 2698,
@@ -5138,7 +5138,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "zombie_hound_infected": {
     "id": "zombie_hound_infected",
     "cityId": "vila_de_valfria",
-    "name": "Cao Zumbi Infectado",
+    "name": "Cão Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_hound_infected.png",
     "level": 103,
     "maxHp": 3192,
@@ -5165,7 +5165,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
   "zombie_hound": {
     "id": "zombie_hound",
     "cityId": "vila_de_valfria",
-    "name": "Cao Zumbi",
+    "name": "Cão Zumbi",
     "imageUrl": "/assets/monsters/zombie_hound.png",
     "level": 104,
     "maxHp": 3223,
