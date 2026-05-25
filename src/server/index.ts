@@ -38,6 +38,7 @@ import type {
   PlayerInspectPayload,
   PlayerPublicProfile,
   PrivateSendPayload,
+  QuestCategory,
   QuestClaimPayload,
   QuestView,
   ReferralClaimPayload,
@@ -108,6 +109,12 @@ const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
 const PASSWORD_MIN_LENGTH = 6;
 const POTION_MISSION_TARGETS = [5, 50, 100, 200];
+const WORK_MISSION_TARGETS = [1, 10, 50, 100];
+const MONARCH_MISSION_TARGETS = [1, 5, 20, 50];
+const ARENA_BATTLE_MISSION_TARGETS = [1, 10, 50, 100];
+const ARENA_WIN_MISSION_TARGETS = [1, 10, 50, 100];
+const ENHANCEMENT_ATTEMPT_MISSION_TARGETS = [1, 10, 50, 100];
+const ENHANCEMENT_SUCCESS_MISSION_TARGETS = [1, 5, 15, 30];
 const CLAN_BASE_MEMBER_CAPACITY = 20;
 const CLAN_CREATE_MIN_LEVEL = 15;
 const CLAN_CREATE_DIAMOND_COST = 10;
@@ -226,6 +233,14 @@ const DAILY_MISSIONS = [
   { id: "daily-defeat-15", title: "Caçada longa", target: 15, reward: { experience: 480, gold: 240 } }
 ];
 
+const DAILY_EXTRA_MISSIONS = [
+  { id: "daily-work-1", category: "work" as const, title: "Expediente arcano", description: "Conclua 1 servico de trabalho hoje.", progressKey: "dailyWorkServicesCompleted" as const, target: 1, reward: { experience: 160, gold: 90 } },
+  { id: "daily-work-3", category: "work" as const, title: "Turno dobrado", description: "Conclua 3 servicos de trabalho hoje.", progressKey: "dailyWorkServicesCompleted" as const, target: 3, reward: { experience: 360, gold: 210 } },
+  { id: "daily-monarch-1", category: "monarch" as const, title: "Chamado de Morthaly", description: "Enfrente o monarca do dia 1 vez.", progressKey: "dailyMonarchBattles" as const, target: 1, reward: { experience: 420, diamonds: 2 } },
+  { id: "daily-arena-1", category: "arena" as const, title: "Sangue na arena", description: "Dispute 1 batalha de Arena hoje.", progressKey: "dailyArenaBattles" as const, target: 1, reward: { experience: 180, gold: 120 } },
+  { id: "daily-arena-win-1", category: "arena" as const, title: "Gloria da Arena", description: "Venca 1 batalha de Arena hoje.", progressKey: "dailyArenaWins" as const, target: 1, reward: { experience: 320, diamonds: 1 } }
+];
+
 loadPersistentStore();
 
 const httpServer = createServer((request, response) => {
@@ -287,7 +302,8 @@ function createCharacter(player: Player): Character {
   };
 
   addItem(character, "training_sword", ITEM_CATALOG, 1);
-  addItem(character, "health_potion", ITEM_CATALOG, 3);
+  addItem(character, "health_potion_light", ITEM_CATALOG, 5);
+  addItem(character, "energy_potion_light", ITEM_CATALOG, 3);
   character.equipment.weapon = character.inventory.find((item) => item.itemId === "training_sword")?.instanceId ?? null;
   const stats = deriveStats(character, ITEM_CATALOG);
   character.currentHp = stats.maxHp;
@@ -658,6 +674,15 @@ function createQuestProgress() {
   return {
     dayKey: currentDayKey(),
     dailyEnemyDefeats: 0,
+    dailyWorkServicesCompleted: 0,
+    dailyMonarchBattles: 0,
+    dailyArenaBattles: 0,
+    dailyArenaWins: 0,
+    workServicesCompleted: 0,
+    monarchBattles: 0,
+    arenaBattles: 0,
+    equipmentEnhancementAttempts: 0,
+    equipmentEnhancementSuccesses: 0,
     marketItemsSold: 0,
     marketItemsBought: 0,
     shopItemsBought: 0,
@@ -671,11 +696,33 @@ function createQuestProgress() {
 
 function ensureQuestProgress(character: Character) {
   character.questProgress ??= createQuestProgress();
+  character.questProgress.dailyEnemyDefeats ??= 0;
+  character.questProgress.dailyWorkServicesCompleted ??= 0;
+  character.questProgress.dailyMonarchBattles ??= 0;
+  character.questProgress.dailyArenaBattles ??= 0;
+  character.questProgress.dailyArenaWins ??= 0;
+  character.questProgress.workServicesCompleted ??= 0;
+  character.questProgress.monarchBattles ??= 0;
+  character.questProgress.arenaBattles ??= (character.arenaWins ?? 0) + (character.arenaLosses ?? 0);
+  character.questProgress.equipmentEnhancementAttempts ??= 0;
+  character.questProgress.equipmentEnhancementSuccesses ??= 0;
+  character.questProgress.marketItemsSold ??= 0;
+  character.questProgress.marketItemsBought ??= 0;
+  character.questProgress.shopItemsBought ??= 0;
+  character.questProgress.shopItemsSold ??= 0;
+  character.questProgress.healthPotionsUsed ??= 0;
+  character.questProgress.energyPotionsUsed ??= 0;
+  character.questProgress.claimedDailyQuestIds ??= [];
+  character.questProgress.claimedFixedQuestIds ??= [];
 
   const today = currentDayKey();
   if (character.questProgress.dayKey !== today) {
     character.questProgress.dayKey = today;
     character.questProgress.dailyEnemyDefeats = 0;
+    character.questProgress.dailyWorkServicesCompleted = 0;
+    character.questProgress.dailyMonarchBattles = 0;
+    character.questProgress.dailyArenaBattles = 0;
+    character.questProgress.dailyArenaWins = 0;
     character.questProgress.claimedDailyQuestIds = [];
   }
 }
@@ -684,9 +731,10 @@ function buildQuests(character: Character) {
   ensureQuestProgress(character);
   const progress = character.questProgress;
 
-  const daily: QuestView[] = DAILY_MISSIONS.map((mission) => ({
+  const dailyCombat: QuestView[] = DAILY_MISSIONS.map((mission) => ({
     id: mission.id,
     type: "daily",
+    category: "combat",
     title: mission.title,
     description: `Derrote ${mission.target} inimigos hoje.`,
     progress: Math.min(progress.dailyEnemyDefeats, mission.target),
@@ -695,12 +743,29 @@ function buildQuests(character: Character) {
     completed: progress.dailyEnemyDefeats >= mission.target,
     claimed: progress.claimedDailyQuestIds.includes(mission.id)
   }));
+  const dailyExtra: QuestView[] = DAILY_EXTRA_MISSIONS.map((mission) => {
+    const progressValue = progress[mission.progressKey] ?? 0;
+    return {
+      id: mission.id,
+      type: "daily" as const,
+      category: mission.category,
+      title: mission.title,
+      description: mission.description,
+      progress: Math.min(progressValue, mission.target),
+      target: mission.target,
+      reward: mission.reward,
+      completed: progressValue >= mission.target,
+      claimed: progress.claimedDailyQuestIds.includes(mission.id)
+    };
+  });
+  const daily = [...dailyCombat, ...dailyExtra];
 
   const levelTargets = buildLevelTargets(character.level);
   const fixed: QuestView[] = [
     ...levelTargets.map((target) => ({
       id: `level-${target}`,
       type: "fixed" as const,
+      category: "level" as const,
       title: `Alcance nível ${target}`,
       description: `Evolua seu personagem até o nível ${target}.`,
       progress: Math.min(character.level, target),
@@ -709,10 +774,76 @@ function buildQuests(character: Character) {
       completed: character.level >= target,
       claimed: progress.claimedFixedQuestIds.includes(`level-${target}`)
     })),
-    fixedCounterQuest("market-sell-1", "Venda um item no mercado", progress.marketItemsSold, 1, 6, progress),
-    fixedCounterQuest("market-buy-1", "Compre um item no mercado", progress.marketItemsBought, 1, 6, progress),
-    fixedCounterQuest("shop-buy-1", "Compre um item na loja", progress.shopItemsBought, 1, 4, progress),
-    fixedCounterQuest("shop-sell-1", "Venda um item na loja", progress.shopItemsSold, 1, 4, progress),
+    fixedCounterQuest("market-sell-1", "Venda um item no mercado", progress.marketItemsSold, 1, 6, progress, "market"),
+    fixedCounterQuest("market-buy-1", "Compre um item no mercado", progress.marketItemsBought, 1, 6, progress, "market"),
+    fixedCounterQuest("shop-buy-1", "Compre um item na loja", progress.shopItemsBought, 1, 4, progress, "shop"),
+    fixedCounterQuest("shop-sell-1", "Venda um item na loja", progress.shopItemsSold, 1, 4, progress, "shop"),
+    ...WORK_MISSION_TARGETS.map((target) =>
+      fixedCounterQuest(
+        `work-service-${target}`,
+        `Conclua ${target} servicos de trabalho`,
+        progress.workServicesCompleted,
+        target,
+        fixedActivityDiamondReward(target),
+        progress,
+        "work"
+      )
+    ),
+    ...MONARCH_MISSION_TARGETS.map((target) =>
+      fixedCounterQuest(
+        `monarch-battle-${target}`,
+        `Enfrente monarcas ${target} vez(es)`,
+        progress.monarchBattles,
+        target,
+        fixedActivityDiamondReward(target) + 2,
+        progress,
+        "monarch"
+      )
+    ),
+    ...ARENA_BATTLE_MISSION_TARGETS.map((target) =>
+      fixedCounterQuest(
+        `arena-battle-${target}`,
+        `Dispute ${target} batalhas de Arena`,
+        progress.arenaBattles,
+        target,
+        fixedActivityDiamondReward(target),
+        progress,
+        "arena"
+      )
+    ),
+    ...ARENA_WIN_MISSION_TARGETS.map((target) =>
+      fixedCounterQuest(
+        `arena-win-${target}`,
+        `Venca ${target} batalhas de Arena`,
+        character.arenaWins,
+        target,
+        fixedActivityDiamondReward(target) + 1,
+        progress,
+        "arena"
+      )
+    ),
+    ...ENHANCEMENT_ATTEMPT_MISSION_TARGETS.map((target) =>
+      fixedCounterQuest(
+        `enhancement-attempt-${target}`,
+        `Tente aprimorar equipamentos ${target} vez(es)`,
+        progress.equipmentEnhancementAttempts,
+        target,
+        fixedActivityDiamondReward(target),
+        progress,
+        "enhancement"
+      )
+    ),
+    ...ENHANCEMENT_SUCCESS_MISSION_TARGETS.map((target) =>
+      fixedCounterQuest(
+        `enhancement-success-${target}`,
+        `Aprimore equipamentos com sucesso ${target} vez(es)`,
+        progress.equipmentEnhancementSuccesses,
+        target,
+        fixedActivityDiamondReward(target) + 2,
+        progress,
+        "enhancement"
+      )
+    ),
     ...POTION_MISSION_TARGETS.map((target) =>
       fixedCounterQuest(
         `health-potion-${target}`,
@@ -720,7 +851,8 @@ function buildQuests(character: Character) {
         progress.healthPotionsUsed,
         target,
         potionDiamondReward(target),
-        progress
+        progress,
+        "potion"
       )
     ),
     ...POTION_MISSION_TARGETS.map((target) =>
@@ -730,7 +862,8 @@ function buildQuests(character: Character) {
         progress.energyPotionsUsed,
         target,
         potionDiamondReward(target),
-        progress
+        progress,
+        "potion"
       )
     )
   ];
@@ -758,6 +891,15 @@ function potionDiamondReward(target: number) {
   return 5;
 }
 
+function fixedActivityDiamondReward(target: number) {
+  if (target >= 100) return 45;
+  if (target >= 50) return 24;
+  if (target >= 20) return 12;
+  if (target >= 10) return 8;
+  if (target >= 5) return 6;
+  return 4;
+}
+
 function recordPotionProgress(character: Character, definition: ItemDefinition | null | undefined) {
   if (!definition || definition.kind !== "potion") {
     return;
@@ -776,11 +918,13 @@ function fixedCounterQuest(
   progressValue: number,
   target: number,
   diamonds: number,
-  progress: Character["questProgress"]
+  progress: Character["questProgress"],
+  category: QuestCategory = "combat"
 ): QuestView {
   return {
     id,
     type: "fixed",
+    category,
     title,
     description: title,
     progress: Math.min(progressValue, target),
@@ -968,6 +1112,8 @@ function claimWork(character: Character) {
   const result = grantWorkReward(character, reward);
   character.workAptitudes ??= {};
   character.workAptitudes[service.id] = progressWorkAptitude(aptitude, minutes);
+  character.questProgress.dailyWorkServicesCompleted += 1;
+  character.questProgress.workServicesCompleted += 1;
   character.activeWork = null;
   return {
     service,
@@ -1725,10 +1871,17 @@ function recordArenaResult(battleId: string) {
   const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
   const loser = battle.participants.find((participant) => participant.id !== battle.winnerParticipantId);
   if (winner?.ownerPlayerId) {
-    currentCharacter(winner.ownerPlayerId).arenaWins += 1;
+    const winnerCharacter = currentCharacter(winner.ownerPlayerId);
+    winnerCharacter.arenaWins += 1;
+    winnerCharacter.questProgress.dailyArenaBattles += 1;
+    winnerCharacter.questProgress.dailyArenaWins += 1;
+    winnerCharacter.questProgress.arenaBattles += 1;
   }
   if (loser?.ownerPlayerId) {
-    currentCharacter(loser.ownerPlayerId).arenaLosses += 1;
+    const loserCharacter = currentCharacter(loser.ownerPlayerId);
+    loserCharacter.arenaLosses += 1;
+    loserCharacter.questProgress.dailyArenaBattles += 1;
+    loserCharacter.questProgress.arenaBattles += 1;
   }
   store.arenaRecordedBattleIds.add(battleId);
 }
@@ -1845,8 +1998,10 @@ function enhanceEquipment(character: Character, payload: EnhancePayload) {
   }
 
   const success = Math.random() * 100 < plan.successChance;
+  character.questProgress.equipmentEnhancementAttempts += 1;
   if (success) {
     inventoryItem.enhancementLevel = plan.nextLevel;
+    character.questProgress.equipmentEnhancementSuccesses += 1;
   }
   normalizeVitals(character);
 
@@ -2680,6 +2835,8 @@ io.on("connection", (socket: AuthedSocket) => {
       removeItemByItemId(character, MONARCH_ACCESS_KEY_ID, 1);
       event.attemptsByPlayer[playerId] = attempts + 1;
       character.monarchAttempts = { dayKey: event.dayKey, count: event.attemptsByPlayer[playerId] };
+      character.questProgress.dailyMonarchBattles += 1;
+      character.questProgress.monarchBattles += 1;
       event.participantNames[playerId] = character.name;
       event.damageByPlayer[playerId] ??= 0;
       const battle = createMonarchBattle(character, monarchAsMonster(event), event.currentHp);

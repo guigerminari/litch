@@ -68,6 +68,7 @@ import type {
   ClanBenefitCategory,
   TalentCategory,
   QuestView,
+  QuestCategory,
   Rarity,
   TalentDefinition,
   WorkReward,
@@ -179,7 +180,7 @@ const viewLabels: Record<View, string> = {
   armorer: "Armeiro",
   apothecary: "Boticário",
   moneyChanger: "Cambista",
-  agency: "Agencia",
+  agency: "Agência",
   travel: "Viajar",
   inventory: "Inventário",
   market: "Mercado",
@@ -195,9 +196,21 @@ const viewLabels: Record<View, string> = {
 
 const attributes: AttributeKey[] = ["strength", "constitution", "agility"];
 const ATTRIBUTE_RELEVANCE: Record<AttributeKey, string> = {
-  strength: "Aumenta o impacto dos ataques e ajuda a encerrar combates mais rapido.",
-  constitution: "Aumenta sua sobrevivencia, dando mais folego para batalhas longas.",
-  agility: "Melhora sua chance de agir com precisao, evitar golpes e causar acertos decisivos."
+  strength: "Aumenta o impacto dos ataques e ajuda a encerrar combates mais rápido.",
+  constitution: "Aumenta sua sobrevivência, dando mais fôlego para batalhas longas.",
+  agility: "Melhora sua chance de agir com precisão, evitar golpes e causar acertos decisivos."
+};
+const QUEST_FILTER_LABELS: Record<QuestCategory | "all", string> = {
+  all: "Todas",
+  combat: "Combate",
+  work: "Trabalho",
+  monarch: "Monarcas",
+  arena: "Arena",
+  enhancement: "Aprimoramento",
+  market: "Mercado",
+  shop: "Lojas",
+  potion: "Poções",
+  level: "Nível"
 };
 const CLAN_CREST_OPTIONS = ["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"] as const;
 
@@ -1116,7 +1129,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
   );
 }
 
-type GuideTab = "history" | "faq" | "world" | "items" | "monsters" | "monarchs" | "developer" | "stats";
+type GuideTab = "history" | "faq" | "world" | "work" | "items" | "monsters" | "monarchs" | "developer" | "stats";
 
 function GuideModal({ game, onClose }: { game: GameState; onClose: () => void }) {
   const [tab, setTab] = useState<GuideTab>("history");
@@ -1170,6 +1183,12 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
       return { country, cities };
     })
     .filter((group) => group.cities.length > 0);
+  const workGroups = game.countries
+    .map((country) => ({
+      country,
+      services: game.workServices.filter((service) => service.countryId === country.id)
+    }))
+    .filter((group) => group.services.length > 0);
 
   const sendDeveloperMessage = (event: FormEvent) => {
     event.preventDefault();
@@ -1183,6 +1202,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     { id: "history", label: "Historia", icon: <BookOpen size={14} /> },
     { id: "faq", label: "FAQ", icon: <Info size={14} /> },
     { id: "world", label: "Mundo", icon: <Castle size={14} /> },
+    { id: "work", label: "Trabalhos", icon: <BriefcaseBusiness size={14} /> },
     { id: "items", label: "Itens", icon: <Backpack size={14} /> },
     { id: "monsters", label: "Monstros", icon: <Swords size={14} /> },
     { id: "monarchs", label: "Monarcas", icon: <Skull style={{color: "var(--red)"}} size={14} /> },
@@ -1556,6 +1576,50 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               ))}
               {countryGroups.length === 0 && <p className="empty-state">Nenhum pais, cidade ou local encontrado.</p>}
             </div>
+          </div>
+        )}
+
+        {tab === "work" && (
+          <div className="guide-work-list">
+            <section className="guide-list">
+              <article><strong>Como funciona</strong><span>Agencias existem em todas as cidades. Voce escolhe um servico, define o tempo de trabalho e volta quando o expediente terminar para receber.</span></article>
+              <article><strong>Bloqueios</strong><span>Enquanto trabalha, o personagem nao pode batalhar, viajar para outro pais ou iniciar outro servico. Abandonar cancela toda recompensa daquele expediente.</span></article>
+              <article><strong>Aptidao</strong><span>Cada servico tem nivel proprio de aptidao. Quanto mais voce trabalha nele, maior a recompensa e mais perto fica do bonus especial.</span></article>
+              <article><strong>Tempo</strong><span>Servicos curtos pagam melhor proporcionalmente, mas servicos raros e valiosos podem exigir turnos mais longos.</span></article>
+            </section>
+            {workGroups.map(({ country, services }) => (
+              <section className="guide-work-country" key={country.id}>
+                <div className="guide-work-country-head">
+                  <div>
+                    <span className="eyebrow">Pais</span>
+                    <h3>{country.name}</h3>
+                  </div>
+                  <small>{services.length} servicos</small>
+                </div>
+                <p>{country.description}</p>
+                <div className="guide-work-grid">
+                  {services.map((service) => (
+                    <article className="guide-work-card" key={service.id}>
+                      <div>
+                        <span className="eyebrow">{service.specialty}</span>
+                        <h4>{service.name}</h4>
+                        <p>{service.description}</p>
+                      </div>
+                      <div className="guide-work-durations">
+                        {service.minuteOptions.map((minutes) => <span key={minutes}>{formatWorkMinutes(minutes)}</span>)}
+                      </div>
+                      <div className="work-reward-list">
+                        {renderWorkReward(game, service.rewardsPerHour)}
+                      </div>
+                      <div className="work-bonus">
+                        <strong>Bonus Nv. {service.bonus.level}</strong>
+                        <span>{service.bonus.description}</span>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         )}
 
@@ -2245,8 +2309,8 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   const workValue = game.character.activeWork
     ? isWorkReady(game.character.activeWork)
       ? "Recompensa pronta"
-      : "Servico em andamento"
-    : `${countryServices.length} servicos`;
+      : "Serviço em andamento"
+    : `${countryServices.length} serviços`;
   const working = isWorkInProgress(game.character.activeWork);
   const combatOptions: CityOption[] = [
     { view: "hunt", icon: <Swords size={24} />, title: "Caçar", value: `${game.cityHuntLocations.length} locais` },
@@ -2325,13 +2389,13 @@ function AgencyPanel({ game }: { game: GameState }) {
       {activeWork && activeService && (
         <article className={activeReady ? "work-active-card ready" : "work-active-card"}>
           <div>
-            <span className="eyebrow">Servico atual</span>
+            <span className="eyebrow">Serviço atual</span>
             <h3>{activeService.name}</h3>
             <p>{activeService.description}</p>
           </div>
           <div className="work-active-meta">
             <span>{formatWorkMinutes(activeWorkMinutes)} contratados</span>
-            <strong>{activeReady ? "Concluido" : formatDuration(activeWork.endsAt - now)}</strong>
+            <strong>{activeReady ? "Concluído" : formatDuration(activeWork.endsAt - now)}</strong>
           </div>
           <div className="work-progress-bar">
             <span style={{ width: `${activeReady ? 100 : getTimedProgress(activeWork.startedAt, activeWork.endsAt, now)}%` }} />
@@ -2347,7 +2411,7 @@ function AgencyPanel({ game }: { game: GameState }) {
             <button
               className="danger-button"
               onClick={() => {
-                if (window.confirm("Abandonar o servico e perder toda recompensa e aptidao deste expediente?")) {
+                if (window.confirm("Abandonar o serviço e perder toda recompensa e aptidão deste expediente?")) {
                   socket.emit("work:abandon");
                 }
               }}
@@ -2355,7 +2419,7 @@ function AgencyPanel({ game }: { game: GameState }) {
               Abandonar
             </button>
           </div>
-          {!activeInCountry && <small className="level-warn">Volte para {currentCountryName} para receber este servico.</small>}
+          {!activeInCountry && <small className="level-warn">Volte para {currentCountryName} para receber este serviço.</small>}
         </article>
       )}
 
@@ -2380,7 +2444,7 @@ function AgencyPanel({ game }: { game: GameState }) {
               </div>
               <p>{service.description}</p>
               <div className="work-aptitude">
-                <span>{aptitude.level <= 0 ? "Primeiro servico libera nivel 1" : `${formatAptitudeHours(aptitude.progressHours)}/${formatAptitudeHours(nextLevelHours)} para o proximo nivel`}</span>
+                <span>{aptitude.level <= 0 ? "Primeiro serviço libera nível 1" : `${formatAptitudeHours(aptitude.progressHours)}/${formatAptitudeHours(nextLevelHours)} para o próximo nível`}</span>
                 <div className="work-progress-bar">
                   <span style={{ width: `${progressPercent}%` }} />
                 </div>
@@ -2422,7 +2486,7 @@ function AgencyPanel({ game }: { game: GameState }) {
                 disabled={Boolean(activeWork)}
                 onClick={() => socket.emit("work:start", { serviceId: service.id, minutes: selectedMinutes })}
               >
-                Iniciar servico
+                Iniciar serviço
               </button>
             </article>
           );
@@ -2433,16 +2497,50 @@ function AgencyPanel({ game }: { game: GameState }) {
 }
 
 function MissionsPanel({ game }: { game: GameState }) {
+  const [activeFilter, setActiveFilter] = useState<QuestCategory | "all">("all");
+  const allQuests = [...game.quests.daily, ...game.quests.fixed];
+  const filters = (["all", "combat", "work", "monarch", "arena", "enhancement", "market", "shop", "potion", "level"] as Array<QuestCategory | "all">)
+    .filter((filter) => filter === "all" || allQuests.some((quest) => quest.category === filter));
+  const dailyQuests = filterQuestsByCategory(game.quests.daily, activeFilter);
+  const fixedQuests = filterQuestsByCategory(game.quests.fixed, activeFilter);
+  const filteredCount = dailyQuests.length + fixedQuests.length;
+
   return (
     <section className="content-panel missions-panel">
       <PanelTitle icon={<ScrollText size={20} />} title="Missões" />
-      <QuestSection title="Diárias" quests={game.quests.daily} />
-      <QuestSection title="Fixas" quests={game.quests.fixed} />
+      <div className="quest-filter-tabs" role="tablist" aria-label="Filtros de missoes">
+        {filters.map((filter) => {
+          const count = filter === "all" ? allQuests.length : allQuests.filter((quest) => quest.category === filter).length;
+          return (
+            <button
+              type="button"
+              key={filter}
+              className={activeFilter === filter ? "mini-tab active" : "mini-tab"}
+              onClick={() => setActiveFilter(filter)}
+            >
+              {QUEST_FILTER_LABELS[filter]} <span>{count}</span>
+            </button>
+          );
+        })}
+      </div>
+      {filteredCount === 0 ? (
+        <p className="empty-state">Nenhuma missao neste filtro.</p>
+      ) : (
+        <>
+          <QuestSection title="Diárias" quests={dailyQuests} />
+          <QuestSection title="Fixas" quests={fixedQuests} />
+        </>
+      )}
     </section>
   );
 }
 
+function filterQuestsByCategory(quests: QuestView[], filter: QuestCategory | "all") {
+  return filter === "all" ? quests : quests.filter((quest) => quest.category === filter);
+}
+
 function QuestSection({ title, quests }: { title: string; quests: QuestView[] }) {
+  if (quests.length === 0) return null;
   const sectionComplete = quests.length > 0 && quests.every((quest) => quest.claimed);
   const claimable = countClaimable(quests);
   const completed = quests.filter((quest) => quest.completed || quest.claimed).length;
@@ -2480,6 +2578,7 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
                 <div className="quest-main">
                 <strong>{quest.title}</strong>
                 <span>{quest.description}</span>
+                <small className="quest-category-tag">{QUEST_FILTER_LABELS[quest.category]}</small>
                 </div>
               <div className="quest-reward">
                 {quest.reward.experience ? <span>{quest.reward.experience} XP</span> : null}

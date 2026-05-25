@@ -403,6 +403,7 @@ button:disabled {
 .guide-modal > .guide-copy,
 .guide-modal > .faq-list,
 .guide-modal > .guide-catalog,
+.guide-modal > .guide-work-list,
 .guide-modal > .monarch-guide,
 .guide-modal > .utility-form,
 .guide-modal > .guide-stat-grid {
@@ -448,6 +449,7 @@ button:disabled {
 .invite-panel,
 .guide-copy,
 .guide-list article,
+.guide-work-country,
 .guide-world-row,
 .guide-detail-card {
   display: grid;
@@ -456,6 +458,65 @@ button:disabled {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: rgba(33, 27, 49, 0.7);
+}
+
+.guide-work-list,
+.guide-work-country,
+.guide-work-card {
+  display: grid;
+  gap: 12px;
+}
+
+.guide-work-country-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.guide-work-country-head h3,
+.guide-work-card h4 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-title);
+}
+
+.guide-work-country > p,
+.guide-work-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.guide-work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.guide-work-card {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--theme-accent-2) 10%, transparent), transparent 10rem),
+    rgba(16, 13, 26, 0.54);
+}
+
+.guide-work-durations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.guide-work-durations span {
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(33, 27, 49, 0.78);
+  color: var(--lavender);
+  font-size: 0.76rem;
+  font-weight: 800;
 }
 
 .invite-header {
@@ -4636,6 +4697,28 @@ button:disabled {
   gap: 18px;
 }
 
+.quest-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quest-filter-tabs .mini-tab span {
+  min-width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(220, 203, 255, 0.12);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.quest-filter-tabs .mini-tab.active span {
+  background: rgba(157, 107, 255, 0.24);
+  color: var(--lavender);
+}
+
 .rankings-panel,
 .talents-panel,
 .clan-panel,
@@ -5177,6 +5260,17 @@ button:disabled {
 .talent-row span,
 .talent-row small {
   color: var(--muted);
+}
+
+.quest-category-tag {
+  width: fit-content;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(16, 13, 26, 0.48);
+  color: var(--theme-highlight);
+  font-size: 0.72rem;
+  font-weight: 800;
 }
 
 .quest-progress {

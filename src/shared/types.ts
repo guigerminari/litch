@@ -15,6 +15,7 @@ export type Currency = "gold" | "diamonds";
 export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
 
 export type QuestType = "daily" | "fixed";
+export type QuestCategory = "combat" | "work" | "monarch" | "arena" | "enhancement" | "market" | "shop" | "potion" | "level";
 
 export type TalentCategory = "offensive" | "defensive" | "utility";
 
@@ -105,6 +106,15 @@ export interface Character {
 export interface QuestProgress {
   dayKey: string;
   dailyEnemyDefeats: number;
+  dailyWorkServicesCompleted: number;
+  dailyMonarchBattles: number;
+  dailyArenaBattles: number;
+  dailyArenaWins: number;
+  workServicesCompleted: number;
+  monarchBattles: number;
+  arenaBattles: number;
+  equipmentEnhancementAttempts: number;
+  equipmentEnhancementSuccesses: number;
   marketItemsSold: number;
   marketItemsBought: number;
   shopItemsBought: number;
@@ -431,6 +441,7 @@ export interface QuestReward {
 export interface QuestView {
   id: string;
   type: QuestType;
+  category: QuestCategory;
   title: string;
   description: string;
   progress: number;
