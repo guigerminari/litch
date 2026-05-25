@@ -3711,12 +3711,20 @@ button:disabled {
 .arena-panel {
   display: grid;
   place-items: center;
+  gap: 14px;
+}
+
+.arena-mode-tabs {
+  display: inline-flex;
+  gap: 8px;
+  justify-self: center;
 }
 
 .arena-plate {
   display: grid;
   justify-items: center;
   gap: 10px;
+  width: min(520px, 100%);
   text-align: center;
   padding: 24px;
 }
@@ -3728,6 +3736,35 @@ button:disabled {
 .arena-plate p {
   margin: 0;
   color: var(--muted);
+}
+
+.arena-ranked-rules {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.arena-ranked-rules span {
+  padding: 5px 9px;
+  border: 1px solid rgba(220, 203, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(11, 9, 18, 0.32);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.arena-ranked-rules strong {
+  color: var(--gold);
+}
+
+.arena-ranked-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18px;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .sell-strip {

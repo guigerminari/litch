@@ -709,6 +709,10 @@ export function App() {
             loading={loadingPlayerProfileId === selectedPlayer.playerId}
             onInspect={() => inspectPlayer(selectedPlayer)}
             onMessage={() => startPrivateChat(selectedPlayer)}
+            onDuel={() => {
+              socket.emit("arena:duel", { playerId: selectedPlayer.playerId });
+              setSelectedPlayer(null);
+            }}
             onClose={() => setSelectedPlayer(null)}
           />
         )}
@@ -791,6 +795,7 @@ function PlayerActionModal({
   loading,
   onInspect,
   onMessage,
+  onDuel,
   onClose
 }: {
   player: PlayerReference;
@@ -800,6 +805,7 @@ function PlayerActionModal({
   loading: boolean;
   onInspect: () => void;
   onMessage: () => void;
+  onDuel: () => void;
   onClose: () => void;
 }) {
   const royalFriendUntil = Math.max(profile?.pveAutoUntil ?? 0, profile?.royalSealUntil ?? 0);
@@ -831,6 +837,9 @@ function PlayerActionModal({
           <button className="primary-button" onClick={onMessage}>
             <MessageCircle size={15} /> Mensagem privada
           </button>
+          <button className="ghost-button" onClick={onDuel} disabled={!profile?.online}>
+            <Swords size={15} /> Convidar para duelo
+          </button>
         </div>
         {profile && (
           <>
@@ -851,7 +860,7 @@ function PlayerActionModal({
             <div className="player-profile-grid">
               <div><span>Nível</span><strong>{profile.level}</strong></div>
               <div><span>Clã</span><strong>{profile.clanName ? `Nv ${profile.clanLevel ?? 0}` : "Sem clã"}</strong></div>
-              <div><span>Arena</span><strong>{profile.arenaWins}V/{profile.arenaLosses}D</strong></div>
+              <div><span>Ranqueada</span><strong>{profile.arenaRankedPoints} pts</strong></div>
               <div><span>Masmorras</span><strong>{profile.dungeonClears}</strong></div>
             </div>
             <section className="player-public-equipment">
@@ -3230,11 +3239,11 @@ function RankingsPanel({ game }: { game: GameState }) {
       <PanelTitle icon={<Trophy size={20} />} title="Ranking" />
       <div className="rankings-tabs">
         <button type="button" className={activeTab === "level" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("level")}>Nível</button>
-        <button type="button" className={activeTab === "arena" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("arena")}>Arena</button>
+        <button type="button" className={activeTab === "arena" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("arena")}>Ranqueada</button>
         <button type="button" className={activeTab === "clans" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("clans")}>Clãs</button>
       </div>
       {activeTab === "level" && <RankingList title="Nível" entries={game.rankings.level} mode="level" />}
-      {activeTab === "arena" && <RankingList title="Arena" entries={game.rankings.arena} mode="arena" />}
+      {activeTab === "arena" && <RankingList title="Arena Ranqueada" entries={game.rankings.arena} mode="arena" />}
       {activeTab === "clans" && <ClanRankingList entries={game.rankings.clans} />}
     </section>
   );
@@ -3249,7 +3258,7 @@ function RankingList({ title, entries, mode }: { title: string; entries: GameSta
           <article className="ranking-row" key={`${mode}-${entry.playerId}`}>
             <strong>#{index + 1}</strong>
             <PlayerName playerId={entry.playerId} name={entry.name} />
-            <b>{mode === "level" ? `Nível ${entry.level}` : `${entry.arenaWins}V/${entry.arenaLosses}D`}</b>
+            <b>{mode === "level" ? `Nível ${entry.level}` : `${entry.arenaRankedPoints} pts`}</b>
           </article>
         ))}
       </div>
@@ -4053,22 +4062,80 @@ function HuntPanel({ game }: { game: GameState }) {
 }
 
 function ArenaPanel({ game }: { game: GameState }) {
+  const [arenaMode, setArenaMode] = useState<"duel" | "ranked">("duel");
+  const [rankedSearching, setRankedSearching] = useState(false);
+  const [rankedStatus, setRankedStatus] = useState<string | null>(null);
   const queued = game.arenaQueueSize > 0;
+
+  useEffect(() => {
+    if (game.activeBattle?.arena?.type === "ranked") {
+      setRankedSearching(false);
+      setRankedStatus(null);
+    }
+  }, [game.activeBattle?.id, game.activeBattle?.arena?.type]);
+
+  const startRankedDuel = () => {
+    setRankedSearching(true);
+    setRankedStatus("Buscando adversário...");
+    socket.timeout(4000).emit("arena:ranked", (error: Error | null, response?: { ok: boolean; message?: string }) => {
+      if (error) {
+        setRankedSearching(false);
+        setRankedStatus("O servidor não respondeu. Reinicie o servidor do jogo e tente novamente.");
+        return;
+      }
+      if (!response?.ok) {
+        setRankedSearching(false);
+        setRankedStatus(response?.message ?? "Não foi possível iniciar a Arena Ranqueada.");
+        return;
+      }
+      setRankedStatus("Duelo encontrado. Abrindo batalha...");
+    });
+  };
+
   return (
     <section className="content-panel arena-panel">
       <PanelTitle icon={<Shield size={20} />} title="Arena" />
+      <div className="arena-mode-tabs">
+        <button type="button" className={arenaMode === "duel" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("duel")}>
+          Duelo
+        </button>
+        <button type="button" className={arenaMode === "ranked" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("ranked")}>
+          Ranqueada
+        </button>
+      </div>
       <div className="arena-plate">
-        <Shield size={44} />
-        <h2>{queued ? "Aguardando adversário" : "Fila PvP"}</h2>
-        <p>{game.arenaQueueSize} recruta(s) na fila</p>
-        <div className="button-row">
-          <button className="primary-button" onClick={() => socket.emit("arena:join")}>
-            Entrar na fila
-          </button>
-          <button className="ghost-button" onClick={() => socket.emit("arena:leave")}>
-            Sair
-          </button>
-        </div>
+        {arenaMode === "duel" ? (
+          <>
+            <Shield size={44} />
+            <h2>{queued ? "Aguardando adversário" : "Duelo"}</h2>
+            <p>{game.arenaQueueSize} recruta(s) na fila. Entre na fila ou desafie outro jogador pelo perfil dele.</p>
+            <div className="button-row">
+              <button className="primary-button" onClick={() => socket.emit("arena:join")}>
+                Entrar na fila
+              </button>
+              <button className="ghost-button" onClick={() => socket.emit("arena:leave")}>
+                Sair
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <Trophy size={44} />
+            <h2>Arena Ranqueada</h2>
+            <p>
+              Seu placar: <strong>{game.character.arenaRankedPoints}</strong> pontos. O jogo escolhe o rival mais próximo,
+              online ou offline.
+            </p>
+            <div className="arena-ranked-rules">
+              <span>Vitória <strong>+5</strong></span>
+              <span>Derrota <strong>-2</strong></span>
+            </div>
+            <button className="primary-button" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
+              {rankedSearching ? "Buscando..." : "Buscar duelo ranqueado"}
+            </button>
+            {rankedStatus && <small className="arena-ranked-status">{rankedStatus}</small>}
+          </>
+        )}
       </div>
     </section>
   );
@@ -5370,7 +5437,7 @@ function BattlePanel({ game }: { game: GameState }) {
     <section className="content-panel battle-panel">
       <PanelTitle
         icon={<Swords size={20} />}
-        title={battle.mode === "pvp" ? "Arena PvP" : battle.mode === "dungeon" ? "Masmorra" : battle.mode === "monarch" ? "Monarca" : "Batalha PvE"}
+        title={battle.mode === "pvp" ? (battle.arena?.type === "ranked" ? "Arena Ranqueada" : "Arena Duelo") : battle.mode === "dungeon" ? "Masmorra" : battle.mode === "monarch" ? "Monarca" : "Batalha PvE"}
       />
       <div className="combatants">
         {me && (

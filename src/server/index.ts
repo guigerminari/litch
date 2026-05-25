@@ -3,6 +3,7 @@ import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypt
 import { Server } from "socket.io";
 import type {
   AllocatePayload,
+  ArenaDuelPayload,
   AvatarSelectPayload,
   BattleActionPayload,
   Character,
@@ -86,6 +87,7 @@ import {
   createMonarchBattle,
   createPveBattle,
   createPvpBattle,
+  createRankedPvpBattle,
   fleeBattle,
   syncCharacterVitalsFromBattle,
   takeMonarchBattleTurn,
@@ -133,6 +135,9 @@ const MONARCH_ACCESS_KEY_ID = "misc_high_dungeon_key";
 const MONARCH_DAILY_ATTEMPT_LIMIT = 10;
 const MONARCH_EXPIRED_REWARD_RATE = 0.15;
 const MONARCH_KING_REWARD_MULTIPLIER = 3;
+const ARENA_RANKED_STARTING_POINTS = 100;
+const ARENA_RANKED_WIN_POINTS = 5;
+const ARENA_RANKED_LOSS_POINTS = 2;
 const MONARCH_SCHEDULE = [
   {
     id: "rei-lich",
@@ -288,6 +293,7 @@ function createCharacter(player: Player): Character {
     clanBenefitAllocations: {},
     arenaWins: 0,
     arenaLosses: 0,
+    arenaRankedPoints: ARENA_RANKED_STARTING_POINTS,
     dungeonClears: 0,
     marketHistory: [],
     pveAutoUntil: 0,
@@ -323,6 +329,7 @@ function currentCharacter(playerId: string) {
   syncClanBenefits(character);
   character.arenaWins ??= 0;
   character.arenaLosses ??= 0;
+  character.arenaRankedPoints ??= ARENA_RANKED_STARTING_POINTS;
   character.dungeonClears ??= 0;
   character.marketHistory ??= [];
   character.pveAutoUntil ??= 0;
@@ -1000,6 +1007,7 @@ function normalizeVitals(character: Character) {
   syncClanBenefits(character);
   character.arenaWins ??= 0;
   character.arenaLosses ??= 0;
+  character.arenaRankedPoints ??= ARENA_RANKED_STARTING_POINTS;
   character.dungeonClears ??= 0;
   character.monarchAttempts ??= { dayKey: "", count: 0 };
   character.activeWork ??= null;
@@ -1384,12 +1392,13 @@ function buildRankings() {
     name: character.name,
     level: character.level,
     arenaWins: character.arenaWins ?? 0,
-    arenaLosses: character.arenaLosses ?? 0
+    arenaLosses: character.arenaLosses ?? 0,
+    arenaRankedPoints: character.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS
   }));
 
   return {
     level: [...entries].sort((a, b) => b.level - a.level || b.arenaWins - a.arenaWins).slice(0, 20),
-    arena: [...entries].sort((a, b) => b.arenaWins - a.arenaWins || a.arenaLosses - b.arenaLosses).slice(0, 20),
+    arena: [...entries].sort((a, b) => b.arenaRankedPoints - a.arenaRankedPoints || b.arenaWins - a.arenaWins || a.name.localeCompare(b.name)).slice(0, 20),
     clans: buildClanDirectory().slice(0, 20)
   };
 }
@@ -1423,6 +1432,7 @@ function buildPlayerPublicProfile(playerId: string): PlayerPublicProfile | null 
     clanLevel: clanView?.level,
     arenaWins: character?.arenaWins ?? 0,
     arenaLosses: character?.arenaLosses ?? 0,
+    arenaRankedPoints: character?.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS,
     dungeonClears: character?.dungeonClears ?? 0,
     royalSealUntil: character?.royalSealUntil ?? 0,
     pveAutoUntil: character?.pveAutoUntil ?? 0,
@@ -1870,6 +1880,35 @@ function recordArenaResult(battleId: string) {
 
   const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
   const loser = battle.participants.find((participant) => participant.id !== battle.winnerParticipantId);
+  if (battle.arena?.type === "ranked") {
+    const challengerPlayerId = battle.arena.challengerPlayerId;
+    if (!challengerPlayerId) {
+      store.arenaRecordedBattleIds.add(battleId);
+      return;
+    }
+    const challenger = currentCharacter(challengerPlayerId);
+    const challengerWon = winner?.ownerPlayerId === challengerPlayerId;
+    if (challengerWon) {
+      challenger.arenaWins += 1;
+      challenger.arenaRankedPoints = (challenger.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS) + ARENA_RANKED_WIN_POINTS;
+      challenger.questProgress.dailyArenaWins += 1;
+    } else {
+      challenger.arenaLosses += 1;
+      challenger.arenaRankedPoints = Math.max(0, (challenger.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS) - ARENA_RANKED_LOSS_POINTS);
+    }
+    challenger.questProgress.dailyArenaBattles += 1;
+    challenger.questProgress.arenaBattles += 1;
+    battle.log.unshift({
+      id: randomUUID(),
+      createdAt: Date.now(),
+      text: challengerWon
+        ? `${challenger.name} ganhou ${ARENA_RANKED_WIN_POINTS} pontos ranqueados.`
+        : `${challenger.name} perdeu ${ARENA_RANKED_LOSS_POINTS} pontos ranqueados.`
+    });
+    store.arenaRecordedBattleIds.add(battleId);
+    return;
+  }
+
   if (winner?.ownerPlayerId) {
     const winnerCharacter = currentCharacter(winner.ownerPlayerId);
     winnerCharacter.arenaWins += 1;
@@ -2130,6 +2169,17 @@ function resetAttributes(character: Character, method: ResetPayload["method"]) {
 
 function leaveArenaQueue(playerId: string) {
   store.arenaQueue = store.arenaQueue.filter((queued) => queued !== playerId);
+}
+
+function findRankedArenaOpponent(character: Character) {
+  const currentPoints = character.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS;
+  return Array.from(store.characters.values())
+    .filter((candidate) => candidate.playerId !== character.playerId)
+    .sort((left, right) => {
+      const leftDiff = Math.abs((left.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS) - currentPoints);
+      const rightDiff = Math.abs((right.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS) - currentPoints);
+      return leftDiff - rightDiff || right.level - left.level || left.name.localeCompare(right.name);
+    })[0] ?? null;
 }
 
 function activePlayerIdsForBattle(battleId: string) {
@@ -2887,6 +2937,72 @@ io.on("connection", (socket: AuthedSocket) => {
       leaveArenaQueue(playerId);
       broadcastWorldState();
     } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("arena:duel", (payload: ArenaDuelPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const targetPlayerId = String(payload?.playerId ?? "");
+      if (!targetPlayerId || targetPlayerId === playerId) {
+        throw new Error("Escolha outro jogador para o duelo.");
+      }
+      if (!store.socketsByPlayer.has(targetPlayerId)) {
+        throw new Error("O jogador precisa estar online para duelar.");
+      }
+
+      const character = currentCharacter(playerId);
+      const target = currentCharacter(targetPlayerId);
+      clearEndedBattle(character);
+      clearEndedBattle(target);
+      ensureNotInBattle(character);
+      ensureNotInBattle(target);
+      ensureNotWorking(character);
+      ensureNotWorking(target);
+      normalizeVitals(character);
+      normalizeVitals(target);
+      if (character.currentHp <= 0 || target.currentHp <= 0) {
+        throw new Error("Ambos os jogadores precisam ter vida para duelar.");
+      }
+
+      leaveArenaQueue(playerId);
+      leaveArenaQueue(targetPlayerId);
+      const battle = createPvpBattle(character, target);
+      store.battles.set(battle.id, battle);
+      emitMany([playerId, targetPlayerId]);
+      broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("arena:ranked", (ack?: (response: { ok: boolean; message?: string }) => void) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      clearEndedBattle(character);
+      ensureNotInBattle(character);
+      ensureNotWorking(character);
+      normalizeVitals(character);
+      if (character.currentHp <= 0) {
+        throw new Error("Você precisa recuperar vida antes de entrar na Arena Ranqueada.");
+      }
+
+      const opponent = findRankedArenaOpponent(character);
+      if (!opponent) {
+        throw new Error("Ainda não há outro jogador disponível para a Arena Ranqueada.");
+      }
+
+      leaveArenaQueue(playerId);
+      const battle = createRankedPvpBattle(character, opponent);
+      store.battles.set(battle.id, battle);
+      emitState(playerId);
+      broadcastWorldState();
+      ack?.({ ok: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro inesperado.";
+      ack?.({ ok: false, message });
       handleError(socket, error);
     }
   });

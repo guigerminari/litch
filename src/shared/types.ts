@@ -8,6 +8,8 @@ export type BattleMode = "pve" | "pvp" | "dungeon" | "monarch";
 
 export type BattleStatus = "active" | "ended";
 
+export type ArenaBattleType = "duel" | "ranked";
+
 export const MONARCH_BATTLE_ATTACK_LIMIT = 50;
 
 export type Currency = "gold" | "diamonds";
@@ -87,6 +89,7 @@ export interface Character {
   clanBenefitAllocations: Record<string, number>;
   arenaWins: number;
   arenaLosses: number;
+  arenaRankedPoints: number;
   dungeonClears: number;
   marketHistory: MarketTransactionHistory[];
   pveAutoUntil?: number;
@@ -376,6 +379,12 @@ export interface MonarchBattleProgress {
   attackLimit: number;
 }
 
+export interface ArenaBattleState {
+  type: ArenaBattleType;
+  challengerPlayerId?: string;
+  opponentPlayerId?: string;
+}
+
 export interface BattleState {
   id: string;
   mode: BattleMode;
@@ -388,6 +397,7 @@ export interface BattleState {
   createdAt: number;
   updatedAt: number;
   monarch?: MonarchBattleProgress;
+  arena?: ArenaBattleState;
 }
 
 export interface ChatMessage {
@@ -552,6 +562,7 @@ export interface RankingEntry {
   level: number;
   arenaWins: number;
   arenaLosses: number;
+  arenaRankedPoints: number;
 }
 
 export interface PlayerPublicProfile {
@@ -566,6 +577,7 @@ export interface PlayerPublicProfile {
   clanLevel?: number;
   arenaWins: number;
   arenaLosses: number;
+  arenaRankedPoints: number;
   dungeonClears: number;
   royalSealUntil?: number;
   pveAutoUntil?: number;
@@ -734,6 +746,10 @@ export interface HuntStartPayload {
 
 export interface DungeonStartPayload {
   monsterId: string;
+}
+
+export interface ArenaDuelPayload {
+  playerId: string;
 }
 
 export interface BattleActionPayload {

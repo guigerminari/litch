@@ -178,11 +178,45 @@ export function createPvpBattle(first: Character, second: Character): BattleStat
     log: [entry(`${first.name} e ${second.name} entraram na Arena.`)],
     winnerParticipantId: null,
     createdAt: Date.now(),
-    updatedAt: Date.now()
+    updatedAt: Date.now(),
+    arena: {
+      type: "duel",
+      challengerPlayerId: first.playerId,
+      opponentPlayerId: second.playerId
+    }
   };
 
   first.activeBattleId = battle.id;
   second.activeBattleId = battle.id;
+  return battle;
+}
+
+export function createRankedPvpBattle(challenger: Character, opponent: Character): BattleState {
+  const challengerParticipant = playerParticipant(challenger, ITEM_CATALOG);
+  const opponentParticipant = playerParticipant(opponent, ITEM_CATALOG);
+  opponentParticipant.id = `ranked:${opponent.playerId}`;
+  opponentParticipant.ownerPlayerId = null;
+  opponentParticipant.hp = opponentParticipant.maxHp;
+
+  const battle: BattleState = {
+    id: randomUUID(),
+    mode: "pvp",
+    status: "active",
+    cityId: challenger.cityId,
+    participants: [challengerParticipant, opponentParticipant],
+    turnParticipantId: challengerParticipant.id,
+    log: [entry(`${challenger.name} desafiou ${opponent.name} em uma Arena Ranqueada.`)],
+    winnerParticipantId: null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    arena: {
+      type: "ranked",
+      challengerPlayerId: challenger.playerId,
+      opponentPlayerId: opponent.playerId
+    }
+  };
+
+  challenger.activeBattleId = battle.id;
   return battle;
 }
 
@@ -394,8 +428,35 @@ function resolveBattleFlow(battle: BattleState, actingCharacter: Character) {
     return;
   }
 
+  if (battle.mode === "pvp" && battle.arena?.type === "ranked") {
+    resolveRankedOpponentTurn(battle);
+    return;
+  }
+
   const next = battle.participants.find((participant) => participant.id !== battle.turnParticipantId && participant.hp > 0);
   battle.turnParticipantId = next?.id ?? null;
+}
+
+function resolveRankedOpponentTurn(battle: BattleState) {
+  const challenger = battle.participants.find((participant) => participant.ownerPlayerId === battle.arena?.challengerPlayerId && participant.hp > 0);
+  const opponent = battle.participants.find((participant) => participant.ownerPlayerId === null && participant.hp > 0);
+
+  if (!challenger || !opponent) {
+    const winner = challenger ?? opponent;
+    if (winner) {
+      finishBattle(battle, winner);
+    }
+    return;
+  }
+
+  attack(opponent, challenger, battle);
+
+  if (challenger.hp <= 0) {
+    finishBattle(battle, opponent);
+    return;
+  }
+
+  battle.turnParticipantId = challenger.id;
 }
 
 function resolveMonsterTurn(battle: BattleState) {
