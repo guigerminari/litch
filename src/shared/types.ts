@@ -97,6 +97,9 @@ export interface Character {
     dayKey: string;
     count: number;
   };
+  activeWork?: WorkAssignment | null;
+  workAptitudes?: Record<string, WorkAptitudeState>;
+  workBonusClaims?: Record<string, number>;
 }
 
 export interface QuestProgress {
@@ -138,6 +141,58 @@ export interface DerivedStats {
   dropBonusPercent: number;
   availableTalentPoints: number;
   spentTalentPoints: number;
+}
+
+export interface WorkReward {
+  experience?: number;
+  gold?: number;
+  diamonds?: number;
+  attributePoints?: number;
+  items?: Array<{
+    itemId: string;
+    quantity: number;
+  }>;
+}
+
+export interface WorkServiceBonus {
+  level: number;
+  description: string;
+  attributes?: Partial<Attributes>;
+  xpBonusPercent?: number;
+  goldBonusPercent?: number;
+  periodicHours?: number;
+  periodicReward?: WorkReward;
+}
+
+export interface WorkServiceDefinition {
+  id: string;
+  countryId: string;
+  name: string;
+  specialty: string;
+  description: string;
+  minMinutes: number;
+  maxMinutes: number;
+  minuteOptions: number[];
+  shortDurationBonusPercent: number;
+  aptitudeRewardBonusPercent: number;
+  rewardsPerHour: WorkReward;
+  bonus: WorkServiceBonus;
+}
+
+export interface WorkAptitudeState {
+  level: number;
+  progressHours: number;
+  totalHours: number;
+  completions: number;
+}
+
+export interface WorkAssignment {
+  serviceId: string;
+  countryId: string;
+  minutes: number;
+  hours?: number;
+  startedAt: number;
+  endsAt: number;
 }
 
 export interface MonsterDrop {
@@ -596,6 +651,7 @@ export interface GameState {
   privateMessages: PrivateMessage[];
   onlinePlayers: Array<{ playerId: string; name: string }>;
   referrals: ReferralView;
+  workServices: WorkServiceDefinition[];
 }
 
 export interface ServerError {
@@ -721,6 +777,16 @@ export interface CraftPayload {
 export interface EnhancePayload {
   instanceId: string;
   creationStones?: number;
+}
+
+export interface WorkStartPayload {
+  serviceId: string;
+  minutes?: number;
+  hours?: number;
+}
+
+export interface WorkBonusClaimPayload {
+  serviceId: string;
 }
 
 export interface TalentBuyPayload {

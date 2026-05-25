@@ -9,7 +9,8 @@ import type {
   HuntingLocationDefinition,
   ItemDefinition,
   MonsterDefinition,
-  TalentDefinition
+  TalentDefinition,
+  WorkServiceDefinition
 } from "../shared/types";
 
 export const INVENTORY_CAPACITY = 40;
@@ -1547,6 +1548,284 @@ export const COUNTRIES: CountryDefinition[] = [
     description: "Ilha necromantica de rochas negras, runas violetas e cidades tomadas por magia morta.",
     portCityId: "porto_sombrio",
     imageUrl: "/assets/locals/morthaly.png"
+  }
+];
+
+export const WORK_SERVICES: WorkServiceDefinition[] = [
+  {
+    id: "aurevia_furnace_wood",
+    countryId: "aurevia",
+    name: "Coletar lenha para a fornalha",
+    specialty: "Forjas e bosques protegidos",
+    description: "Recolha madeira resinosa nas matas de Aurevia para manter as fornalhas reais acesas.",
+    minMinutes: 15,
+    maxMinutes: 480,
+    minuteOptions: [15, 30, 60, 120, 240, 480],
+    shortDurationBonusPercent: 0.28,
+    aptitudeRewardBonusPercent: 0.07,
+    rewardsPerHour: {
+      experience: 18,
+      gold: 55,
+      items: [{ itemId: "material_old_stone", quantity: 0.18 }]
+    },
+    bonus: {
+      level: 5,
+      description: "Fornecimento da fornalha: resgate 2 Pedras Antigas a cada 20 horas.",
+      periodicHours: 20,
+      periodicReward: { items: [{ itemId: "material_old_stone", quantity: 2 }] }
+    }
+  },
+  {
+    id: "aurevia_mines",
+    countryId: "aurevia",
+    name: "Auxiliar nas minas",
+    specialty: "Mineração e metalurgia",
+    description: "Carregue minério, separe veios úteis e ajude os mestres de Ironhold na extração.",
+    minMinutes: 120,
+    maxMinutes: 600,
+    minuteOptions: [120, 240, 360, 600],
+    shortDurationBonusPercent: 0.2,
+    aptitudeRewardBonusPercent: 0.08,
+    rewardsPerHour: {
+      experience: 26,
+      gold: 80,
+      items: [
+        { itemId: "material_old_stone", quantity: 0.24 },
+        { itemId: "material_eran_fragment", quantity: 0.08 }
+      ]
+    },
+    bonus: {
+      level: 6,
+      description: "Bracos de minerador: +2 Forca permanente.",
+      attributes: { strength: 2 }
+    }
+  },
+  {
+    id: "aurevia_tower_watch",
+    countryId: "aurevia",
+    name: "Vigia na torre",
+    specialty: "Vigilancia de estradas",
+    description: "Observe as estradas antigas e sinalize movimentos suspeitos antes que alcancem as vilas.",
+    minMinutes: 30,
+    maxMinutes: 360,
+    minuteOptions: [30, 60, 120, 180, 360],
+    shortDurationBonusPercent: 0.24,
+    aptitudeRewardBonusPercent: 0.06,
+    rewardsPerHour: {
+      experience: 24,
+      gold: 42
+    },
+    bonus: {
+      level: 4,
+      description: "Olhos da muralha: +1 Agilidade permanente.",
+      attributes: { agility: 1 }
+    }
+  },
+  {
+    id: "aurevia_merchant_escort",
+    countryId: "aurevia",
+    name: "Escolta de mercadores",
+    specialty: "Rotas reais",
+    description: "Acompanhe carroças entre bosques e fortalezas. A paga é boa, mas exige turnos longos.",
+    minMinutes: 240,
+    maxMinutes: 720,
+    minuteOptions: [240, 360, 480, 720],
+    shortDurationBonusPercent: 0.16,
+    aptitudeRewardBonusPercent: 0.08,
+    rewardsPerHour: {
+      experience: 30,
+      gold: 130,
+      items: [{ itemId: "ticket_train", quantity: 0.05 }]
+    },
+    bonus: {
+      level: 5,
+      description: "Contratos de rota: +3% gold em todas as fontes.",
+      goldBonusPercent: 0.03
+    }
+  },
+  {
+    id: "valfria_tavern_waiter",
+    countryId: "valfria",
+    name: "Garcom na taverna",
+    specialty: "Hospitalidade fria",
+    description: "Sirva viajantes exaustos, negocie gorjetas e mantenha a lareira acesa.",
+    minMinutes: 20,
+    maxMinutes: 360,
+    minuteOptions: [20, 40, 60, 120, 240, 360],
+    shortDurationBonusPercent: 0.32,
+    aptitudeRewardBonusPercent: 0.06,
+    rewardsPerHour: {
+      experience: 15,
+      gold: 75,
+      items: [{ itemId: "health_potion_light", quantity: 0.12 }]
+    },
+    bonus: {
+      level: 6,
+      description: "Gorjetas constantes: +5% gold em todas as fontes.",
+      goldBonusPercent: 0.05
+    }
+  },
+  {
+    id: "valfria_hospital",
+    countryId: "valfria",
+    name: "Ajudar os feridos no hospital",
+    specialty: "Cuidado e alquimia prática",
+    description: "Troque faixas, carregue macas e auxilie boticarios em uma rotina silenciosa.",
+    minMinutes: 60,
+    maxMinutes: 480,
+    minuteOptions: [60, 120, 240, 360, 480],
+    shortDurationBonusPercent: 0.22,
+    aptitudeRewardBonusPercent: 0.07,
+    rewardsPerHour: {
+      experience: 34,
+      gold: 45,
+      items: [{ itemId: "health_potion_medium", quantity: 0.08 }]
+    },
+    bonus: {
+      level: 4,
+      description: "Kit do hospital: resgate 2 pocoes de vida medias a cada 24 horas.",
+      periodicHours: 24,
+      periodicReward: { items: [{ itemId: "health_potion_medium", quantity: 2 }] }
+    }
+  },
+  {
+    id: "valfria_noble_tutor",
+    countryId: "valfria",
+    name: "Treinar filho de um nobre",
+    specialty: "Etiqueta marcial",
+    description: "Ensine postura, disciplina e sobrevivencia basica a herdeiros protegidos demais.",
+    minMinutes: 240,
+    maxMinutes: 720,
+    minuteOptions: [240, 360, 480, 720],
+    shortDurationBonusPercent: 0.14,
+    aptitudeRewardBonusPercent: 0.08,
+    rewardsPerHour: {
+      experience: 42,
+      gold: 115,
+      diamonds: 0.04,
+      attributePoints: 0.018
+    },
+    bonus: {
+      level: 7,
+      description: "Metodologia nobre: +4% XP em todas as fontes.",
+      xpBonusPercent: 0.04
+    }
+  },
+  {
+    id: "valfria_frozen_pass",
+    countryId: "valfria",
+    name: "Patrulhar os passos gelados",
+    specialty: "Escolta nas montanhas",
+    description: "Abra caminho entre nevoa e neve para caravanas que atravessam Valfria.",
+    minMinutes: 180,
+    maxMinutes: 600,
+    minuteOptions: [180, 300, 420, 600],
+    shortDurationBonusPercent: 0.18,
+    aptitudeRewardBonusPercent: 0.07,
+    rewardsPerHour: {
+      experience: 32,
+      gold: 95,
+      items: [{ itemId: "energy_potion_medium", quantity: 0.07 }]
+    },
+    bonus: {
+      level: 5,
+      description: "Passo firme: +1 Constituicao permanente.",
+      attributes: { constitution: 1 }
+    }
+  },
+  {
+    id: "morthaly_sewers",
+    countryId: "morthaly",
+    name: "Limpar esgotos assombrados",
+    specialty: "Serviços perigosos",
+    description: "Remova lodo necrotico e lacre pequenos ninhos de mortos inquietos sob as ruas.",
+    minMinutes: 45,
+    maxMinutes: 480,
+    minuteOptions: [45, 90, 120, 240, 360, 480],
+    shortDurationBonusPercent: 0.22,
+    aptitudeRewardBonusPercent: 0.08,
+    rewardsPerHour: {
+      experience: 48,
+      gold: 90,
+      items: [{ itemId: "material_celena", quantity: 0.06 }]
+    },
+    bonus: {
+      level: 4,
+      description: "Pulmoes de cripta: +2 Constituicao permanente.",
+      attributes: { constitution: 2 }
+    }
+  },
+  {
+    id: "morthaly_necropolis_watch",
+    countryId: "morthaly",
+    name: "Vigia na muralha da necropole",
+    specialty: "Defesa contra mortos",
+    description: "Segure a linha quando sombras se mexem fora das torres violetas.",
+    minMinutes: 180,
+    maxMinutes: 720,
+    minuteOptions: [180, 360, 540, 720],
+    shortDurationBonusPercent: 0.18,
+    aptitudeRewardBonusPercent: 0.08,
+    rewardsPerHour: {
+      experience: 56,
+      gold: 110,
+      items: [{ itemId: "material_midran", quantity: 0.05 }]
+    },
+    bonus: {
+      level: 5,
+      description: "Disciplina sombria: +1 Forca e +1 Constituicao permanentes.",
+      attributes: { strength: 1, constitution: 1 }
+    }
+  },
+  {
+    id: "morthaly_rune_catalog",
+    countryId: "morthaly",
+    name: "Catalogar runas mortas",
+    specialty: "Pesquisa necromantica",
+    description: "Copie runas instaveis antes que elas mudem de forma. Serviço raro e bem pago.",
+    minMinutes: 360,
+    maxMinutes: 840,
+    minuteOptions: [360, 480, 600, 840],
+    shortDurationBonusPercent: 0.12,
+    aptitudeRewardBonusPercent: 0.09,
+    rewardsPerHour: {
+      experience: 72,
+      gold: 75,
+      diamonds: 0.05,
+      items: [
+        { itemId: "misc_stone_craft", quantity: 0.04 },
+        { itemId: "material_midran", quantity: 0.05 }
+      ]
+    },
+    bonus: {
+      level: 7,
+      description: "Memoria runica: +6% XP em todas as fontes.",
+      xpBonusPercent: 0.06
+    }
+  },
+  {
+    id: "morthaly_shadow_caravan",
+    countryId: "morthaly",
+    name: "Escolta de caravanas sombrias",
+    specialty: "Logistica entre ilhas",
+    description: "Proteja cargas raras entre portos negros. Turnos longos, recompensa alta.",
+    minMinutes: 480,
+    maxMinutes: 960,
+    minuteOptions: [480, 600, 720, 960],
+    shortDurationBonusPercent: 0.1,
+    aptitudeRewardBonusPercent: 0.09,
+    rewardsPerHour: {
+      experience: 58,
+      gold: 160,
+      diamonds: 0.06,
+      items: [{ itemId: "ticket_ship", quantity: 0.04 }]
+    },
+    bonus: {
+      level: 8,
+      description: "Contrato sombrio: resgate 2 diamantes a cada 36 horas.",
+      periodicHours: 36,
+      periodicReward: { diamonds: 2 }
+    }
   }
 ];
 

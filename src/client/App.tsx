@@ -10,6 +10,7 @@ import {
   Coins,
   Copy,
   Crown,
+  BriefcaseBusiness,
   ChevronDown,
   ChevronRight,
   Flame,
@@ -68,7 +69,9 @@ import type {
   TalentCategory,
   QuestView,
   Rarity,
-  TalentDefinition
+  TalentDefinition,
+  WorkReward,
+  WorkServiceDefinition
 } from "../shared/types";
 import { RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
 import { experienceForNextLevel } from "../shared/progression";
@@ -82,6 +85,14 @@ import {
   getEnhancementBaseChance,
   getEnhancementMaterialQuantity
 } from "../shared/enhancement";
+import {
+  calculateWorkReward,
+  getDefaultWorkAptitude,
+  getHoursForNextWorkLevel,
+  isWorkInProgress,
+  isWorkReady,
+  normalizeWorkMinutes
+} from "../shared/work";
 import { socket } from "./socket";
 
 type View =
@@ -91,6 +102,7 @@ type View =
   | "armorer"
   | "apothecary"
   | "moneyChanger"
+  | "agency"
   | "travel"
   | "inventory"
   | "market"
@@ -167,6 +179,7 @@ const viewLabels: Record<View, string> = {
   armorer: "Armeiro",
   apothecary: "Boticário",
   moneyChanger: "Cambista",
+  agency: "Agencia",
   travel: "Viajar",
   inventory: "Inventário",
   market: "Mercado",
@@ -888,13 +901,14 @@ function ResourceBar({
 
 function BottomNav({ game, view, setView }: { game: GameState; view: View; setView: (view: View) => void }) {
   const locked = Boolean(game.activeBattle);
+  const working = isWorkInProgress(game.character.activeWork);
   const completedMissions = countClaimable(game.quests.daily) + countClaimable(game.quests.fixed);
   const myListings = game.marketplaceListings.filter((l) => l.sellerPlayerId === game.player.id).length;
 
   const items = [
     { view: "city" as View, label: "Cidade", icon: <Castle size={20} />, disabled: locked, badge: null },
     { view: "hunt" as View, label: "Caça", icon: <Swords size={20} />, disabled: locked, badge: null },
-    { view: "arena" as View, label: "Arena", icon: <Shield size={20} />, disabled: locked, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
+    { view: "arena" as View, label: "Arena", icon: <Shield size={20} />, disabled: locked || working, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
     { view: "inventory" as View, label: "Inventário", icon: <Backpack size={20} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
     { view: "market" as View, label: "Mercado", icon: <ShoppingBag size={20} />, disabled: locked, badge: myListings > 0 ? myListings : null },
     { view: "missions" as View, label: "Missões", icon: <ScrollText size={20} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
@@ -2104,6 +2118,9 @@ function GamePane({ game, view, setView }: { game: GameState; view: View; setVie
   if (view === "moneyChanger") {
     return <ShopPanel game={game} shop="moneyChanger" />;
   }
+  if (view === "agency") {
+    return <AgencyPanel game={game} />;
+  }
   if (view === "travel") {
     return <TravelPanel game={game} />;
   }
@@ -2141,11 +2158,11 @@ function GamePane({ game, view, setView }: { game: GameState; view: View; setVie
   return <CityOverview game={game} setView={setView} />;
 }
 
-type CityOption = { view: View; icon: React.ReactNode; title: string; value: string };
+type CityOption = { view: View; icon: React.ReactNode; title: string; value: string; disabled?: boolean };
 
 function CityOptionCard({ option, setView }: { option: CityOption; setView: (v: View) => void }) {
   return (
-    <button className="option-card" onClick={() => setView(option.view)}>
+    <button className="option-card" disabled={option.disabled} onClick={() => setView(option.view)}>
       <span>{option.icon}</span>
       <strong>{option.title}</strong>
       <small>{option.value}</small>
@@ -2166,22 +2183,32 @@ function CityGroup({ title, options, setView }: { title: string; options: CityOp
 }
 
 function CityOverview({ game, setView }: { game: GameState; setView: (view: View) => void }) {
+  const countryServices = game.workServices.filter((service) => service.countryId === game.currentCountry.id);
+  const workValue = game.character.activeWork
+    ? isWorkReady(game.character.activeWork)
+      ? "Recompensa pronta"
+      : "Servico em andamento"
+    : `${countryServices.length} servicos`;
+  const working = isWorkInProgress(game.character.activeWork);
   const combatOptions: CityOption[] = [
     { view: "hunt", icon: <Swords size={24} />, title: "Caçar", value: `${game.cityHuntLocations.length} locais` },
-    { view: "arena", icon: <Shield size={24} />, title: "Arena", value: `${game.arenaQueueSize} na fila` },
+    { view: "arena", icon: <Shield size={24} />, title: "Arena", value: working ? "Trabalhando" : `${game.arenaQueueSize} na fila`, disabled: working },
   ];
   if (game.currentCity.dungeonMonsterIds?.length) {
-    combatOptions.push({ view: "dungeon", icon: <Star size={24} />, title: "Masmorra", value: `${game.currentCity.dungeonMonsterIds.length} desafios` });
+    combatOptions.push({ view: "dungeon", icon: <Star size={24} />, title: "Masmorra", value: working ? "Trabalhando" : `${game.currentCity.dungeonMonsterIds.length} desafios`, disabled: working });
   }
 
-  const actionOptions: CityOption[] = [];
+  const actionOptions: CityOption[] = [
+    { view: "agency", icon: <BriefcaseBusiness size={24} />, title: "Agencia", value: workValue }
+  ];
   
   if (game.currentCountry.id === "morthaly" && game.monarchEvent) {
     actionOptions.push({
       view: "monarch",
       icon: <Skull size={24} style={{ color: "var(--red)" }} />,
       title: game.monarchEvent.isKing ? "Rei Litch" : "Monarca",
-      value: game.monarchEvent.status === "active" ? `${game.monarchEvent.attemptsLimit - game.monarchEvent.attemptsUsed} entradas` : "Encerrado"
+      value: working ? "Trabalhando" : game.monarchEvent.status === "active" ? `${game.monarchEvent.attemptsLimit - game.monarchEvent.attemptsUsed} entradas` : "Encerrado",
+      disabled: working
     });
   }
 
@@ -2211,6 +2238,138 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
       <CityGroup title="Combate" options={combatOptions} setView={setView} />
       <CityGroup title="Ações" options={actionOptions} setView={setView} />
       <CityGroup title="Habitantes" options={inhabitantOptions} setView={setView} />
+    </section>
+  );
+}
+
+function AgencyPanel({ game }: { game: GameState }) {
+  const services = game.workServices.filter((service) => service.countryId === game.currentCountry.id);
+  const [now, setNow] = useState(Date.now());
+  const [minutesByService, setMinutesByService] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const activeWork = game.character.activeWork ?? null;
+  const activeService = activeWork ? game.workServices.find((service) => service.id === activeWork.serviceId) ?? null : null;
+  const activeReady = isWorkReady(activeWork, now);
+  const activeInCountry = !activeWork || activeWork.countryId === game.currentCountry.id;
+  const currentCountryName = game.countries.find((country) => country.id === activeWork?.countryId)?.name ?? "outro pais";
+  const activeWorkMinutes = activeWork ? getWorkAssignmentMinutes(activeWork) : 0;
+
+  return (
+    <section className="content-panel agency-panel">
+      <PanelTitle icon={<BriefcaseBusiness size={20} />} title={`Agencia de ${game.currentCountry.name}`} />
+      <p className="agency-intro">{game.currentCountry.description}</p>
+
+      {activeWork && activeService && (
+        <article className={activeReady ? "work-active-card ready" : "work-active-card"}>
+          <div>
+            <span className="eyebrow">Servico atual</span>
+            <h3>{activeService.name}</h3>
+            <p>{activeService.description}</p>
+          </div>
+          <div className="work-active-meta">
+            <span>{formatWorkMinutes(activeWorkMinutes)} contratados</span>
+            <strong>{activeReady ? "Concluido" : formatDuration(activeWork.endsAt - now)}</strong>
+          </div>
+          <div className="work-progress-bar">
+            <span style={{ width: `${activeReady ? 100 : getTimedProgress(activeWork.startedAt, activeWork.endsAt, now)}%` }} />
+          </div>
+          <div className="button-row">
+            <button
+              className="primary-button"
+              disabled={!activeReady || !activeInCountry}
+              onClick={() => socket.emit("work:claim")}
+            >
+              Receber recompensa
+            </button>
+            <button
+              className="danger-button"
+              onClick={() => {
+                if (window.confirm("Abandonar o servico e perder toda recompensa e aptidao deste expediente?")) {
+                  socket.emit("work:abandon");
+                }
+              }}
+            >
+              Abandonar
+            </button>
+          </div>
+          {!activeInCountry && <small className="level-warn">Volte para {currentCountryName} para receber este servico.</small>}
+        </article>
+      )}
+
+      <div className="agency-service-grid">
+        {services.map((service) => {
+          const aptitude = game.character.workAptitudes?.[service.id] ?? getDefaultWorkAptitude();
+          const selectedMinutes = normalizeWorkMinutes(service, minutesByService[service.id] ?? service.minuteOptions[0] ?? service.minMinutes);
+          const reward = calculateWorkReward(service, aptitude, selectedMinutes);
+          const nextLevelHours = getHoursForNextWorkLevel(Math.max(1, aptitude.level));
+          const progressPercent = aptitude.level <= 0 ? 0 : Math.min(100, Math.round((aptitude.progressHours / nextLevelHours) * 100));
+          const bonusUnlocked = aptitude.level >= service.bonus.level;
+          const periodicReady = isWorkBonusReady(game, service, now);
+
+          return (
+            <article className="agency-service-card" key={service.id}>
+              <div className="agency-service-head">
+                <div>
+                  <span className="eyebrow">{service.specialty}</span>
+                  <h3>{service.name}</h3>
+                </div>
+                <strong>Nv. {aptitude.level}</strong>
+              </div>
+              <p>{service.description}</p>
+              <div className="work-aptitude">
+                <span>{aptitude.level <= 0 ? "Primeiro servico libera nivel 1" : `${formatAptitudeHours(aptitude.progressHours)}/${formatAptitudeHours(nextLevelHours)} para o proximo nivel`}</span>
+                <div className="work-progress-bar">
+                  <span style={{ width: `${progressPercent}%` }} />
+                </div>
+              </div>
+              <div className="work-hours-field">
+                <span>Tempo de trabalho</span>
+                <div className="work-hour-options" role="group" aria-label={`Tempo de trabalho para ${service.name}`}>
+                  {service.minuteOptions.map((minutes) => (
+                    <button
+                      type="button"
+                      key={minutes}
+                      className={selectedMinutes === minutes ? "work-hour-option selected" : "work-hour-option"}
+                      disabled={Boolean(activeWork)}
+                      onClick={() => setMinutesByService((current) => ({ ...current, [service.id]: minutes }))}
+                    >
+                      {formatWorkMinutes(minutes)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="work-reward-list">
+                {renderWorkReward(game, reward)}
+              </div>
+              <div className={bonusUnlocked ? "work-bonus unlocked" : "work-bonus"}>
+                <strong>Bonus Nv. {service.bonus.level}</strong>
+                <span>{service.bonus.description}</span>
+                {service.bonus.periodicReward && bonusUnlocked && (
+                  <button
+                    className="ghost-button"
+                    disabled={!periodicReady}
+                    onClick={() => socket.emit("work:claimBonus", { serviceId: service.id })}
+                  >
+                    {periodicReady ? "Resgatar bonus" : `Pronto em ${formatDuration(getWorkBonusReadyAt(game, service) - now)}`}
+                  </button>
+                )}
+              </div>
+              <button
+                className="primary-button"
+                disabled={Boolean(activeWork)}
+                onClick={() => socket.emit("work:start", { serviceId: service.id, minutes: selectedMinutes })}
+              >
+                Iniciar servico
+              </button>
+            </article>
+          );
+        })}
+      </div>
     </section>
   );
 }
@@ -3366,16 +3525,16 @@ function getTalentIcon(talent: TalentDefinition | null | undefined): React.React
 
 function getClanBenefitIcon(benefit: { id: string; icon?: string }) {
   const key = benefit.icon ?? benefit.id;
-  if (key.includes("members")) return <Users size={18} />;
-  if (key.includes("inventory")) return <Backpack size={18} />;
-  if (key.includes("damage") || key.includes("strength")) return <Swords size={18} />;
-  if (key.includes("crit") || key.includes("dodge")) return <Crosshair size={18} />;
-  if (key.includes("guard") || key.includes("defense")) return <Shield size={18} />;
-  if (key.includes("vitality") || key.includes("life")) return <Heart size={18} />;
-  if (key.includes("gold")) return <Coins size={18} />;
-  if (key.includes("drop")) return <Gem size={18} />;
-  if (key.includes("energy")) return <Zap size={18} />;
-  return <Star size={18} />;
+  if (key.includes("members")) return <Users size={18} style={{ color: "var(--red)" }} />;
+  if (key.includes("inventory")) return <Backpack size={18} style={{ color: "var(--muted)" }} />;
+  if (key.includes("damage") || key.includes("strength")) return <Swords style={{ color: "var(--red)" }} size={18} />;
+  if (key.includes("crit") || key.includes("dodge")) return <Crosshair style={{ color: "var(--gold)" }} size={18} />;
+  if (key.includes("guard") || key.includes("defense")) return <Shield style={{ color: "var(--purple)" }} size={18} />;
+  if (key.includes("vitality") || key.includes("life")) return <Heart style={{ color: "var(--red)" }} size={18} />;
+  if (key.includes("gold")) return <Coins style={{ color: "var(--gold)" }} size={18} />;
+  if (key.includes("drop")) return <Gem style={{ color: "var(--cyan)" }} size={18} />;
+  if (key.includes("energy")) return <Zap style={{ color: "var(--green)" }} size={18} />;
+  return <Star style={{ color: "var(--purple)" }} size={18} />;
 }
 
 function HuntPanel({ game }: { game: GameState }) {
@@ -5683,6 +5842,71 @@ function countInventoryItem(game: GameState, itemId: string) {
   return game.character.inventory
     .filter((item) => item.itemId === itemId)
     .reduce((total, item) => total + item.quantity, 0);
+}
+
+function renderWorkReward(game: GameState, reward: WorkReward): React.ReactNode[] {
+  const entries: React.ReactNode[] = [];
+  if (reward.experience) entries.push(<span key="xp"><Star size={13} /> {formatCurrency(reward.experience)} XP</span>);
+  if (reward.gold) entries.push(<span key="gold"><Coins size={13} /> {formatCurrency(reward.gold)} gold</span>);
+  if (reward.diamonds) entries.push(<span key="diamonds"><Gem size={13} /> {formatCurrency(reward.diamonds)} diamantes</span>);
+  if (reward.attributePoints) entries.push(<span key="attributes"><Sparkles size={13} /> {reward.attributePoints} ponto atributo</span>);
+  for (const item of reward.items ?? []) {
+    entries.push(
+      <span key={item.itemId}>
+        <Backpack size={13} /> {game.itemCatalog[item.itemId]?.name ?? item.itemId} x{item.quantity}
+      </span>
+    );
+  }
+  return entries.length > 0 ? entries : [<span key="none">Sem recompensa direta</span>];
+}
+
+function getTimedProgress(startedAt: number, endsAt: number, now: number) {
+  const total = Math.max(1, endsAt - startedAt);
+  return Math.max(0, Math.min(100, Math.round(((now - startedAt) / total) * 100)));
+}
+
+function getWorkAssignmentMinutes(activeWork: NonNullable<GameState["character"]["activeWork"]>) {
+  return Math.max(1, Math.round(activeWork.minutes ?? (activeWork.hours ?? 0) * 60));
+}
+
+function formatWorkMinutes(minutes: number) {
+  const normalized = Math.max(0, Math.round(minutes));
+  if (normalized < 60) {
+    return `${normalized}min`;
+  }
+  const hours = Math.floor(normalized / 60);
+  const remainingMinutes = normalized % 60;
+  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}min` : `${hours}h`;
+}
+
+function formatAptitudeHours(hours: number) {
+  if (hours > 0 && hours < 1) {
+    return `${Math.round(hours * 60)}min`;
+  }
+  return `${Number.isInteger(hours) ? hours : hours.toFixed(1)}h`;
+}
+
+function formatDuration(ms: number) {
+  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
+}
+
+function getWorkBonusReadyAt(game: GameState, service: WorkServiceDefinition) {
+  const periodicHours = service.bonus.periodicHours ?? 0;
+  const lastClaim = game.character.workBonusClaims?.[service.id] ?? 0;
+  return lastClaim > 0 ? lastClaim + periodicHours * 60 * 60 * 1000 : 0;
+}
+
+function isWorkBonusReady(game: GameState, service: WorkServiceDefinition, now = Date.now()) {
+  if (!service.bonus.periodicReward || !service.bonus.periodicHours) {
+    return false;
+  }
+  return now >= getWorkBonusReadyAt(game, service);
 }
 
 function isPotionForQuickSlot(item: ItemDefinition | undefined, slot: QuickPotionSlot): item is ItemDefinition {

@@ -47,7 +47,11 @@ import type {
   ShopBuyPayload,
   TalentBuyPayload,
   TravelPayload,
-  UseItemPayload
+  UseItemPayload,
+  WorkBonusClaimPayload,
+  WorkReward,
+  WorkServiceDefinition,
+  WorkStartPayload
 } from "../shared/types";
 import { RARITY_PRICE_MULTIPLIER } from "../shared/rarity";
 import {
@@ -73,7 +77,8 @@ import {
   SHIP_TICKET_ID,
   STARTING_CITY_ID,
   TRAIN_TICKET_ID,
-  TALENTS
+  TALENTS,
+  WORK_SERVICES
 } from "./content";
 import {
   createDungeonBattle,
@@ -90,6 +95,14 @@ import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventor
 import { deriveStats, grantExperience } from "./domain/stats";
 import { store } from "./store";
 import { flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
+import {
+  calculateWorkReward,
+  getDefaultWorkAptitude,
+  isWorkInProgress,
+  isWorkReady,
+  normalizeWorkMinutes,
+  progressWorkAptitude
+} from "../shared/work";
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
@@ -115,6 +128,20 @@ const MONARCH_EXPIRED_REWARD_RATE = 0.15;
 const MONARCH_KING_REWARD_MULTIPLIER = 3;
 const MONARCH_SCHEDULE = [
   {
+    id: "rei-lich",
+    name: "Rei Litch",
+    title: "Monarca do Domingo",
+    imageUrl: "/assets/monarchs/rei-lich.png",
+    level: 50,
+    maxHp: 51000000,
+    strength: 520,
+    defense: 240,
+    agility: 72,
+    experience: 120000,
+    gold: 70000,
+    isKing: true
+  },
+  {
     id: "monday",
     name: "General Mortis, o Estandarte Oco",
     title: "General Undead de Segunda",
@@ -129,7 +156,7 @@ const MONARCH_SCHEDULE = [
   },
   {
     id: "tuesday",
-    name: "Dama Sepulcral Vael",
+    name: "Guardião Vael",
     title: "General Undead de Terca",
     imageUrl: "/assets/monarchs/tuesday.png",
     level: 36,
@@ -180,18 +207,17 @@ const MONARCH_SCHEDULE = [
     gold: 43000
   },
   {
-    id: "rei-lich",
-    name: "Rei Litch",
-    title: "Monarca do Fim de Semana",
-    imageUrl: "/assets/monarchs/rei-lich.png",
-    level: 50,
-    maxHp: 51000000,
-    strength: 520,
-    defense: 240,
-    agility: 72,
-    experience: 120000,
-    gold: 70000,
-    isKing: true
+    id: "saturday",
+    name: "Dama Sepulcral Seralyth",
+    title: "General Undead de Sábado",
+    imageUrl: "/assets/monarchs/saturday.png",
+    level: 48,
+    maxHp: 21000000,
+    strength: 420,
+    defense: 198,
+    agility: 98,
+    experience: 100000,
+    gold: 55000
   }
 ] as const;
 const DAILY_MISSIONS = [
@@ -254,7 +280,10 @@ function createCharacter(player: Player): Character {
     avatarId: DEFAULT_AVATAR_ID,
     unlockedAvatarIds: AVATARS.filter((avatar) => avatar.priceDiamonds === 0).map((avatar) => avatar.id),
     referralRewardsClaimedFor: [],
-    monarchAttempts: { dayKey: "", count: 0 }
+    monarchAttempts: { dayKey: "", count: 0 },
+    activeWork: null,
+    workAptitudes: {},
+    workBonusClaims: {}
   };
 
   addItem(character, "training_sword", ITEM_CATALOG, 1);
@@ -292,6 +321,10 @@ function currentCharacter(playerId: string) {
     character.avatarId = DEFAULT_AVATAR_ID;
   }
   character.monarchAttempts ??= { dayKey: "", count: 0 };
+  character.activeWork ??= null;
+  normalizeActiveWorkDuration(character);
+  character.workAptitudes ??= {};
+  character.workBonusClaims ??= {};
   ensureQuestProgress(character);
   return character;
 }
@@ -434,7 +467,8 @@ function serializeGameState(playerId: string): GameState {
     clanChatMessages,
     privateMessages,
     onlinePlayers,
-    referrals: buildReferralView(playerId)
+    referrals: buildReferralView(playerId),
+    workServices: WORK_SERVICES
   };
 }
 
@@ -809,6 +843,12 @@ function ensureNotInBattle(character: Character) {
   }
 }
 
+function ensureNotWorking(character: Character) {
+  if (isWorkInProgress(character.activeWork)) {
+    throw new Error("Voce esta trabalhando. Conclua ou abandone o servico antes desta acao.");
+  }
+}
+
 function normalizeVitals(character: Character) {
   character.diamonds ??= 0;
   character.talentAllocations ??= {};
@@ -818,10 +858,151 @@ function normalizeVitals(character: Character) {
   character.arenaLosses ??= 0;
   character.dungeonClears ??= 0;
   character.monarchAttempts ??= { dayKey: "", count: 0 };
+  character.activeWork ??= null;
+  normalizeActiveWorkDuration(character);
+  character.workAptitudes ??= {};
+  character.workBonusClaims ??= {};
   ensureQuestProgress(character);
   const stats = deriveStats(character, ITEM_CATALOG);
   character.currentHp = Math.min(Math.max(0, character.currentHp ?? stats.maxHp), stats.maxHp);
   character.currentEnergy = Math.min(Math.max(0, character.currentEnergy ?? stats.maxEnergy), stats.maxEnergy);
+}
+
+function getWorkMinutesFromAssignment(activeWork: NonNullable<Character["activeWork"]>) {
+  return Math.max(1, Math.round(activeWork.minutes ?? (activeWork.hours ?? 0) * 60));
+}
+
+function normalizeActiveWorkDuration(character: Character) {
+  if (!character.activeWork) {
+    return;
+  }
+  character.activeWork.minutes = getWorkMinutesFromAssignment(character.activeWork);
+}
+
+function getCharacterCountryId(character: Character) {
+  const city = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
+  return city.countryId;
+}
+
+function getWorkService(serviceId: string): WorkServiceDefinition {
+  const service = WORK_SERVICES.find((entry) => entry.id === serviceId);
+  if (!service) {
+    throw new Error("Servico indisponivel.");
+  }
+  return service;
+}
+
+function grantWorkReward(character: Character, reward: WorkReward) {
+  const stats = deriveStats(character, ITEM_CATALOG);
+  const granted: WorkReward = {};
+  const levelMessages: string[] = [];
+
+  if (reward.experience) {
+    granted.experience = Math.max(1, Math.round(reward.experience * (1 + stats.xpBonusPercent)));
+    levelMessages.push(...grantExperience(character, granted.experience));
+  }
+  if (reward.gold) {
+    granted.gold = Math.max(1, Math.round(reward.gold * (1 + stats.goldBonusPercent)));
+    character.gold += granted.gold;
+  }
+  if (reward.diamonds) {
+    granted.diamonds = reward.diamonds;
+    character.diamonds += granted.diamonds;
+  }
+  if (reward.attributePoints) {
+    granted.attributePoints = reward.attributePoints;
+    character.unspentAttributePoints += granted.attributePoints;
+  }
+  if (reward.items?.length) {
+    granted.items = [];
+    for (const item of reward.items) {
+      addItem(character, item.itemId, ITEM_CATALOG, item.quantity);
+      granted.items.push(item);
+    }
+  }
+
+  normalizeVitals(character);
+  return { granted, levelMessages };
+}
+
+function startWork(character: Character, payload: WorkStartPayload) {
+  if (character.activeWork) {
+    throw new Error(isWorkReady(character.activeWork) ? "Receba a recompensa do servico atual antes de iniciar outro." : "Voce ja esta trabalhando.");
+  }
+
+  const service = getWorkService(String(payload.serviceId ?? ""));
+  const countryId = getCharacterCountryId(character);
+  if (service.countryId !== countryId) {
+    throw new Error("Este servico pertence a agencia de outro pais.");
+  }
+
+  const requestedMinutes = payload.minutes ?? (payload.hours ?? 0) * 60;
+  const minutes = normalizeWorkMinutes(service, requestedMinutes);
+  const now = Date.now();
+  character.activeWork = {
+    serviceId: service.id,
+    countryId: service.countryId,
+    minutes,
+    startedAt: now,
+    endsAt: now + minutes * 60 * 1000
+  };
+}
+
+function claimWork(character: Character) {
+  const activeWork = character.activeWork;
+  if (!activeWork) {
+    throw new Error("Nao ha servico em andamento.");
+  }
+  if (!isWorkReady(activeWork)) {
+    throw new Error("O expediente ainda nao terminou.");
+  }
+  if (activeWork.countryId !== getCharacterCountryId(character)) {
+    throw new Error("Volte a agencia do pais do servico para receber.");
+  }
+
+  const service = getWorkService(activeWork.serviceId);
+  const aptitude = character.workAptitudes?.[service.id] ?? getDefaultWorkAptitude();
+  const minutes = getWorkMinutesFromAssignment(activeWork);
+  const reward = calculateWorkReward(service, aptitude, minutes);
+  const beforeLevel = aptitude.level;
+  const result = grantWorkReward(character, reward);
+  character.workAptitudes ??= {};
+  character.workAptitudes[service.id] = progressWorkAptitude(aptitude, minutes);
+  character.activeWork = null;
+  return {
+    service,
+    reward: result.granted,
+    levelMessages: result.levelMessages,
+    beforeLevel,
+    afterLevel: character.workAptitudes[service.id].level
+  };
+}
+
+function abandonWork(character: Character) {
+  if (!character.activeWork) {
+    throw new Error("Nao ha servico em andamento.");
+  }
+  character.activeWork = null;
+}
+
+function claimWorkBonus(character: Character, payload: WorkBonusClaimPayload) {
+  const service = getWorkService(String(payload.serviceId ?? ""));
+  const aptitude = character.workAptitudes?.[service.id] ?? getDefaultWorkAptitude();
+  if (aptitude.level < service.bonus.level) {
+    throw new Error(`Aptidao nivel ${service.bonus.level} necessaria.`);
+  }
+  if (!service.bonus.periodicReward || !service.bonus.periodicHours) {
+    throw new Error("Este bonus nao possui recompensa resgatavel.");
+  }
+  const now = Date.now();
+  const lastClaim = character.workBonusClaims?.[service.id] ?? 0;
+  const nextClaimAt = lastClaim + service.bonus.periodicHours * 60 * 60 * 1000;
+  if (lastClaim > 0 && now < nextClaimAt) {
+    throw new Error("Este bonus ainda nao esta pronto para resgate.");
+  }
+  character.workBonusClaims ??= {};
+  character.workBonusClaims[service.id] = now;
+  return grantWorkReward(character, service.bonus.periodicReward).granted;
 }
 
 function getLocalDayKey(now = new Date()) {
@@ -837,10 +1018,8 @@ function getNextLocalDayStart(now = new Date()) {
 
 function getTodayMonarchDefinition(now = new Date()) {
   const day = now.getDay();
-  if (day === 0 || day === 6) {
-    return MONARCH_SCHEDULE.find((entry) => entry.id === "rei-lich")!;
-  }
-  return MONARCH_SCHEDULE[Math.max(0, day - 1)];
+  
+  return MONARCH_SCHEDULE[Math.max(0, day)];
 }
 
 function buildMonarchRanking(event: MonarchEventState): MonarchRankingEntry[] {
@@ -2007,6 +2186,9 @@ io.on("connection", (socket: AuthedSocket) => {
       }
       const currentCity = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
       const sameCountry = currentCity.countryId === city.countryId;
+      if (!sameCountry && isWorkInProgress(character.activeWork)) {
+        throw new Error("Voce esta trabalhando e nao pode viajar para outro pais.");
+      }
       const destinationCountry = COUNTRIES.find((country) => country.id === city.countryId);
       if (!sameCountry && !city.isPort) {
         const destinationPort = CITIES.find((entry) => entry.id === destinationCountry?.portCityId);
@@ -2028,6 +2210,53 @@ io.on("connection", (socket: AuthedSocket) => {
       removeItemByItemId(character, ticketId, 1);
       character.cityId = destinationCity.id;
       leaveArenaQueue(playerId);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("work:start", (payload: WorkStartPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      clearEndedBattle(character);
+      ensureNotInBattle(character);
+      startWork(character, payload);
+      leaveArenaQueue(playerId);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("work:claim", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      claimWork(character);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("work:abandon", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      abandonWork(character);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("work:claimBonus", (payload: WorkBonusClaimPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      claimWorkBonus(character, payload);
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -2362,6 +2591,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const character = currentCharacter(playerId);
       clearEndedBattle(character);
       ensureNotInBattle(character);
+      ensureNotWorking(character);
       normalizeVitals(character);
 
       const cityMonsterIds = getCityHuntMonsterIds(character.cityId);
@@ -2392,6 +2622,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const character = currentCharacter(playerId);
       clearEndedBattle(character);
       ensureNotInBattle(character);
+      ensureNotWorking(character);
       normalizeVitals(character);
 
       const city = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
@@ -2423,6 +2654,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const character = currentCharacter(playerId);
       clearEndedBattle(character);
       ensureNotInBattle(character);
+      ensureNotWorking(character);
       normalizeVitals(character);
 
       const city = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
@@ -2465,6 +2697,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const character = currentCharacter(playerId);
       clearEndedBattle(character);
       ensureNotInBattle(character);
+      ensureNotWorking(character);
       normalizeVitals(character);
       if (character.currentHp <= 0) {
         throw new Error("Você precisa recuperar vida antes de entrar na Arena.");

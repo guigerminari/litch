@@ -1,7 +1,7 @@
 import type { Character, DerivedStats, InventoryItem, ItemDefinition, ItemStats } from "../../shared/types";
 import { RARITY_STAT_MULTIPLIER } from "../../shared/rarity";
 import { experienceForNextLevel } from "../../shared/progression";
-import { CLAN_BENEFITS, TALENTS } from "../content";
+import { CLAN_BENEFITS, TALENTS, WORK_SERVICES } from "../content";
 
 function isClanCategoryComplete(allocations: Record<string, number>, category: "combat" | "defense" | "prosperity") {
   const benefits = CLAN_BENEFITS.filter((benefit) => benefit.category === category);
@@ -42,6 +42,7 @@ export function getEffectiveAttributes(character: Character, itemCatalog: Record
   const attributes = { ...character.attributes };
   const talentRanks = character.talentAllocations ?? {};
   const clanRanks = character.clanBenefitAllocations ?? {};
+  const workAptitudes = character.workAptitudes ?? {};
 
   for (const item of getEquippedItems(character, itemCatalog)) {
     const stats = getEnhancedItemStats(item.inventoryItem, item.definition);
@@ -56,6 +57,16 @@ export function getEffectiveAttributes(character: Character, itemCatalog: Record
   attributes.agility += (talentRanks.def_agility_1 ?? 0) * 2;
   attributes.strength += clanRanks.clan_strength_1 ?? 0;
 
+  for (const service of WORK_SERVICES) {
+    const bonus = service.bonus;
+    if ((workAptitudes[service.id]?.level ?? 0) < bonus.level || !bonus.attributes) {
+      continue;
+    }
+    attributes.strength += bonus.attributes.strength ?? 0;
+    attributes.constitution += bonus.attributes.constitution ?? 0;
+    attributes.agility += bonus.attributes.agility ?? 0;
+  }
+
   return attributes;
 }
 
@@ -63,6 +74,15 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
   const attributes = getEffectiveAttributes(character, itemCatalog);
   const talentRanks = character.talentAllocations ?? {};
   const clanRanks = character.clanBenefitAllocations ?? {};
+  const workAptitudes = character.workAptitudes ?? {};
+  const workXpBonusPercent = WORK_SERVICES.reduce(
+    (total, service) => total + ((workAptitudes[service.id]?.level ?? 0) >= service.bonus.level ? service.bonus.xpBonusPercent ?? 0 : 0),
+    0
+  );
+  const workGoldBonusPercent = WORK_SERVICES.reduce(
+    (total, service) => total + ((workAptitudes[service.id]?.level ?? 0) >= service.bonus.level ? service.bonus.goldBonusPercent ?? 0 : 0),
+    0
+  );
   const combatSuperActive = isClanCategoryComplete(clanRanks, "combat");
   const defenseSuperActive = isClanCategoryComplete(clanRanks, "defense");
   const prosperitySuperActive = isClanCategoryComplete(clanRanks, "prosperity");
@@ -127,12 +147,14 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
       (talentRanks.util_xp_2 ?? 0) * 0.08 +
       (clanRanks.clan_xp_1 ?? 0) * 0.02 +
       (clanRanks.clan_xp_2 ?? 0) * 0.02 +
-      (prosperitySuperActive ? 0.1 : 0),
+      (prosperitySuperActive ? 0.1 : 0) +
+      workXpBonusPercent,
     goldBonusPercent:
       (talentRanks.util_gold_1 ?? 0) * 0.05 +
       (clanRanks.clan_gold_1 ?? 0) * 0.02 +
       (clanRanks.clan_gold_2 ?? 0) * 0.015 +
-      (prosperitySuperActive ? 0.1 : 0),
+      (prosperitySuperActive ? 0.1 : 0) +
+      workGoldBonusPercent,
     dropBonusPercent:
       (talentRanks.util_drop_1 ?? 0) * 0.04 +
       (talentRanks.util_drop_2 ?? 0) * 0.08 +
