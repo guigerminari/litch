@@ -4062,7 +4062,7 @@ function HuntPanel({ game }: { game: GameState }) {
 }
 
 function ArenaPanel({ game }: { game: GameState }) {
-  const [arenaMode, setArenaMode] = useState<"duel" | "ranked">("duel");
+  const [arenaMode, setArenaMode] = useState<"duel" | "ranked">("ranked");
   const [rankedSearching, setRankedSearching] = useState(false);
   const [rankedStatus, setRankedStatus] = useState<string | null>(null);
   const queued = game.arenaQueueSize > 0;
@@ -4096,11 +4096,11 @@ function ArenaPanel({ game }: { game: GameState }) {
     <section className="content-panel arena-panel">
       <PanelTitle icon={<Shield size={20} />} title="Arena" />
       <div className="arena-mode-tabs">
-        <button type="button" className={arenaMode === "duel" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("duel")}>
-          Duelo
-        </button>
         <button type="button" className={arenaMode === "ranked" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("ranked")}>
           Ranqueada
+        </button>
+        <button type="button" className={arenaMode === "duel" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("duel")}>
+          Duelo
         </button>
       </div>
       <div className="arena-plate">
