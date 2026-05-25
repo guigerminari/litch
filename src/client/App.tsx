@@ -148,6 +148,14 @@ type PotionQuickOption = {
   quantity: number;
 };
 
+type InventorySlotEntry = {
+  instanceId: string;
+  itemId: string;
+  quantity: number;
+  enhancementLevel?: number;
+  rarity?: Rarity;
+};
+
 type FirstClickNoticeKey = "exchange" | "diamonds" | "ranking" | "guide";
 
 const BATTLE_CUE_DURATION_MS = 680;
@@ -4161,31 +4169,38 @@ function QuickPotionSelector({ game }: { game: GameState }) {
     return null;
   }
 
-  const renderSelect = (
+  const renderPotionButtons = (
     slot: QuickPotionSlot,
     icon: React.ReactNode,
     label: string,
     options: PotionQuickOption[],
     selected: PotionQuickOption | null
   ) => (
-    <label className="quick-potion-field">
+    <div className="quick-potion-field">
       <span>{icon} {label}</span>
-      <select
-        value={selected?.itemId ?? ""}
-        disabled={options.length === 0}
-        onChange={(event) => setPreference(slot, event.target.value)}
-      >
+      <div className="quick-potion-choice-grid">
         {options.length === 0 ? (
-          <option value="">Nenhuma</option>
+          <span className="quick-potion-empty">Nenhuma</span>
         ) : (
-          options.map((option) => (
-            <option key={option.itemId} value={option.itemId}>
-              {option.definition.name} x{option.quantity} - {getPotionEffectLabel(option.definition, slot)}
-            </option>
-          ))
+          options.map((option) => {
+            const active = selected?.itemId === option.itemId;
+            return (
+              <button
+                type="button"
+                key={option.itemId}
+                className={active ? "quick-potion-choice active" : "quick-potion-choice"}
+                onClick={() => setPreference(slot, option.itemId)}
+                title={`${option.definition.name} x${option.quantity} - ${getPotionEffectLabel(option.definition, slot)}`}
+                aria-pressed={active}
+              >
+                <ItemVisual item={option.definition} className="quick-potion-choice-visual" quantity={option.quantity} />
+                <small>{getPotionEffectLabel(option.definition, slot)}</small>
+              </button>
+            );
+          })
         )}
-      </select>
-    </label>
+      </div>
+    </div>
   );
 
   return (
@@ -4195,8 +4210,8 @@ function QuickPotionSelector({ game }: { game: GameState }) {
         <small>Escolha qual poção os atalhos de batalha e detalhes vão consumir.</small>
       </div>
       <div className="quick-potion-fields">
-        {renderSelect("health", <Heart size={14} />, "Vida", healthOptions, selectedHealth)}
-        {renderSelect("energy", <Zap size={14} />, "Energia", energyOptions, selectedEnergy)}
+        {renderPotionButtons("health", <Heart size={14} />, "Vida", healthOptions, selectedHealth)}
+        {renderPotionButtons("energy", <Zap size={14} />, "Energia", energyOptions, selectedEnergy)}
       </div>
     </section>
   );
@@ -4214,7 +4229,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
   });
   const stackableMap = game.character.inventory
     .filter((inv) => !game.itemCatalog[inv.itemId]?.slot)
-    .reduce<Record<string, { instanceId: string; itemId: string; quantity: number }>>((acc, inv) => {
+    .reduce<Record<string, InventorySlotEntry>>((acc, inv) => {
       if (!acc[inv.itemId]) acc[inv.itemId] = { instanceId: inv.instanceId, itemId: inv.itemId, quantity: 0 };
       acc[inv.itemId].quantity += inv.quantity;
       return acc;
@@ -4223,7 +4238,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 
   // Pad to exactly 40 slots (5 columns × 8 rows)
   const TOTAL_SLOTS = 40;
-  const slots: Array<{ instanceId: string; itemId: string; quantity: number; enhancementLevel?: number; rarity?: Rarity } | null> = [
+  const slots: Array<InventorySlotEntry | null> = [
     ...filledSlots,
     ...Array(Math.max(0, TOTAL_SLOTS - filledSlots.length)).fill(null),
   ];
@@ -4259,7 +4274,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
               className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""}`}
               title={formatInventoryItemName(item, slot)}
               style={{ borderColor: rarityColor }}
-              onClick={() => setSelectedInstanceId(selected ? null : slot.instanceId)}
+              onClick={() => setSelectedInstanceId(slot.instanceId)}
             >
               <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} enhancementLevel={slot.enhancementLevel} rarity={slot.rarity} />
             </button>
@@ -4268,8 +4283,19 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
       </div>
 
       {selectedEntry && selectedItem && (
-        <div className="inv-action-bar">
-          <div className="inv-action-info">
+        <div className="drawer-backdrop inventory-item-backdrop" role="presentation" onClick={() => setSelectedInstanceId(null)}>
+          <div className="inv-action-bar inventory-item-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+            <button className="close-button" title="Fechar" onClick={() => setSelectedInstanceId(null)}>
+              <X size={18} />
+            </button>
+            <ItemVisual
+              item={selectedItem}
+              className="inventory-modal-visual"
+              quantity={selectedEntry.quantity}
+              enhancementLevel={selectedEntry.enhancementLevel}
+              rarity={selectedEntry.rarity}
+            />
+            <div className="inv-action-info">
             <strong>{formatInventoryItemName(selectedItem, selectedEntry)}</strong>
             <span>{selectedItem.description}</span>
             <div className="inventory-item-meta">
@@ -4350,6 +4376,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
             <button className="ghost-button" onClick={() => setSelectedInstanceId(null)}>
               Fechar
             </button>
+            </div>
           </div>
         </div>
       )}
@@ -4425,14 +4452,14 @@ function TravelPanel({ game }: { game: GameState }) {
           {trainTicket ? <ItemVisual item={trainTicket} className="travel-ticket-visual" /> : <MapPinned size={16} />}
           <span className="travel-ticket-copy">
             <small>{trainTicket?.name ?? "Ticket de Trem"}</small>
-            <strong>{trainTickets}</strong>
+            <strong>x{trainTickets}</strong>
           </span>
         </span>
         <span className="travel-ticket-chip">
           {shipTicket ? <ItemVisual item={shipTicket} className="travel-ticket-visual" /> : <Ship size={16} />}
           <span className="travel-ticket-copy">
             <small>{shipTicket?.name ?? "Ticket de Navio"}</small>
-            <strong>{shipTickets}</strong>
+            <strong>x{shipTickets}</strong>
           </span>
         </span>
       </div>
