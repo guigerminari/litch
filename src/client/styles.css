@@ -2066,13 +2066,10 @@ button:disabled {
   width: 34px;
   height: 34px;
   flex: 0 0 auto;
-  border: 1px solid rgba(220, 203, 255, 0.12);
-  border-radius: 10px;
-  background: rgba(11, 9, 18, 0.46);
 }
 
 .travel-ticket-visual img {
-  padding: 5px;
+  padding: 4px !important;
 }
 
 .travel-panel {

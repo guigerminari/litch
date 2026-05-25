@@ -5801,15 +5801,51 @@ function CurrencyExchangeModal({ game, onClose }: { game: GameState; onClose: ()
   );
 }
 
-function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; fallback: React.ReactNode; style?: React.CSSProperties }) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const hasFailed = Boolean(src && failedSrc === src);
+const ASSET_URL_ALIASES: Record<string, string> = {
+  "/assets/items/misc/train-ticket.png": "/assets/items/misc/train_ticket.png",
+  "/assets/items/misc/train_ticket.png": "/assets/items/misc/train-ticket.png",
+  "/assets/items/misc/ship-ticket.png": "/assets/items/misc/ship_ticket.png",
+  "/assets/items/misc/ship_ticket.png": "/assets/items/misc/ship-ticket.png"
+};
 
-  if (!src || hasFailed) {
+function getAssetUrlAlias(src: string) {
+  const normalized = src.startsWith("/") ? src : `/${src}`;
+  const alias = ASSET_URL_ALIASES[normalized];
+  if (!alias) return null;
+  return src.startsWith("/") ? alias : alias.slice(1);
+}
+
+function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; fallback: React.ReactNode; style?: React.CSSProperties }) {
+  const [activeSrc, setActiveSrc] = useState(src ?? "");
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setActiveSrc(src ?? "");
+    setFailed(false);
+  }, [src]);
+
+  if (!src || !activeSrc || failed) {
     return <span className="asset-fallback" aria-hidden="true" style={style}>{fallback}</span>;
   }
 
-  return <img key={src} style={style} src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailedSrc(src)} />;
+  return (
+    <img
+      key={activeSrc}
+      style={style}
+      src={activeSrc}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      onError={() => {
+        const alias = getAssetUrlAlias(activeSrc);
+        if (alias && alias !== activeSrc && alias !== src) {
+          setActiveSrc(alias);
+          return;
+        }
+        setFailed(true);
+      }}
+    />
+  );
 }
 
 function ItemVisual({
