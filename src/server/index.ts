@@ -138,6 +138,17 @@ const MONARCH_KING_REWARD_MULTIPLIER = 3;
 const ARENA_RANKED_STARTING_POINTS = 100;
 const ARENA_RANKED_WIN_POINTS = 5;
 const ARENA_RANKED_LOSS_POINTS = 2;
+const ARENA_RANKED_BLUE_COIN_COST = 1;
+const ARENA_RANKED_DAILY_BLUE_COINS = 10;
+const ARENA_RANKED_LOSS_GOLD_COIN = 1;
+const ARENA_RANKED_WIN_GOLD_COIN = 3;
+const ARENA_RANKED_LOSS_XP = 80;
+const ARENA_RANKED_WIN_XP = 240;
+const ARENA_RANKED_LOSS_GOLD = 100;
+const ARENA_RANKED_WIN_GOLD = 300;
+const ARENA_BLUE_COIN_ID = "material_blue_coin";
+const ARENA_GOLD_COIN_ID = "material_gold_coin";
+const ARENA_CHAMPION_AVATAR_ID = "arena_champion";
 const MONARCH_SCHEDULE = [
   {
     id: "rei-lich",
@@ -247,6 +258,64 @@ const DAILY_EXTRA_MISSIONS = [
 ];
 
 loadPersistentStore();
+
+function getCurrentSeasonKey() {
+  const now = new Date();
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+function maybeEndSeason() {
+  const currentKey = getCurrentSeasonKey();
+  if (store.arenaSeasonKey === currentKey) {
+    return;
+  }
+
+  if (store.arenaSeasonKey !== "") {
+    const ranked = Array.from(store.characters.values())
+      .map((ch) => ({
+        playerId: ch.playerId,
+        name: ch.name,
+        arenaRankedPoints: ch.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS
+      }))
+      .sort((a, b) => b.arenaRankedPoints - a.arenaRankedPoints || a.name.localeCompare(b.name))
+      .slice(0, 20);
+
+    const seasonRanking = ranked.map((entry, index) => ({ ...entry, rank: index + 1 }));
+    store.lastArenaSeason = { seasonKey: store.arenaSeasonKey, ranking: seasonRanking };
+
+    for (const entry of seasonRanking) {
+      const ch = store.characters.get(entry.playerId);
+      if (!ch) continue;
+      let goldCoins = 0;
+      if (entry.rank === 1) {
+        goldCoins = 50;
+        if (!ch.unlockedAvatarIds) ch.unlockedAvatarIds = [];
+        if (!ch.unlockedAvatarIds.includes(ARENA_CHAMPION_AVATAR_ID)) {
+          ch.unlockedAvatarIds.push(ARENA_CHAMPION_AVATAR_ID);
+        }
+      } else if (entry.rank === 2) {
+        goldCoins = 30;
+      } else if (entry.rank === 3) {
+        goldCoins = 20;
+      } else if (entry.rank <= 10) {
+        goldCoins = 10;
+      } else {
+        goldCoins = 5;
+      }
+      grantPackageStack(ch, ARENA_GOLD_COIN_ID, goldCoins);
+    }
+
+    for (const ch of store.characters.values()) {
+      ch.arenaRankedPoints = ARENA_RANKED_STARTING_POINTS;
+    }
+  }
+
+  store.arenaSeasonKey = currentKey;
+  persistStoreSoon();
+}
+
+maybeEndSeason();
+setInterval(maybeEndSeason, 60 * 60 * 1000);
 
 const httpServer = createServer((request, response) => {
   if (request.url === "/health") {
@@ -491,7 +560,9 @@ function serializeGameState(playerId: string): GameState {
     privateMessages,
     onlinePlayers,
     referrals: buildReferralView(playerId),
-    workServices: WORK_SERVICES
+    workServices: WORK_SERVICES,
+    arenaSeasonKey: store.arenaSeasonKey,
+    lastArenaSeason: store.lastArenaSeason
   };
 }
 
@@ -1014,6 +1085,7 @@ function normalizeVitals(character: Character) {
   normalizeActiveWorkDuration(character);
   character.workAptitudes ??= {};
   character.workBonusClaims ??= {};
+  character.lastDailyBlueCoinGrantKey ??= "";
   ensureQuestProgress(character);
   const stats = deriveStats(character, ITEM_CATALOG);
   character.currentHp = Math.min(Math.max(0, character.currentHp ?? stats.maxHp), stats.maxHp);
@@ -1898,6 +1970,15 @@ function recordArenaResult(battleId: string) {
     }
     challenger.questProgress.dailyArenaBattles += 1;
     challenger.questProgress.arenaBattles += 1;
+    if (challengerWon) {
+      grantPackageStack(challenger, ARENA_GOLD_COIN_ID, ARENA_RANKED_WIN_GOLD_COIN);
+      challenger.experience += ARENA_RANKED_WIN_XP;
+      challenger.gold += ARENA_RANKED_WIN_GOLD;
+    } else {
+      grantPackageStack(challenger, ARENA_GOLD_COIN_ID, ARENA_RANKED_LOSS_GOLD_COIN);
+      challenger.experience += ARENA_RANKED_LOSS_XP;
+      challenger.gold += ARENA_RANKED_LOSS_GOLD;
+    }
     battle.log.unshift({
       id: randomUUID(),
       createdAt: Date.now(),
@@ -2485,11 +2566,26 @@ io.on("connection", (socket: AuthedSocket) => {
           ? city.armorerItemIds.includes(item.id)
           : requestedShop === "apothecary"
             ? city.apothecaryItemIds.includes(item.id) && item.kind !== "scroll" && item.kind !== "ticket"
-            : Boolean(city.isPort && city.moneyChangerItemIds?.includes(item.id) && (item.kind === "scroll" || item.kind === "ticket"));
+            : requestedShop === "goldCoinMerchant"
+              ? Boolean(city.goldCoinMerchantItemIds?.includes(item.id) && item.goldCoinPrice && item.goldCoinPrice > 0)
+              : Boolean(city.isPort && city.moneyChangerItemIds?.includes(item.id) && (item.kind === "scroll" || item.kind === "ticket"));
       if (!available) {
         throw new Error("Este comerciante não vende o item aqui.");
       }
       const quantity = item.slot ? 1 : Math.max(1, Math.min(999, Math.floor(payload.quantity ?? 1)));
+
+      if (requestedShop === "goldCoinMerchant") {
+        const goldCoinCost = (item.goldCoinPrice ?? 0) * quantity;
+        if (countItem(character, ARENA_GOLD_COIN_ID) < goldCoinCost) {
+          throw new Error("Moedas de Arena insuficientes.");
+        }
+        addItem(character, item.id, ITEM_CATALOG, quantity);
+        removeItemByItemId(character, ARENA_GOLD_COIN_ID, goldCoinCost);
+        character.questProgress.shopItemsBought += 1;
+        emitState(playerId);
+        return;
+      }
+
       const totalPrice = item.price * quantity;
       if (character.gold < totalPrice) {
         throw new Error("Ouro insuficiente.");
@@ -2989,8 +3085,20 @@ io.on("connection", (socket: AuthedSocket) => {
         throw new Error("Você precisa recuperar vida antes de entrar na Arena Ranqueada.");
       }
 
+      const today = currentDayKey();
+      if (character.lastDailyBlueCoinGrantKey !== today) {
+        grantPackageStack(character, ARENA_BLUE_COIN_ID, ARENA_RANKED_DAILY_BLUE_COINS);
+        character.lastDailyBlueCoinGrantKey = today;
+      }
+
+      if (countItem(character, ARENA_BLUE_COIN_ID) < ARENA_RANKED_BLUE_COIN_COST) {
+        throw new Error(`Você precisa de ${ARENA_RANKED_BLUE_COIN_COST} Moeda(s) Azul para disputar um duelo ranqueado.`);
+      }
+      removeItemByItemId(character, ARENA_BLUE_COIN_ID, ARENA_RANKED_BLUE_COIN_COST);
+
       const opponent = findRankedArenaOpponent(character);
       if (!opponent) {
+        grantPackageStack(character, ARENA_BLUE_COIN_ID, ARENA_RANKED_BLUE_COIN_COST);
         throw new Error("Ainda não há outro jogador disponível para a Arena Ranqueada.");
       }
 
@@ -3003,6 +3111,23 @@ io.on("connection", (socket: AuthedSocket) => {
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro inesperado.";
       ack?.({ ok: false, message });
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("arena:claimDailyCoins", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      normalizeVitals(character);
+      const today = currentDayKey();
+      if (character.lastDailyBlueCoinGrantKey === today) {
+        throw new Error("Você já recebeu as moedas diárias hoje.");
+      }
+      grantPackageStack(character, ARENA_BLUE_COIN_ID, ARENA_RANKED_DAILY_BLUE_COINS);
+      character.lastDailyBlueCoinGrantKey = today;
+      emitState(playerId);
+    } catch (error) {
       handleError(socket, error);
     }
   });

@@ -3312,7 +3312,7 @@ button:disabled {
   align-items: center;
   gap: 8px;
   width: fit-content;
-  margin: -4px 0 14px;
+  margin: -4px 10px 14px;
   padding: 7px 10px;
   border: 1px solid rgba(139, 233, 253, 0.28);
   border-radius: 6px;
@@ -3765,6 +3765,142 @@ button:disabled {
   min-height: 18px;
   color: var(--muted);
   font-size: 0.82rem;
+}
+
+.arena-ranked-highlight {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.arena-ranked-highlight-card {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 209, 102, 0.16), rgba(13, 17, 23, 0.72));
+  border: 1px solid rgba(255, 209, 102, 0.24);
+}
+
+.arena-ranked-highlight-card small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.arena-ranked-highlight-card strong {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  line-height: 1;
+  color: var(--gold);
+}
+
+.arena-ranked-highlight-card span {
+  color: rgba(244, 240, 255, 0.72);
+  font-size: 0.84rem;
+}
+
+.arena-ranked-highlight-card-secondary {
+  background: linear-gradient(180deg, rgba(139, 233, 253, 0.14), rgba(13, 17, 23, 0.72));
+  border-color: rgba(139, 233, 253, 0.24);
+}
+
+.arena-ranked-highlight-card-secondary strong {
+  color: var(--cyan);
+}
+
+.arena-coins-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.arena-claim-btn {
+  font-size: 0.82rem;
+  padding: 4px 10px;
+}
+
+.arena-ranked-rewards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.arena-reward-card {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(12, 15, 24, 0.84);
+  border: 1px solid rgba(244, 240, 255, 0.08);
+  text-align: center;
+}
+
+.arena-reward-card small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.arena-reward-card strong {
+  font-size: 1rem;
+}
+
+.arena-reward-card span {
+  color: rgba(244, 240, 255, 0.72);
+  font-size: 0.84rem;
+}
+
+.arena-reward-card.win strong {
+  color: var(--gold);
+}
+
+.arena-reward-card.loss strong {
+  color: var(--cyan);
+}
+
+.arena-season-label {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.arena-ranking-list {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.arena-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+.arena-rank-pos {
+  color: var(--muted);
+  min-width: 28px;
+  font-weight: 600;
+}
+
+.arena-rank-name {
+  flex: 1;
+}
+
+.arena-rank-pts {
+  color: var(--gold);
+  font-weight: 600;
 }
 
 .sell-strip {

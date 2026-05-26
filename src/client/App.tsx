@@ -103,6 +103,7 @@ type View =
   | "armorer"
   | "apothecary"
   | "moneyChanger"
+  | "goldCoinMerchant"
   | "agency"
   | "travel"
   | "inventory"
@@ -192,6 +193,7 @@ const viewLabels: Record<View, string> = {
   armorer: "Armeiro",
   apothecary: "Boticário",
   moneyChanger: "Cambista",
+  goldCoinMerchant: "Mercador",
   agency: "Agência",
   travel: "Viajar",
   inventory: "Inventário",
@@ -2009,6 +2011,9 @@ function getItemVendors(game: GameState, itemId: string) {
     if ((city.moneyChangerItemIds ?? []).includes(itemId) && city.npcs.moneyChanger) {
       vendors.push({ city, country, role: "Cambista", name: city.npcs.moneyChanger });
     }
+    if ((city.goldCoinMerchantItemIds ?? []).includes(itemId) && city.npcs.goldCoinMerchant) {
+      vendors.push({ city, country, role: "Mercador", name: city.npcs.goldCoinMerchant });
+    }
   }
   return vendors;
 }
@@ -2025,6 +2030,8 @@ function formatNpcRole(role: string) {
       return "Alquimista";
     case "moneyChanger":
       return "Cambista";
+    case "goldCoinMerchant":
+      return "Mercador";
     default:
       return role;
   }
@@ -2154,6 +2161,10 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
     }
     if (avatar.id === game.character.avatarId) {
       setShowAvatarChoices(false);
+      return;
+    }
+    if (!unlocked && avatar.exclusive) {
+      window.alert(`${avatar.name} é um avatar exclusivo. Conquiste o 1º lugar em uma temporada da Arena Ranqueada.`);
       return;
     }
     if (!unlocked && !window.confirm(`Comprar ${avatar.name} por ${avatar.priceDiamonds} diamantes?`)) {
@@ -2400,7 +2411,7 @@ function AvatarPickerModal({
         </div>
         <div className="avatar-choice-grid modal">
           {game.avatarCatalog.map((avatar) => {
-            const unlocked = avatar.priceDiamonds === 0 || unlockedAvatarIds.includes(avatar.id);
+            const unlocked = (avatar.priceDiamonds === 0 && !avatar.exclusive) || unlockedAvatarIds.includes(avatar.id);
             const selected = game.character.avatarId === avatar.id;
             return (
               <button
@@ -2409,7 +2420,7 @@ function AvatarPickerModal({
                 className={`avatar-choice${selected ? " selected" : ""}${!unlocked ? " locked" : ""}`}
                 disabled={locked}
                 onClick={() => onChoose(avatar, unlocked)}
-                title={unlocked ? avatar.name : `${avatar.name} - ${avatar.priceDiamonds} diamantes`}
+                title={unlocked ? avatar.name : avatar.exclusive ? `${avatar.name} — Exclusivo` : `${avatar.name} - ${avatar.priceDiamonds} diamantes`}
               >
                 <CharacterAvatar avatar={avatar} size={46} />
                 {!unlocked && <span className="avatar-lock"><Lock size={12} /></span>}
@@ -2419,6 +2430,8 @@ function AvatarPickerModal({
                     "Em uso"
                   ) : unlocked ? (
                     "Usar"
+                  ) : avatar.exclusive ? (
+                    "Exclusivo"
                   ) : (
                     <>{avatar.priceDiamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></>
                   )}
@@ -2528,6 +2541,9 @@ function GamePane({ game, view, setView }: { game: GameState; view: View; setVie
   }
   if (view === "moneyChanger") {
     return <ShopPanel game={game} shop="moneyChanger" />;
+  }
+  if (view === "goldCoinMerchant") {
+    return <ShopPanel game={game} shop="goldCoinMerchant" />;
   }
   if (view === "agency") {
     return <AgencyPanel game={game} />;
@@ -2641,6 +2657,15 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
       icon: <Coins size={24} />,
       title: game.currentCity.npcs.moneyChanger ?? "Cambista",
       value: `Na minha mão é mais barato`
+    });
+  }
+
+  if (game.currentCity.npcs.goldCoinMerchant && game.currentCity.goldCoinMerchantItemIds?.length) {
+    inhabitantOptions.push({
+      view: "goldCoinMerchant",
+      icon: <Coins size={24} />,
+      title: game.currentCity.npcs.goldCoinMerchant,
+      value: `Aceito apenas Moedas de Arena`
     });
   }
 
@@ -4062,10 +4087,18 @@ function HuntPanel({ game }: { game: GameState }) {
 }
 
 function ArenaPanel({ game }: { game: GameState }) {
-  const [arenaMode, setArenaMode] = useState<"duel" | "ranked">("ranked");
+  const [arenaMode, setArenaMode] = useState<"duel" | "ranked" | "season">("ranked");
   const [rankedSearching, setRankedSearching] = useState(false);
   const [rankedStatus, setRankedStatus] = useState<string | null>(null);
   const queued = game.arenaQueueSize > 0;
+  const blueCoins = countInventoryItem(game, "material_blue_coin");
+  const currentArenaRank = game.rankings.arena.findIndex((entry) => entry.playerId === game.player.id) + 1;
+  const hasArenaRank = currentArenaRank > 0;
+  const today = new Date().toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  const lastGrantDate = game.character.lastDailyBlueCoinGrantKey
+    ? new Date(game.character.lastDailyBlueCoinGrantKey + "T00:00:00Z").toLocaleDateString("pt-BR", { timeZone: "UTC" })
+    : "";
+  const canClaimDaily = lastGrantDate !== today;
 
   useEffect(() => {
     if (game.activeBattle?.arena?.type === "ranked") {
@@ -4092,6 +4125,13 @@ function ArenaPanel({ game }: { game: GameState }) {
     });
   };
 
+  const seasonLabel = (key: string) => {
+    if (!key) return "—";
+    const [year, month] = key.split("-");
+    const date = new Date(Number(year), Number(month) - 1, 1);
+    return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  };
+
   return (
     <section className="content-panel arena-panel">
       <PanelTitle icon={<Shield size={20} />} title="Arena" />
@@ -4101,6 +4141,9 @@ function ArenaPanel({ game }: { game: GameState }) {
         </button>
         <button type="button" className={arenaMode === "duel" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("duel")}>
           Duelo
+        </button>
+        <button type="button" className={arenaMode === "season" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("season")}>
+          Temporada
         </button>
       </div>
       <div className="arena-plate">
@@ -4118,20 +4161,89 @@ function ArenaPanel({ game }: { game: GameState }) {
               </button>
             </div>
           </>
+        ) : arenaMode === "season" ? (
+          <>
+            <Trophy size={44} />
+            <h2>Temporada</h2>
+            <p className="arena-season-label">Temporada atual: <strong>{seasonLabel(game.arenaSeasonKey)}</strong></p>
+            <div className="arena-ranking-list">
+              {game.rankings.arena.length === 0 ? (
+                <p>Nenhum jogador no ranking ainda.</p>
+              ) : (
+                game.rankings.arena.map((entry, index) => (
+                  <div key={entry.playerId} className="arena-rank-row">
+                    <span className="arena-rank-pos">#{index + 1}</span>
+                    <span className="arena-rank-name">{entry.name}</span>
+                    <span className="arena-rank-pts">{entry.arenaRankedPoints} pts</span>
+                  </div>
+                ))
+              )}
+            </div>
+            {game.lastArenaSeason && (
+              <>
+                <h3 style={{ marginTop: 16 }}>Última Temporada — {seasonLabel(game.lastArenaSeason.seasonKey)}</h3>
+                <div className="arena-ranking-list">
+                  {game.lastArenaSeason.ranking.map((entry) => (
+                    <div key={entry.playerId} className="arena-rank-row">
+                      <span className="arena-rank-pos">#{entry.rank}</span>
+                      <span className="arena-rank-name">{entry.name}</span>
+                      <span className="arena-rank-pts">{entry.arenaRankedPoints} pts</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <>
             <Trophy size={44} />
             <h2>Arena Ranqueada</h2>
-            <p>
-              Seu placar: <strong>{game.character.arenaRankedPoints}</strong> pontos. O jogo escolhe o rival mais próximo,
-              online ou offline.
-            </p>
+            <div className="arena-ranked-highlight">
+              <div className="arena-ranked-highlight-card">
+                <small>Seus pontos</small>
+                <strong>{game.character.arenaRankedPoints}</strong>
+                <span>ranking atual</span>
+              </div>
+              <div className="arena-ranked-highlight-card arena-ranked-highlight-card-secondary">
+                <small>Sua posição</small>
+                <strong>{hasArenaRank ? `#${currentArenaRank}` : "Top 20+"}</strong>
+                <span>{hasArenaRank ? "entre os melhores" : "fora do top 20"}</span>
+              </div>
+            </div>
+            <div className="arena-coins-row">
+              <Coins size={16} style={{ color: "#8be9fd" }} />
+              <span>Moedas Azuis: <strong>{blueCoins}</strong></span>
+              {canClaimDaily && (
+                <button
+                  className="ghost-button arena-claim-btn"
+                  type="button"
+                  onClick={() => socket.emit("arena:claimDailyCoins")}
+                >
+                  Receber 10 moedas diárias
+                </button>
+              )}
+            </div>
+            <p>O jogo escolhe o rival mais próximo, online ou offline.</p>
             <div className="arena-ranked-rules">
               <span>Vitória <strong>+5</strong></span>
               <span>Derrota <strong>-2</strong></span>
             </div>
+            <div className="arena-ranked-rewards">
+              <div className="arena-reward-card win">
+                <small>Vitória</small>
+                <strong>3 Moedas de Arena</strong>
+                <span><Star size={12} style={{color: "var(--cyan)"}} /> 240 <Coins size={12} style={{ color: "var(--gold)" }} /> 300</span>
+              </div>
+              <div className="arena-reward-card loss">
+                <small>Derrota</small>
+                <strong>1 Moeda de Arena</strong>
+                <span><Star size={12} style={{color: "var(--cyan)"}} /> 80 <Coins size={12} style={{ color: "var(--gold)" }} /> 100</span>
+              </div>
+            </div>
+            <small style={{ opacity: 0.7 }}>Custo: 1 Moeda Azul por duelo. As moedas diárias são concedidas automaticamente ao buscar um duelo.</small>
             <button className="primary-button" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
-              {rankedSearching ? "Buscando..." : "Buscar duelo ranqueado"}
+              <Swords size={16} style={{ marginRight: 8, color: "var(--white)" }} />
+              {rankedSearching ? "Buscando..." : "Buscar Oponente"}
             </button>
             {rankedStatus && <small className="arena-ranked-status">{rankedStatus}</small>}
           </>
@@ -4141,7 +4253,8 @@ function ArenaPanel({ game }: { game: GameState }) {
   );
 }
 
-function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothecary" | "moneyChanger" }) {
+function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothecary" | "moneyChanger" | "goldCoinMerchant" }) {
+  const isGoldCoinShop = shop === "goldCoinMerchant";
   const itemIds =
     shop === "armorer"
       ? game.currentCity.armorerItemIds
@@ -4150,18 +4263,30 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
             const item = game.itemCatalog[itemId];
             return item?.kind !== "scroll" && item?.kind !== "ticket";
           })
-        : game.currentCity.moneyChangerItemIds ?? [];
+        : isGoldCoinShop
+          ? game.currentCity.goldCoinMerchantItemIds ?? []
+          : game.currentCity.moneyChangerItemIds ?? [];
   const sortedItemIds = [...itemIds].sort((leftId, rightId) => {
     const left = game.itemCatalog[leftId];
     const right = game.itemCatalog[rightId];
+    if (isGoldCoinShop) {
+      return (left?.goldCoinPrice ?? 0) - (right?.goldCoinPrice ?? 0) || (left?.name ?? "").localeCompare(right?.name ?? "");
+    }
     return (left?.price ?? 0) - (right?.price ?? 0) || (left?.name ?? "").localeCompare(right?.name ?? "");
   });
-  const title = shop === "armorer" ? "Armeiro" : shop === "apothecary" ? "Boticário" : "Cambista";
+  const title = shop === "armorer" ? "Armeiro" : shop === "apothecary" ? "Boticário" : isGoldCoinShop ? "Mercador de Arena" : "Cambista";
   const icon = shop === "armorer" ? <Gavel size={20} /> : shop === "apothecary" ? <FlaskConical size={20} /> : <Coins size={20} />;
   const npcName =
-    shop === "armorer" ? game.currentCity.npcs.armorer : shop === "apothecary" ? game.currentCity.npcs.apothecary : game.currentCity.npcs.moneyChanger;
+    shop === "armorer"
+      ? game.currentCity.npcs.armorer
+      : shop === "apothecary"
+        ? game.currentCity.npcs.apothecary
+        : isGoldCoinShop
+          ? game.currentCity.npcs.goldCoinMerchant
+          : game.currentCity.npcs.moneyChanger;
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] : null;
+  const goldCoins = countInventoryItem(game, "material_gold_coin");
 
   return (
     <section className="content-panel">
@@ -4170,6 +4295,12 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
         <User size={18} />
         <span>{npcName}</span>
       </div>
+      {isGoldCoinShop && (
+        <div className="npc-banner" style={{ marginTop: 4, color: "var(--gold)" }}>
+          <Coins size={14} />
+          <span>Suas Moedas de Arena: <strong>{goldCoins}</strong></span>
+        </div>
+      )}
       <div className="shop-grid npc-shop-grid">
         {sortedItemIds.map((itemId) => {
           const item = game.itemCatalog[itemId];
@@ -4181,6 +4312,7 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
               key={item.id}
               item={item}
               onClick={() => setSelectedItemId(item.id)}
+              goldCoinMode={isGoldCoinShop}
             />
           );
         })}
@@ -4190,6 +4322,7 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
           game={game}
           item={selectedItem}
           onClose={() => setSelectedItemId(null)}
+          goldCoinMode={isGoldCoinShop}
           onBuy={(quantity) => {
             socket.emit("shop:buy", { itemId: selectedItem.id, quantity, shop });
             setSelectedItemId(null);
@@ -6211,13 +6344,15 @@ function ParticipantVisual({ participant, className }: { participant: BattlePart
   );
 }
 
-function ShopItemCard({ item, onClick }: { item: ItemDefinition; onClick: () => void }) {
+function ShopItemCard({ item, onClick, goldCoinMode }: { item: ItemDefinition; onClick: () => void; goldCoinMode?: boolean }) {
   return (
     <button className="shop-item-card" type="button" onClick={onClick} title={item.name}>
       <ItemVisual item={item} className="shop-card-image" />
       <strong>{item.name}</strong>
       <span className="shop-card-price">
-        {formatCurrency(item.price)} <Coins size={13} style={{ color: "var(--gold)" }} />
+        {goldCoinMode
+          ? <>{item.goldCoinPrice ?? "?"} <Coins size={13} style={{ color: "#f1fa8c" }} /></>
+          : <>{formatCurrency(item.price)} <Coins size={13} style={{ color: "var(--gold)" }} /></>}
       </span>
     </button>
   );
@@ -6227,19 +6362,24 @@ function ShopItemModal({
   game,
   item,
   onClose,
-  onBuy
+  onBuy,
+  goldCoinMode
 }: {
   game: GameState;
   item: ItemDefinition;
   onClose: () => void;
   onBuy: (quantity: number) => void;
+  goldCoinMode?: boolean;
 }) {
   const [quantity, setQuantity] = useState(1);
   const rarityColor = getEquipmentRarityColor(item);
   const canChooseQuantity = !item.slot;
   const purchaseQuantity = canChooseQuantity ? Math.max(1, Math.min(999, Math.floor(quantity || 1))) : 1;
-  const totalPrice = item.price * purchaseQuantity;
-  const blockedReason = getNpcShopBlockedReason(game, item, purchaseQuantity);
+  const totalPrice = goldCoinMode ? (item.goldCoinPrice ?? 0) * purchaseQuantity : item.price * purchaseQuantity;
+  const playerGoldCoins = goldCoinMode ? countInventoryItem(game, "material_gold_coin") : 0;
+  const blockedReason = goldCoinMode
+    ? (playerGoldCoins < totalPrice ? "Moedas insuficientes" : !canReceiveShopItem(game, item) ? "Inventário cheio" : null)
+    : getNpcShopBlockedReason(game, item, purchaseQuantity);
 
   useEffect(() => {
     setQuantity(1);
@@ -6320,7 +6460,9 @@ function ShopItemModal({
             <div className="market-modal-price">
               <strong>{canChooseQuantity ? "Total:" : "Valor:"}</strong>
               <b className="price-amount">
-                {formatCurrency(totalPrice)} <Coins size={16} style={{ color: "var(--gold)" }} />
+                {goldCoinMode
+                  ? <>{totalPrice} <Coins size={16} style={{ color: "#f1fa8c" }} /></>
+                  : <>{formatCurrency(totalPrice)} <Coins size={16} style={{ color: "var(--gold)" }} /></>}
               </b>
             </div>
             <button className="primary-button" disabled={Boolean(blockedReason)} onClick={() => onBuy(purchaseQuantity)}>

@@ -47,6 +47,7 @@ export interface ItemDefinition {
   imageUrl?: string;
   minLevel: number;
   price: number;
+  goldCoinPrice?: number;
   stats: ItemStats;
   description?: string;
   rarity?: Rarity;
@@ -104,6 +105,7 @@ export interface Character {
   activeWork?: WorkAssignment | null;
   workAptitudes?: Record<string, WorkAptitudeState>;
   workBonusClaims?: Record<string, number>;
+  lastDailyBlueCoinGrantKey?: string;
 }
 
 export interface QuestProgress {
@@ -338,6 +340,7 @@ export interface CityDefinition {
     blacksmith?: string;
     alchemist?: string;
     moneyChanger?: string;
+    goldCoinMerchant?: string;
   };
   dungeonMonsterIds?: string[];
   blacksmithRecipeIds?: string[];
@@ -348,6 +351,7 @@ export interface CityDefinition {
   armorerItemIds: string[];
   apothecaryItemIds: string[];
   moneyChangerItemIds?: string[];
+  goldCoinMerchantItemIds?: string[];
 }
 
 export interface BattleParticipant {
@@ -591,6 +595,19 @@ export interface AvatarDefinition {
   icon: AvatarIcon;
   accent: string;
   priceDiamonds: number;
+  exclusive?: boolean;
+}
+
+export interface ArenaSeasonEntry {
+  playerId: string;
+  name: string;
+  arenaRankedPoints: number;
+  rank: number;
+}
+
+export interface ArenaSeasonData {
+  seasonKey: string;
+  ranking: ArenaSeasonEntry[];
 }
 
 export interface ClanRankingEntry {
@@ -675,6 +692,8 @@ export interface GameState {
   onlinePlayers: Array<{ playerId: string; name: string }>;
   referrals: ReferralView;
   workServices: WorkServiceDefinition[];
+  arenaSeasonKey: string;
+  lastArenaSeason: ArenaSeasonData | null;
 }
 
 export interface ServerError {
@@ -724,7 +743,7 @@ export interface TravelPayload {
 export interface ShopBuyPayload {
   itemId: string;
   quantity?: number;
-  shop?: "armorer" | "apothecary" | "moneyChanger";
+  shop?: "armorer" | "apothecary" | "moneyChanger" | "goldCoinMerchant";
 }
 
 export interface SellPayload {

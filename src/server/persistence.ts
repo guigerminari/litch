@@ -1,6 +1,6 @@
 import { dirname, join } from "node:path";
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
-import type { BattleState, Character, ChatMessage, Clan, MarketListing, MonarchEventState, Player, PrivateMessage } from "../shared/types";
+import type { ArenaSeasonData, BattleState, Character, ChatMessage, Clan, MarketListing, MonarchEventState, Player, PrivateMessage } from "../shared/types";
 import { store, type AuthAccount, type GameStore } from "./store";
 
 interface PersistedGameStore {
@@ -20,6 +20,8 @@ interface PersistedGameStore {
   arenaRecordedBattleIds: string[];
   nextRegenAt: number;
   monarchEvent: MonarchEventState | null;
+  arenaSeasonKey?: string;
+  lastArenaSeason?: ArenaSeasonData | null;
 }
 
 const DEFAULT_DATA_FILE = join(process.cwd(), "data", "game-state.json");
@@ -43,7 +45,9 @@ function toPersistedStore(source: GameStore): PersistedGameStore {
     arenaQueue: source.arenaQueue,
     arenaRecordedBattleIds: Array.from(source.arenaRecordedBattleIds.values()),
     nextRegenAt: source.nextRegenAt,
-    monarchEvent: source.monarchEvent
+    monarchEvent: source.monarchEvent,
+    arenaSeasonKey: source.arenaSeasonKey,
+    lastArenaSeason: source.lastArenaSeason
   };
 }
 
@@ -69,6 +73,8 @@ export function loadPersistentStore(target: GameStore = store) {
   target.socketsByPlayer = new Map();
   target.nextRegenAt = persisted.nextRegenAt ?? Date.now() + 2 * 60 * 1000;
   target.monarchEvent = persisted.monarchEvent ?? null;
+  target.arenaSeasonKey = persisted.arenaSeasonKey ?? "";
+  target.lastArenaSeason = persisted.lastArenaSeason ?? null;
 }
 
 export function saveStoreNow(source: GameStore = store) {

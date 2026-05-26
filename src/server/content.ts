@@ -27,7 +27,8 @@ export const AVATARS: AvatarDefinition[] = [
   { id: "arcane", name: "Arcano", icon: "sparkles", accent: "linear-gradient(135deg, #8be9fd, #f1fa8c)", priceDiamonds: 60 },
   { id: "shadow", name: "Sombra", icon: "skull", accent: "linear-gradient(135deg, #44475a, #bd93f9)", priceDiamonds: 75 },
   { id: "sovereign", name: "Soberano", icon: "crown", accent: "linear-gradient(135deg, #f1fa8c, #ff79c6)", priceDiamonds: 120 },
-  { id: "crystal", name: "Cristal", icon: "gem", accent: "linear-gradient(135deg, #8be9fd, #50fa7b)", priceDiamonds: 150 }
+  { id: "crystal", name: "Cristal", icon: "gem", accent: "linear-gradient(135deg, #8be9fd, #50fa7b)", priceDiamonds: 150 },
+  { id: "arena_champion", name: "Campeão da Arena", icon: "crown", accent: "linear-gradient(135deg, #ffd700, #ff8c00)", priceDiamonds: 0, exclusive: true }
 ];
 
 export const ITEM_CATALOG: Record<string, ItemDefinition> = {
@@ -201,6 +202,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/materials/blue_coin.png",
     "minLevel": 1,
     "price": 15,
+    "goldCoinPrice": 2,
     "stats": {},
     "description": "Moeda para participar da arena."
   },
@@ -797,6 +799,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/potions/energy-high.png",
     "minLevel": 1,
     "price": 5000,
+    "goldCoinPrice": 8,
     "stats": {
       "energy": 400
     },
@@ -845,6 +848,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/potions/health-high.png",
     "minLevel": 1,
     "price": 5000,
+    "goldCoinPrice": 8,
     "stats": {
       "heal": 3000
     },
@@ -1297,6 +1301,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/potions/health.png",
     "minLevel": 5,
     "price": 6000,
+    "goldCoinPrice": 5,
     "stats": {
       "healPercent": 0.55
     },
@@ -1309,6 +1314,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/potions/energy.png",
     "minLevel": 5,
     "price": 6000,
+    "goldCoinPrice": 5,
     "stats": {
       "energyPercent": 0.55
     },
@@ -1321,6 +1327,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/misc/enhanced-parchment.png",
     "minLevel": 1,
     "price": 180,
+    "goldCoinPrice": 3,
     "stats": {},
     "description": "Reseta talentos sem gastar diamantes"
   },
@@ -1331,6 +1338,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/misc/fraddo-parchment.png",
     "minLevel": 1,
     "price": 180,
+    "goldCoinPrice": 3,
     "stats": {},
     "description": "Reseta atributos sem gastar diamantes"
   },
@@ -2262,13 +2270,15 @@ export const CITIES: CityDefinition[] = [
       "Helga Forja-Alta",
       "Orin Cinza-Viva",
       "Sentinela Rosin",
-      "Archivista Dalen"
+      "Archivista Dalen",
+      "Caelum, o Cambista"
     ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
       "apothecary": "Orin Cinza-Viva",
       "blacksmith": "Helga Forja-Alta",
-      "alchemist": "Orin Cinza-Viva"
+      "alchemist": "Orin Cinza-Viva",
+      "goldCoinMerchant": "Caelum, o Cambista"
     },
     "dungeonMonsterIds": [
       "zombie_kraken_infected",
@@ -2340,6 +2350,15 @@ export const CITIES: CityDefinition[] = [
       "energy_potion_high",
       "health_potion_medium",
       "health_potion_high"
+    ],
+    "goldCoinMerchantItemIds": [
+      "material_blue_coin",
+      "energy_potion_high",
+      "health_potion_high",
+      "major_health_potion",
+      "major_energy_potion",
+      "oblivion_scroll",
+      "memory_scroll"
     ]
   },
   {
