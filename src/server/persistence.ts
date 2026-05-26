@@ -59,7 +59,15 @@ export function loadPersistentStore(target: GameStore = store) {
   const persisted = JSON.parse(readFileSync(DATA_FILE, "utf8")) as Partial<PersistedGameStore>;
 
   target.players = new Map((persisted.players ?? []).map((player) => [player.id, { ...player, email: player.email ?? "" }]));
-  target.accountsByEmail = new Map((persisted.accountsByEmail ?? []).map((account) => [account.email, account]));
+  target.accountsByEmail = new Map(
+    (persisted.accountsByEmail ?? []).map((account) => [
+      account.email,
+      {
+        ...account,
+        emailVerifiedAt: account.emailVerifiedAt ?? account.createdAt
+      }
+    ])
+  );
   target.characters = new Map((persisted.characters ?? []).map((character) => [character.playerId, character]));
   target.sessions = new Map(persisted.sessions ?? []);
   target.battles = new Map((persisted.battles ?? []).map((battle) => [battle.id, battle]));

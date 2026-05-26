@@ -45,11 +45,13 @@ import type {
   ReferralClaimPayload,
   RegisterPayload,
   ResetPayload,
+  ResetPasswordPayload,
   SellPayload,
   ShopBuyPayload,
   TalentBuyPayload,
   TravelPayload,
   UseItemPayload,
+  VerifyEmailPayload,
   WorkBonusClaimPayload,
   WorkReward,
   WorkServiceDefinition,
@@ -96,8 +98,9 @@ import {
 } from "./domain/battle";
 import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, removeItem } from "./domain/inventory";
 import { deriveStats, grantExperience } from "./domain/stats";
-import { store } from "./store";
+import { store, type AuthAccount } from "./store";
 import { flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
+import { sendGameEmail } from "./mailer";
 import {
   calculateWorkReward,
   getDefaultWorkAptitude,
@@ -109,7 +112,10 @@ import {
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
+const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL ?? CLIENT_ORIGIN;
 const PASSWORD_MIN_LENGTH = 6;
+const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 const POTION_MISSION_TARGETS = [5, 50, 100, 200];
 const WORK_MISSION_TARGETS = [1, 10, 50, 100];
 const MONARCH_MISSION_TARGETS = [1, 5, 20, 50];
@@ -629,6 +635,76 @@ function createRecoveryCode() {
   return raw.match(/.{1,4}/g)?.join("-") ?? raw;
 }
 
+function createEmailToken() {
+  return randomBytes(32).toString("base64url");
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function publicLink(path: "verify-email" | "reset-password", token: string) {
+  const url = new URL(PUBLIC_APP_URL);
+  url.searchParams.set(path === "verify-email" ? "verifyEmail" : "resetPassword", token);
+  return url.toString();
+}
+
+async function sendVerificationEmail(account: AuthAccount, playerName: string) {
+  const token = createEmailToken();
+  const link = publicLink("verify-email", token);
+  const safePlayerName = escapeHtml(playerName);
+  account.emailVerificationTokenHash = hashSecret(token);
+  account.emailVerificationTokenExpiresAt = Date.now() + EMAIL_VERIFICATION_TTL_MS;
+
+  await sendGameEmail({
+    to: account.email,
+    subject: "Confirme seu e-mail em Litch",
+    text: [
+      `Olá, ${playerName}.`,
+      "Confirme seu e-mail para liberar sua conta em Litch:",
+      link,
+      "Este link expira em 24 horas."
+    ].join("\n\n"),
+    html: [
+      `<p>Olá, <strong>${safePlayerName}</strong>.</p>`,
+      `<p>Confirme seu e-mail para liberar sua conta em <strong>Litch</strong>.</p>`,
+      `<p><a href="${link}">Confirmar e-mail</a></p>`,
+      "<p>Este link expira em 24 horas.</p>"
+    ].join("")
+  });
+}
+
+async function sendPasswordResetEmail(account: AuthAccount, playerName: string) {
+  const token = createEmailToken();
+  const link = publicLink("reset-password", token);
+  const safePlayerName = escapeHtml(playerName);
+  account.passwordResetTokenHash = hashSecret(token);
+  account.passwordResetTokenExpiresAt = Date.now() + PASSWORD_RESET_TTL_MS;
+  account.passwordResetRequestedAt = Date.now();
+
+  await sendGameEmail({
+    to: account.email,
+    subject: "Redefina sua senha em Litch",
+    text: [
+      `Olá, ${playerName}.`,
+      "Use este link para redefinir sua senha em Litch:",
+      link,
+      "O código de recuperação fica oculto no link e expira em 1 hora."
+    ].join("\n\n"),
+    html: [
+      `<p>Olá, <strong>${safePlayerName}</strong>.</p>`,
+      "<p>Use o link abaixo para redefinir sua senha em <strong>Litch</strong>.</p>",
+      `<p><a href="${link}">Redefinir senha</a></p>`,
+      "<p>O código de recuperação fica oculto no link e expira em 1 hora.</p>"
+    ].join("")
+  });
+}
+
 function createReferralCode(username: string, playerId: string) {
   const prefix = username.replace(/[^a-z0-9]/gi, "").slice(0, 5).toUpperCase() || "LITCH";
   return normalizeReferralCode(`${prefix}${playerId.slice(0, 6)}`);
@@ -683,6 +759,24 @@ function accountForPlayer(playerId: string) {
     throw new Error("Conta não encontrada.");
   }
   return account;
+}
+
+function findAccountByToken(token: string, kind: "email" | "password") {
+  if (!token) {
+    return null;
+  }
+  const now = Date.now();
+  for (const account of store.accountsByEmail.values()) {
+    const hash = kind === "email" ? account.emailVerificationTokenHash : account.passwordResetTokenHash;
+    const expiresAt = kind === "email" ? account.emailVerificationTokenExpiresAt : account.passwordResetTokenExpiresAt;
+    if (!hash || !expiresAt || expiresAt < now) {
+      continue;
+    }
+    if (verifySecret(token, hash)) {
+      return account;
+    }
+  }
+  return null;
 }
 
 function attachSocketSession(socket: AuthedSocket, playerId: string, sessionToken: string) {
@@ -2286,13 +2380,23 @@ io.on("connection", (socket: AuthedSocket) => {
     }
   });
 
-  socket.on("auth:login", (payload: LoginPayload) => {
+  socket.on("auth:login", async (payload: LoginPayload) => {
     try {
       const email = normalizeEmail(String(payload.email ?? ""));
       const password = String(payload.password ?? "");
       const account = store.accountsByEmail.get(email);
       if (!account || !verifySecret(password, account.passwordHash)) {
         throw new Error("E-mail ou senha invalidos.");
+      }
+      if (!account.emailVerifiedAt) {
+        const player = store.players.get(account.playerId);
+        await sendVerificationEmail(account, player?.username ?? "recruta");
+        persistStoreSoon();
+        socket.emit("auth:notice", {
+          message: "Confirme seu e-mail para entrar. Enviamos um novo link de confirmação.",
+          mode: "login"
+        });
+        return;
       }
 
       const sessionToken = createSession(socket, account.playerId);
@@ -2303,7 +2407,7 @@ io.on("connection", (socket: AuthedSocket) => {
     }
   });
 
-  socket.on("auth:register", (payload: RegisterPayload) => {
+  socket.on("auth:register", async (payload: RegisterPayload) => {
     try {
       const username = sanitizeName(String(payload.username ?? ""));
       const email = normalizeEmail(String(payload.email ?? ""));
@@ -2343,30 +2447,72 @@ io.on("connection", (socket: AuthedSocket) => {
 
       store.players.set(player.id, player);
       store.characters.set(player.id, character);
-      store.accountsByEmail.set(email, {
+      const account: AuthAccount = {
         playerId: player.id,
         email,
         passwordHash: hashSecret(password),
         recoveryCodeHash: hashSecret(normalizeRecoveryCode(recoveryCode)),
         createdAt: Date.now()
-      });
+      };
+      store.accountsByEmail.set(email, account);
+      await sendVerificationEmail(account, username);
 
-      const sessionToken = createSession(socket, player.id);
-      socket.emit("auth:ok", { sessionToken, playerId: player.id, recoveryCode });
+      persistStoreSoon();
+      socket.emit("auth:notice", {
+        message: "Conta criada. Enviamos um link para confirmar seu e-mail antes do primeiro login.",
+        mode: "login"
+      });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
     }
   });
 
-  socket.on("auth:forgotPassword", (payload: ForgotPasswordPayload) => {
+  socket.on("auth:verifyEmail", (payload: VerifyEmailPayload) => {
+    try {
+      const token = String(payload.token ?? "");
+      const account = findAccountByToken(token, "email");
+      if (!account) {
+        throw new Error("Link de confirmação inválido ou expirado.");
+      }
+      account.emailVerifiedAt = Date.now();
+      account.emailVerificationTokenHash = undefined;
+      account.emailVerificationTokenExpiresAt = undefined;
+      persistStoreSoon();
+      socket.emit("auth:notice", {
+        message: "E-mail confirmado. Você já pode entrar em Litch.",
+        mode: "login"
+      });
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("auth:forgotPassword", async (payload: ForgotPasswordPayload) => {
     try {
       const email = normalizeEmail(String(payload.email ?? ""));
-      const recoveryCode = normalizeRecoveryCode(String(payload.recoveryCode ?? ""));
-      const newPassword = String(payload.newPassword ?? "");
       const account = store.accountsByEmail.get(email);
-      if (!account || !verifySecret(recoveryCode, account.recoveryCodeHash)) {
-        throw new Error("E-mail ou código de recuperação inválido.");
+      if (account) {
+        const player = store.players.get(account.playerId);
+        await sendPasswordResetEmail(account, player?.username ?? "recruta");
+        persistStoreSoon();
+      }
+      socket.emit("auth:notice", {
+        message: "Se o e-mail estiver cadastrado, enviaremos um link seguro para redefinir a senha.",
+        mode: "login"
+      });
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("auth:resetPassword", (payload: ResetPasswordPayload) => {
+    try {
+      const token = String(payload.token ?? "");
+      const newPassword = String(payload.newPassword ?? "");
+      const account = findAccountByToken(token, "password");
+      if (!account) {
+        throw new Error("Link de redefinição inválido ou expirado.");
       }
       assertPassword(newPassword);
 
@@ -2375,11 +2521,14 @@ io.on("connection", (socket: AuthedSocket) => {
       account.recoveryCodeHash = hashSecret(normalizeRecoveryCode(nextRecoveryCode));
       account.passwordUpdatedAt = Date.now();
       account.recoveryCodeUpdatedAt = Date.now();
+      account.passwordResetTokenHash = undefined;
+      account.passwordResetTokenExpiresAt = undefined;
+      account.emailVerifiedAt ??= Date.now();
       deleteSessionsForPlayer(account.playerId);
       forceLogoutPlayerSockets(account.playerId, socket.id);
 
       const sessionToken = createSession(socket, account.playerId);
-      socket.emit("auth:ok", { sessionToken, playerId: account.playerId, recoveryCode: nextRecoveryCode });
+      socket.emit("auth:ok", { sessionToken, playerId: account.playerId });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);

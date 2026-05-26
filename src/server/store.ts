@@ -8,6 +8,12 @@ export interface AuthAccount {
   createdAt: number;
   passwordUpdatedAt?: number;
   recoveryCodeUpdatedAt?: number;
+  emailVerifiedAt?: number;
+  emailVerificationTokenHash?: string;
+  emailVerificationTokenExpiresAt?: number;
+  passwordResetTokenHash?: string;
+  passwordResetTokenExpiresAt?: number;
+  passwordResetRequestedAt?: number;
 }
 
 export interface GameStore {

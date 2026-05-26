@@ -117,7 +117,7 @@ type View =
   | "gameShop"
   | "clan";
 
-type AuthMode = "login" | "register" | "forgot";
+type AuthMode = "login" | "register" | "forgot" | "reset";
 
 type BattleAnimationCue = {
   kind: "damage" | "dodge";
@@ -414,9 +414,8 @@ export function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [inviteCode, setInviteCode] = useState("");
-  const [recoveryCode, setRecoveryCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [latestRecoveryCode, setLatestRecoveryCode] = useState<string | null>(null);
+  const [passwordResetToken, setPasswordResetToken] = useState("");
   const [view, setView] = useState<View>("city");
   const [utilityModal, setUtilityModal] = useState<"settings" | "guide" | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -440,15 +439,12 @@ export function App() {
       }
     };
 
-    const onAuthOk = (payload: { sessionToken: string; recoveryCode?: string }) => {
+    const onAuthOk = (payload: { sessionToken: string }) => {
       localStorage.setItem("litch:session", payload.sessionToken);
-      if (payload.recoveryCode) {
-        setLatestRecoveryCode(payload.recoveryCode);
-      }
       setPassword("");
       setInviteCode("");
       setNewPassword("");
-      setRecoveryCode("");
+      setPasswordResetToken("");
     };
 
     const onAuthLogout = () => {
@@ -476,6 +472,16 @@ export function App() {
       window.setTimeout(() => setNotice(null), 3200);
     };
 
+    const onAuthNotice = (payload: { message: string; mode?: AuthMode }) => {
+      setNotice(payload.message);
+      if (payload.mode) {
+        setAuthMode(payload.mode);
+      }
+      setPassword("");
+      setNewPassword("");
+      window.setTimeout(() => setNotice(null), 5200);
+    };
+
     const onError = (payload: { message: string }) => {
       setError(payload.message);
       setLoadingPlayerProfileId(null);
@@ -496,6 +502,7 @@ export function App() {
     socket.on("player:profile", onPlayerProfile);
     socket.on("account:passwordChanged", onPasswordChanged);
     socket.on("developer:message:ok", onDeveloperMessageOk);
+    socket.on("auth:notice", onAuthNotice);
     socket.on("game:error", onError);
 
     if (socket.connected) {
@@ -511,8 +518,30 @@ export function App() {
       socket.off("player:profile", onPlayerProfile);
       socket.off("account:passwordChanged", onPasswordChanged);
       socket.off("developer:message:ok", onDeveloperMessageOk);
+      socket.off("auth:notice", onAuthNotice);
       socket.off("game:error", onError);
     };
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const verifyEmailToken = params.get("verifyEmail");
+    const resetToken = params.get("resetPassword");
+    if (!verifyEmailToken && !resetToken) {
+      return;
+    }
+
+    if (verifyEmailToken) {
+      setNotice("Confirmando e-mail...");
+      socket.emit("auth:verifyEmail", { token: verifyEmailToken });
+      setAuthMode("login");
+    }
+    if (resetToken) {
+      setPasswordResetToken(resetToken);
+      setAuthMode("reset");
+      setNotice("Link de redefinição carregado. Defina sua nova senha.");
+    }
+    window.history.replaceState({}, document.title, window.location.pathname);
   }, []);
 
   useEffect(() => {
@@ -536,7 +565,6 @@ export function App() {
 
   const submitAuth = (event: FormEvent) => {
     event.preventDefault();
-    setLatestRecoveryCode(null);
     if (authMode === "login") {
       socket.emit("auth:login", { email, password });
       return;
@@ -545,7 +573,11 @@ export function App() {
       socket.emit("auth:register", { username, email, password, inviteCode });
       return;
     }
-    socket.emit("auth:forgotPassword", { email, recoveryCode, newPassword });
+    if (authMode === "forgot") {
+      socket.emit("auth:forgotPassword", { email });
+      return;
+    }
+    socket.emit("auth:resetPassword", { token: passwordResetToken, newPassword });
   };
 
   const logout = () => {
@@ -562,8 +594,8 @@ export function App() {
 
   const canSubmitAuth =
     connected &&
-    email.trim().length > 0 &&
-    (authMode === "forgot" ? newPassword.length >= 6 && recoveryCode.trim().length > 0 : password.length >= 6) &&
+    (authMode === "reset" || email.trim().length > 0) &&
+    (authMode === "forgot" ? true : authMode === "reset" ? passwordResetToken.length > 0 && newPassword.length >= 6 : password.length >= 6) &&
     (authMode !== "register" || username.trim().length >= 3);
 
   if (!game) {
@@ -582,6 +614,11 @@ export function App() {
             <button type="button" className={authMode === "forgot" ? "active" : ""} onClick={() => setAuthMode("forgot")}>
               <KeyRound size={15} /> Senha
             </button>
+            {authMode === "reset" && (
+              <button type="button" className="active">
+                <Lock size={15} /> Redefinir
+              </button>
+            )}
           </div>
           {authMode === "register" && (
             <label>
@@ -607,27 +644,22 @@ export function App() {
               />
             </label>
           )}
-          <label>
-            <span className="auth-label"><Mail size={15} /> E-mail</span>
-            <input
-              type="email"
-              value={email}
-              autoComplete="email"
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="seu@email.com"
-            />
-          </label>
+          {authMode !== "reset" && (
+            <label>
+              <span className="auth-label"><Mail size={15} /> E-mail</span>
+              <input
+                type="email"
+                value={email}
+                autoComplete="email"
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="seu@email.com"
+              />
+            </label>
+          )}
           {authMode === "forgot" ? (
+            <p className="auth-hint">Informe seu e-mail para receber um link seguro de redefinição. O código fica oculto no link.</p>
+          ) : authMode === "reset" ? (
             <>
-              <label>
-                <span className="auth-label"><KeyRound size={15} /> Código de recuperação</span>
-                <input
-                  value={recoveryCode}
-                  autoComplete="one-time-code"
-                  onChange={(event) => setRecoveryCode(event.target.value)}
-                  placeholder="XXXX-XXXX-XXXX"
-                />
-              </label>
               <label>
                 <span className="auth-label"><Lock size={15} /> Nova senha</span>
                 <input
@@ -653,17 +685,12 @@ export function App() {
               />
             </label>
           )}
-          {latestRecoveryCode && (
-            <div className="recovery-card">
-              <span>Código de recuperação</span>
-              <code>{latestRecoveryCode}</code>
-            </div>
-          )}
           <button className="primary-button" type="submit" disabled={!canSubmitAuth}>
-            {authMode === "login" ? "Entrar" : authMode === "register" ? "Criar conta" : "Redefinir senha"}
+            {authMode === "login" ? "Entrar" : authMode === "register" ? "Criar conta" : authMode === "forgot" ? "Enviar link" : "Redefinir senha"}
           </button>
           <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Conectando"}</span>
         </form>
+        {notice && <Toast message={notice} kind="success" />}
         {error && <Toast message={error} />}
       </main>
     );
@@ -762,7 +789,6 @@ export function App() {
             onClose={() => setSelectedPlayer(null)}
           />
         )}
-        {latestRecoveryCode && <RecoveryCodeModal code={latestRecoveryCode} onClose={() => setLatestRecoveryCode(null)} />}
         {notice && <Toast message={notice} kind="success" />}
         {error && <Toast message={error} />}
         </PlayerActionContext.Provider>
@@ -6968,7 +6994,7 @@ function formatCurrency(n: number): string {
   for (const [threshold, suffix] of tiers) {
     if (n >= threshold) {
       const val = n / threshold;
-      return val.toFixed(3).replace(/\,?0+$/, "") + suffix;
+      return val.toFixed(2).replace(/\,?0+$/, "") + suffix;
     }
   }
   return String(n);

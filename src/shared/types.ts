@@ -714,8 +714,15 @@ export interface LoginPayload {
 
 export interface ForgotPasswordPayload {
   email: string;
-  recoveryCode: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
   newPassword: string;
+}
+
+export interface VerifyEmailPayload {
+  token: string;
 }
 
 export interface ChangePasswordPayload {
@@ -731,7 +738,11 @@ export interface DeveloperMessagePayload {
 export interface AuthOkPayload {
   sessionToken: string;
   playerId: string;
-  recoveryCode?: string;
+}
+
+export interface AuthNoticePayload {
+  message: string;
+  mode?: "login" | "register" | "forgot" | "reset";
 }
 
 export interface AllocatePayload extends Partial<Attributes> {}

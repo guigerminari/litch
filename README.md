@@ -20,10 +20,27 @@ Cliente: http://127.0.0.1:5173
 
 Servidor realtime: http://127.0.0.1:3001
 
+## E-mail
+
+Cadastro e recuperação de senha usam links enviados por e-mail. Em desenvolvimento, se SMTP não estiver configurado, os e-mails são gravados em `data/email-outbox.log`.
+
+Variáveis para envio real:
+
+```bash
+PUBLIC_APP_URL=https://seu-site.com
+CLIENT_ORIGIN=https://seu-site.com
+SMTP_HOST=smtp.seudominio.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=usuario
+SMTP_PASS=senha
+SMTP_FROM="Litch <no-reply@seudominio.com>"
+```
+
 ## Regras implementadas
 
 - Cadastro cria jogador e personagem automaticamente.
-- Login com e-mail e senha, logout de sessão e redefinição de senha por código de recuperação.
+- Login com e-mail e senha, confirmação de e-mail, logout de sessão e redefinição de senha por link seguro.
 - Atributos iniciais: FORÇA, CONSTITUIÇÃO e AGILIDADE com 1 ponto.
 - Equipamentos: arma, armadura e amuleto.
 - Inventário com capacidade de 40 itens.
