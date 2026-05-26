@@ -3023,6 +3023,8 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
   const [creationStones, setCreationStones] = useState(0);
   const selectedEntry = equipmentItems.find((entry) => entry.instanceId === selectedInstanceId) ?? null;
   const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
+  const creationStoneItem = game.itemCatalog[ENHANCEMENT_ITEMS.creationStone];
+  const creationStonesOwned = countInventoryItem(game, ENHANCEMENT_ITEMS.creationStone);
   const plan = selectedEntry ? getEnhancementPlanForUi(game, selectedEntry, creationStones) : null;
   const rangeLabel = describeEnhancementLevelRange(game.currentCountry.id);
   const currentStats = selectedItem && selectedEntry ? getEnhancedItemStats(selectedItem, selectedEntry) : null;
@@ -3118,7 +3120,11 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
               const item = game.itemCatalog[requirement.itemId];
               return (
                 <small className={owned < requirement.quantity ? "missing" : ""} key={requirement.itemId}>
-                  {item?.name ?? requirement.itemId}: {owned}/{requirement.quantity}
+                  <span className="enhancement-cost-material">
+                    {item ? <ItemVisual item={item} className="enhancement-cost-item-visual" /> : null}
+                    {item?.name ?? requirement.itemId}
+                  </span>
+                  <b>{owned}/{requirement.quantity}</b>
                 </small>
               );
             })}
@@ -3133,7 +3139,11 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
 
           <div className="enhancement-boost">
             <label>
-              <span>Pedras de Criação (+{ENHANCEMENT_CREATION_STONE_BONUS}% cada)</span>
+              <span className="enhancement-creation-stone-label">
+                {creationStoneItem ? <ItemVisual item={creationStoneItem} className="enhancement-cost-item-visual" /> : null}
+                Pedras de Criação (+{ENHANCEMENT_CREATION_STONE_BONUS}% cada)
+                <small className="enhancement-creation-stone-owned">Você tem: {creationStonesOwned}</small>
+              </span>
               <input
                 type="number"
                 min={0}
@@ -3711,29 +3721,63 @@ function ClanPanel({ game }: { game: GameState }) {
   return (
     <section className="content-panel clan-panel">
       <PanelTitle icon={getClanCrestIcon(clan.icon, 20)} title={clan.name} />
-      <div className="clan-summary">
-        <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
-        <Metric icon={<Users size={18} />} label="Membros" value={`${clanMembers.length}/${clan.memberCapacity}`} />
-        <Metric icon={<Coins size={18} style={{ color: "var(--gold)" }} />} label="Tesouro" value={clan.gold} />
-        <Metric icon={<Gem size={18} style={{ color: "var(--cyan)" }} />} label="Diamantes" value={clan.diamonds} />
-        <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : "Clã"} />
+      <div className="clan-header-grid">
+        <div className="clan-summary">
+          <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
+          <Metric icon={<Users size={18} />} label="Membros" value={`${clanMembers.length}/${clan.memberCapacity}`} />
+          <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : "Clã"} />
+        </div>
+        <section className="clan-treasury-card">
+          <div className="clan-treasury-head">
+            <strong>Tesouro do Clã</strong>
+            <small>Recursos compartilhados para evolução coletiva.</small>
+          </div>
+          <div className="clan-treasury-grid">
+            <Metric icon={<Coins size={18} style={{ color: "var(--gold)" }} />} label="" value={clan.gold} />
+            <Metric icon={<Gem size={18} style={{ color: "var(--cyan)" }} />} label="" value={clan.diamonds} />
+          </div>
+        </section>
       </div>
 
-      <form className="market-form" onSubmit={donate}>
-        <Coins width={50} size={18} style={{ color: "var(--gold)" }} />
-        <input type="number" min={0} value={gold} onChange={(event) => setGold(Number(event.target.value))} aria-label="Ouro" />
-        <Gem width={50} size={18} style={{ color: "var(--cyan)" }} />
-        <input
-          type="number"
-          min={0}
-          value={diamonds}
-          onChange={(event) => setDiamonds(Number(event.target.value))}
-          aria-label="Diamantes"
-        />
-        <button className="primary-button" disabled={gold <= 0 && diamonds <= 0}>
-          Doar
-        </button>
-      </form>
+      <section className="clan-donate-card">
+        <div className="clan-donate-card-head">
+          <strong>Doação</strong>
+          <small>Envie recursos para fortalecer o clã.</small>
+        </div>
+        <form className="clan-donate-form" onSubmit={donate}>
+          <label className="clan-donate-field" htmlFor="clan-donate-gold">
+            <span><Coins size={15} style={{ color: "var(--gold)" }} /> Ouro</span>
+            <input
+              id="clan-donate-gold"
+              type="number"
+              min={0}
+              step={1}
+              inputMode="numeric"
+              value={gold}
+              onChange={(event) => setGold(Number(event.target.value))}
+              placeholder="0"
+              aria-label="Ouro"
+            />
+          </label>
+          <label className="clan-donate-field" htmlFor="clan-donate-diamonds">
+            <span><Gem size={15} style={{ color: "var(--cyan)" }} /> Diamantes</span>
+            <input
+              id="clan-donate-diamonds"
+              type="number"
+              min={0}
+              step={1}
+              inputMode="numeric"
+              value={diamonds}
+              onChange={(event) => setDiamonds(Number(event.target.value))}
+              placeholder="0"
+              aria-label="Diamantes"
+            />
+          </label>
+          <button type="submit" className="primary-button" disabled={gold <= 0 && diamonds <= 0}>
+            Doar
+          </button>
+        </form>
+      </section>
 
       {!leader && (
         <button className="ghost-button clan-leave-button" onClick={() => socket.emit("clan:leave")}>Sair do clã</button>
@@ -3930,7 +3974,10 @@ function ClanSuperBenefits({ game }: { game: GameState }) {
     <section className="clan-super-benefits">
       <div className="clan-super-title">
         <Crown size={18} />
-        <h3>Super-benefícios</h3>
+        <div>
+          <h3>Super-benefícios</h3>
+          <small>Ative ao completar uma trilha inteira de benefícios do clã.</small>
+        </div>
       </div>
       <div className="clan-super-grid">
         {game.clanSuperBenefits.map((benefit) => {
@@ -6613,7 +6660,7 @@ function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; 
     <span className="metric">
       {icon}
       <small>{label}</small>
-      <strong>{value}</strong>
+      <strong>{Number.isFinite(value) ? formatCurrency(Number(value)) : value}</strong>
     </span>
   );
 }

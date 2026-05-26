@@ -3,7 +3,7 @@ export const ENHANCEMENT_CREATION_STONE_BONUS = 3;
 
 export const ENHANCEMENT_ITEMS = {
   oldStone: "material_old_stone",
-  eranStone: "material_eran_fragment",
+  eranStone: "misc_eran",
   celena: "material_celena",
   midran: "material_midran",
   creationStone: "misc_stone_craft"

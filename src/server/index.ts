@@ -2712,9 +2712,9 @@ io.on("connection", (socket: AuthedSocket) => {
       const requestedShop = payload.shop ?? "apothecary";
       const available =
         requestedShop === "armorer"
-          ? city.armorerItemIds.includes(item.id)
+          ? (city.armorerItemIds ?? []).includes(item.id)
           : requestedShop === "apothecary"
-            ? city.apothecaryItemIds.includes(item.id) && item.kind !== "scroll" && item.kind !== "ticket"
+            ? (city.apothecaryItemIds ?? []).includes(item.id) && item.kind !== "scroll" && item.kind !== "ticket"
             : requestedShop === "goldCoinMerchant"
               ? Boolean(city.goldCoinMerchantItemIds?.includes(item.id) && item.goldCoinPrice && item.goldCoinPrice > 0)
               : Boolean(city.isPort && city.moneyChangerItemIds?.includes(item.id) && (item.kind === "scroll" || item.kind === "ticket"));

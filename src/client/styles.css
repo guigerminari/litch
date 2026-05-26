@@ -3049,8 +3049,8 @@ button:disabled .game-icon {
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, 140px);
+  gap: 17px;
 }
 
 .city-overview {
@@ -3776,6 +3776,40 @@ button:disabled .game-icon {
 
 .enhancement-costs small {
   color: var(--muted);
+}
+
+.enhancement-cost-item-visual {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.enhancement-cost-item-visual img {
+  padding: 0 !important;
+}
+
+.enhancement-cost-material {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.enhancement-creation-stone-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.enhancement-creation-stone-owned {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.enhancement-costs small b {
+  font-weight: 700;
+  color: var(--text);
 }
 
 .enhancement-costs .missing {
@@ -5732,10 +5766,134 @@ button:disabled .game-icon {
   grid-column: 1 / -1;
 }
 
+.clan-header-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.95fr);
+  gap: 10px;
+  align-items: start;
+}
+
 .clan-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 8px;
+}
+
+.clan-treasury-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(216, 178, 74, 0.24);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(216, 178, 74, 0.08), rgba(23, 20, 36, 0.94));
+}
+
+.clan-treasury-head {
+  display: grid;
+  gap: 3px;
+}
+
+.clan-treasury-head strong {
+  color: var(--gold);
+  font-size: 0.92rem;
+}
+
+.clan-treasury-head small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.clan-treasury-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px;
+}
+
+.clan-treasury-grid .metric{
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  strong, svg {
+    font-size: 1.5rem;
+  }
+}
+
+.clan-donate-card {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+}
+
+.clan-donate-card-head {
+  display: grid;
+  gap: 2px;
+}
+
+.clan-donate-card-head strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.clan-donate-card-head small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.clan-donate-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.clan-donate-field {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.clan-donate-field > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.clan-donate-field input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel-soft) 88%, #000 12%);
+  color: var(--text);
+  padding: 0 12px;
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.clan-donate-field input::placeholder {
+  color: var(--faint);
+}
+
+.clan-donate-field input:hover {
+  border-color: var(--line-strong);
+}
+
+.clan-donate-field input:focus {
+  border-color: var(--line-active);
+  box-shadow: 0 0 0 2px var(--theme-focus-shadow, rgba(124, 77, 255, 0.12));
+}
+
+.clan-donate-form .primary-button {
+  grid-column: 1 / -1;
+  min-height: 42px;
+  width: 100%;
+  padding-inline: 16px;
 }
 
 .clan-tabs {
@@ -5917,18 +6075,34 @@ button:disabled .game-icon {
 .clan-super-benefits {
   display: grid;
   gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(216, 178, 74, 0.22);
+  border-radius: 12px;
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(216, 178, 74, 0.12) 0%, rgba(216, 178, 74, 0) 52%),
+    rgba(33, 34, 44, 0.62);
 }
 
 .clan-super-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   color: var(--gold);
 }
 
+.clan-super-title > div {
+  display: grid;
+  gap: 2px;
+}
+
 .clan-super-title h3 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
+}
+
+.clan-super-title small {
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .clan-super-grid {
@@ -5942,11 +6116,11 @@ button:disabled .game-icon {
   grid-template-columns: 38px minmax(0, 1fr);
   gap: 9px;
   align-items: center;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   background: rgba(33, 34, 44, 0.72);
-  opacity: 0.62;
+  opacity: 0.78;
 }
 
 .clan-super-card > span {
@@ -5957,6 +6131,7 @@ button:disabled .game-icon {
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .clan-super-card div {
@@ -5967,6 +6142,7 @@ button:disabled .game-icon {
 .clan-super-card small {
   color: var(--muted);
   font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .clan-super-card b {
@@ -5976,13 +6152,23 @@ button:disabled .game-icon {
 
 .clan-super-card.active {
   opacity: 1;
-  border-color: rgba(241, 250, 140, 0.5);
-  background: rgba(241, 250, 140, 0.08);
+  border-color: rgba(216, 178, 74, 0.42);
+  background: linear-gradient(180deg, rgba(216, 178, 74, 0.18), rgba(33, 34, 44, 0.92));
+  box-shadow: 0 10px 24px rgba(216, 178, 74, 0.12);
 }
 
 .clan-super-card.active > span,
 .clan-super-card.active b {
   color: var(--gold);
+}
+
+.clan-super-card.active > span {
+  border-color: rgba(216, 178, 74, 0.3);
+  background: rgba(216, 178, 74, 0.12);
+}
+
+.clan-super-card strong {
+  color: var(--text);
 }
 
 .clan-benefit-section {
@@ -7703,6 +7889,11 @@ button:disabled {
   }
 
   .market-form {
+    grid-template-columns: 1fr;
+  }
+
+  .clan-header-grid,
+  .clan-treasury-grid {
     grid-template-columns: 1fr;
   }
 
