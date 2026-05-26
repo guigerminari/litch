@@ -1073,14 +1073,14 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
   const myListings = game.marketplaceListings.filter((l) => l.sellerPlayerId === game.player.id).length;
 
   const items = [
-    { view: "city" as View, label: "Cidade", icon: <Castle size={20} />, disabled: locked, badge: null },
-    { view: "hunt" as View, label: "Caça", icon: <Swords size={20} />, disabled: locked, badge: null },
-    { view: "arena" as View, label: "Arena", icon: <Shield size={20} />, disabled: locked || working, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
-    { view: "inventory" as View, label: "Inventário", icon: <Backpack size={20} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
-    { view: "market" as View, label: "Mercado", icon: <ShoppingBag size={20} />, disabled: locked, badge: myListings > 0 ? myListings : null },
-    { view: "missions" as View, label: "Missões", icon: <ScrollText size={20} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
-    { view: "clan" as View, label: "Clã", icon: <Users size={20} />, disabled: locked, badge: null },
-    { view: "travel" as View, label: "Viajar", icon: <MapPinned size={20} />, disabled: locked, badge: null }
+    { view: "city" as View, label: "Cidade", icon: <Castle size={25} />, disabled: locked, badge: null },
+    { view: "hunt" as View, label: "Caça", icon: <Swords size={25} />, disabled: locked, badge: null },
+    { view: "arena" as View, label: "Arena", icon: <Shield size={25} />, disabled: locked || working, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
+    { view: "inventory" as View, label: "Inventário", icon: <Backpack size={25} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
+    { view: "market" as View, label: "Mercado", icon: <ShoppingBag size={25} />, disabled: locked, badge: myListings > 0 ? myListings : null },
+    { view: "missions" as View, label: "Missões", icon: <ScrollText size={25} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
+    { view: "clan" as View, label: "Clã", icon: <Users size={25} />, disabled: locked, badge: null },
+    { view: "travel" as View, label: "Viajar", icon: <MapPinned size={25} />, disabled: locked, badge: null }
   ];
 
   return (
