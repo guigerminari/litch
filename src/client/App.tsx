@@ -3408,12 +3408,78 @@ function TalentTreeView({
 
 function GameShopPanel({ game }: { game: GameState }) {
   const packages = [...game.diamondPackages].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+  const royalPackage = packages.find((pack) => pack.id === "friend_of_king") ?? packages.find((pack) => pack.featured) ?? null;
+  const regularPackages = packages.filter((pack) => pack.id !== royalPackage?.id);
+  const royalBenefits: Array<{ id: string; amount?: number; label?: string }> = [
+    { id: "diamonds", amount: 200, label: "" },
+    { id: TRAIN_TICKET_ID, amount: 100 },
+    { id: SHIP_TICKET_ID, amount: 30 },
+    { id: "pve_auto_30d", label: "PvE automático por 30 dias" },
+    { id: "royal_seal_30d", label: "Selo do Rei por 30 dias" }
+  ];
 
   return (
-    <section className="content-panel">
+    <section className="content-panel game-shop-panel">
       <PanelTitle icon={<Gem size={20} style={{ color: "var(--cyan)" }} />} title="Loja do Jogo" />
-      <div className="shop-grid">
-        {packages.map((pack) => (
+      {royalPackage && (
+        <article className="royal-offer-card">
+          <div className="royal-offer-head">
+            <span className="royal-offer-badge"><Crown size={14} /> Oferta em Destaque</span>
+            <small>{royalPackage.priceLabel}</small>
+          </div>
+          <div className="royal-offer-main">
+            <div>
+              <h3>{royalPackage.name}</h3>
+              <p>{royalPackage.description ?? "Pacote premium com benefícios reais para acelerar sua jornada."}</p>
+              <div className="royal-offer-benefits">
+                {royalBenefits.map((benefit) => {
+                  const item = game.itemCatalog[benefit.id];
+                  const isCurrency = benefit.id === "diamonds" || benefit.id.includes("coin");
+                  const amountLabel = benefit.amount ? `${benefit.amount} ` : "";
+
+                  if (item) {
+                    return (
+                      <span className="royal-offer-benefit" key={benefit.id}>
+                        <ItemVisual item={item} className="royal-offer-benefit-item" />
+                        <small>{amountLabel}{benefit.label ?? item.name}</small>
+                      </span>
+                    );
+                  }
+
+                  if (isCurrency) {
+                    const CurrencyIcon = benefit.id === "diamonds" ? Gem : Coins;
+                    return (
+                      <span className="royal-offer-benefit" key={benefit.id}>
+                        <i className={benefit.id === "diamonds" ? "royal-offer-benefit-icon diamonds" : "royal-offer-benefit-icon coins"}>
+                          <CurrencyIcon size={13} />
+                        </i>
+                        <small>{amountLabel}{benefit.label ?? "Moedas"}</small>
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <span className="royal-offer-benefit" key={benefit.id}>
+                      <i className="royal-offer-benefit-icon perk">
+                        {benefit.id === "royal_seal_30d" ? <Crown size={15} /> : <Zap size={15} />}
+                      </i>
+                      <small>{benefit.label}</small>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="royal-offer-cta">
+              <button className="primary-button" onClick={() => socket.emit("game:buyDiamonds", { packageId: royalPackage.id })}>
+                Comprar Amigo do Rei
+              </button>
+            </div>
+          </div>
+        </article>
+      )}
+
+      <div className="shop-grid game-shop-grid">
+        {regularPackages.map((pack) => (
           <article className={pack.featured ? "item-card diamond-pack featured-pack" : "item-card diamond-pack"} key={pack.id}>
             <div>
               <strong>{pack.name}</strong>

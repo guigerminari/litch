@@ -1877,7 +1877,7 @@ button:disabled {
 }
 
 .quick-potion-choice-visual img {
-  padding: 2px;
+  padding: 2px !important;
 }
 
 .quick-potion-empty {
@@ -3194,6 +3194,146 @@ button:disabled {
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
+.game-shop-panel {
+  gap: 12px;
+}
+
+.game-shop-grid {
+  margin-top: 4px;
+}
+
+.royal-offer-card {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(241, 250, 140, 0.38);
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(255, 184, 108, 0.2) 0%, rgba(255, 184, 108, 0) 46%),
+    radial-gradient(130% 130% at 0% 100%, rgba(189, 147, 249, 0.2) 0%, rgba(189, 147, 249, 0) 48%),
+    linear-gradient(135deg, rgba(16, 18, 30, 0.94), rgba(27, 31, 48, 0.92));
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.royal-offer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.royal-offer-head small {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.royal-offer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #f1fa8c;
+  border: 1px solid rgba(241, 250, 140, 0.35);
+  background: rgba(241, 250, 140, 0.11);
+}
+
+.royal-offer-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.royal-offer-main h3 {
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+}
+
+.royal-offer-main p {
+  margin: 0;
+  color: rgba(244, 240, 255, 0.78);
+  line-height: 1.45;
+}
+
+.royal-offer-benefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.royal-offer-benefit {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 233, 253, 0.3);
+  background: rgba(139, 233, 253, 0.08);
+}
+
+.royal-offer-benefit small {
+  color: rgba(232, 246, 255, 0.92);
+  font-size: 0.8rem;
+}
+
+.royal-offer-benefit-item {
+  width: 25px;
+  height: 25px;
+}
+
+.royal-offer-benefit-item img {
+  padding: 0px !important;
+}
+
+.royal-offer-benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 999px;
+}
+
+.royal-offer-benefit-icon.diamonds {
+  color: var(--cyan);
+}
+
+.royal-offer-benefit-icon.coins {
+  color: var(--gold);
+  background: rgba(241, 250, 140, 0.18);
+}
+
+.royal-offer-benefit-icon.perk {
+  color: #ffb86c;
+}
+
+.royal-offer-cta {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.royal-offer-cta strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.24rem;
+  color: var(--text);
+}
+
+.royal-offer-cta .primary-button {
+  min-width: 220px;
+  font-weight: 700;
+}
+
 .diamond-pack.featured-pack {
   grid-column: 1 / -1;
   border-color: rgba(241, 250, 140, 0.48);
@@ -3204,6 +3344,21 @@ button:disabled {
 
 .diamond-pack.featured-pack strong {
   color: var(--gold);
+}
+
+@media (max-width: 760px) {
+  .royal-offer-main {
+    grid-template-columns: 1fr;
+  }
+
+  .royal-offer-cta {
+    justify-items: stretch;
+  }
+
+  .royal-offer-cta .primary-button {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 .npc-shop-grid {
