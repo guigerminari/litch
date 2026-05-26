@@ -335,8 +335,8 @@ export interface CityDefinition {
   isPort?: boolean;
   inhabitants: string[];
   npcs: {
-    armorer: string;
-    apothecary: string;
+    armorer?: string;
+    apothecary?: string;
     blacksmith?: string;
     alchemist?: string;
     moneyChanger?: string;
@@ -348,8 +348,8 @@ export interface CityDefinition {
   alchemistRecipeIds?: string[];
   huntLocationIds: string[];
   huntMonsterIds: string[];
-  armorerItemIds: string[];
-  apothecaryItemIds: string[];
+  armorerItemIds?: string[];
+  apothecaryItemIds?: string[];
   moneyChangerItemIds?: string[];
   goldCoinMerchantItemIds?: string[];
 }

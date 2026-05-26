@@ -1861,18 +1861,13 @@ export const CITIES: CityDefinition[] = [
     "inhabitants": [
       "Borin Martelo-Firme",
       "Mira Folha-Clara",
-      "Nara Alambique",
       "Tomas Mar-Alto"
     ],
     "npcs": {
       "armorer": "Borin Martelo-Firme",
       "apothecary": "Mira Folha-Clara",
-      "alchemist": "Nara Alambique",
       "moneyChanger": "Tomas Mar-Alto"
     },
-    "alchemistRecipeIds": [
-      "brew_major_health"
-    ],
     "huntLocationIds": [
       "eldoria_training_fields",
       "eldoria_old_woods",
@@ -1928,17 +1923,13 @@ export const CITIES: CityDefinition[] = [
     "countryId": "aurevia",
     "name": "Ravenspire",
     "minLevel": 3,
-    "travelCost": 45,
+    "travelCost": 45, 
     "description": "Torres de pedra vigiam trilhas tomadas por saqueadores.",
     "inhabitants": [
-      "Garrik Aco-Negro",
       "Selene Vidro-Rubro",
-      "Doran Bigorna",
-      "Capitã Havel"
+      "Doran Bigorna"
     ],
     "npcs": {
-      "armorer": "Garrik Aco-Negro",
-      "apothecary": "Selene Vidro-Rubro",
       "blacksmith": "Doran Bigorna",
       "alchemist": "Selene Vidro-Rubro"
     },
@@ -1952,9 +1943,7 @@ export const CITIES: CityDefinition[] = [
       "demon_dragon",
       "desert_giant"
     ],
-    "blacksmithRecipeIds": [
-      "forge_ember_blade"
-    ],
+    "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
       "brew_major_health",
       "brew_major_energy"
@@ -1985,29 +1974,6 @@ export const CITIES: CityDefinition[] = [
       "desert_giant",
       "desert_walker",
       "desert_worm"
-    ],
-    "armorerItemIds": [
-      "armor_steel",
-      "armor_mystic",
-      "armor_kharlee",
-      "weapon_chaos_axe",
-      "weapon_claymore_3",
-      "weapon_claymore",
-      "weapon_double_sword_2",
-      "weapon_double_sword_new",
-      "weapon_executioner_axe_6",
-      "iron_armor",
-      "hunter_charm",
-      "ember_blade",
-      "guardian_mail",
-      "moon_amulet"
-    ],
-    "apothecaryItemIds": [
-      "misc_eran",
-      "energy_potion_light",
-      "energy_potion_medium",
-      "health_potion_light",
-      "health_potion_medium"
     ]
   },
   {
@@ -2019,15 +1985,11 @@ export const CITIES: CityDefinition[] = [
     "description": "Uma fortaleza nas montanhas onde o ar pesa como metal.",
     "inhabitants": [
       "Helga Forja-Alta",
-      "Orin Cinza-Viva",
       "Mestre Rurik",
-      "Vigia Mael"
     ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
-      "apothecary": "Orin Cinza-Viva",
-      "blacksmith": "Helga Forja-Alta",
-      "alchemist": "Orin Cinza-Viva"
+      "blacksmith": "Mestre Rurik",
     },
     "dungeonMonsterIds": [
       "ember_golem",
@@ -2046,12 +2008,6 @@ export const CITIES: CityDefinition[] = [
     "blacksmithRecipeIds": [
       "forge_ember_blade",
       "forge_guardian_mail"
-    ],
-    "blacksmithEnhancement": true,
-    "alchemistRecipeIds": [
-      "brew_major_health",
-      "brew_major_energy",
-      "bind_moon_amulet"
     ],
     "huntLocationIds": [
       "ironhold_ember_mines",
@@ -2110,17 +2066,6 @@ export const CITIES: CityDefinition[] = [
       "weapon_long_sword",
       "weapon_obs_axe",
       "moon_amulet"
-    ],
-    "apothecaryItemIds": [
-      "misc_eran",
-      "material_old_stone",
-      "material_eran_fragment",
-      "material_celena",
-      "material_midran",
-      "energy_potion_light",
-      "energy_potion_medium",
-      "health_potion_light",
-      "health_potion_medium"
     ]
   },
   {
@@ -2134,14 +2079,11 @@ export const CITIES: CityDefinition[] = [
     "inhabitants": [
       "Helga Forja-Alta",
       "Orin Cinza-Viva",
-      "Lia Trilho-Norte",
       "Caio Cartas"
     ],
     "npcs": {
-      "armorer": "Helga Forja-Alta",
       "apothecary": "Orin Cinza-Viva",
       "blacksmith": "Helga Forja-Alta",
-      "alchemist": "Orin Cinza-Viva",
       "moneyChanger": "Caio Cartas"
     },
     "dungeonMonsterIds": [
@@ -2163,11 +2105,6 @@ export const CITIES: CityDefinition[] = [
     "blacksmithRecipeIds": [
       "forge_ember_blade",
       "forge_guardian_mail"
-    ],
-    "alchemistRecipeIds": [
-      "brew_major_health",
-      "brew_major_energy",
-      "bind_moon_amulet"
     ],
     "huntLocationIds": [
       "valfria_orc_marsh",
@@ -2216,26 +2153,6 @@ export const CITIES: CityDefinition[] = [
       "zombie_hound",
       "zombie_kraken_head"
     ],
-    "armorerItemIds": [
-      "armor_cursed",
-      "armor_justice",
-      "armor_obscure",
-      "armor_death",
-      "armor_dragon",
-      "armor_dhron",
-      "weapon_executioner_axe",
-      "weapon_extreme_axe",
-      "weapon_greatsword_2",
-      "weapon_greatsword_4",
-      "weapon_insane_axe",
-      "weapon_long_sword",
-      "weapon_obs_axe",
-      "weapon_orcish_dagger",
-      "weapon_real_axe",
-      "weapon_triple_sword_2",
-      "weapon_triple_sword_3",
-      "weapon_vorgonax"
-    ],
     "apothecaryItemIds": [
       "misc_eran",
       "misc_laede",
@@ -2270,13 +2187,11 @@ export const CITIES: CityDefinition[] = [
       "Helga Forja-Alta",
       "Orin Cinza-Viva",
       "Sentinela Rosin",
-      "Archivista Dalen",
       "Caelum, o Mercador"
     ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
-      "apothecary": "Orin Cinza-Viva",
-      "blacksmith": "Helga Forja-Alta",
+      "blacksmith": "Sentinela Rosin",
       "alchemist": "Orin Cinza-Viva",
       "goldCoinMerchant": "Caelum, o Mercador"
     },
@@ -2288,10 +2203,6 @@ export const CITIES: CityDefinition[] = [
       "zombie_small",
       "zombie_turtle_infected",
       "zombie_ugly_thing_infected"
-    ],
-    "blacksmithRecipeIds": [
-      "forge_ember_blade",
-      "forge_guardian_mail"
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
@@ -2334,23 +2245,6 @@ export const CITIES: CityDefinition[] = [
       "weapon_vorgonax",
       "acid_amulet"
     ],
-    "apothecaryItemIds": [
-      "misc_doemia",
-      "misc_dragon_stone",
-      "misc_eran",
-      "misc_herb_bitter",
-      "misc_maginia",
-      "misc_serlen",
-      "misc_stone_craft",
-      "material_old_stone",
-      "material_eran_fragment",
-      "material_celena",
-      "material_midran",
-      "energy_potion_medium",
-      "energy_potion_high",
-      "health_potion_medium",
-      "health_potion_high"
-    ],
     "goldCoinMerchantItemIds": [
       "material_blue_coin",
       "energy_potion_high",
@@ -2371,16 +2265,11 @@ export const CITIES: CityDefinition[] = [
     "isPort": true,
     "inhabitants": [
       "Marechal Voss",
-      "Irma Velka",
       "Orives Nulo",
-      "Ancião Loren",
       "Barqueiro Naren"
     ],
     "npcs": {
-      "armorer": "Marechal Voss",
-      "apothecary": "Irma Velka",
       "blacksmith": "Orives Nulo",
-      "alchemist": "Ancião Loren",
       "moneyChanger": "Barqueiro Naren"
     },
     "dungeonMonsterIds": [
@@ -2391,11 +2280,6 @@ export const CITIES: CityDefinition[] = [
     "blacksmithRecipeIds": [
       "forge_ember_blade",
       "forge_guardian_mail"
-    ],
-    "alchemistRecipeIds": [
-      "brew_major_health",
-      "brew_major_energy",
-      "bind_moon_amulet"
     ],
     "huntLocationIds": [
       "morthaly_black_docks"
@@ -2409,28 +2293,6 @@ export const CITIES: CityDefinition[] = [
       "zombie_hound_infected",
       "zombie_hound",
       "spectral_fish_old"
-    ],
-    "armorerItemIds": [
-      "armor_death",
-      "armor_dragon",
-      "armor_dhron",
-      "armor_erins",
-      "weapon_real_axe",
-      "weapon_triple_sword_2",
-      "weapon_triple_sword_3",
-      "weapon_vorgonax"
-    ],
-    "apothecaryItemIds": [
-      "misc_dungeon_key",
-      "misc_high_dungeon_key",
-      "scroll_magic_lands_parchment",
-      "energy_potion",
-      "health_potion",
-      "potion_mana",
-      "health_potion_medium",
-      "health_potion_high",
-      "energy_potion_medium",
-      "energy_potion_high"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -2450,14 +2312,12 @@ export const CITIES: CityDefinition[] = [
     "travelCost": 220,
     "description": "Cidade ritual erguida ao redor de torres violetas e cemitérios sem fim.",
     "inhabitants": [
-      "Arquimago Kael",
       "Vigilia Nox",
       "Ferreiro Ossian",
       "Sibilante Eron"
     ],
     "npcs": {
       "armorer": "Vigilia Nox",
-      "apothecary": "Sibilante Eron",
       "blacksmith": "Ferreiro Ossian",
       "alchemist": "Arquimago Kael"
     },
@@ -2466,10 +2326,6 @@ export const CITIES: CityDefinition[] = [
       "spectral_hydra_3_old",
       "zombie_drake_infected",
       "skeleton_dragon"
-    ],
-    "blacksmithRecipeIds": [
-      "forge_ember_blade",
-      "forge_guardian_mail"
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
@@ -2502,12 +2358,6 @@ export const CITIES: CityDefinition[] = [
       "weapon_triple_sword_3",
       "weapon_vorgonax",
       "celtic_cyan_amulet"
-    ],
-    "apothecaryItemIds": [
-      "misc_dungeon_key",
-      "misc_high_dungeon_key",
-      "energy_potion_high",
-      "health_potion_high"
     ]
   }
 ];

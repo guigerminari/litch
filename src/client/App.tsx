@@ -2039,10 +2039,10 @@ function getItemVendors(game: GameState, itemId: string) {
   const vendors: Array<{ city: GameState["cities"][number]; country?: GameState["countries"][number]; role: string; name: string }> = [];
   for (const city of game.cities) {
     const country = game.countries.find((entry) => entry.id === city.countryId);
-    if (city.armorerItemIds.includes(itemId)) {
+    if ((city.armorerItemIds ?? []).includes(itemId) && city.npcs.armorer) {
       vendors.push({ city, country, role: "Armeiro", name: city.npcs.armorer });
     }
-    if (city.apothecaryItemIds.includes(itemId)) {
+    if ((city.apothecaryItemIds ?? []).includes(itemId) && city.npcs.apothecary) {
       vendors.push({ city, country, role: "Boticário", name: city.npcs.apothecary });
     }
     if ((city.moneyChangerItemIds ?? []).includes(itemId) && city.npcs.moneyChanger) {
@@ -2676,10 +2676,17 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
     });
   }
 
-  const inhabitantOptions: CityOption[] = [
-    { view: "armorer", icon: <GameIcon name="armorer" size={50} />, title: game.currentCity.npcs.armorer ?? "Armeiro", value: `Meus equipamentos vão te acompanhar do início ao fim` },
-    { view: "apothecary", icon: <GameIcon name="apothecary" size={50} />, title: game.currentCity.npcs.apothecary ?? "Boticário", value: `As poções de cura são muito importantes` },
-  ];
+  const inhabitantOptions: CityOption[] = [];
+  
+  if (game.currentCity.npcs.armorer) {
+    inhabitantOptions.push(
+      { view: "armorer", icon: <GameIcon name="armorer" size={50} />, title: game.currentCity.npcs.armorer ?? "Armeiro", value: `Meus equipamentos vão te acompanhar do início ao fim` });
+  }
+
+  if (game.currentCity.npcs.apothecary) {
+    inhabitantOptions.push(
+      { view: "apothecary", icon: <GameIcon name="apothecary" size={50} />, title: game.currentCity.npcs.apothecary ?? "Boticário", value: `As poções de cura são muito importantes` });
+  }
 
   if (game.currentCity.blacksmithRecipeIds?.length || game.currentCity.blacksmithEnhancement) {
     inhabitantOptions.push({ view: "blacksmith", icon: <GameIcon name="blacksmith" size={50} />, title: game.currentCity.npcs.blacksmith ?? "Ferreiro", value: "Minha forja está pronta" });
