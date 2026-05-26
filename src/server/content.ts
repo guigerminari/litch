@@ -202,7 +202,17 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Moeda para participar da arena."
+  },
+  "material_gold_coin": {
+    "id": "material_gold_coin",
+    "name": "Moeda da Arena",
+    "kind": "material",
+    "imageUrl": "/assets/items/materials/gold_coin.png",
+    "minLevel": 1,
+    "price": 15,
+    "stats": {},
+    "description": "Moeda recompensa da arena."
   },
   "material_bone": {
     "id": "material_bone",
