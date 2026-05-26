@@ -1361,6 +1361,95 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
 
 type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "items" | "monsters" | "monarchs" | "developer" | "stats";
 
+function HistoryGuide() {
+  return (
+    <div className="guide-copy history-guide-copy">
+      <h1>Litch: O Chamado dos Vivos</h1>
+      <p>
+        Antes que os sinos de Ravenspire soassem em luto, antes que as rotas de navio fossem marcadas por presságios, o
+        mundo ainda acreditava que a morte era uma fronteira. Os reinos comerciavam, disputavam terras, erguiam templos
+        e esqueciam, com a arrogância dos vivos, que certas coroas nunca permanecem enterradas por muito tempo.
+      </p>
+      <p>
+        Então vieram as primeiras noites sem lua. Covas antigas abriram por dentro. Runas apagadas voltaram a arder em
+        violeta. Soldados mortos responderam a ordens que nenhum general vivo havia dado. E, de Morthaly, nasceu um
+        silêncio tão pesado que até os mares pareceram recuar.
+      </p>
+
+      <blockquote>
+        <p>
+          Quando a Coroa Vazia despertar, nenhum reino cairá sozinho. Cada cidade será uma muralha, cada estrada será
+          uma escolha, e cada vivo carregará uma parte da guerra.
+        </p>
+      </blockquote>
+
+      <h2>Os Três Reinos</h2>
+      <p>
+        Aurevia foi o primeiro reino a transformar medo em disciplina. Suas vilas prosperam entre campos dourados,
+        fornalhas e antigas ordens de ofício. Ali, aprendizes, guardas e aventureiros iniciantes encontram trabalho,
+        treinamento e as primeiras cicatrizes de uma vida que raramente permite descanso.
+      </p>
+      <p>
+        Valfria, ao norte, é uma terra de vento cortante, fortalezas de pedra e juramentos duros. Seus habitantes
+        aprenderam que sobreviver exige preparo, paciência e armas bem cuidadas. Entre minas, torres e caminhos gelados,
+        o reino forja guerreiros que entendem o peso real de uma patrulha.
+      </p>
+      <p>
+        Morthaly já teve outro nome, mas poucos ousam pronunciá-lo. Hoje, suas cidades vivem sob céus escuros, cercadas
+        por necrópoles, ruínas e bosques onde a própria sombra parece escutar. É ali que a guerra deixou de ser uma
+        ameaça distante e passou a respirar no portão.
+      </p>
+
+      <h2>A Profecia da Coroa Vazia</h2>
+      <p>
+        Os cronistas dizem que o Rei Litch não busca apenas conquista. Ele deseja um mundo imóvel, perfeito em sua
+        obediência, onde nenhuma voz envelhece, nenhuma memória discorda e nenhum coração trai a vontade da coroa. Para
+        ele, a vida é uma falha passageira. Para os vivos, essa falha é tudo.
+      </p>
+      <p>
+        A cada dia, um general morto-vivo se ergue em Morthaly para testar as defesas dos reinos. São monarcas de
+        guerra, ecos de líderes corrompidos, cada um trazendo uma forma diferente de ruína. No fim de semana, quando as
+        runas queimam mais fundo, o próprio Rei Litch reclama o campo de batalha.
+      </p>
+
+      <h2>O Pacto dos Portos</h2>
+      <p>
+        O mar que separa Aurevia, Valfria e Morthaly também os mantém vivos. Nenhum viajante cruza entre países sem
+        passar pelos portos, onde tickets de navio são contados como provisões de guerra. Primeiro chega-se ao porto;
+        depois, se ainda houver coragem, seguem-se as estradas internas.
+      </p>
+      <p>
+        Por isso, cada viagem importa. Sair de casa pode significar buscar trabalho em outra agência, caçar criaturas
+        mais perigosas, vender um achado raro no mercado ou atravessar o mar para golpear um monarca antes que a noite
+        cobre seu preço.
+      </p>
+
+      <h2>O Alistamento dos Vivos</h2>
+      <p>
+        Você não começa como lenda. Começa como alguém que ainda precisa escolher onde gastar força, ouro, energia e
+        tempo. Cada batalha ensina o corpo. Cada trabalho ensina uma aptidão. Cada item melhorado, cada poção guardada e
+        cada ponto de atributo distribuído aproxima o personagem de algo maior que sobrevivência.
+      </p>
+      <p>
+        O mercado aproxima jogadores, a arena mede ambição, os clãs transformam esforço individual em presença coletiva,
+        e as missões apontam caminhos para quem quer crescer sem perder o rumo. Nada disso existe fora da história: são
+        as pequenas engrenagens dos vivos tentando resistir a uma máquina antiga de morte.
+      </p>
+
+      <h2>Sua Jornada</h2>
+      <p>
+        Em Litch, progresso é mais que números subindo. É a história de um personagem que aprende onde pode lutar, onde
+        deve recuar e quando vale gastar um recurso raro por uma chance maior. O mundo não espera por heróis prontos; ele
+        cria heróis pressionando pessoas comuns até que elas descubram o que conseguem carregar.
+      </p>
+      <p>
+        Morthaly ainda chama. Os generais ainda se levantam. O Rei Litch ainda observa do outro lado da guerra. Mas
+        enquanto houver vivos dispostos a viajar, trabalhar, lutar e retornar, a Coroa Vazia ainda não venceu.
+      </p>
+    </div>
+  );
+}
+
 function GuideModal({ game, onClose }: { game: GameState; onClose: () => void }) {
   const [tab, setTab] = useState<GuideTab>("history");
   const [worldFilter, setWorldFilter] = useState("");
@@ -1466,240 +1555,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
           ))}
         </div>
 
-        {tab === "history" && (
-          <div className="guide-copy">
-            <h1>O Chamado dos Vivos</h1>
-            <p>
-              Antes que o medo tivesse nome e antes que os mortos aprendessem a marchar,
-              havia três grandes países separados pelas águas antigas do mundo:
-              <strong>Aurevia</strong>, <strong>Valfria</strong> e <strong>Duskwood</strong>.
-            </p>
-            <p>
-              Por muitos séculos, eles viveram em harmonia.
-            </p>
-            <p>
-              Aurevia era o coração verde do continente. Suas florestas se estendiam como mantos vivos
-              sobre colinas férteis, rios claros e cidades erguidas entre árvores milenares.
-              Era uma terra próspera, lar de cavaleiros, caçadores, guardiões e heróis cujos nomes
-              atravessavam gerações.
-            </p>
-            <p>
-              Valfria, ao sul, era o reino das areias douradas. Onde muitos viam apenas deserto,
-              os valfrianos viam conhecimento. Eles ergueram torres entre dunas, bibliotecas sob templos
-              de pedra, observatórios voltados às estrelas e escolas dedicadas ao estudo das feras,
-              do clima, da guerra e da mente.
-            </p>
-            <p>
-              E Duskwood, ao leste, era uma terra de bosques escuros, montanhas frias e vales envoltos
-              por névoa. Apesar de seu aspecto sombrio, era um país antigo e respeitado.
-              Seus habitantes guardavam tradições profundas, protegiam fronteiras esquecidas e mantinham
-              vigílias sobre ruínas que já existiam antes dos primeiros reis.
-            </p>
-            <p>
-              Juntos, os três países formavam um equilíbrio raro.
-            </p>
-            <p>
-              Aurevia oferecia alimento, madeira, remédios e heróis.<br/>
-              Valfria oferecia ciência, estratégia, mapas, técnicas e sabedoria.<br/>
-              Duskwood oferecia minerais, fortalezas, artefatos antigos e vigilância contra perigos
-              enterrados pela história.
-            </p>
-            <p>
-              Durante muito tempo, as bandeiras dos três reinos tremularam lado a lado.
-              Mercadores cruzavam os mares. Estudiosos viajavam entre universidades.
-              Guerreiros treinavam em terras estrangeiras. Crianças cresciam ouvindo histórias de união,
-              coragem e prosperidade.
-            </p>
-            <p>
-              Mas havia uma lenda.
-            </p>
-            <p>
-              Uma profecia antiga, tão velha que muitos já a tratavam como conto para assustar crianças.
-            </p>
-            <p>
-              Ela dizia que, quando a lua perdesse sua cor e as torres de Duskwood projetassem sombras
-              contra o céu sem sol, um rei esquecido despertaria sob a terra.
-              Não um rei dos vivos, mas dos mortos.
-            </p>
-            <p>
-              Um soberano sem carne, sem piedade e sem fim. Ele se ergueria usando uma coroa profanada
-              e traria consigo generais caídos, legiões sem alma e uma fome que não seria saciada por terras,
-              ouro ou tronos.
-            </p>
-            <p>
-              A profecia dizia que ele não desejaria apenas governar.
-            </p>
-            <p>
-              Ele desejaria calar toda vida.
-            </p>
-            <p>
-              Por gerações, ninguém acreditou.
-            </p>
-            <p>
-              Até a noite em que os sinos de Duskwood tocaram sozinhos.
-            </p>
-            <p>
-              Naquela noite, as estrelas desapareceram atrás de nuvens roxas.
-              As florestas escureceram. As criptas se abriram.
-              Os túmulos racharam como cascas secas.
-              Dos campos, das catacumbas e dos salões esquecidos sob antigos castelos,
-              os mortos se levantaram.
-            </p>
-            <p>
-              E no centro de tudo, em uma fortaleza sepultada sob a capital de Duskwood, ele despertou.
-            </p>
-            <h2>O Rei Litch</h2>
-            <p>
-              Seus olhos ardiam com luz violeta. Suas vestes rasgadas pareciam feitas da própria noite.
-              Em uma das mãos, carregava um cajado imponente, coroado por pedras arcanas e ossos de reis vencidos.
-            </p>
-            <p>
-              Ao seu redor, ajoelhavam-se seus generais: guerreiros mortos, assassinos sem rosto,
-              carrascos de armadura negra, comandantes de foices e lâminas gigantescas.
-            </p>
-            <p>
-              Duskwood caiu em poucos dias.
-            </p>
-            <p>
-              Suas cidades foram tomadas. Seus castelos, profanados.
-              Seus campos, cobertos por névoa púrpura.
-              Aqueles que resistiram foram esmagados.
-              Aqueles que tombaram se levantaram novamente, agora servindo ao trono dos mortos.
-            </p>
-            <p>
-              E então, diante de suas legiões, o Rei Litch apagou o nome antigo do reino.
-            </p>
-            <p>
-              Duskwood não existia mais.
-            </p>
-            <p>
-              Em seu lugar nasceu <strong>Morthaly</strong>, a Coroa dos Mortos.
-            </p>
-            <p>
-              Das torres negras de sua nova capital, o Rei Litch enviou sua declaração aos outros países.
-              Não foi escrita em tinta, mas em cinzas. Não foi entregue por mensageiros vivos,
-              mas por corvos de ossos e sombras.
-            </p>
-            <blockquote>
-              <p>
-                Todos os reinos cairão.<br/>
-                Todos os vivos servirão.<br/>
-                Toda existência humana será dobrada diante de Morthaly.
-              </p>
-            </blockquote>
-            <p>
-              Aurevia chorou pelos aliados perdidos.<br/>
-              Valfria fechou suas bibliotecas e abriu seus arsenais.<br/>
-              Os mares, antes caminhos de comércio, tornaram-se fronteiras de guerra.
-            </p>
-            <p>
-              Pela primeira vez em séculos, os três países restantes do mundo livre compreenderam
-              que a harmonia havia terminado.
-            </p>
-            <h2>O Alistamento dos Vivos</h2>
-            <p>
-              Então foi criado o <strong>Alistamento dos Vivos</strong>.
-            </p>
-            <p>
-              Não importava a origem. Não importava se alguém era camponês, caçador, aprendiz,
-              mercador, estudioso, desertor, órfão ou herdeiro de sangue nobre.
-              Todos aqueles que ainda carregavam vida no peito poderiam se apresentar.
-            </p>
-            <p>
-              Alguns vieram por dever.<br/>
-              Outros, por vingança.<br/>
-              Alguns vieram por glória.<br/>
-              Outros, porque não tinham mais para onde fugir.
-            </p>
-            <p>
-              Entre eles, estava você.
-            </p>
-            <p>
-              No início, você não era uma lenda.
-              Não era um campeão celebrado em canções.
-              Não carregava uma coroa, nem comandava exércitos,
-              nem possuía poder suficiente para desafiar os horrores de Morthaly.
-            </p>
-            <p>
-              Você era apenas mais uma chama pequena diante de uma escuridão imensa.
-            </p>
-            <p>
-              Mas até a menor chama pode incendiar uma noite inteira.
-            </p>
-            <p>
-              Seu juramento foi feito diante das bandeiras de Aurevia e Valfria,
-              sob o olhar severo dos comandantes, dos sábios, dos sobreviventes de Duskwood
-              e dos feridos que ainda sussurravam os nomes dos que ficaram para trás.
-            </p>
-            <p>
-              Você jurou lutar.
-            </p>
-            <p>
-              Lutar contra os mortos-vivos que cruzam as fronteiras.<br/>
-              Lutar contra os generais do Rei Litch.<br/>
-              Lutar contra as fortalezas profanadas, as criptas abertas e as hordas que não conhecem cansaço.<br/>
-              Lutar até que Morthaly recue.<br/>
-              Lutar até que os vivos possam dormir sem temer que seus ancestrais batam à porta durante a noite.
-            </p>
-            <p>
-              Mas essa guerra não será vencida em um único dia.
-            </p>
-            <p>
-              O Rei Litch é antigo. Seus generais são poderosos.
-              Seus exércitos crescem a cada batalha.
-              Cada derrota alimenta sua marcha.
-              Cada cidade perdida se torna mais uma peça em seu império de ossos.
-            </p>
-            <p>
-              Por isso, sua missão é crescer.
-            </p>
-            <p>
-              Ficar mais forte.<br/>
-              Treinar.<br/>
-              Explorar.<br/>
-              Caçar monstros.<br/>
-              Conquistar equipamentos.<br/>
-              Dominar habilidades.<br/>
-              Encontrar companheiros que compartilham o mesmo juramento.<br/>
-              Formar alianças.<br/>
-              Enfrentar inimigos cada vez mais terríveis.<br/>
-              Retornar das batalhas com cicatrizes, recompensas e histórias.
-            </p>
-            <p>
-              Cada combate vencido é uma vida protegida.<br/>
-              Cada monstro derrotado é um passo contra a escuridão.<br/>
-              Cada companheiro encontrado é uma prova de que os vivos ainda sabem se unir.<br/>
-              Cada nível conquistado é uma afronta ao trono de Morthaly.
-            </p>
-            <p>
-              E talvez, um dia, quando seu nome for conhecido nas tavernas de Aurevia,
-              nas academias de Valfria e nos acampamentos de guerra espalhados pelo mundo,
-              você esteja pronto para marchar até o coração do reino morto.
-            </p>
-            <p>
-              Talvez um dia você encare os generais do Rei Litch.<br/>
-              Talvez um dia atravesse os portões negros de Morthaly.<br/>
-              Talvez um dia suba os degraus do trono profanado.<br/>
-              Talvez um dia olhe nos olhos violetas do Rei dos Mortos e prove que a humanidade
-              ainda não terminou sua história.
-            </p>
-            <p>
-              Até lá, a guerra continua.
-            </p>
-            <p>
-              As florestas de Aurevia ainda resistem.<br/>
-              As torres de Valfria ainda estudam os céus.<br/>
-              Os sobreviventes de Duskwood ainda esperam redenção.<br/>
-              E Morthaly ainda cresce nas sombras.
-            </p>
-            <p>
-              Mas enquanto houver vivos dispostos a lutar, o mundo não pertence aos mortos.
-            </p>
-            <p>
-              <strong>E é aqui que sua jornada começa.</strong>
-            </p>
-          </div>
-        )}
+        {tab === "history" && <HistoryGuide />}
 
         {tab === "faq" && (
           <div className="faq-list">
