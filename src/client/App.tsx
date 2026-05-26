@@ -189,7 +189,12 @@ type GameIconName =
   | "moneyChanger"
   | "ship"
   | "train"
-  | "travel";
+  | "travel"
+  | "pin"
+  | "faq"
+  | "history"
+  | "dev"
+  | "stats";
 
 const GAME_ICON_SRC: Record<GameIconName, string> = {
   agency: "/assets/icons/agency.png",
@@ -211,7 +216,11 @@ const GAME_ICON_SRC: Record<GameIconName, string> = {
   ship: "/assets/icons/ship.png",
   train: "/assets/icons/train.png",
   travel: "/assets/icons/travel.png",
-  pin: "/assets/icons/pin.png"
+  pin: "/assets/icons/pin.png",
+  dev: "/assets/icons/dev.png",
+  faq: "/assets/icons/faq.png",
+  history: "/assets/icons/history.png",
+  stats: "/assets/icons/stats.png",
 };
 
 const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
@@ -1350,7 +1359,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
   );
 }
 
-type GuideTab = "history" | "faq" | "world" | "work" | "items" | "monsters" | "monarchs" | "developer" | "stats";
+type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "items" | "monsters" | "monarchs" | "developer" | "stats";
 
 function GuideModal({ game, onClose }: { game: GameState; onClose: () => void }) {
   const [tab, setTab] = useState<GuideTab>("history");
@@ -1410,6 +1419,15 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
       services: game.workServices.filter((service) => service.countryId === country.id)
     }))
     .filter((group) => group.services.length > 0);
+  const arenaRankIndex = game.rankings.arena.findIndex((entry) => entry.playerId === game.player.id);
+  const arenaRankLabel = arenaRankIndex >= 0 ? `#${arenaRankIndex + 1}` : "Top 20+";
+  const arenaBlueCoins = countInventoryItem(game, "material_gold_coin");
+  const formatArenaSeasonLabel = (key: string) => {
+    if (!key) return "Sem temporada ativa";
+    const [year, month] = key.split("-");
+    const date = new Date(Number(year), Number(month) - 1, 1);
+    return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  };
 
   const sendDeveloperMessage = (event: FormEvent) => {
     event.preventDefault();
@@ -1420,15 +1438,16 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   };
 
   const tabs: Array<{ id: GuideTab; label: string; icon: React.ReactNode }> = [
-    { id: "history", label: "História", icon: <BookOpen size={14} /> },
-    { id: "faq", label: "FAQ", icon: <Info size={14} /> },
-    { id: "world", label: "Mundo", icon: <Castle size={14} /> },
+    { id: "history", label: "História", icon: <GameIcon name="history" size={18} /> },
+    { id: "faq", label: "FAQ", icon: <GameIcon name="faq" size={18} /> },
+    { id: "world", label: "Mundo", icon: <GameIcon name="travel" size={18} /> },
     { id: "work", label: "Trabalhos", icon: <GameIcon name="agency" size={18} /> },
+    { id: "arena", label: "Arena", icon: <GameIcon name="arena" size={18} /> },
     { id: "items", label: "Itens", icon: <GameIcon name="inventory" size={18} /> },
     { id: "monsters", label: "Monstros", icon: <GameIcon name="hunt" size={18} /> },
     { id: "monarchs", label: "Monarcas", icon: <GameIcon name="monarch" size={18} /> },
-    { id: "developer", label: "Dev", icon: <Send size={14} /> },
-    { id: "stats", label: "Stats", icon: <BarChart3 size={14} /> }
+    { id: "developer", label: "Dev", icon: <GameIcon name="dev" size={18} /> },
+    { id: "stats", label: "Stats", icon: <GameIcon name="stats" size={18} /> }
   ];
 
   return (
@@ -1441,7 +1460,8 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
         <div className="guide-tabs">
           {tabs.map((entry) => (
             <button key={entry.id} className={tab === entry.id ? "mini-tab active" : "mini-tab"} onClick={() => setTab(entry.id)}>
-              {entry.icon} {entry.label}
+              <span className="guide-tab-icon">{entry.icon}</span>
+              <span className="guide-tab-label">{entry.label}</span>
             </button>
           ))}
         </div>
@@ -1841,6 +1861,83 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                 </div>
               </section>
             ))}
+          </div>
+        )}
+
+        {tab === "arena" && (
+          <div className="arena-guide">
+            <section className="arena-guide-hero">
+              <GameIcon name="arena" size={76} />
+              <div>
+                <span className="eyebrow">Arena</span>
+                <h3>Duelo, Ranqueada e Temporada</h3>
+                <p>
+                  A Arena concentra combates contra outros recrutas. Use Duelo para confrontos diretos e Ranqueada para subir no placar da temporada.
+                </p>
+              </div>
+            </section>
+
+            <section className="arena-guide-summary">
+              <div>
+                <small>Seus pontos</small>
+                <strong>{game.character.arenaRankedPoints}</strong>
+                <span>{arenaRankLabel}</span>
+              </div>
+              <div>
+                <small>Moedas Azuis</small>
+                <strong>{arenaBlueCoins}</strong>
+                <span>usadas em duelos ranqueados e no mercador</span>
+              </div>
+              <div>
+                <small>Temporada</small>
+                <strong>{formatArenaSeasonLabel(game.arenaSeasonKey)}</strong>
+                <span>ranking mensal</span>
+              </div>
+            </section>
+
+            <section className="guide-list">
+              <article>
+                <strong>Duelo</strong>
+                <span>É o PvP livre: entre na fila aguardando outro jogador ou convide alguém pelo perfil. O resultado conta como vitória/derrota de Arena, mas não altera pontos ranqueados.</span>
+              </article>
+              <article>
+                <strong>Ranqueada</strong>
+                <span>O jogo escolhe um adversário com pontuação próxima, online ou offline. O oponente luta automaticamente e não ganha nem perde pontos nessa batalha.</span>
+              </article>
+              <article>
+                <strong>Pontuação</strong>
+                <span>Todo jogador começa com 100 pontos. Vitória soma 5 pontos; derrota remove 2 pontos, sem afetar o adversário escolhido pelo sistema.</span>
+              </article>
+              <article>
+                <strong>Moedas de Arena</strong>
+                <span>A Ranqueada consome Moeda Azul. Você pode receber moedas diárias na tela da Arena e ganha moedas de recompensa ao vencer ou perder.</span>
+              </article>
+              <article>
+                <strong>Recompensas por batalha</strong>
+                <span>Vitória concede 3 Moedas de Arena, 240 XP e 300 ouro. Derrota concede 1 Moeda de Arena, 80 XP e 100 ouro.</span>
+              </article>
+              <article>
+                <strong>Temporada</strong>
+                <span>O ranking da Arena usa a pontuação ranqueada. Ao virar a temporada, os melhores recebem recompensas e os pontos ranqueados voltam ao início.</span>
+              </article>
+            </section>
+
+            <section className="arena-guide-ranking">
+              <div className="arena-guide-heading">
+                <h3>Top Ranqueada</h3>
+                <span>{game.rankings.arena.length} no ranking</span>
+              </div>
+              <div className="arena-ranking-list">
+                {game.rankings.arena.slice(0, 5).map((entry, index) => (
+                  <div key={entry.playerId} className="arena-rank-row">
+                    <span className="arena-rank-pos">#{index + 1}</span>
+                    <PlayerName playerId={entry.playerId} name={entry.name} className="arena-rank-name" />
+                    <span className="arena-rank-pts">{entry.arenaRankedPoints} pts</span>
+                  </div>
+                ))}
+                {game.rankings.arena.length === 0 && <p className="empty-state">Nenhum recruta ranqueado ainda.</p>}
+              </div>
+            </section>
           </div>
         )}
 

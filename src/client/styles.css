@@ -403,8 +403,42 @@ button:disabled {
 
 .guide-tabs .mini-tab {
   flex: 0 0 auto;
-  min-width: max-content;
+  min-width: 72px;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 8px 10px;
   white-space: nowrap;
+}
+
+.guide-tab-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+
+.guide-tab-icon svg,
+.guide-tab-icon .game-icon {
+  width: 38px;
+  height: 38px;
+}
+
+.guide-tabs .mini-tab {
+  border: none;
+  background: transparent;
+}
+
+
+
+.guide-tab-label {
+  font-size: 0.76rem;
+  line-height: 1;
+}
+
+.guide-tabs .mini-tab.active .guide-tab-icon {
+  border-color: var(--line-active);
+  box-shadow: 0 0 14px var(--theme-glow-soft);
 }
 
 .guide-modal > .panel-title {
@@ -415,6 +449,7 @@ button:disabled {
 .guide-modal > .faq-list,
 .guide-modal > .guide-catalog,
 .guide-modal > .guide-work-list,
+.guide-modal > .arena-guide,
 .guide-modal > .monarch-guide,
 .guide-modal > .utility-form,
 .guide-modal > .guide-stat-grid {
@@ -528,6 +563,73 @@ button:disabled {
   color: var(--lavender);
   font-size: 0.76rem;
   font-weight: 800;
+}
+
+.arena-guide {
+  display: grid;
+  gap: 12px;
+}
+
+.arena-guide-hero,
+.arena-guide-ranking {
+  display: grid;
+  gap: 12px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at top left, rgba(124, 77, 255, 0.16), transparent 42%),
+    rgba(33, 27, 49, 0.72);
+}
+
+.arena-guide-hero {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.arena-guide-hero h3,
+.arena-guide-heading h3 {
+  margin: 0;
+}
+
+.arena-guide-hero p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.arena-guide-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.arena-guide-summary > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(16, 13, 26, 0.55);
+}
+
+.arena-guide-summary small,
+.arena-guide-summary span,
+.arena-guide-heading span {
+  color: var(--muted);
+}
+
+.arena-guide-summary strong {
+  color: var(--lavender);
+  font-size: 1.15rem;
+}
+
+.arena-guide-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .invite-header {
@@ -7683,10 +7785,16 @@ button:disabled {
 
   .guide-catalog.split,
   .guide-filters,
+  .arena-guide-summary,
   .invite-header,
   .invite-code-row,
   .referral-row {
     grid-template-columns: 1fr;
+  }
+
+  .arena-guide-hero {
+    grid-template-columns: 1fr;
+    justify-items: start;
   }
 
   .guide-detail-card {
