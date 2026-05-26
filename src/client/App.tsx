@@ -170,6 +170,50 @@ const DEFAULT_QUICK_POTION_PREFERENCES: QuickPotionPreferences = {
 };
 const FIRST_CLICK_NOTICE_KEYS: FirstClickNoticeKey[] = ["exchange", "diamonds", "ranking", "guide"];
 
+type GameIconName =
+  | "agency"
+  | "alchemist"
+  | "apothecary"
+  | "arena"
+  | "armorer"
+  | "blacksmith"
+  | "city"
+  | "clan"
+  | "dungeon"
+  | "goldCoinMerchant"
+  | "hunt"
+  | "inventory"
+  | "market"
+  | "missions"
+  | "monarch"
+  | "moneyChanger"
+  | "ship"
+  | "train"
+  | "travel";
+
+const GAME_ICON_SRC: Record<GameIconName, string> = {
+  agency: "/assets/icons/agency.png",
+  alchemist: "/assets/icons/alchemist.png",
+  apothecary: "/assets/icons/apothecary.png",
+  arena: "/assets/icons/arena.png",
+  armorer: "/assets/icons/armorer.png",
+  blacksmith: "/assets/icons/blacksmith.png",
+  city: "/assets/icons/city.png",
+  clan: "/assets/icons/clan.png",
+  dungeon: "/assets/icons/dungeon.png",
+  goldCoinMerchant: "/assets/icons/goldCoinMerchant.png",
+  hunt: "/assets/icons/hunt.png",
+  inventory: "/assets/icons/inventory.png",
+  market: "/assets/icons/market.png",
+  missions: "/assets/icons/missions.png",
+  monarch: "/assets/icons/monarch.png",
+  moneyChanger: "/assets/icons/moneyChanger.png",
+  ship: "/assets/icons/ship.png",
+  train: "/assets/icons/train.png",
+  travel: "/assets/icons/travel.png",
+  pin: "/assets/icons/pin.png"
+};
+
 const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
   eldoria: { x: 25, y: 55.5 },
   ravenspire: { x: 36.5, y: 41.5 },
@@ -747,6 +791,20 @@ function PlayerName({ playerId, name, className }: PlayerReference & { className
   );
 }
 
+function GameIcon({ name, size = 24, className = "", alt = "" }: { name: GameIconName; size?: number; className?: string; alt?: string }) {
+  return (
+    <img
+      className={className ? `game-icon ${className}` : "game-icon"}
+      src={GAME_ICON_SRC[name]}
+      alt={alt}
+      aria-hidden={alt ? undefined : true}
+      loading="lazy"
+      decoding="async"
+      style={{ "--game-icon-size": `${size}px` } as React.CSSProperties}
+    />
+  );
+}
+
 function FloatingAgencyNotice({ game, onOpenAgency }: { game: GameState; onOpenAgency: () => void }) {
   const [now, setNow] = useState(Date.now());
 
@@ -776,7 +834,7 @@ function FloatingAgencyNotice({ game, onOpenAgency }: { game: GameState; onOpenA
     <div className={`floating-agency-layer country-${game.currentCountry.id}${game.activeBattle ? " in-battle" : ""}`}>
       <button className="floating-agency-button" type="button" onClick={onOpenAgency}>
         <span className="floating-agency-icon">
-          {activeWorkReady ? <BriefcaseBusiness size={20} /> : <Sparkles size={20} />}
+          <GameIcon name="agency" size={30} />
         </span>
         <span>
           <strong>Ir à Agência</strong>
@@ -840,7 +898,7 @@ function PlayerActionModal({
             <MessageCircle size={15} /> Mensagem privada
           </button>
           <button className="ghost-button" onClick={onDuel} disabled={!profile?.online}>
-            <Swords size={15} /> Convidar para duelo
+            <GameIcon name="arena" size={16} className="button-game-icon" /> Convidar para duelo
           </button>
         </div>
         {profile && (
@@ -1073,14 +1131,14 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
   const myListings = game.marketplaceListings.filter((l) => l.sellerPlayerId === game.player.id).length;
 
   const items = [
-    { view: "city" as View, label: "Cidade", icon: <Castle size={25} />, disabled: locked, badge: null },
-    { view: "hunt" as View, label: "Caça", icon: <Swords size={25} />, disabled: locked, badge: null },
-    { view: "arena" as View, label: "Arena", icon: <Shield size={25} />, disabled: locked || working, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
-    { view: "inventory" as View, label: "Inventário", icon: <Backpack size={25} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
-    { view: "market" as View, label: "Mercado", icon: <ShoppingBag size={25} />, disabled: locked, badge: myListings > 0 ? myListings : null },
-    { view: "missions" as View, label: "Missões", icon: <ScrollText size={25} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
-    { view: "clan" as View, label: "Clã", icon: <Users size={25} />, disabled: locked, badge: null },
-    { view: "travel" as View, label: "Viajar", icon: <MapPinned size={25} />, disabled: locked, badge: null }
+    { view: "city" as View, label: "Cidade", icon: <GameIcon name="city" size={40} />, disabled: locked, badge: null },
+    { view: "hunt" as View, label: "Caça", icon: <GameIcon name="hunt" size={40} />, disabled: locked, badge: null },
+    { view: "arena" as View, label: "Arena", icon: <GameIcon name="arena" size={40} />, disabled: locked || working, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
+    { view: "inventory" as View, label: "Inventário", icon: <GameIcon name="inventory" size={40} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
+    { view: "market" as View, label: "Mercado", icon: <GameIcon name="market" size={40} />, disabled: locked, badge: myListings > 0 ? myListings : null },
+    { view: "missions" as View, label: "Missões", icon: <GameIcon name="missions" size={40} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
+    { view: "clan" as View, label: "Clã", icon: <GameIcon name="clan" size={40} />, disabled: locked, badge: null },
+    { view: "travel" as View, label: "Viajar", icon: <GameIcon name="travel" size={40} />, disabled: locked, badge: null }
   ];
 
   return (
@@ -1339,10 +1397,10 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     { id: "history", label: "História", icon: <BookOpen size={14} /> },
     { id: "faq", label: "FAQ", icon: <Info size={14} /> },
     { id: "world", label: "Mundo", icon: <Castle size={14} /> },
-    { id: "work", label: "Trabalhos", icon: <BriefcaseBusiness size={14} /> },
-    { id: "items", label: "Itens", icon: <Backpack size={14} /> },
-    { id: "monsters", label: "Monstros", icon: <Swords size={14} /> },
-    { id: "monarchs", label: "Monarcas", icon: <Skull style={{color: "var(--red)"}} size={14} /> },
+    { id: "work", label: "Trabalhos", icon: <GameIcon name="agency" size={18} /> },
+    { id: "items", label: "Itens", icon: <GameIcon name="inventory" size={18} /> },
+    { id: "monsters", label: "Monstros", icon: <GameIcon name="hunt" size={18} /> },
+    { id: "monarchs", label: "Monarcas", icon: <GameIcon name="monarch" size={18} /> },
     { id: "developer", label: "Dev", icon: <Send size={14} /> },
     { id: "stats", label: "Stats", icon: <BarChart3 size={14} /> }
   ];
@@ -1645,7 +1703,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               {countryGroups.map(({ country, cities }) => (
                 <article className="guide-country-card" key={country.id}>
                   <div className="guide-country-media">
-                    <AssetImage src={country.imageUrl} alt={country.name} fallback={<MapPinned size={34} />} />
+                    <AssetImage src={country.imageUrl} alt={country.name} fallback={<MapPinned size={50} />} />
                   </div>
                   <div className="guide-country-content">
                     <div className="guide-country-heading">
@@ -2618,21 +2676,21 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
     : `${countryServices.length} serviços`;
   const working = isWorkInProgress(game.character.activeWork);
   const combatOptions: CityOption[] = [
-    { view: "hunt", icon: <Swords size={24} />, title: "Caçar", value: `${game.cityHuntLocations.length} locais` },
-    { view: "arena", icon: <Shield size={24} />, title: "Arena", value: working ? "Trabalhando" : `${game.arenaQueueSize} na fila`, disabled: working },
+    { view: "hunt", icon: <GameIcon name="hunt" size={50} />, title: "Caçar", value: `${game.cityHuntLocations.length} locais` },
+    { view: "arena", icon: <GameIcon name="arena" size={50} />, title: "Arena", value: working ? "Trabalhando" : `${game.arenaQueueSize} na fila`, disabled: working },
   ];
   if (game.currentCity.dungeonMonsterIds?.length) {
-    combatOptions.push({ view: "dungeon", icon: <Star size={24} />, title: "Masmorra", value: working ? "Trabalhando" : `${game.currentCity.dungeonMonsterIds.length} desafios`, disabled: working });
+    combatOptions.push({ view: "dungeon", icon: <GameIcon name="dungeon" size={50} />, title: "Masmorra", value: working ? "Trabalhando" : `${game.currentCity.dungeonMonsterIds.length} desafios`, disabled: working });
   }
 
   const actionOptions: CityOption[] = [
-    { view: "agency", icon: <BriefcaseBusiness size={24} />, title: "Agência", value: workValue }
+    { view: "agency", icon: <GameIcon name="agency" size={50} />, title: "Agência", value: workValue }
   ];
 
   if (game.currentCountry.id === "morthaly" && game.monarchEvent) {
     actionOptions.push({
       view: "monarch",
-      icon: <Skull size={24} style={{ color: "var(--red)" }} />,
+      icon: <GameIcon name="monarch" size={50} />,
       title: game.monarchEvent.isKing ? "Rei Litch" : "Monarca",
       value: working ? "Trabalhando" : game.monarchEvent.status === "active" ? `${game.monarchEvent.attemptsLimit - game.monarchEvent.attemptsUsed} entradas` : "Encerrado",
       disabled: working
@@ -2640,30 +2698,30 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   }
 
   const inhabitantOptions: CityOption[] = [
-    { view: "armorer", icon: <Gavel size={24} />, title: game.currentCity.npcs.armorer ?? "Armeiro", value: `Meus equipamentos vão te acompanhar do início ao fim` },
-    { view: "apothecary", icon: <FlaskConical size={24} />, title: game.currentCity.npcs.apothecary ?? "Boticário", value: `As poções de cura são muito importantes` },
+    { view: "armorer", icon: <GameIcon name="armorer" size={50} />, title: game.currentCity.npcs.armorer ?? "Armeiro", value: `Meus equipamentos vão te acompanhar do início ao fim` },
+    { view: "apothecary", icon: <GameIcon name="apothecary" size={50} />, title: game.currentCity.npcs.apothecary ?? "Boticário", value: `As poções de cura são muito importantes` },
   ];
 
   if (game.currentCity.blacksmithRecipeIds?.length || game.currentCity.blacksmithEnhancement) {
-    inhabitantOptions.push({ view: "blacksmith", icon: <Hammer size={24} />, title: game.currentCity.npcs.blacksmith ?? "Ferreiro", value: "Minha forja está pronta" });
+    inhabitantOptions.push({ view: "blacksmith", icon: <GameIcon name="blacksmith" size={50} />, title: game.currentCity.npcs.blacksmith ?? "Ferreiro", value: "Minha forja está pronta" });
   }
 
   if (game.currentCity.alchemistRecipeIds?.length) {
-    inhabitantOptions.push({ view: "alchemist", icon: <PencilRuler size={24} />, title: game.currentCity.npcs.alchemist ?? "Alquimista", value: "Posso fabricar coisas interessantes" });
+    inhabitantOptions.push({ view: "alchemist", icon: <GameIcon name="alchemist" size={50} />, title: game.currentCity.npcs.alchemist ?? "Alquimista", value: "Posso fabricar coisas interessantes" });
   }
   if (game.currentCity.npcs.moneyChanger) {
     inhabitantOptions.push({
       view: "moneyChanger",
-      icon: <Coins size={24} />,
+      icon: <GameIcon name="moneyChanger" size={50} />,
       title: game.currentCity.npcs.moneyChanger ?? "Cambista",
       value: `Na minha mão é mais barato`
     });
   }
 
   if (game.currentCity.npcs.goldCoinMerchant && game.currentCity.goldCoinMerchantItemIds?.length) {
-    inhabitantOptions.push({
+    actionOptions.push({
       view: "goldCoinMerchant",
-      icon: <Coins size={24} />,
+      icon: <GameIcon name="goldCoinMerchant" size={50} />,
       title: game.currentCity.npcs.goldCoinMerchant,
       value: `Aceito apenas Moedas de Arena`
     });
@@ -2697,7 +2755,7 @@ function AgencyPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel agency-panel">
-      <PanelTitle icon={<BriefcaseBusiness size={20} />} title={`Agência de ${game.currentCountry.name}`} />
+      <PanelTitle icon={<GameIcon name="agency" size={26} />} title={`Agência de ${game.currentCountry.name}`} />
       <p className="agency-intro">{game.currentCountry.description}</p>
 
       {activeWork && activeService && (
@@ -2720,7 +2778,7 @@ function AgencyPanel({ game }: { game: GameState }) {
               disabled={!activeReady || !activeInCountry}
               onClick={() => socket.emit("work:claim")}
             >
-              Receber recompensa
+              <GameIcon name="agency" size={16} className="button-game-icon" /> Receber recompensa
             </button>
             <button
               className="danger-button"
@@ -2791,7 +2849,7 @@ function AgencyPanel({ game }: { game: GameState }) {
                     disabled={!periodicReady}
                     onClick={() => socket.emit("work:claimBonus", { serviceId: service.id })}
                   >
-                    {periodicReady ? "Resgatar bônus" : `Pronto em ${formatDuration(getWorkBonusReadyAt(game, service) - now)}`}
+                    {periodicReady ? <><GameIcon name="agency" size={16} className="button-game-icon" /> Resgatar bônus</> : `Pronto em ${formatDuration(getWorkBonusReadyAt(game, service) - now)}`}
                   </button>
                 )}
               </div>
@@ -2800,7 +2858,7 @@ function AgencyPanel({ game }: { game: GameState }) {
                 disabled={Boolean(activeWork)}
                 onClick={() => socket.emit("work:start", { serviceId: service.id, minutes: selectedMinutes })}
               >
-                Iniciar serviço
+                <GameIcon name="agency" size={16} className="button-game-icon" /> Iniciar serviço
               </button>
             </article>
           );
@@ -2821,7 +2879,7 @@ function MissionsPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel missions-panel">
-      <PanelTitle icon={<ScrollText size={20} />} title="Missões" />
+      <PanelTitle icon={<GameIcon name="missions" size={26} />} title="Missões" />
       <div className="quest-filter-tabs" role="tablist" aria-label="Filtros de missões">
         {filters.map((filter) => {
           const count = filter === "all" ? allQuests.length : allQuests.filter((quest) => quest.category === filter).length;
@@ -2904,7 +2962,7 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
                 disabled={!quest.completed || quest.claimed}
                 onClick={() => socket.emit("quest:claim", { questId: quest.id })}
               >
-                {quest.claimed ? "Resgatada" : "Resgatar"}
+                {quest.claimed ? "Resgatada" : <><GameIcon name="missions" size={16} className="button-game-icon" /> Resgatar</>}
               </button>
               </div>
               <div className="quest-progress">
@@ -2926,7 +2984,7 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
 function CraftingPanel({ game, station }: { game: GameState; station: "blacksmith" | "alchemist" }) {
   const recipes = game.availableCraftingRecipes[station];
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
-  const icon = station === "blacksmith" ? <Hammer size={20} /> : <FlaskConical size={20} />;
+  const icon = station === "blacksmith" ? <GameIcon name="blacksmith" size={26} /> : <GameIcon name="alchemist" size={26} />;
   const npcName = station === "blacksmith" ? game.currentCity.npcs.blacksmith : game.currentCity.npcs.alchemist;
 
   return (
@@ -3126,7 +3184,7 @@ function DungeonPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel">
-      <PanelTitle icon={<Star size={20} />} title="Masmorra" />
+      <PanelTitle icon={<GameIcon name="dungeon" size={26} />} title="Masmorra" />
       <div className="list-grid monster-battle-list">
         {dungeonMonsters.length === 0 && <p className="empty-state">Não há masmorra nesta cidade.</p>}
         {dungeonMonsters.map((monster) => {
@@ -3147,7 +3205,7 @@ function DungeonPanel({ game }: { game: GameState }) {
                 <small title="Energia"><Zap size={13} style={{ color: "var(--yellow)" }} /> {energyCost}</small>
               </div>
               <button className="primary-button" disabled={blocked} onClick={() => socket.emit("dungeon:start", { monsterId: monster.id })}>
-                Entrar
+                <GameIcon name="dungeon" size={16} className="button-game-icon" /> Entrar
               </button>
             </article>
           );
@@ -3163,7 +3221,7 @@ function MonarchPanel({ game }: { game: GameState }) {
   if (!event) {
     return (
       <section className="content-panel monarch-panel">
-        <PanelTitle icon={<Crown size={20} />} title="Monarca de Morthaly" />
+        <PanelTitle icon={<GameIcon name="monarch" size={26} />} title="Monarca de Morthaly" />
         <p className="empty-state">Nenhum monarca foi avistado hoje.</p>
       </section>
     );
@@ -3187,7 +3245,7 @@ function MonarchPanel({ game }: { game: GameState }) {
   const canStart = !blockedReason;
   return (
     <section className="content-panel monarch-panel">
-      <PanelTitle icon={<Crown size={20} />} title="Monarca de Morthaly" />
+      <PanelTitle icon={<GameIcon name="monarch" size={26} />} title="Monarca de Morthaly" />
       <div className={event.isKing ? "monarch-hero king" : "monarch-hero"}>
         <AssetImage src={event.imageUrl} alt={event.name} fallback={<Crown size={44} />} />
         <div className="monarch-hero-copy">
@@ -3214,7 +3272,7 @@ function MonarchPanel({ game }: { game: GameState }) {
             <span>Chaves: <strong>{highKeys}</strong></span>
           </div>
           <button className="primary-button" disabled={!canStart} onClick={() => socket.emit("monarch:start")}>
-            {canStart ? <><Swords size={17} /> Enfrentar monarca</> : blockedReason}
+            {canStart ? <><Swords size={18} style={{ marginRight: "4px" }} /> Enfrentar monarca</> : blockedReason}
           </button>
         </div>
       </div>
@@ -3597,7 +3655,7 @@ function ClanPanel({ game }: { game: GameState }) {
 
     return (
       <section className="content-panel clan-panel">
-        <PanelTitle icon={<Users size={20} />} title="Clã" />
+      <PanelTitle icon={<GameIcon name="clan" size={26} />} title="Clã" />
         <div className="clan-create-section">
           <button
             className="primary-button clan-create-button"
@@ -4101,7 +4159,7 @@ function HuntPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel">
-      <PanelTitle icon={<Swords size={20} />} title="Caçar" />
+      <PanelTitle icon={<GameIcon name="hunt" size={26} />} title="Caçar" />
       <div className="hunt-location-tabs">
         {game.cityHuntLocations.map((location) => (
           <button
@@ -4142,7 +4200,7 @@ function HuntPanel({ game }: { game: GameState }) {
                 disabled={blocked}
                 onClick={() => socket.emit("hunt:start", { monsterId: monster.id })}
               >
-                <Swords size={13} /> Atacar
+                <Swords size={16} style={{ marginRight: "4px" }} /> Atacar
               </button>
             </article>
           );
@@ -4200,7 +4258,6 @@ function ArenaPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel arena-panel">
-      <PanelTitle icon={<Shield size={20} />} title="Arena" />
       <div className="arena-mode-tabs">
         <button type="button" className={arenaMode === "ranked" ? "mini-tab active" : "mini-tab"} onClick={() => setArenaMode("ranked")}>
           Ranqueada
@@ -4213,14 +4270,14 @@ function ArenaPanel({ game }: { game: GameState }) {
         </button>
       </div>
       <div className="arena-plate">
+        <GameIcon name="arena" size={58} className="arena-mode-icon" />
         {arenaMode === "duel" ? (
           <>
-            <Shield size={44} />
             <h2>{queued ? "Aguardando adversário" : "Duelo"}</h2>
             <p>{game.arenaQueueSize} recruta(s) na fila. Entre na fila ou desafie outro jogador pelo perfil dele.</p>
             <div className="button-row">
               <button className="primary-button" onClick={() => socket.emit("arena:join")}>
-                Entrar na fila
+                <Swords size={16} style={{color: "var(--white)", marginRight: "8px"}} /> Entrar na fila
               </button>
               <button className="ghost-button" onClick={() => socket.emit("arena:leave")}>
                 Sair
@@ -4229,7 +4286,6 @@ function ArenaPanel({ game }: { game: GameState }) {
           </>
         ) : arenaMode === "season" ? (
           <>
-            <Trophy size={44} />
             <h2>Temporada</h2>
             <p className="arena-season-label">Temporada atual: <strong>{seasonLabel(game.arenaSeasonKey)}</strong></p>
             <div className="arena-ranking-list">
@@ -4262,7 +4318,6 @@ function ArenaPanel({ game }: { game: GameState }) {
           </>
         ) : (
           <>
-            <Trophy size={44} />
             <h2>Arena Ranqueada</h2>
             <div className="arena-ranked-highlight">
               <div className="arena-ranked-highlight-card">
@@ -4308,7 +4363,7 @@ function ArenaPanel({ game }: { game: GameState }) {
             </div>
             <small style={{ opacity: 0.7 }}>Custo: 1 Moeda Azul por duelo. As moedas diárias são concedidas automaticamente ao buscar um duelo.</small>
             <button className="primary-button" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
-              <Swords size={16} style={{ marginRight: 8, color: "var(--white)" }} />
+              <Swords size={16} style={{color: "var(--white)", marginRight: "8px"}} />
               {rankedSearching ? "Buscando..." : "Buscar Oponente"}
             </button>
             {rankedStatus && <small className="arena-ranked-status">{rankedStatus}</small>}
@@ -4341,7 +4396,14 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
     return (left?.price ?? 0) - (right?.price ?? 0) || (left?.name ?? "").localeCompare(right?.name ?? "");
   });
   const title = shop === "armorer" ? "Armeiro" : shop === "apothecary" ? "Boticário" : isGoldCoinShop ? "Mercador de Arena" : "Cambista";
-  const icon = shop === "armorer" ? <Gavel size={20} /> : shop === "apothecary" ? <FlaskConical size={20} /> : <Coins size={20} />;
+  const icon =
+    shop === "armorer"
+      ? <GameIcon name="armorer" size={26} />
+      : shop === "apothecary"
+        ? <GameIcon name="apothecary" size={26} />
+        : isGoldCoinShop
+          ? <GameIcon name="goldCoinMerchant" size={26} />
+          : <GameIcon name="moneyChanger" size={26} />;
   const npcName =
     shop === "armorer"
       ? game.currentCity.npcs.armorer
@@ -4518,7 +4580,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 
   return (
     <section className="content-panel">
-      <PanelTitle icon={<Backpack size={20} />} title="Inventário" />
+      <PanelTitle icon={<GameIcon name="inventory" size={26} />} title="Inventário" />
       {onBackToBattle && (
         <button className="ghost-button inventory-return" onClick={onBackToBattle}>
           Voltar à batalha
@@ -4712,17 +4774,17 @@ function TravelPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel travel-panel">
-      <PanelTitle icon={<MapPinned size={20} />} title="Viajar" />
+      <PanelTitle icon={<GameIcon name="travel" size={26} />} title="Viajar" />
       <div className="travel-ticket-summary">
         <span className="travel-ticket-chip">
-          {trainTicket ? <ItemVisual item={trainTicket} className="travel-ticket-visual" /> : <MapPinned size={16} />}
+          {trainTicket ? <ItemVisual item={trainTicket} className="travel-ticket-visual" /> : <GameIcon name="train" size={20} />}
           <span className="travel-ticket-copy">
             <small>{trainTicket?.name ?? "Ticket de Trem"}</small>
             <strong>x{trainTickets}</strong>
           </span>
         </span>
         <span className="travel-ticket-chip">
-          {shipTicket ? <ItemVisual item={shipTicket} className="travel-ticket-visual" /> : <Ship size={16} />}
+          {shipTicket ? <ItemVisual item={shipTicket} className="travel-ticket-visual" /> : <GameIcon name="ship" size={20} />}
           <span className="travel-ticket-copy">
             <small>{shipTicket?.name ?? "Ticket de Navio"}</small>
             <strong>x{shipTickets}</strong>
@@ -4768,7 +4830,7 @@ function TravelPanel({ game }: { game: GameState }) {
                 type="button"
               >
                 <span className="travel-map-icon">
-                  {city.isPort ? <Ship size={14} /> : <MapPinned size={14} />}
+                  <GameIcon name={city.isPort ? "ship" : "pin"} size={18} />
                 </span>
                 <span className="travel-map-name">{city.name}</span>
               </button>
@@ -4789,7 +4851,7 @@ function TravelPanel({ game }: { game: GameState }) {
             </button>
             <div className="travel-selection-heading">
               <span className={selectedTravelCity?.isPort ? "travel-selection-kicker port" : "travel-selection-kicker"}>
-                {selectedTravelCity?.isPort ? <Ship size={15} /> : <MapPinned size={15} />}
+                <GameIcon name={selectedTravelCity?.isPort ? "ship" : "pin"} size={18} />
                 {selectedTravelCity?.isPort ? "Porto" : "Cidade"}
               </span>
               <div>
@@ -4919,7 +4981,7 @@ function MarketPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel market-panel">
-      <PanelTitle icon={<ShoppingBag size={20} />} title="Mercado de Trocas" />
+      <PanelTitle icon={<GameIcon name="market" size={26} />} title="Mercado de Trocas" />
       <div className="market-tabs" role="tablist" aria-label="Ações do mercado">
         <button type="button" className={marketTab === "buy" ? "mini-tab active" : "mini-tab"} onClick={() => setMarketTab("buy")}>
           Compra
@@ -4947,7 +5009,7 @@ function MarketPanel({ game }: { game: GameState }) {
                     onClick={() => setCurrencyFilter("all")}
                     aria-pressed={currencyFilter === "all"}
                   >
-                    <ShoppingBag size={16} /> Todos
+                    Todos
                   </button>
                   <button
                     type="button"
@@ -5635,7 +5697,7 @@ function BattlePanel({ game }: { game: GameState }) {
   return (
     <section className="content-panel battle-panel">
       <PanelTitle
-        icon={<Swords size={20} />}
+        icon={<GameIcon name={battle.mode === "pvp" ? "arena" : battle.mode === "dungeon" ? "dungeon" : battle.mode === "monarch" ? "monarch" : "hunt"} size={26} />}
         title={battle.mode === "pvp" ? (battle.arena?.type === "ranked" ? "Arena Ranqueada" : "Arena Duelo") : battle.mode === "dungeon" ? "Masmorra" : battle.mode === "monarch" ? "Monarca" : "Batalha PvE"}
       />
       <div className="combatants">
@@ -5692,7 +5754,7 @@ function BattlePanel({ game }: { game: GameState }) {
               disabled={!myTurn || animationsPending}
               onClick={() => socket.emit("battle:action", { battleId: battle.id, action: "attack" })}
             >
-              <Swords size={13} /> Atacar
+              <Swords size={16} className="button-game-icon" /> Atacar
             </button>
             <button
               className="ghost-button battle-inline-potion"
@@ -5734,7 +5796,7 @@ function BattlePanel({ game }: { game: GameState }) {
                     disabled={!myTurn || animationsPending}
                     onClick={triggerAutoPve}
                   >
-                    <Crown size={14} /> Auto PvE
+                    <Crown name="hunt" style={{ marginRight: "4px", color: "var(--gold)" }} size={16} /> Auto PvE
                   </button>
                 )}
               </>
@@ -5744,7 +5806,7 @@ function BattlePanel({ game }: { game: GameState }) {
           <>
             {animationsPending ? (
               <button className="ghost-button" disabled>
-                Finalizando animações...
+                Coletando espólios...
               </button>
             ) : (
               <>
@@ -5754,7 +5816,7 @@ function BattlePanel({ game }: { game: GameState }) {
                     disabled={!canRematch || autoPveRunning}
                     onClick={() => socket.emit(battle.mode === "dungeon" ? "dungeon:start" : "hunt:start", { monsterId: rematchMonsterId })}
                   >
-                    Enfrentar novamente
+                    <Swords size={18} style={{marginRight: "4px"}} /> Enfrentar novamente
                   </button>
                 )}
                 <button className="ghost-button" disabled={autoPveRunning} onClick={() => socket.emit("battle:leave")}>
@@ -5895,17 +5957,17 @@ function CombatantCard({
       <ParticipantVisual participant={participant} className="combatant-art" />
       <div>
         {participant.ownerPlayerId ? (
-          <strong><PlayerName playerId={participant.ownerPlayerId} name={participant.name} /></strong>
+          <strong><PlayerName className="player-name" playerId={participant.ownerPlayerId} name={participant.name} /></strong>
         ) : (
           <strong>{participant.name}</strong>
         )}
-        <span>Nível {participant.level}</span>
+        <span style={{ marginLeft: "4px" }}>Nv {participant.level}</span>
       </div>
       <div className="hp-bar">
         <span style={{ width: `${hpPercent}%` }} />
       </div>
       <small>
-        {participant.hp}/{participant.maxHp} vida
+        <Heart size={12} style={{ marginRight: "4px", color: "var(--red)" }} /> {participant.hp}/{participant.maxHp}
       </small>
       <div className="combat-stat-row">
         <span title="Força"><Swords size={13} style={{ color: "var(--purple)" }} /> {participant.strength}</span>

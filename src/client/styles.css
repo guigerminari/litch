@@ -2302,6 +2302,11 @@ button:disabled {
   object-fit: cover;
 }
 
+.travel-map-frame img.game-icon {
+  width: 70%;
+  height: 70%;
+}
+
 .travel-country-label {
   position: absolute;
   z-index: 2;
@@ -2365,8 +2370,8 @@ button:disabled {
 }
 
 .travel-map-icon {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   flex: 0 0 28px;
   display: inline-grid;
   place-items: center;
@@ -2375,6 +2380,10 @@ button:disabled {
   background: rgb(11, 9, 18);
   color: var(--lavender);
   box-shadow: 0 0 12px rgba(124, 77, 255, 0.24);
+}
+
+.travel-map-icon .game-icon {
+  filter: drop-shadow(0 0 6px rgba(220, 203, 255, 0.2));
 }
 
 .travel-map-point.selected .travel-map-icon {
@@ -2693,6 +2702,28 @@ button:disabled {
   color: var(--text);
 }
 
+.game-icon {
+  width: var(--game-icon-size, 24px);
+  height: var(--game-icon-size, 24px);
+  display: inline-block;
+  object-fit: contain;
+  flex: 0 0 auto;
+}s
+
+button:disabled .game-icon {
+  opacity: 0.52;
+  filter: grayscale(0.35);
+}
+
+.panel-title .game-icon,
+.button-game-icon {
+  vertical-align: middle;
+}
+
+.button-game-icon {
+  margin-right: 8px;
+}
+
 .player-name-link {
   display: inline;
   width: auto;
@@ -2725,6 +2756,12 @@ button:disabled {
   text-decoration: underline;
   text-decoration-color: rgba(157, 107, 255, 0.45);
   text-underline-offset: 3px;
+}
+
+.player-name {
+  color: var(--text) !important;
+  font-weight: 700;
+  font-size: 1.2rem !important;
 }
 
 .player-action-modal {
@@ -5093,7 +5130,7 @@ button:disabled {
 }
 
 .royal-auto-button {
-  border-color: rgba(241, 250, 140, 0.36);
+  border-color: var(--gold);
   color: var(--gold);
 }
 
@@ -5996,7 +6033,7 @@ button:disabled {
   z-index: 49;
   pointer-events: none;
   --chat-button-size: 54px;
-  --chat-button-bottom: 88px;
+  --chat-button-bottom: 95px;
   --chat-gap: 4px;
 }
 
@@ -6086,6 +6123,10 @@ button:disabled {
   border-radius: 12px;
   background: rgba(216, 178, 74, 0.08);
   color: var(--gold);
+}
+
+.floating-agency-icon .game-icon {
+  filter: drop-shadow(0 0 10px rgba(216, 178, 74, 0.24));
 }
 
 .floating-agency-button strong,
@@ -6922,6 +6963,13 @@ button:disabled {
   overflow: hidden;
 }
 
+.option-card > span {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+}
+
 .option-card::before,
 .entity-card::before,
 .item-card::before,
@@ -7058,7 +7106,7 @@ button:disabled {
 }
 
 .royal-auto-button {
-  border-color: color-mix(in srgb, var(--theme-accent-2) 45%, transparent);
+  border-color: var(--gold);
   color: var(--theme-highlight);
 }
 
@@ -7144,9 +7192,18 @@ button:disabled {
   color: var(--muted);
 }
 
+.bottom-button .game-icon {
+  transition: transform 160ms ease, opacity 160ms ease, filter 160ms ease;
+}
+
 .bottom-button:hover {
   border-color: rgba(220, 203, 255, 0.14);
   background: rgba(33, 27, 49, 0.56);
+}
+
+.bottom-button:hover .game-icon,
+.bottom-button.active .game-icon {
+  transform: translateY(-1px);
 }
 
 .bottom-button.active {
@@ -7572,9 +7629,9 @@ button:disabled {
   }
 
   .travel-map-icon {
-    width: 22px;
-    height: 22px;
-    flex-basis: 22px;
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
   }
 
   .travel-map-name strong {
@@ -7663,14 +7720,15 @@ button:disabled {
   }
 
   .bottom-button {
-    min-height: 40px;
+    min-height: 50px;
     aspect-ratio: auto;
     border-radius: 7px;
   }
 
-  .bottom-button svg {
-    width: 25px;
-    height: 25px;
+  .bottom-button svg,
+  .bottom-button .game-icon {
+    width: 45px;
+    height: 45px;
   }
 
   .bottom-badge {
@@ -7684,7 +7742,7 @@ button:disabled {
 
   .floating-chat-layer {
     --chat-button-size: 48px;
-    --chat-button-bottom: calc(56px + env(safe-area-inset-bottom));
+    --chat-button-bottom: calc(70px + env(safe-area-inset-bottom));
     --chat-gap: 4px;
   }
 
@@ -7697,7 +7755,7 @@ button:disabled {
 
   .floating-agency-button {
     left: 8px;
-    bottom: calc(56px + env(safe-area-inset-bottom));
+    bottom: calc(70px + env(safe-area-inset-bottom));
     width: min(284px, calc(100vw - 72px));
     min-height: 52px;
     grid-template-columns: 38px minmax(0, 1fr) auto;
@@ -7844,13 +7902,14 @@ button:disabled {
   }
 
   .bottom-button {
-    min-height: 36px;
+    min-height: 45px;
     aspect-ratio: auto;
   }
 
-  .bottom-button svg {
-    width: 20px;
-    height: 20px;
+  .bottom-button svg,
+  .bottom-button .game-icon {
+    width: 40px;
+    height: 40px;
   }
 
   .city-hero {

@@ -2271,14 +2271,14 @@ export const CITIES: CityDefinition[] = [
       "Orin Cinza-Viva",
       "Sentinela Rosin",
       "Archivista Dalen",
-      "Caelum, o Cambista"
+      "Caelum, o Mercador"
     ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
       "apothecary": "Orin Cinza-Viva",
       "blacksmith": "Helga Forja-Alta",
       "alchemist": "Orin Cinza-Viva",
-      "goldCoinMerchant": "Caelum, o Cambista"
+      "goldCoinMerchant": "Caelum, o Mercador"
     },
     "dungeonMonsterIds": [
       "zombie_kraken_infected",
