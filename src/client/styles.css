@@ -8020,8 +8020,8 @@ button:disabled {
   }
 
   .utility-strip button {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 
   .topbar {
@@ -8515,6 +8515,11 @@ button:disabled {
     font-size: 0.6rem;
   }
 
+  .character-chip-level {
+    font-size: 0.5rem !important;
+    margin-top: -2px; 
+  }
+
   .top-economy {
     gap: 1px;
   }
@@ -8542,14 +8547,14 @@ button:disabled {
   }
 
   .resource-icon {
-    width: 14px;
-    height: 14px;
-    flex-basis: 14px;
+    width: 12px;
+    height: 12px;
+    flex-basis: 12px;
   }
 
   .resource-icon svg {
-    width: 13px;
-    height: 13px;
+    width: 11px;
+    height: 11px;
   }
 
   .resource-bar-main {
@@ -8561,11 +8566,11 @@ button:disabled {
   }
 
   .resource-bar strong {
-    font-size: 0.6rem;
+    font-size: 0.5rem;
   }
 
   .regen-hint {
-    font-size: 0.55rem;
+    font-size: 0.45rem;
   }
 
   .bottom-nav {

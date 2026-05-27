@@ -1177,7 +1177,7 @@ function Header({
             alertLabel={growthPointLabels.join(" e ") || "Pontos para distribuir"}
           />
           <strong>{game.character.name}</strong>
-          <small>Nv {game.character.level}</small>
+          <small className="character-chip-level">Nv {game.character.level}</small>
           <small className="character-chip-clan">
             {game.clan ? <>{getClanCrestIcon(game.clan.icon, 11)} {game.clan.name}</> : "Sem clã"}
           </small>
@@ -1185,10 +1185,6 @@ function Header({
       </div>
       <div className="topbar-status">
         <div className="top-economy">
-          <span className="stat-pill city-pill" title={game.currentCity.name}>
-            <MapPinned size={17} style={{ color: "var(--purple)" }} />
-            <strong>{game.currentCity.name}</strong>
-          </span>
           <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
             <Coins size={17} style={{ color: "var(--gold)" }} />
             <strong>{formatCurrency(game.character.gold)}</strong>
@@ -2374,13 +2370,13 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
       <section className="character-resource-bars" aria-label="Recursos do personagem">
         <ResourceBar
           className="life"
-          icon={<Heart size={15} style={{ color: "var(--red)" }} />}
+          icon={<Heart size={13} style={{ color: "var(--red)" }} />}
           value={`${game.character.currentHp}/${game.derived.maxHp}`}
           progress={hpProgress}
         />
         <ResourceBar
           className="energy"
-          icon={<Zap size={15} style={{ color: "var(--green)" }} />}
+          icon={<Zap size={13} style={{ color: "var(--green)" }} />}
           value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
           progress={energyProgress}
         />
