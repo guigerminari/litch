@@ -3155,15 +3155,19 @@ button:disabled .game-icon {
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(max(1,5), 70px);
+  grid-template-columns: repeat(5, minmax(0, 70px));
   justify-content: center;
   gap: 6px;
-  margin-bottom: 12px;
+  width: 100%;
+  max-width: 374px;
+  margin: 0 auto 12px;
 }
 
 .inv-slot {
-  width: 70px;
-  height: 70px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3207,8 +3211,8 @@ button:disabled .game-icon {
 }
 
 .slot-visual {
-  width: 54px;
-  height: 54px;
+  width: max(54px, 100%);
+  height: max(54px, 100%);
   border: 0;
   background: transparent;
 }
@@ -5628,7 +5632,7 @@ button:disabled .game-icon {
 .quest-filter-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 2px;
 }
 
 .quest-filter-tabs .mini-tab span {
@@ -5640,6 +5644,14 @@ button:disabled .game-icon {
   background: rgba(220, 203, 255, 0.12);
   color: var(--muted);
   font-size: 0.72rem;
+}
+
+@media (max-width: 520px) {
+  .quest-filter-tabs .mini-tab {
+    font-size: 0.7rem;
+    padding: 5px 9px;
+      min-height: fit-content;
+  }
 }
 
 .quest-filter-tabs .mini-tab.active span {

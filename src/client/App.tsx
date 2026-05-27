@@ -3062,7 +3062,7 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
                 disabled={!quest.completed || quest.claimed}
                 onClick={() => socket.emit("quest:claim", { questId: quest.id })}
               >
-                {quest.claimed ? "Resgatada" : <><GameIcon name="missions" size={16} className="button-game-icon" /> Resgatar</>}
+                {quest.claimed ? "Resgatada" : "Resgatar"}
               </button>
               </div>
               <div className="quest-progress">
