@@ -266,8 +266,8 @@ const viewLabels: Record<View, string> = {
 const attributes: AttributeKey[] = ["strength", "constitution", "agility"];
 const ATTRIBUTE_RELEVANCE: Record<AttributeKey, string> = {
   strength: "Aumenta o impacto dos ataques e ajuda a encerrar combates mais rápido.",
-  constitution: "Aumenta sua sobrevivência, dando mais fôlego para batalhas longas.",
-  agility: "Melhora sua chance de agir com precisão, evitar golpes e causar acertos decisivos."
+  constitution: "Aumenta sua sobrevivência e ajuda a resistir a acertos críticos.",
+  agility: "Melhora crítico, dano crítico, precisão, esquiva e resistência crítica."
 };
 const QUEST_FILTER_LABELS: Record<QuestCategory | "all", string> = {
   all: "Todas",
@@ -1693,8 +1693,9 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
             <section className="faq-section">
               <h3>Combate</h3>
               <article><strong>Como a vida é calculada?</strong><span>Vida máxima: nível * 50 + 2 * CON, somando bônus de equipamentos, talentos e benefícios.</span></article>
-              <article><strong>Como o dano é calculado?</strong><span>O dano base é FOR do atacante menos DEF do defensor, com mínimo de 1 quando o ataque acerta.</span></article>
-              <article><strong>Para que serve AGI?</strong><span>AGI aumenta chance de crítico e esquiva. Ela também conversa bem com talentos ofensivos e defensivos.</span></article>
+              <article><strong>Como o dano é calculado?</strong><span>O dano base é FOR do atacante menos DEF do defensor. Se houver acerto crítico, o dano é multiplicado pelo dano crítico do atacante.</span></article>
+              <article><strong>Como funcionam crítico e resistência?</strong><span>A chance final compara crítico do atacante contra resistência crítica do defensor. Resistência crítica usa (AGI + CON) / 2, então tanques também reduzem críticos recebidos.</span></article>
+              <article><strong>Como funcionam esquiva e precisão?</strong><span>A chance final compara esquiva do defensor contra precisão do atacante. AGI aumenta esquiva, precisão, crítico e também o multiplicador de dano crítico.</span></article>
             </section>
 
             <section className="faq-section highlighted">
@@ -2391,8 +2392,26 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
       </div>
 
       <div className="chance-row">
-        <span>Crítico {formatPercent(game.derived.criticalChance)}</span>
-        <span>Esquiva {formatPercent(game.derived.dodgeChance)}</span>
+        <span>
+          <strong>Crítico {formatSecondaryIndex(game.derived.criticalChance)}</strong>
+          <small>contra Resistência Crítica</small>
+        </span>
+        <span>
+          <strong>Precisão {formatSecondaryIndex(game.derived.accuracy)}</strong>
+          <small>contra Esquiva</small>
+        </span>
+        <span>
+          <strong>Esquiva {formatSecondaryIndex(game.derived.dodgeChance)}</strong>
+          <small>contra Precisão</small>
+        </span>
+        <span>
+          <strong>Resist. crítico {formatSecondaryIndex(game.derived.criticalResistance)}</strong>
+          <small>contra Crítico</small>
+        </span>
+        <span>
+          <strong>Dano crítico x{game.derived.criticalDamageMultiplier.toFixed(2)}</strong>
+          <small>ao acertar crítico</small>
+        </span>
       </div>
 
       <section className="compact-section">
@@ -7120,6 +7139,10 @@ function getShopBuyBlockedReason(game: GameState, item: ItemDefinition) {
 
 function formatPercent(value: number) {
   return `${Math.round(value * 100)}%`;
+}
+
+function formatSecondaryIndex(value: number) {
+  return Math.round(value * 100).toString();
 }
 
 function formatListingDate(value: number) {

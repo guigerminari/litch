@@ -149,6 +149,8 @@ export interface DerivedStats {
   agility: number;
   criticalChance: number;
   dodgeChance: number;
+  accuracy: number;
+  criticalResistance: number;
   damageBonusPercent: number;
   criticalDamageMultiplier: number;
   xpBonusPercent: number;
@@ -397,6 +399,8 @@ export interface BattleParticipant {
   agility: number;
   criticalChance?: number;
   dodgeChance?: number;
+  accuracy?: number;
+  criticalResistance?: number;
   damageBonusPercent?: number;
   criticalDamageMultiplier?: number;
 }

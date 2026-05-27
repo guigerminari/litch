@@ -40,6 +40,8 @@ function playerParticipant(character: Character, itemCatalog: Record<string, Ite
     agility: stats.agility,
     criticalChance: stats.criticalChance,
     dodgeChance: stats.dodgeChance,
+    accuracy: stats.accuracy,
+    criticalResistance: stats.criticalResistance,
     damageBonusPercent: stats.damageBonusPercent,
     criticalDamageMultiplier: stats.criticalDamageMultiplier
   };
@@ -58,32 +60,62 @@ function monsterParticipant(monster: MonsterDefinition): BattleParticipant {
     strength: monster.strength,
     defense: monster.defense,
     agility: monster.agility,
-    criticalChance: Math.min(0.35, monster.agility * 0.01),
-    dodgeChance: Math.min(0.25, monster.agility * 0.008),
+    criticalChance: criticalChance(monster.agility),
+    dodgeChance: dodgeChance(monster.agility),
+    accuracy: accuracy(monster.agility),
+    criticalResistance: criticalResistance(monster.agility),
     damageBonusPercent: 0,
-    criticalDamageMultiplier: 1.5
+    criticalDamageMultiplier: criticalDamageMultiplier(monster.agility)
   };
 }
 
 function criticalChance(agility: number) {
-  return Math.min(0.35, agility * 0.01);
+  return agility * 0.006;
 }
 
 function dodgeChance(agility: number) {
-  return Math.min(0.25, agility * 0.008);
+  return agility * 0.005;
+}
+
+function accuracy(agility: number) {
+  return agility * 0.004;
+}
+
+function criticalResistance(agility: number, constitution = agility) {
+  return ((agility + constitution) / 2) * 0.004;
+}
+
+function criticalDamageMultiplier(agility: number) {
+  return 1.5 + agility * 0.002;
+}
+
+function clampChance(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function attack(attacker: BattleParticipant, defender: BattleParticipant, battle: BattleState) {
-  const dodged = Math.random() < (defender.dodgeChance ?? dodgeChance(defender.agility));
+  const finalDodgeChance = clampChance(
+    (defender.dodgeChance ?? dodgeChance(defender.agility)) - (attacker.accuracy ?? accuracy(attacker.agility)),
+    0.02,
+    0.45
+  );
+  const dodged = Math.random() < finalDodgeChance;
   if (dodged) {
     battle.log.unshift(entry(`${defender.name} esquivou do ataque de ${attacker.name}.`));
     return { damage: 0, dodged: true, critical: false };
   }
 
-  const critical = Math.random() < (attacker.criticalChance ?? criticalChance(attacker.agility));
+  const finalCriticalChance = clampChance(
+    (attacker.criticalChance ?? criticalChance(attacker.agility)) -
+      (defender.criticalResistance ?? criticalResistance(defender.agility)),
+    0.03,
+    0.65
+  );
+  const critical = Math.random() < finalCriticalChance;
   const baseDamage = Math.max(0, attacker.strength - defender.defense);
   const boostedDamage = Math.ceil(baseDamage * (1 + (attacker.damageBonusPercent ?? 0)));
-  const damage = critical ? Math.ceil(boostedDamage * (attacker.criticalDamageMultiplier ?? 1.5)) : boostedDamage;
+  const criticalMultiplier = attacker.criticalDamageMultiplier ?? criticalDamageMultiplier(attacker.agility);
+  const damage = critical ? Math.ceil(boostedDamage * criticalMultiplier) : boostedDamage;
   defender.hp = Math.max(0, defender.hp - damage);
 
   battle.log.unshift(

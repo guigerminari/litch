@@ -105,6 +105,24 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
     (clanRanks.clan_vitality_1 ?? 0) * 0.02 +
     (clanRanks.clan_vitality_2 ?? 0) * 0.015 +
     (defenseSuperActive ? 0.1 : 0);
+  const criticalChance =
+    attributes.agility * 0.006 +
+    (talentRanks.off_crit_1 ?? 0) * 0.02 +
+    (clanRanks.clan_crit_1 ?? 0) * 0.005 +
+    (clanRanks.clan_crit_2 ?? 0) * 0.005 +
+    (combatSuperActive ? 0.03 : 0);
+  const dodgeChance =
+    attributes.agility * 0.005 +
+    (talentRanks.def_dodge_1 ?? 0) * 0.02 +
+    (clanRanks.clan_dodge_1 ?? 0) * 0.005 +
+    (clanRanks.clan_dodge_2 ?? 0) * 0.005 +
+    (defenseSuperActive ? 0.03 : 0);
+  const accuracy = attributes.agility * 0.004 + (combatSuperActive ? 0.02 : 0);
+  const criticalResistance =
+    ((attributes.agility + attributes.constitution) / 2) * 0.004 +
+    (clanRanks.clan_guard_1 ?? 0) * 0.002 +
+    (clanRanks.clan_guard_2 ?? 0) * 0.002 +
+    (defenseSuperActive ? 0.03 : 0);
 
   return {
     maxHp: Math.floor((character.level * 20 + 3 * attributes.constitution) * (1 + maxHpBonusPercent)),
@@ -124,24 +142,13 @@ export function deriveStats(character: Character, itemCatalog: Record<string, It
       (clanRanks.clan_guard_2 ?? 0) +
       (defenseSuperActive ? 5 : 0),
     agility: attributes.agility,
-    criticalChance: Math.min(
-      0.6,
-        attributes.agility * 0.01 +
-        (talentRanks.off_crit_1 ?? 0) * 0.02 +
-        (clanRanks.clan_crit_1 ?? 0) * 0.005 +
-        (clanRanks.clan_crit_2 ?? 0) * 0.005 +
-        (combatSuperActive ? 0.03 : 0)
-    ),
-    dodgeChance: Math.min(
-      0.45,
-        attributes.agility * 0.008 +
-        (talentRanks.def_dodge_1 ?? 0) * 0.02 +
-        (clanRanks.clan_dodge_1 ?? 0) * 0.005 +
-        (clanRanks.clan_dodge_2 ?? 0) * 0.005 +
-        (defenseSuperActive ? 0.03 : 0)
-    ),
+    criticalChance,
+    dodgeChance,
+    accuracy,
+    criticalResistance,
     damageBonusPercent,
-    criticalDamageMultiplier: 1.5 + (talentRanks.off_crit_damage_1 ?? 0) * 0.15 + (combatSuperActive ? 0.2 : 0),
+    criticalDamageMultiplier:
+      1.5 + attributes.agility * 0.002 + (talentRanks.off_crit_damage_1 ?? 0) * 0.15 + (combatSuperActive ? 0.2 : 0),
     xpBonusPercent:
       (talentRanks.util_xp_1 ?? 0) * 0.05 +
       (talentRanks.util_xp_2 ?? 0) * 0.08 +
