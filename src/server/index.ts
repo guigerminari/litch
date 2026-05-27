@@ -134,7 +134,18 @@ const CLAN_DEFAULT_ICON = "shield";
 const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"]);
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
-const DEFAULT_AVATAR_ID = "wanderer";
+const DEFAULT_AVATAR_ID = "andarilho";
+const LEGACY_AVATAR_ID_MAP: Record<string, string> = {
+  wanderer: "andarilho",
+  guardian: "recruta",
+  duelist: "assassino",
+  ember: "barbaro",
+  arcane: "maga",
+  shadow: "necromante",
+  sovereign: "paladino",
+  crystal: "dragao",
+  arena_champion: "campeao_arena"
+};
 const REFERRAL_REWARD_LEVEL = 30;
 const REFERRAL_REWARD_GOLD = 30000;
 const REFERRAL_REWARD_DIAMONDS = 30;
@@ -156,7 +167,7 @@ const ARENA_RANKED_LOSS_GOLD = 100;
 const ARENA_RANKED_WIN_GOLD = 300;
 const ARENA_BLUE_COIN_ID = "material_blue_coin";
 const ARENA_GOLD_COIN_ID = "material_gold_coin";
-const ARENA_CHAMPION_AVATAR_ID = "arena_champion";
+const ARENA_CHAMPION_AVATAR_ID = "campeao_arena";
 const MONARCH_SCHEDULE = [
   {
     id: "rei-lich",
@@ -376,7 +387,7 @@ function createCharacter(player: Player): Character {
     pveAutoUntil: 0,
     royalSealUntil: 0,
     avatarId: DEFAULT_AVATAR_ID,
-    unlockedAvatarIds: AVATARS.filter((avatar) => avatar.priceDiamonds === 0).map((avatar) => avatar.id),
+    unlockedAvatarIds: AVATARS.filter((avatar) => avatar.priceDiamonds === 0 && !avatar.exclusive).map((avatar) => avatar.id),
     referralRewardsClaimedFor: [],
     monarchAttempts: { dayKey: "", count: 0 },
     activeWork: null,
@@ -411,7 +422,13 @@ function currentCharacter(playerId: string) {
   character.marketHistory ??= [];
   character.pveAutoUntil ??= 0;
   character.royalSealUntil ??= 0;
-  character.unlockedAvatarIds ??= AVATARS.filter((avatar) => avatar.priceDiamonds === 0).map((avatar) => avatar.id);
+  character.unlockedAvatarIds ??= AVATARS.filter((avatar) => avatar.priceDiamonds === 0 && !avatar.exclusive).map((avatar) => avatar.id);
+  character.unlockedAvatarIds = Array.from(
+    new Set(character.unlockedAvatarIds.map((avatarId) => LEGACY_AVATAR_ID_MAP[avatarId] ?? avatarId))
+  );
+  if (character.avatarId && LEGACY_AVATAR_ID_MAP[character.avatarId]) {
+    character.avatarId = LEGACY_AVATAR_ID_MAP[character.avatarId];
+  }
   character.referralRewardsClaimedFor ??= [];
   character.avatarId = AVATARS.some((avatar) => avatar.id === character.avatarId) ? character.avatarId : DEFAULT_AVATAR_ID;
   if (!character.unlockedAvatarIds.includes(DEFAULT_AVATAR_ID)) {
@@ -2012,8 +2029,11 @@ function selectAvatar(character: Character, avatarId: string) {
   if (!avatar) {
     throw new Error("Avatar não encontrado.");
   }
-  character.unlockedAvatarIds ??= AVATARS.filter((entry) => entry.priceDiamonds === 0).map((entry) => entry.id);
+  character.unlockedAvatarIds ??= AVATARS.filter((entry) => entry.priceDiamonds === 0 && !entry.exclusive).map((entry) => entry.id);
   if (!character.unlockedAvatarIds.includes(avatar.id)) {
+    if (avatar.exclusive) {
+      throw new Error(avatar.unlockHint ?? "Este avatar é uma recompensa exclusiva.");
+    }
     if (avatar.priceDiamonds <= 0) {
       character.unlockedAvatarIds.push(avatar.id);
     } else {

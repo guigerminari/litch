@@ -2236,10 +2236,14 @@ function CharacterAvatar({
   return (
     <span
       className={`profile-avatar ${className}`}
-      style={{ width: size, height: size, background: avatar?.accent }}
+      style={{ width: size, height: size, background: 'transparent' }}
       title={alert ? alertLabel : avatar?.name}
     >
-      {getAvatarIcon(avatar?.icon ?? "user", Math.max(18, Math.floor(size * 0.48)))}
+      {avatar?.imageUrl ? (
+        <img className="profile-avatar-image" src={avatar.imageUrl} alt="" loading="lazy" decoding="async" />
+      ) : (
+        getAvatarIcon(avatar?.icon ?? "user", Math.max(18, Math.floor(size * 0.48)))
+      )}
       {royal && <i className="royal-seal-mini"><Crown size={Math.max(9, Math.floor(size * 0.16))} /></i>}
       {alert && <i className="profile-avatar-alert-dot" aria-label={alertLabel} />}
     </span>
@@ -2319,7 +2323,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
       return;
     }
     if (!unlocked && avatar.exclusive) {
-      window.alert(`${avatar.name} é um avatar exclusivo. Conquiste o 1º lugar em uma temporada da Arena Ranqueada.`);
+      window.alert(`${avatar.name} é um avatar exclusivo. ${avatar.unlockHint ?? "Desbloqueie esta recompensa no jogo."}`);
       return;
     }
     if (!unlocked && !window.confirm(`Comprar ${avatar.name} por ${avatar.priceDiamonds} diamantes?`)) {
@@ -2575,9 +2579,9 @@ function AvatarPickerModal({
                 className={`avatar-choice${selected ? " selected" : ""}${!unlocked ? " locked" : ""}`}
                 disabled={locked}
                 onClick={() => onChoose(avatar, unlocked)}
-                title={unlocked ? avatar.name : avatar.exclusive ? `${avatar.name} — Exclusivo` : `${avatar.name} - ${avatar.priceDiamonds} diamantes`}
+                title={unlocked ? avatar.name : avatar.exclusive ? `${avatar.name} — ${avatar.unlockHint ?? "Exclusivo"}` : `${avatar.name} - ${avatar.priceDiamonds} diamantes`}
               >
-                <CharacterAvatar avatar={avatar} size={46} />
+                <CharacterAvatar avatar={avatar} size={90} />
                 {!unlocked && <span className="avatar-lock"><Lock size={12} /></span>}
                 <span>{avatar.name}</span>
                 <small>
@@ -2586,7 +2590,7 @@ function AvatarPickerModal({
                   ) : unlocked ? (
                     "Usar"
                   ) : avatar.exclusive ? (
-                    "Exclusivo"
+                    "Recompensa"
                   ) : (
                     <>{avatar.priceDiamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></>
                   )}

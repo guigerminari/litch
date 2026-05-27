@@ -623,8 +623,10 @@ export interface AvatarDefinition {
   name: string;
   icon: AvatarIcon;
   accent: string;
+  imageUrl?: string;
   priceDiamonds: number;
   exclusive?: boolean;
+  unlockHint?: string;
 }
 
 export interface ArenaSeasonEntry {

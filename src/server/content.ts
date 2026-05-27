@@ -44,15 +44,29 @@ export const TEMPORARY_EVENTS: TemporaryEventDefinition[] = [
 ];
 
 export const AVATARS: AvatarDefinition[] = [
-  { id: "wanderer", name: "Viajante", icon: "user", accent: "linear-gradient(135deg, #8be9fd, #bd93f9)", priceDiamonds: 0 },
-  { id: "guardian", name: "Guardião", icon: "shield", accent: "linear-gradient(135deg, #50fa7b, #8be9fd)", priceDiamonds: 0 },
-  { id: "duelist", name: "Duelista", icon: "swords", accent: "linear-gradient(135deg, #ff79c6, #bd93f9)", priceDiamonds: 25 },
-  { id: "ember", name: "Brasa Real", icon: "flame", accent: "linear-gradient(135deg, #ffb86c, #ff5555)", priceDiamonds: 40 },
-  { id: "arcane", name: "Arcano", icon: "sparkles", accent: "linear-gradient(135deg, #8be9fd, #f1fa8c)", priceDiamonds: 60 },
-  { id: "shadow", name: "Sombra", icon: "skull", accent: "linear-gradient(135deg, #44475a, #bd93f9)", priceDiamonds: 75 },
-  { id: "sovereign", name: "Soberano", icon: "crown", accent: "linear-gradient(135deg, #f1fa8c, #ff79c6)", priceDiamonds: 120 },
-  { id: "crystal", name: "Cristal", icon: "gem", accent: "linear-gradient(135deg, #8be9fd, #50fa7b)", priceDiamonds: 150 },
-  { id: "arena_champion", name: "Campeão da Arena", icon: "crown", accent: "linear-gradient(135deg, #ffd700, #ff8c00)", priceDiamonds: 0, exclusive: true }
+  { id: "andarilho", name: "Andarilho", icon: "user", accent: "linear-gradient(135deg, #7C4DFF, #DCCBFF)", imageUrl: "/assets/avatar/andarilho_free.png", priceDiamonds: 0 },
+  { id: "assassina", name: "Assassina", icon: "swords", accent: "linear-gradient(135deg, #211B31, #9D6BFF)", imageUrl: "/assets/avatar/assassina_free.png", priceDiamonds: 0 },
+  { id: "assassino", name: "Assassino", icon: "swords", accent: "linear-gradient(135deg, #171424, #7C4DFF)", imageUrl: "/assets/avatar/assassino_free.png", priceDiamonds: 0 },
+  { id: "barbaro", name: "Bárbaro", icon: "flame", accent: "linear-gradient(135deg, #3A2230, #C94E6B)", imageUrl: "/assets/avatar/barbaro_free.png", priceDiamonds: 0 },
+  { id: "cacador", name: "Caçador", icon: "shield", accent: "linear-gradient(135deg, #172421, #52D89B)", imageUrl: "/assets/avatar/cacador_free.png", priceDiamonds: 0 },
+  { id: "clerigo", name: "Clérigo", icon: "sparkles", accent: "linear-gradient(135deg, #211B31, #DCCBFF)", imageUrl: "/assets/avatar/clerigo_free.png", priceDiamonds: 0 },
+  { id: "drow", name: "Drow", icon: "skull", accent: "linear-gradient(135deg, #100D1A, #7C4DFF)", imageUrl: "/assets/avatar/drow_free.png", priceDiamonds: 0 },
+  { id: "ferreiro", name: "Ferreiro", icon: "shield", accent: "linear-gradient(135deg, #2E2635, #D8B24A)", imageUrl: "/assets/avatar/ferreiro_free.png", priceDiamonds: 0 },
+  { id: "maga", name: "Maga", icon: "sparkles", accent: "linear-gradient(135deg, #171424, #52E0C4)", imageUrl: "/assets/avatar/maga_free.png", priceDiamonds: 0 },
+  { id: "monge", name: "Monge", icon: "shield", accent: "linear-gradient(135deg, #211B31, #AFA3C7)", imageUrl: "/assets/avatar/monge_free.png", priceDiamonds: 0 },
+  { id: "orc", name: "Orc", icon: "swords", accent: "linear-gradient(135deg, #172421, #746A86)", imageUrl: "/assets/avatar/orc_free.png", priceDiamonds: 0 },
+  { id: "princesa", name: "Princesa", icon: "crown", accent: "linear-gradient(135deg, #211B31, #DCCBFF)", imageUrl: "/assets/avatar/princesa_free.png", priceDiamonds: 0 },
+  { id: "recruta", name: "Recruta", icon: "user", accent: "linear-gradient(135deg, #100D1A, #AFA3C7)", imageUrl: "/assets/avatar/recruta_free.png", priceDiamonds: 0 },
+  { id: "undead", name: "Undead", icon: "skull", accent: "linear-gradient(135deg, #171424, #52E0C4)", imageUrl: "/assets/avatar/undead_free.png", priceDiamonds: 0 },
+  { id: "dragao", name: "Dragão", icon: "flame", accent: "linear-gradient(135deg, #3A2230, #9D6BFF)", imageUrl: "/assets/avatar/dragao_pago.png", priceDiamonds: 180 },
+  { id: "druida", name: "Druida", icon: "sparkles", accent: "linear-gradient(135deg, #172421, #52D89B)", imageUrl: "/assets/avatar/druida_pago.png", priceDiamonds: 80 },
+  { id: "general_undead", name: "General Undead", icon: "skull", accent: "linear-gradient(135deg, #100D1A, #9D6BFF)", imageUrl: "/assets/avatar/general_undead_pago.png", priceDiamonds: 220 },
+  { id: "litch", name: "Litch", icon: "crown", accent: "linear-gradient(135deg, #0B0912, #7C4DFF)", imageUrl: "/assets/avatar/litch_pago.png", priceDiamonds: 250 },
+  { id: "lobo", name: "Lobo", icon: "shield", accent: "linear-gradient(135deg, #171424, #AFA3C7)", imageUrl: "/assets/avatar/lobo_pago.png", priceDiamonds: 90 },
+  { id: "necromante", name: "Necromante", icon: "skull", accent: "linear-gradient(135deg, #100D1A, #7C4DFF)", imageUrl: "/assets/avatar/necromante_pago.png", priceDiamonds: 140 },
+  { id: "paladino", name: "Paladino", icon: "shield", accent: "linear-gradient(135deg, #211B31, #D8B24A)", imageUrl: "/assets/avatar/paladino_pago.png", priceDiamonds: 120 },
+  { id: "campeao_arena", name: "Campeão da Arena", icon: "crown", accent: "linear-gradient(135deg, #211B31, #D8B24A)", imageUrl: "/assets/avatar/campeao_arena.png", priceDiamonds: 0, exclusive: true, unlockHint: "Conquiste o 1º lugar em uma temporada da Arena Ranqueada." },
+  { id: "rei", name: "Rei", icon: "crown", accent: "linear-gradient(135deg, #0B0912, #D8B24A)", imageUrl: "/assets/avatar/rei_recompensa.png", priceDiamonds: 0, exclusive: true, unlockHint: "Avatar de recompensa especial." }
 ];
 
 export const ITEM_CATALOG: Record<string, ItemDefinition> = {
