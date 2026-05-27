@@ -134,7 +134,7 @@ const CLAN_DEFAULT_ICON = "shield";
 const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"]);
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
-const DEFAULT_AVATAR_ID = "andarilho";
+const DEFAULT_AVATAR_ID = "recruta";
 const LEGACY_AVATAR_ID_MAP: Record<string, string> = {
   wanderer: "andarilho",
   guardian: "recruta",

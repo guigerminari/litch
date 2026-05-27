@@ -1173,7 +1173,7 @@ function Header({
         <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
           <CharacterAvatar
             avatar={getCurrentAvatar(game)}
-            size={42}
+            size={50}
             royal={royalSealActive}
             className="character-chip-avatar"
             alert={hasGrowthPoints}
