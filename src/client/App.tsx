@@ -1048,7 +1048,7 @@ function PlayerActionModal({
             <MessageCircle size={15} /> Mensagem privada
           </button>
           <button className="ghost-button" onClick={onDuel} disabled={!profile?.online}>
-            <GameIcon name="arena" size={16} className="button-game-icon" /> Convidar para duelo
+            <Swords size={16} /> Convidar para duelo
           </button>
         </div>
         {profile && (
@@ -1063,13 +1063,11 @@ function PlayerActionModal({
                 <span>{getClanCrestIcon(profile.clanIcon ?? "shield", 18)}</span>
                 <div>
                   <strong>{profile.clanName}</strong>
-                  <small>Clã nível {profile.clanLevel ?? 0}</small>
+                  <small>Nv. {profile.clanLevel ?? 0}</small>
                 </div>
               </div>
             )}
             <div className="player-profile-grid">
-              <div><span>Nível</span><strong>{profile.level}</strong></div>
-              <div><span>Clã</span><strong>{profile.clanName ? `Nv ${profile.clanLevel ?? 0}` : "Sem clã"}</strong></div>
               <div><span>Ranqueada</span><strong>{profile.arenaRankedPoints} pts</strong></div>
               <div><span>Masmorras</span><strong>{profile.dungeonClears}</strong></div>
             </div>
@@ -2327,7 +2325,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
   };
 
   return (
-    <aside className="side-panel character-panel">
+    <section className="character-panel">
       <header className="character-identity">
         <button
           className="avatar-ring avatar-ring-button"
@@ -2345,18 +2343,19 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           />
         </button>
         <div className="character-identity-copy">
-          <div>
+          <div style={{alignContent: "space-evenly"}}>
             <h2>{game.character.name}</h2>
-            <p className="muted">Nível {game.character.level}</p>
+            <p className="muted">Nv. {game.character.level}</p>
           </div>
 
           {game.clan ? (
             <div className="character-clan-info compact">
-              <span className="character-clan-crest">{getClanCrestIcon(game.clan.icon, 18)}</span>
               <div>
+                <span className="character-clan-crest">{getClanCrestIcon(game.clan.icon, 18)}</span>
                 <strong>{game.clan.name}</strong>
-                <small>Nível {game.clan.level} - {game.clan.leaderPlayerId === game.player.id ? "Líder do clã" : "Membro do clã"}</small>
               </div>
+              <small>Nv. {game.clan.level} - {game.clan.leaderPlayerId === game.player.id ? "Líder" : "Membro"}</small>
+              
             </div>
           ) : ""}
         </div>
@@ -2383,11 +2382,11 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
       </section>
 
       <div className="stat-grid">
-        <Metric icon={<Heart size={18} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
-        <Metric icon={<Zap size={18} />} label="Energia" value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`} />
-        <Metric icon={<Swords size={18} />} label="FORÇA" value={game.derived.totalStrength} />
-        <Metric icon={<Shield size={18} />} label="DEFESA" value={game.derived.defense} />
-        <Metric icon={<Crosshair size={18} />} label="AGI" value={game.derived.agility} />
+        <Metric icon={<Heart size={18} style={{color: "var(--red)"}} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
+        <Metric icon={<Zap size={18} style={{color: "var(--green)"}} />} label="Energia" value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`} />
+        <Metric icon={<Swords size={18} style={{color: "var(--red)"}} />} label="FORÇA" value={game.derived.totalStrength} />
+        <Metric icon={<Shield size={18} style={{color: "var(--purple)"}} />} label="DEFESA" value={game.derived.defense} />
+        <Metric icon={<Crosshair size={18} style={{color: "var(--gold)"}} />} label="AGI" value={game.derived.agility} />
       </div>
 
       <div className="chance-row">
@@ -2460,7 +2459,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
       </section>
 
       <section className="compact-section">
-        <h3>Atributos</h3>
+        <h3>Atributos Base</h3>
         {attributes.map((attribute) => {
           const attrIcon = { strength: <Swords size={13} />, constitution: <Heart size={13} />, agility: <Zap size={13} /> };
           return (
@@ -2527,7 +2526,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
       {resetModal && (
         <ResetChoiceModal game={game} target={resetModal} onClose={() => setResetModal(null)} />
       )}
-    </aside>
+    </section>
   );
 }
 
@@ -3739,7 +3738,7 @@ function ClanPanel({ game }: { game: GameState }) {
 
     return (
       <section className="content-panel clan-panel">
-      <PanelTitle icon={<GameIcon name="clan" size={26} />} title="Clã" />
+      <PanelTitle icon={<GameIcon name="clan" size={50} />} title="Clã" />
         <div className="clan-create-section">
           <button
             className="primary-button clan-create-button"
@@ -3808,7 +3807,7 @@ function ClanPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel clan-panel">
-      <PanelTitle icon={getClanCrestIcon(clan.icon, 20)} title={clan.name} />
+      <PanelTitle icon={getClanCrestIcon(clan.icon, 50)} title={clan.name} />
       <div className="clan-header-grid">
         <div className="clan-summary">
           <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
@@ -4307,7 +4306,7 @@ function HuntPanel({ game }: { game: GameState }) {
               <MonsterVisual monster={monster} className="entity-art" />
               <div>
                 <strong>{monster.name}</strong>
-                <span>Nv {monster.level}</span>
+                <span>Nv. {monster.level}</span>
               </div>
               <div className="monster-stats">
                 <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>

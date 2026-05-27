@@ -1526,9 +1526,8 @@ button:disabled {
 }
 
 .character-clan-info {
-  display: flex;
+  display: grid;
   align-items: center;
-  gap: 10px;
   padding: 10px;
 }
 
@@ -1536,7 +1535,6 @@ button:disabled {
   width: fit-content;
   max-width: 100%;
   padding: 7px 9px;
-  gap: 8px;
 }
 
 .character-clan-info.compact .character-clan-crest {
@@ -1550,9 +1548,6 @@ button:disabled {
   height: 36px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(189, 147, 249, 0.4);
-  border-radius: 8px;
-  background: rgba(189, 147, 249, 0.1);
   color: var(--purple);
   flex-shrink: 0;
 }
@@ -1565,7 +1560,7 @@ button:disabled {
 }
 
 .character-clan-info > div {
-  display: grid;
+  display: flex;
   gap: 2px;
 }
 
@@ -1884,8 +1879,10 @@ button:disabled {
 .character-panel {
   display: grid;
   gap: 14px;
-  max-width: 860px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
 }
 
 .character-identity {
@@ -1904,7 +1901,11 @@ button:disabled {
 
 .character-identity-copy h2,
 .character-identity-copy p {
-  margin: 0;
+  margin: 0 !important;
+}
+
+.character-identity-copy h2 {
+  font-size: 1rem;
 }
 
 .character-no-clan {
@@ -2227,9 +2228,9 @@ button:disabled {
 .character-drawer {
   position: relative;
   width: min(920px, calc(100vw - 24px));
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 55px);
   overflow: auto;
-  padding: 28px;
+  padding: 18px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: #282a36;
@@ -2238,8 +2239,8 @@ button:disabled {
 
 .close-button {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 3px;
+  right: 3px;
   z-index: 2;
   width: 38px;
   height: 38px;
@@ -3053,12 +3054,11 @@ button:disabled .game-icon {
 }
 
 .player-profile-clan > span {
-  width: 34px;
-  height: 34px;
+  width: 45px;
+  height: 45px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(157, 107, 255, 0.36);
-  border-radius: 8px;
+  background: none;
   color: var(--lavender);
 }
 
@@ -3101,6 +3101,8 @@ button:disabled .game-icon {
 .city-group {
   display: grid;
   gap: 8px;
+  width: min(520px, 100%);
+  margin: 0 auto;
 }
 
 .city-group-title {
@@ -3153,7 +3155,7 @@ button:disabled .game-icon {
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(5, 70px);
+  grid-template-columns: repeat(max(1,5), 70px);
   justify-content: center;
   gap: 6px;
   margin-bottom: 12px;
@@ -3958,7 +3960,7 @@ button:disabled .game-icon {
 }
 
 .monster-card {
-  grid-template-columns: 64px minmax(0, 1fr) auto;
+  grid-template-columns: 64px auto auto;
   align-items: center;
   column-gap: 10px;
   row-gap: 4px;
@@ -3966,14 +3968,14 @@ button:disabled .game-icon {
 
 .monster-card .entity-art {
   grid-column: 1;
-  grid-row: 1 / span 2;
+  grid-row: 1 / span 3;
   width: 56px;
   align-self: center;
   justify-self: start;
 }
 
 .monster-card > div:not(.monster-stats) {
-  grid-column: 2;
+  grid-column: 2 / span 2;
   align-self: end;
   min-width: 0;
 }
@@ -3998,7 +4000,7 @@ button:disabled .game-icon {
 
 .monster-card .monster-stats {
   display: flex;
-  grid-column: 2;
+  grid-column: 2 / span 2;
   grid-row: 2;
   gap: 6px;
   align-self: start;
@@ -4017,7 +4019,7 @@ button:disabled .game-icon {
 
 .monster-card .primary-button {
   grid-column: 3;
-  grid-row: 1 / span 3;
+  grid-row: 3 / span 2;
   min-height: 36px;
   padding: 0 10px;
   align-self: center;
@@ -5653,6 +5655,11 @@ button:disabled .game-icon {
   gap: 16px;
 }
 
+.clan-panel {
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
 .quest-section,
 .ranking-section,
 .talent-tree {
@@ -5808,14 +5815,14 @@ button:disabled .game-icon {
 
 .clan-header-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.95fr);
+  grid-template-columns: 1fr;
   gap: 10px;
   align-items: start;
 }
 
 .clan-summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 8px;
 }
 
@@ -7889,7 +7896,6 @@ button:disabled {
   color: var(--gold);
 }
 
-.character-clan-crest,
 .attribute-box,
 .hunt-location-banner,
 .inv-action-bar,
@@ -8042,6 +8048,7 @@ button:disabled {
 
   .topbar-status {
     gap: 5px;
+    align-self: flex-start;
   }
 
   .character-chip {
@@ -8188,7 +8195,6 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .clan-header-grid,
   .clan-treasury-grid {
     grid-template-columns: 1fr;
   }
