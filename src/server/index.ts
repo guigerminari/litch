@@ -111,6 +111,7 @@ import {
   progressWorkAptitude
 } from "../shared/work";
 import { getActiveTemporaryEventViews } from "../shared/temporaryEvents";
+import { normalizeClanCrestId } from "../shared/clan";
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
@@ -130,8 +131,6 @@ const CLAN_CREATE_MIN_LEVEL = 15;
 const CLAN_CREATE_DIAMOND_COST = 10;
 const CLAN_BENEFIT_RESET_DIAMOND_COST = 1000;
 const CLAN_BENEFIT_RESET_REFUND_RATE = 0.8;
-const CLAN_DEFAULT_ICON = "shield";
-const CLAN_ALLOWED_ICONS = new Set(["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"]);
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_AVATAR_ID = "recruta";
@@ -1650,7 +1649,7 @@ function getClanMemberCapacity(clan: { benefitAllocations: Record<string, number
 }
 
 function normalizeClanIcon(icon?: string) {
-  return icon && CLAN_ALLOWED_ICONS.has(icon) ? icon : CLAN_DEFAULT_ICON;
+  return normalizeClanCrestId(icon);
 }
 
 function normalizeClanName(name: string) {

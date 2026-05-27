@@ -5,7 +5,6 @@ import {
   Backpack,
   BarChart3,
   BookOpen,
-  Castle,
   CheckCircle2,
   Coins,
   Copy,
@@ -14,7 +13,6 @@ import {
   ChevronDown,
   ChevronRight,
   Flame,
-  Flag,
   FlaskConical,
   Gavel,
   Gem,
@@ -96,6 +94,7 @@ import {
   normalizeWorkMinutes
 } from "../shared/work";
 import { formatTemporaryEventBonusPercent } from "../shared/temporaryEvents";
+import { CLAN_CRESTS, getClanCrestDefinition, normalizeClanCrestId, type ClanCrestId } from "../shared/clan";
 import { socket } from "./socket";
 
 type View =
@@ -281,8 +280,6 @@ const QUEST_FILTER_LABELS: Record<QuestCategory | "all", string> = {
   potion: "Poções",
   level: "Nível"
 };
-const CLAN_CREST_OPTIONS = ["shield", "swords", "star", "gem", "castle", "trophy", "crown", "flame", "flag", "skull"] as const;
-
 const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   weapon: "Arma",
   armor: "Armadura",
@@ -1290,7 +1287,7 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
     { view: "inventory" as View, label: "Inventário", icon: <GameIcon name="inventory" size={40} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
     { view: "market" as View, label: "Mercado", icon: <GameIcon name="market" size={40} />, disabled: locked, badge: myListings > 0 ? myListings : null },
     { view: "missions" as View, label: "Missões", icon: <GameIcon name="missions" size={40} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
-    { view: "clan" as View, label: "Clã", icon: <GameIcon name="clan" size={40} />, disabled: locked, badge: null },
+    { view: "clan" as View, label: "Clã", icon: game.clan ? getClanCrestIcon(game.clan.icon, 40, "bottom-clan-crest") : <GameIcon name="clan" size={40} />, disabled: locked, badge: null },
     { view: "travel" as View, label: "Viajar", icon: <GameIcon name="travel" size={40} />, disabled: locked, badge: null }
   ];
 
@@ -3675,55 +3672,32 @@ function GameShopPanel({ game }: { game: GameState }) {
   );
 }
 
-function getClanCrestIcon(icon?: string, size = 18) {
-  switch (icon) {
-    case "swords":
-      return <Swords size={size} />;
-    case "star":
-      return <Star size={size} />;
-    case "gem":
-      return <Gem size={size} />;
-    case "castle":
-      return <Castle size={size} />;
-    case "trophy":
-      return <Trophy size={size} />;
-    case "crown":
-      return <Crown size={size} />;
-    case "flame":
-      return <Flame size={size} />;
-    case "flag":
-      return <Flag size={size} />;
-    case "skull":
-      return <Skull size={size} />;
-    case "shield":
-    default:
-      return <Shield size={size} />;
-  }
+function getClanCrestIcon(icon?: string, size = 18, className = "") {
+  const crest = getClanCrestDefinition(icon);
+  return (
+    <img
+      className={className ? `clan-crest-image ${className}` : "clan-crest-image"}
+      src={crest.imageUrl}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+      style={{ "--clan-crest-size": `${size}px` } as React.CSSProperties}
+    />
+  );
 }
 
 function getClanCrestLabel(icon: string) {
-  const labels: Record<string, string> = {
-    shield: "Escudo",
-    swords: "Espadas",
-    star: "Estrela",
-    gem: "Gema",
-    castle: "Castelo",
-    trophy: "Troféu",
-    crown: "Coroa",
-    flame: "Chama",
-    flag: "Bandeira",
-    skull: "Caveira"
-  };
-  return labels[icon] ?? "Escudo";
+  return getClanCrestDefinition(icon).label;
 }
 
 function ClanPanel({ game }: { game: GameState }) {
   const [activeTab, setActiveTab] = useState<"benefits" | "members" | "admin">("benefits");
   const [name, setName] = useState("");
-  const [crestIcon, setCrestIcon] = useState<(typeof CLAN_CREST_OPTIONS)[number]>("shield");
+  const [crestIcon, setCrestIcon] = useState<ClanCrestId>(normalizeClanCrestId());
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editName, setEditName] = useState("");
-  const [editCrestIcon, setEditCrestIcon] = useState<(typeof CLAN_CREST_OPTIONS)[number]>("shield");
+  const [editCrestIcon, setEditCrestIcon] = useState<ClanCrestId>(normalizeClanCrestId());
   const [gold, setGold] = useState(0);
   const [diamonds, setDiamonds] = useState(0);
   const clan = game.clan;
@@ -3751,11 +3725,7 @@ function ClanPanel({ game }: { game: GameState }) {
     if (!clan) return;
     setActiveTab("benefits");
     setEditName(clan.name);
-    setEditCrestIcon(
-      CLAN_CREST_OPTIONS.includes(clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
-        ? (clan.icon as (typeof CLAN_CREST_OPTIONS)[number])
-        : "shield"
-    );
+    setEditCrestIcon(normalizeClanCrestId(clan.icon));
   }, [clan?.id, clan?.name, clan?.icon]);
 
   useEffect(() => {
@@ -3794,15 +3764,15 @@ function ClanPanel({ game }: { game: GameState }) {
           <form className="market-form clan-create-form" onSubmit={createClan}>
             <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome do clã" maxLength={28} autoFocus />
             <div className="crest-picker" aria-label="Brasão do clã">
-              {CLAN_CREST_OPTIONS.map((icon) => (
+              {CLAN_CRESTS.map((crest) => (
                 <button
                   type="button"
-                  className={crestIcon === icon ? "crest-option selected" : "crest-option"}
-                  key={icon}
-                  title={getClanCrestLabel(icon)}
-                  onClick={() => setCrestIcon(icon)}
+                  className={crestIcon === crest.id ? "crest-option selected" : "crest-option"}
+                  key={crest.id}
+                  title={crest.label}
+                  onClick={() => setCrestIcon(crest.id)}
                 >
-                  {getClanCrestIcon(icon)}
+                  {getClanCrestIcon(crest.id, 32)}
                 </button>
               ))}
             </div>
@@ -3958,15 +3928,15 @@ function ClanPanel({ game }: { game: GameState }) {
             </div>
             <input value={editName} onChange={(event) => setEditName(event.target.value)} maxLength={28} placeholder="Nome do clã" />
             <div className="crest-picker" aria-label="Brasão do clã">
-              {CLAN_CREST_OPTIONS.map((icon) => (
+              {CLAN_CRESTS.map((crest) => (
                 <button
                   type="button"
-                  className={editCrestIcon === icon ? "crest-option selected" : "crest-option"}
-                  key={icon}
-                  title={getClanCrestLabel(icon)}
-                  onClick={() => setEditCrestIcon(icon)}
+                  className={editCrestIcon === crest.id ? "crest-option selected" : "crest-option"}
+                  key={crest.id}
+                  title={crest.label}
+                  onClick={() => setEditCrestIcon(crest.id)}
                 >
-                  {getClanCrestIcon(icon)}
+                  {getClanCrestIcon(crest.id, 60)}
                 </button>
               ))}
             </div>
