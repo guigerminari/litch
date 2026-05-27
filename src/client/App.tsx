@@ -52,6 +52,7 @@ import type {
   AvatarIcon,
   BattleLogEntry,
   BattleParticipant,
+  ChatMessage,
   ClanRankingEntry,
   Currency,
   GameState,
@@ -3046,24 +3047,26 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
           const progress = Math.min(100, Math.round((quest.progress / quest.target) * 100));
           return (
             <article className={quest.claimed ? "quest-row claimed" : "quest-row"} key={quest.id}>
-              <div className="quest-info-line">
+              <strong className="quest-title">{quest.title}</strong>
+              <div className="quest-card-body">
                 <div className="quest-main">
-                <strong>{quest.title}</strong>
-                <span>{quest.description}</span>
-                <small className="quest-category-tag">{QUEST_FILTER_LABELS[quest.category]}</small>
+                  <span>{quest.description}</span>
+                  <div className="quest-card-meta">
+                    <small className="quest-category-tag">{QUEST_FILTER_LABELS[quest.category]}</small>
+                    <div className="quest-reward">
+                      {quest.reward.experience ? <span>{quest.reward.experience} XP</span> : null}
+                      {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={12} style={{ color: "var(--gold)" }} /></span> : null}
+                      {quest.reward.diamonds ? <span>{quest.reward.diamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></span> : null}
+                    </div>
+                  </div>
                 </div>
-              <div className="quest-reward">
-                {quest.reward.experience ? <span>{quest.reward.experience} XP</span> : null}
-                {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={12} style={{ color: "var(--gold)" }} /></span> : null}
-                {quest.reward.diamonds ? <span>{quest.reward.diamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></span> : null}
-              </div>
-              <button
-                className="primary-button"
-                disabled={!quest.completed || quest.claimed}
-                onClick={() => socket.emit("quest:claim", { questId: quest.id })}
-              >
-                {quest.claimed ? "Resgatada" : "Resgatar"}
-              </button>
+                <button
+                  className="primary-button quest-claim-button"
+                  disabled={!quest.completed || quest.claimed}
+                  onClick={() => socket.emit("quest:claim", { questId: quest.id })}
+                >
+                  {quest.claimed ? "Resgatada" : "Resgatar"}
+                </button>
               </div>
               <div className="quest-progress">
                 <i>
@@ -6208,6 +6211,68 @@ function renderTextWithPlayerLinks(text: string, participants: BattleParticipant
   return fragments;
 }
 
+function normalizeChatSubject(value: string) {
+  return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function getSystemChatTone(chat: ChatMessage) {
+  const subject = normalizeChatSubject(`${chat.author} ${chat.text}`);
+  if (subject.includes("rei lich")) {
+    return { kind: "monarch-king", label: "Rei Lich", icon: <Crown size={15} /> };
+  }
+  if (subject.includes("morthaly") || subject.includes("monarca") || subject.includes("alvorada") || subject.includes("derrotado")) {
+    return { kind: "monarch", label: "Monarca", icon: <Skull size={15} /> };
+  }
+  if (subject.includes("subiu para") || subject.includes("nivel") || subject.includes("talento") || subject.includes("atributo")) {
+    return { kind: "level", label: "Evolução", icon: <Star size={15} /> };
+  }
+  if (subject.includes("recompensa") || subject.includes("ouro") || subject.includes("diamante") || subject.includes("xp")) {
+    return { kind: "reward", label: "Recompensa", icon: <Coins size={15} /> };
+  }
+  if (subject.includes("arena") || subject.includes("duelo") || subject.includes("ranqueada")) {
+    return { kind: "arena", label: "Arena", icon: <Swords size={15} /> };
+  }
+  if (subject.includes("trabalho") || subject.includes("servico") || subject.includes("agencia") || subject.includes("aptidao")) {
+    return { kind: "work", label: "Trabalho", icon: <BriefcaseBusiness size={15} /> };
+  }
+  if (subject.includes("mercado") || subject.includes("oferta") || subject.includes("compra") || subject.includes("venda")) {
+    return { kind: "market", label: "Mercado", icon: <ShoppingBag size={15} /> };
+  }
+  if (subject.includes("evento") || subject.includes("boas vindas")) {
+    return { kind: "event", label: "Evento", icon: <Sparkles size={15} /> };
+  }
+  if (subject.includes("viagem") || subject.includes("porto") || subject.includes("ticket") || subject.includes("cidade")) {
+    return { kind: "travel", label: "Viagem", icon: <MapPinned size={15} /> };
+  }
+  if (subject.includes("cla")) {
+    return { kind: "clan", label: "Clã", icon: <Shield size={15} /> };
+  }
+  return { kind: "system", label: "Sistema", icon: <ScrollText size={15} /> };
+}
+
+function GlobalChatMessage({ chat }: { chat: ChatMessage }) {
+  if (chat.playerId !== "system") {
+    return (
+      <article className="chat-message" key={chat.id}>
+        <strong><PlayerName playerId={chat.playerId} name={chat.author} /></strong>
+        <span>{chat.text}</span>
+      </article>
+    );
+  }
+
+  const tone = getSystemChatTone(chat);
+  return (
+    <article className={`chat-message system-chat-message ${tone.kind}`} key={chat.id}>
+      <span className="system-chat-icon" aria-hidden="true">{tone.icon}</span>
+      <strong className="system-chat-heading">
+        <span>{chat.author}</span>
+        <small>{tone.label}</small>
+      </strong>
+      <span className="system-chat-text">{chat.text}</span>
+    </article>
+  );
+}
+
 function FloatingChat({
   game,
   open,
@@ -6266,7 +6331,7 @@ function FloatingChat({
   }, [privateTarget?.playerId]);
 
   const chatContent = (
-    <div className={`floating-chat-layer country-${game.currentCountry.id}`}>
+    <div className={`floating-chat-layer country-${game.currentCountry.id}${open ? " open" : ""}`}>
       <button className="floating-chat-button" title="Chat" onClick={() => setOpen(!open)}>
         <MessageCircle size={22} />
         {!open && unreadPrivate > 0 && <span>{Math.min(99, unreadPrivate)}</span>}
@@ -6295,12 +6360,7 @@ function FloatingChat({
             <>
               <div className="chat-feed" ref={feedRef}>
                 {game.chatMessages.length === 0 && <p className="empty-state">Chat vazio.</p>}
-                {game.chatMessages.map((chat) => (
-                  <article className="chat-message" key={chat.id}>
-                    <strong><PlayerName playerId={chat.playerId} name={chat.author} /></strong>
-                    <span>{chat.text}</span>
-                  </article>
-                ))}
+                {game.chatMessages.map((chat) => <GlobalChatMessage chat={chat} key={chat.id} />)}
               </div>
               <form className="chat-form" onSubmit={sendGlobal}>
                 <input value={message} onChange={(e) => setMessage(e.target.value)} maxLength={240} placeholder="Mensagem global" />

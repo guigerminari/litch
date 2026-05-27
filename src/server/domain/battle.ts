@@ -10,12 +10,17 @@ import type {
 import { MONARCH_BATTLE_ATTACK_LIMIT } from "../../shared/types";
 import { getRarityFromRoll } from "../../shared/rarity";
 import { getActiveTemporaryEventViews, getTemporaryEventBonus } from "../../shared/temporaryEvents";
-import { ITEM_CATALOG, MONSTERS, TEMPORARY_EVENTS } from "../content";
+import { AVATARS, ITEM_CATALOG, MONSTERS, TEMPORARY_EVENTS } from "../content";
 import { addItem, findInventoryItem, hasCapacity, removeItem } from "./inventory";
 import { deriveStats, grantExperience } from "./stats";
 
 function entry(text: string) {
   return { id: randomUUID(), createdAt: Date.now(), text };
+}
+
+function getCharacterAvatarImageUrl(character: Character) {
+  return AVATARS.find((avatar) => avatar.id === character.avatarId)?.imageUrl
+    ?? AVATARS.find((avatar) => avatar.id === "recruta")?.imageUrl;
 }
 
 function playerParticipant(character: Character, itemCatalog: Record<string, ItemDefinition>): BattleParticipant {
@@ -26,6 +31,7 @@ function playerParticipant(character: Character, itemCatalog: Record<string, Ite
     ownerPlayerId: character.playerId,
     name: character.name,
     kind: "player",
+    imageUrl: getCharacterAvatarImageUrl(character),
     level: character.level,
     hp: currentHp,
     maxHp: stats.maxHp,
