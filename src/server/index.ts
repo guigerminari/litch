@@ -80,6 +80,7 @@ import {
   MONSTERS,
   SHIP_TICKET_ID,
   STARTING_CITY_ID,
+  TEMPORARY_EVENTS,
   TRAIN_TICKET_ID,
   TALENTS,
   WORK_SERVICES
@@ -109,6 +110,7 @@ import {
   normalizeWorkMinutes,
   progressWorkAptitude
 } from "../shared/work";
+import { getActiveTemporaryEventViews } from "../shared/temporaryEvents";
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
@@ -500,6 +502,7 @@ function serializeGameState(playerId: string): GameState {
     .map((id) => HUNTING_LOCATIONS[id])
     .filter(Boolean);
   const activeBattle = character.activeBattleId ? store.battles.get(character.activeBattleId) ?? null : null;
+  const activeEvents = getActiveTemporaryEventViews(TEMPORARY_EVENTS);
   const availableRecipes = getAvailableCraftingRecipes(character.cityId);
   const clan = character.clanId ? store.clans.get(character.clanId) ?? null : null;
   const derived = deriveStats(character, ITEM_CATALOG);
@@ -560,6 +563,7 @@ function serializeGameState(playerId: string): GameState {
       ...general,
       isKing: "isKing" in general ? Boolean(general.isKing) : false
     })),
+    activeEvents,
     regenHpAmount,
     regenEnergyAmount,
     clanChatMessages,

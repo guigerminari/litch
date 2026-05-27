@@ -71,6 +71,7 @@ import type {
   QuestCategory,
   Rarity,
   TalentDefinition,
+  TemporaryEventBonusDefinition,
   WorkReward,
   WorkServiceDefinition
 } from "../shared/types";
@@ -94,6 +95,7 @@ import {
   isWorkReady,
   normalizeWorkMinutes
 } from "../shared/work";
+import { formatTemporaryEventBonusPercent } from "../shared/temporaryEvents";
 import { socket } from "./socket";
 
 type View =
@@ -433,6 +435,7 @@ export function App() {
   const [showDetails, setShowDetails] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showExchange, setShowExchange] = useState(false);
+  const [showEvents, setShowEvents] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerReference | null>(null);
   const [privateChatTarget, setPrivateChatTarget] = useState<PlayerReference | null>(null);
   const [playerProfiles, setPlayerProfiles] = useState<Record<string, PlayerPublicProfile>>({});
@@ -778,6 +781,7 @@ export function App() {
           setPrivateTarget={setPrivateChatTarget}
         />
         <FloatingAgencyNotice game={game} onOpenAgency={() => setView("agency")} />
+        <FloatingEvents game={game} open={showEvents} setOpen={setShowEvents} />
         {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
         {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
         {utilityModal === "settings" && <SettingsModal game={game} onClose={() => setUtilityModal(null)} />}
@@ -880,6 +884,120 @@ function FloatingAgencyNotice({ game, onOpenAgency }: { game: GameState; onOpenA
     </div>,
     document.body
   );
+}
+
+function FloatingEvents({
+  game,
+  open,
+  setOpen
+}: {
+  game: GameState;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
+  const activeEvents = game.activeEvents ?? [];
+  if (activeEvents.length === 0 || typeof document === "undefined") {
+    return null;
+  }
+
+  const primaryEvent = activeEvents[0];
+  const content = (
+    <div className="floating-event-layer">
+      {open && (
+        <button
+          className="floating-event-backdrop"
+          type="button"
+          aria-label="Fechar detalhes dos eventos"
+          onClick={() => setOpen(false)}
+        />
+      )}
+      <button className="floating-event-button" type="button" title="Eventos ativos" onClick={() => setOpen(!open)}>
+        {primaryEvent.iconUrl ? <img src={primaryEvent.iconUrl} alt="" /> : <Sparkles size={22} />}
+        {activeEvents.length > 1 && <span>{activeEvents.length}</span>}
+      </button>
+      {open && (
+        <aside className="floating-event-panel" role="dialog" aria-label="Eventos temporários">
+          <div className="floating-event-header">
+            <div>
+              <span className="eyebrow">Eventos temporários</span>
+              <h2>{activeEvents.length === 1 ? "Evento ativo" : `${activeEvents.length} eventos ativos`}</h2>
+            </div>
+            <button className="floating-event-close" type="button" title="Fechar eventos" onClick={() => setOpen(false)}>
+              <X size={16} />
+            </button>
+          </div>
+          <div className="floating-event-list">
+            {activeEvents.map((event) => (
+              <TemporaryEventBanner event={event} key={event.id} />
+            ))}
+          </div>
+        </aside>
+      )}
+    </div>
+  );
+
+  return createPortal(content, document.body);
+}
+
+function TemporaryEventBanner({ event }: { event: GameState["activeEvents"][number] }) {
+  return (
+    <article
+      className="temporary-event-banner"
+      style={{ "--event-accent": event.accentColor ?? "#9D6BFF" } as React.CSSProperties}
+    >
+      {event.bannerImageUrl && <img className="temporary-event-watermark" src={event.bannerImageUrl} alt="" />}
+      <div className="temporary-event-content">
+        <span className="eyebrow">Evento</span>
+        <h3>{event.name}</h3>
+        {event.subtitle && <strong>{event.subtitle}</strong>}
+        <p>{event.description}</p>
+        <div className="temporary-event-bonuses">
+          {event.bonuses.flatMap((bonus, index) => renderTemporaryEventBonusChips(bonus, index))}
+        </div>
+        <small>Ativo até {formatTemporaryEventDate(event.endsAtMs)}</small>
+      </div>
+    </article>
+  );
+}
+
+function renderTemporaryEventBonusChips(bonus: TemporaryEventBonusDefinition, index: number) {
+  const chips = [
+    <span className="scope" key={`scope-${index}`}>
+      {formatTemporaryEventScope(bonus.scope)}
+    </span>
+  ];
+
+  if (bonus.xpBonusPercent) {
+    chips.push(<span key={`xp-${index}`}>XP {formatTemporaryEventBonusPercent(bonus.xpBonusPercent)}</span>);
+  }
+  if (bonus.goldBonusPercent) {
+    chips.push(<span key={`gold-${index}`}>Ouro {formatTemporaryEventBonusPercent(bonus.goldBonusPercent)}</span>);
+  }
+  if (bonus.dropChanceBonusPercent) {
+    chips.push(<span key={`drop-${index}`}>Drop {formatTemporaryEventBonusPercent(bonus.dropChanceBonusPercent)}</span>);
+  }
+  if (bonus.rewardMultiplier && bonus.rewardMultiplier !== 1) {
+    chips.push(<span key={`reward-${index}`}>Recompensas x{bonus.rewardMultiplier}</span>);
+  }
+
+  return chips;
+}
+
+function formatTemporaryEventScope(scope: TemporaryEventBonusDefinition["scope"]) {
+  if (scope === "hunt") return "Caçadas";
+  if (scope === "dungeon") return "Masmorras";
+  if (scope === "monarch") return "Monarcas";
+  return "Todo o jogo";
+}
+
+function formatTemporaryEventDate(timestamp: number) {
+  if (!timestamp) return "data indefinida";
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(timestamp));
 }
 
 function PlayerActionModal({

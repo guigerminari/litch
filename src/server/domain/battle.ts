@@ -9,7 +9,8 @@ import type {
 } from "../../shared/types";
 import { MONARCH_BATTLE_ATTACK_LIMIT } from "../../shared/types";
 import { getRarityFromRoll } from "../../shared/rarity";
-import { ITEM_CATALOG, MONSTERS } from "../content";
+import { getActiveTemporaryEventViews, getTemporaryEventBonus } from "../../shared/temporaryEvents";
+import { ITEM_CATALOG, MONSTERS, TEMPORARY_EVENTS } from "../content";
 import { addItem, findInventoryItem, hasCapacity, removeItem } from "./inventory";
 import { deriveStats, grantExperience } from "./stats";
 
@@ -495,17 +496,24 @@ function grantPveRewards(battle: BattleState, character: Character) {
   }
 
   const stats = deriveStats(character, ITEM_CATALOG);
-  const xp = Math.ceil(monster.experience * (1 + stats.xpBonusPercent));
-  const gold = Math.ceil(monster.gold * (1 + stats.goldBonusPercent));
+  const activeEvents = getActiveTemporaryEventViews(TEMPORARY_EVENTS);
+  const eventBonus = battle.mode === "pve" ? getTemporaryEventBonus(activeEvents, "hunt") : getTemporaryEventBonus(activeEvents, "dungeon");
+  const xp = Math.ceil(monster.experience * (1 + stats.xpBonusPercent + eventBonus.xpBonusPercent) * eventBonus.rewardMultiplier);
+  const gold = Math.ceil(monster.gold * (1 + stats.goldBonusPercent + eventBonus.goldBonusPercent) * eventBonus.rewardMultiplier);
   character.gold += gold;
   battle.log.unshift(entry(`${character.name} recebeu ${xp} XP e ${gold} ouro.`));
+  if (eventBonus.eventNames.length > 0) {
+    battle.log.unshift(entry(`Evento ${eventBonus.eventNames.join(", ")} concedeu bônus nesta caçada.`));
+  }
 
   for (const levelMessage of grantExperience(character, xp)) {
     battle.log.unshift(entry(levelMessage));
   }
 
   for (const drop of monster.drops) {
-    if (Math.random() <= Math.min(0.95, drop.chance + stats.dropBonusPercent)) {
+    const baseDropChance = Math.min(0.95, drop.chance + stats.dropBonusPercent);
+    const eventDropChance = Math.min(0.95, baseDropChance * (1 + eventBonus.dropChanceBonusPercent));
+    if (Math.random() <= eventDropChance) {
       if (hasCapacity(character, 1)) {
         const definition = ITEM_CATALOG[drop.itemId];
         const rarity = definition?.slot ? getRarityFromRoll() : undefined;

@@ -230,6 +230,35 @@ export interface MonsterDefinition {
   drops: MonsterDrop[];
 }
 
+export type TemporaryEventBonusScope = "hunt" | "dungeon" | "monarch" | "all";
+
+export interface TemporaryEventBonusDefinition {
+  scope: TemporaryEventBonusScope;
+  xpBonusPercent?: number;
+  goldBonusPercent?: number;
+  dropChanceBonusPercent?: number;
+  rewardMultiplier?: number;
+}
+
+export interface TemporaryEventDefinition {
+  id: string;
+  name: string;
+  subtitle?: string;
+  description: string;
+  startsAt: string;
+  endsAt: string;
+  iconUrl?: string;
+  bannerImageUrl?: string;
+  accentColor?: string;
+  bonuses: TemporaryEventBonusDefinition[];
+}
+
+export interface TemporaryEventView extends TemporaryEventDefinition {
+  startsAtMs: number;
+  endsAtMs: number;
+  nowMs: number;
+}
+
 export type MonarchEventStatus = "active" | "defeated" | "expired";
 
 export interface MonarchRankingEntry {
@@ -685,6 +714,7 @@ export interface GameState {
   nextRegenAt: number;
   monarchEvent: MonarchEventView | null;
   monarchGenerals: MonarchGeneralView[];
+  activeEvents: TemporaryEventView[];
   regenHpAmount: number;
   regenEnergyAmount: number;
   clanChatMessages: ChatMessage[];

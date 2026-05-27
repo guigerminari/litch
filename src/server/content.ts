@@ -10,6 +10,7 @@ import type {
   ItemDefinition,
   MonsterDefinition,
   TalentDefinition,
+  TemporaryEventDefinition,
   WorkServiceDefinition
 } from "../shared/types";
 
@@ -18,6 +19,29 @@ export const STARTING_CITY_ID = "eldoria";
 
 export const TRAIN_TICKET_ID = "ticket_train";
 export const SHIP_TICKET_ID = "ticket_ship";
+
+export const TEMPORARY_EVENTS: TemporaryEventDefinition[] = [
+  {
+    id: "welcome_2026",
+    name: "BOAS VINDAS!",
+    subtitle: "A chama inicial dos recrutas",
+    description:
+      "Durante o evento, todas as caçadas recebem bônus de 50% de XP, 50% de ouro e 50% de chance de drop. Um empurrão arcano para novos e antigos recrutas acelerarem a jornada.",
+    startsAt: "2026-05-01T00:00:00-03:00",
+    endsAt: "2026-12-31T23:59:59-03:00",
+    iconUrl: "/assets/banner/events/icons/boas_vindas.png",
+    bannerImageUrl: "/assets/banner/events/boas_vindas.png",
+    accentColor: "#9D6BFF",
+    bonuses: [
+      {
+        scope: "hunt",
+        xpBonusPercent: 0.5,
+        goldBonusPercent: 0.5,
+        dropChanceBonusPercent: 0.5
+      }
+    ]
+  }
+];
 
 export const AVATARS: AvatarDefinition[] = [
   { id: "wanderer", name: "Viajante", icon: "user", accent: "linear-gradient(135deg, #8be9fd, #bd93f9)", priceDiamonds: 0 },
