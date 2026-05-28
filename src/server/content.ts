@@ -1587,25 +1587,25 @@ export const CLAN_SUPER_BENEFITS: ClanSuperBenefitDefinition[] = [
 
 export const COUNTRIES: CountryDefinition[] = [
   {
-    id: "aurevia",
-    name: "Aurevia",
-    description: "Reino de estradas antigas, fortalezas de pedra e bosques seguros.",
-    portCityId: "eldoria",
-    imageUrl: "/assets/locals/aurevia.png"
+    "id": "aurevia",
+    "name": "Aurevia",
+    "description": "País florestal de matas antigas, clareiras férteis, rios verdes e portos escondidos sob copas imensas.",
+    "portCityId": "eldoria",
+    "imageUrl": "/assets/locals/aurevia.png"
   },
   {
-    id: "valfria",
-    name: "Valfria",
-    description: "País frio de montanhas, ruínas espectrais e vilas isoladas.",
-    portCityId: "vila_de_valfria",
-    imageUrl: "/assets/locals/valfria.png"
+    "id": "valfria",
+    "name": "Valfria",
+    "description": "País desértico e seco, marcado por salinas, dunas ásperas, ventos quentes e cânions profundos.",
+    "portCityId": "vila_de_valfria",
+    "imageUrl": "/assets/locals/valfria.png"
   },
   {
-    id: "morthaly",
-    name: "Morthaly",
-    description: "Ilha necromântica de rochas negras, runas violetas e cidades tomadas por magia morta.",
-    portCityId: "porto_sombrio",
-    imageUrl: "/assets/locals/morthaly.png"
+    "id": "morthaly",
+    "name": "Morthaly",
+    "description": "País amaldiçoado, onde a névoa negra, os portos mortos e castelos necromânticos deformam a própria paisagem.",
+    "portCityId": "porto_sombrio",
+    "imageUrl": "/assets/locals/morthaly.png"
   }
 ];
 
@@ -1894,7 +1894,7 @@ export const CITIES: CityDefinition[] = [
     "name": "Eldoria",
     "minLevel": 1,
     "travelCost": 0,
-    "description": "Cidade principal, cercada por bosques antigos e estradas seguras.",
+    "description": "Cidade portuária de Aurevia, erguida entre cais arborizados, canais verdes e bosques que chegam até o mar.",
     "isPort": true,
     "inhabitants": [
       "Borin Martelo-Firme",
@@ -1915,16 +1915,16 @@ export const CITIES: CityDefinition[] = [
       "training_dummy",
       "forest_rat",
       "gray_wolf",
-      "aberr",
       "anaconda_new",
-      "anubis_guard",
       "black_mamba_new",
       "brown_ooze",
-      "centaur_demon",
-      "clay_golem",
       "cursed_goblin",
-      "damnation_cyclops",
-      "damnation_elemental"
+      "clay_golem",
+      "anubis_guard",
+      "aberr",
+      "centaur_demon",
+      "damnation_elemental",
+      "damnation_cyclops"
     ],
     "armorerItemIds": [
       "armor_leather",
@@ -1960,9 +1960,9 @@ export const CITIES: CityDefinition[] = [
     "id": "ravenspire",
     "countryId": "aurevia",
     "name": "Ravenspire",
-    "minLevel": 3,
-    "travelCost": 45, 
-    "description": "Torres de pedra vigiam trilhas tomadas por saqueadores.",
+    "minLevel": 14,
+    "travelCost": 45,
+    "description": "Cidade de torres antigas entre campos abertos e florestas densas, vigiando rotas usadas por caçadores e saqueadores.",
     "inhabitants": [
       "Selene Vidro-Rubro",
       "Doran Bigorna"
@@ -1972,14 +1972,14 @@ export const CITIES: CityDefinition[] = [
       "alchemist": "Selene Vidro-Rubro"
     },
     "dungeonMonsterIds": [
-      "road_bandit",
-      "thorn_boar",
+      "giant_spore",
+      "giant_leech",
+      "giant_toad",
       "damnation_golem",
+      "damnation_harpy",
       "damnation_orc",
       "damnation_spider",
-      "deep_dwarf",
-      "demon_dragon",
-      "desert_giant"
+      "damnation_troll"
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
@@ -1994,54 +1994,48 @@ export const CITIES: CityDefinition[] = [
     "huntMonsterIds": [
       "road_bandit",
       "thorn_boar",
+      "human_bandit",
+      "deathcap",
       "damnation_golem",
       "damnation_harpy",
-      "damnation_mummy",
       "damnation_orc",
-      "damnation_scorpion",
-      "damnation_snake",
       "damnation_spider",
       "damnation_troll",
-      "deathcap",
-      "deep_dwarf",
-      "demon_bareon",
-      "demon_desert_giant",
-      "demon_dragon",
-      "demoniac_elephant",
       "demoniac_wolf",
-      "desert_giant",
-      "desert_walker",
-      "desert_worm"
+      "joree_plant",
+      "giant_spore",
+      "grey_bear",
+      "grey_wolf",
+      "guardian_serpent",
+      "giant_toad",
+      "giant_leech",
+      "demon_dragon"
     ]
   },
   {
     "id": "ironhold",
     "countryId": "aurevia",
     "name": "Ironhold",
-    "minLevel": 7,
+    "minLevel": 32,
     "travelCost": 130,
-    "description": "Uma fortaleza nas montanhas onde o ar pesa como metal.",
+    "description": "Fortaleza montanhosa de Aurevia, cravada em picos de pedra, minas profundas e vales tomados por feras de altitude.",
     "inhabitants": [
       "Helga Forja-Alta",
-      "Mestre Rurik",
+      "Mestre Rurik"
     ],
     "npcs": {
       "armorer": "Helga Forja-Alta",
-      "blacksmith": "Mestre Rurik",
+      "blacksmith": "Mestre Rurik"
     },
     "dungeonMonsterIds": [
-      "ember_golem",
-      "cave_wyvern",
-      "dorrene_orc",
-      "emperor_scorpion",
-      "giant_gecko",
-      "giant_spore",
-      "grey_bear",
       "hell_lizard",
+      "hell_worm",
       "hill_giant_new",
-      "jelly",
+      "joree_giant",
       "joree_walker",
-      "ogre_mage"
+      "ogre_mage",
+      "ogre",
+      "orc_knight"
     ],
     "blacksmithRecipeIds": [
       "forge_ember_blade",
@@ -2053,38 +2047,31 @@ export const CITIES: CityDefinition[] = [
       "ironhold_giant_valley"
     ],
     "huntMonsterIds": [
+      "deep_dwarf",
       "ember_golem",
       "cave_wyvern",
       "dorrene_orc",
       "dorrene_snake",
-      "easter_bunny",
       "emperor_scorpion",
       "eye_of_devastation_new",
       "giant_ant",
       "giant_gecko",
-      "giant_leech",
       "giant_scorpion",
-      "giant_spore",
-      "giant_toad",
       "grey_rat",
-      "grey_bear",
-      "grey_wolf",
-      "guardian_serpent",
       "hell_lizard",
       "hell_salamander",
       "hell_worm",
       "hill_giant_new",
-      "human_bandit",
       "infernal_serpent",
       "jelly",
       "joree_giant",
-      "joree_plant",
       "joree_walker",
       "labrat_unseen",
-      "mummy",
       "ogre_mage",
       "ogre",
-      "orc_knight"
+      "orc_knight",
+      "rock_troll",
+      "easter_bunny"
     ],
     "armorerItemIds": [
       "armor_mystic",
@@ -2110,9 +2097,9 @@ export const CITIES: CityDefinition[] = [
     "id": "vila_de_valfria",
     "countryId": "valfria",
     "name": "Vila de Valfria",
-    "minLevel": 15,
+    "minLevel": 57,
     "travelCost": 130,
-    "description": "Uma vila pitoresca nas montanhas, conhecida por suas tradições antigas.",
+    "description": "Vila portuária de Valfria, onde navios chegam por canais de sal e caravanas partem rumo ao deserto seco.",
     "isPort": true,
     "inhabitants": [
       "Helga Forja-Alta",
@@ -2125,20 +2112,14 @@ export const CITIES: CityDefinition[] = [
       "moneyChanger": "Caio Cartas"
     },
     "dungeonMonsterIds": [
-      "orc_warrior",
-      "redback_new",
-      "salamander",
-      "skeleton_bat",
-      "skeleton_naga",
       "skeleton_snake",
-      "spectral_bat_old",
-      "spectral_dragon_old",
-      "spectral_naga_old",
-      "spectral_spider_old",
-      "two_headed_ogre",
-      "wolf_spider_old",
-      "zombie_drake",
-      "zombie_kraken_head"
+      "skeleton_quadruped_small",
+      "demon_desert_giant",
+      "demoniac_elephant",
+      "salamander_firebrand",
+      "skeleton_centaur",
+      "skeleton_naga",
+      "skeleton_ugly_thing"
     ],
     "blacksmithRecipeIds": [
       "forge_ember_blade",
@@ -2150,46 +2131,29 @@ export const CITIES: CityDefinition[] = [
       "valfria_spectral_mire"
     ],
     "huntMonsterIds": [
+      "demon_desert_giant",
+      "demoniac_elephant",
+      "desert_giant",
+      "desert_walker",
+      "desert_worm",
       "orc_warrior",
       "orc",
       "pulsating_lump",
       "redback_new",
-      "rock_troll",
       "salamander_firebrand",
       "salamander",
       "sand_elemental",
       "sand_spider",
       "skeleton_bat",
       "skeleton_centaur",
-      "skeleton_dragon",
       "skeleton_naga",
       "skeleton_quadruped_large_new",
       "skeleton_quadruped_small",
       "skeleton_snake",
       "skeleton_ugly_thing",
-      "spectral_ant_old",
-      "spectral_bat_old",
-      "spectral_bee_old",
-      "spectral_centaur_old",
-      "spectral_dragon_old",
-      "spectral_fish_old",
-      "spectral_hydra_3_old",
-      "spectral_naga_old",
-      "spectral_quadruped_small_old",
-      "spectral_snake_old",
-      "spectral_spider_old",
-      "spectral_thing",
-      "spectral_worm",
-      "two_headed_ogre",
-      "viper",
-      "wolf_spider_new",
-      "wolf_spider_old",
-      "zombie_crab",
-      "zombie_drake_infected",
-      "zombie_drake",
-      "zombie_hound_infected",
-      "zombie_hound",
-      "zombie_kraken_head"
+      "mummy",
+      "damnation_scorpion",
+      "damnation_snake"
     ],
     "apothecaryItemIds": [
       "misc_eran",
@@ -2202,7 +2166,7 @@ export const CITIES: CityDefinition[] = [
       "energy_potion_light",
       "energy_potion_medium",
       "health_potion_light",
-      "health_potion_medium",
+      "health_potion_medium"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -2218,9 +2182,9 @@ export const CITIES: CityDefinition[] = [
     "id": "rosindale",
     "countryId": "valfria",
     "name": "Rosindale",
-    "minLevel": 25,
+    "minLevel": 80,
     "travelCost": 130,
-    "description": "Uma fortaleza nas montanhas onde o ar pesa como metal.",
+    "description": "Cidade entre cânions de Valfria, cercada por gargantas avermelhadas, pontes estreitas e ravinas cheias de ecos.",
     "inhabitants": [
       "Helga Forja-Alta",
       "Orin Cinza-Viva",
@@ -2234,13 +2198,14 @@ export const CITIES: CityDefinition[] = [
       "goldCoinMerchant": "Caelum, o Mercador"
     },
     "dungeonMonsterIds": [
-      "zombie_kraken_infected",
-      "zombie_lizard",
-      "zombie_octopode",
-      "zombie_ogre",
-      "zombie_small",
-      "zombie_turtle_infected",
-      "zombie_ugly_thing_infected"
+      "spectral_naga_old",
+      "viper",
+      "spectral_quadruped_small_old",
+      "spectral_spider_old",
+      "spectral_thing",
+      "spectral_worm",
+      "two_headed_ogre",
+      "wolf_spider_new"
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
@@ -2253,20 +2218,20 @@ export const CITIES: CityDefinition[] = [
       "rosindale_zombie_quarter"
     ],
     "huntMonsterIds": [
-      "zombie_kraken_infected",
-      "zombie_lizard_infected",
-      "zombie_lizard",
-      "zombie_octopode_infected",
-      "zombie_octopode",
-      "zombie_ogre_infected",
-      "zombie_ogre",
-      "zombie_rat",
-      "zombie_small",
-      "zombie_toad",
-      "zombie_turtle_infected",
-      "zombie_turtle",
-      "zombie_ugly_thing_infected",
-      "zombie_ugly_thing"
+      "spectral_ant_old",
+      "spectral_bat_old",
+      "spectral_bee_old",
+      "spectral_centaur_old",
+      "spectral_naga_old",
+      "spectral_quadruped_small_old",
+      "spectral_spider_old",
+      "spectral_thing",
+      "spectral_worm",
+      "two_headed_ogre",
+      "viper",
+      "wolf_spider_new",
+      "wolf_spider_old",
+      "spectral_snake_old"
     ],
     "armorerItemIds": [
       "armor_obscure",
@@ -2297,9 +2262,9 @@ export const CITIES: CityDefinition[] = [
     "id": "porto_sombrio",
     "countryId": "morthaly",
     "name": "Porto Sombrio",
-    "minLevel": 30,
+    "minLevel": 94,
     "travelCost": 180,
-    "description": "Cais de pedra negra onde navios atracam sob faróis de chama violeta.",
+    "description": "Porto amaldiçoado de Morthaly, com cais de pedra negra, navios silenciosos e marés que trazem restos de criaturas mortas.",
     "isPort": true,
     "inhabitants": [
       "Marechal Voss",
@@ -2311,9 +2276,13 @@ export const CITIES: CityDefinition[] = [
       "moneyChanger": "Barqueiro Naren"
     },
     "dungeonMonsterIds": [
+      "zombie_crab",
+      "zombie_kraken_head",
       "zombie_kraken_infected",
-      "spectral_dragon_old",
-      "zombie_drake_infected"
+      "zombie_octopode_infected",
+      "zombie_octopode",
+      "zombie_turtle_infected",
+      "spectral_fish_old"
     ],
     "blacksmithRecipeIds": [
       "forge_ember_blade",
@@ -2323,14 +2292,17 @@ export const CITIES: CityDefinition[] = [
       "morthaly_black_docks"
     ],
     "huntMonsterIds": [
+      "zombie_crab",
+      "zombie_kraken_head",
       "zombie_kraken_infected",
-      "zombie_lizard_infected",
-      "zombie_lizard",
       "zombie_octopode_infected",
       "zombie_octopode",
-      "zombie_hound_infected",
-      "zombie_hound",
-      "spectral_fish_old"
+      "zombie_turtle_infected",
+      "zombie_turtle",
+      "spectral_fish_old",
+      "zombie_lizard_infected",
+      "zombie_lizard",
+      "zombie_rat"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -2346,9 +2318,9 @@ export const CITIES: CityDefinition[] = [
     "id": "necropole_de_morthaly",
     "countryId": "morthaly",
     "name": "Necrópole de Morthaly",
-    "minLevel": 40,
+    "minLevel": 105,
     "travelCost": 220,
-    "description": "Cidade ritual erguida ao redor de torres violetas e cemitérios sem fim.",
+    "description": "Imenso castelo-necrópole de Morthaly, feito de muralhas, criptas, torres violetas e salões onde a morte ainda governa.",
     "inhabitants": [
       "Vigilia Nox",
       "Ferreiro Ossian",
@@ -2360,10 +2332,14 @@ export const CITIES: CityDefinition[] = [
       "alchemist": "Arquimago Kael"
     },
     "dungeonMonsterIds": [
-      "spectral_dragon_old",
-      "spectral_hydra_3_old",
+      "zombie_hound",
       "zombie_drake_infected",
-      "skeleton_dragon"
+      "zombie_drake",
+      "zombie_ogre_infected",
+      "zombie_ogre",
+      "zombie_small",
+      "zombie_ugly_thing_infected",
+      "zombie_ugly_thing"
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
@@ -2376,15 +2352,21 @@ export const CITIES: CityDefinition[] = [
       "morthaly_lich_spire"
     ],
     "huntMonsterIds": [
+      "damnation_mummy",
+      "demon_bareon",
+      "skeleton_dragon",
       "spectral_dragon_old",
       "spectral_hydra_3_old",
-      "spectral_naga_old",
-      "spectral_spider_old",
-      "spectral_thing",
-      "spectral_worm",
-      "skeleton_dragon",
+      "zombie_hound_infected",
+      "zombie_hound",
       "zombie_drake_infected",
-      "zombie_ugly_thing_infected"
+      "zombie_drake",
+      "zombie_ogre_infected",
+      "zombie_ogre",
+      "zombie_small",
+      "zombie_toad",
+      "zombie_ugly_thing_infected",
+      "zombie_ugly_thing"
     ],
     "armorerItemIds": [
       "armor_death",
@@ -2404,116 +2386,103 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
   "eldoria_training_fields": {
     "id": "eldoria_training_fields",
     "cityId": "eldoria",
-    "name": "Campos de Treino",
-    "description": "Campos vigiados onde iniciantes enfrentam ameacas pequenas.",
+    "name": "Cais Verde de Treino",
+    "description": "Área segura entre o porto arborizado e a mata baixa, onde recrutas enfrentam pragas pequenas sob vigia dos guardas.",
     "monsterIds": [
       "training_dummy",
       "forest_rat",
-      "gray_wolf"
+      "gray_wolf",
+      "anaconda_new"
     ]
   },
   "eldoria_old_woods": {
     "id": "eldoria_old_woods",
     "cityId": "eldoria",
-    "name": "Bosque Antigo",
-    "description": "Trilhas fechadas tomadas por criaturas venenosas e guardiões antigos.",
+    "name": "Bosque Antigo de Eldoria",
+    "description": "Trilhas úmidas sob árvores centenárias, tomadas por serpentes, lodos de mangue e criaturas que protegem raízes antigas.",
     "monsterIds": [
-      "aberr",
-      "anaconda_new",
-      "anubis_guard",
       "black_mamba_new",
-      "cursed_goblin"
+      "brown_ooze",
+      "cursed_goblin",
+      "clay_golem"
     ]
   },
   "eldoria_sunken_ruins": {
     "id": "eldoria_sunken_ruins",
     "cityId": "eldoria",
-    "name": "Ruinas Alagadas",
-    "description": "Pedras afundadas e lama escura onde monstros mais perigosos se escondem.",
+    "name": "Ruínas do Estuário",
+    "description": "Pedras afundadas entre raízes e água salobra, onde a floresta encontra o mar e a magia antiga apodrece em silêncio.",
     "monsterIds": [
-      "brown_ooze",
+      "aberr",
       "centaur_demon",
-      "clay_golem",
-      "damnation_cyclops",
-      "damnation_elemental"
+      "damnation_elemental",
+      "damnation_cyclops"
     ]
   },
   "ravenspire_bandit_road": {
     "id": "ravenspire_bandit_road",
     "cityId": "ravenspire",
-    "name": "Estrada dos Saqueadores",
-    "description": "Rotas estreitas patrulhadas por bandidos e bestas agressivas.",
+    "name": "Campos dos Corvos",
+    "description": "Campos altos e trilhas abertas onde saqueadores se escondem entre moitas, javalis e lobos que rondam as caravanas.",
     "monsterIds": [
       "road_bandit",
+      "human_bandit",
       "thorn_boar",
-      "damnation_golem",
-      "deathcap"
+      "grey_wolf",
+      "grey_bear"
     ]
   },
   "ravenspire_damned_lands": {
     "id": "ravenspire_damned_lands",
     "cityId": "ravenspire",
-    "name": "Terras Danadas",
-    "description": "Planicies retorcidas por magia hostil.",
+    "name": "Mata dos Espinhos Negros",
+    "description": "Trecho fechado da floresta de Ravenspire, tomado por fungos, plantas agressivas e feras que caçam sob a sombra das torres.",
     "monsterIds": [
-      "damnation_harpy",
-      "damnation_mummy",
-      "damnation_orc",
-      "damnation_scorpion",
-      "damnation_snake",
-      "damnation_spider",
-      "damnation_troll"
+      "deathcap",
+      "joree_plant",
+      "giant_spore",
+      "giant_leech",
+      "giant_toad"
     ]
   },
   "ravenspire_desert_pass": {
     "id": "ravenspire_desert_pass",
     "cityId": "ravenspire",
-    "name": "Passagem do Deserto",
-    "description": "Um caminho seco onde gigantes e demonios rondam caravanas.",
+    "name": "Bosque da Torre Sombria",
+    "description": "Bosque corrompido próximo às antigas torres, onde a mata ainda é viva, mas responde à presença de criaturas danadas.",
     "monsterIds": [
-      "deep_dwarf",
-      "demon_bareon",
-      "demon_desert_giant",
-      "demon_dragon",
-      "demoniac_elephant",
-      "demoniac_wolf",
-      "desert_giant",
-      "desert_walker",
-      "desert_worm"
+      "damnation_golem",
+      "damnation_harpy",
+      "damnation_orc",
+      "damnation_spider",
+      "damnation_troll"
     ]
   },
   "ironhold_ember_mines": {
     "id": "ironhold_ember_mines",
     "cityId": "ironhold",
     "name": "Minas de Brasa",
-    "description": "Tuneis quentes guardados por criaturas de pedra e fogo.",
+    "description": "Túneis quentes sob Ironhold, onde veios incandescentes atraem anões hostis, orcs das rochas e criaturas de fogo.",
     "monsterIds": [
+      "deep_dwarf",
       "ember_golem",
       "cave_wyvern",
       "dorrene_orc",
-      "dorrene_snake",
-      "emperor_scorpion",
-      "eye_of_devastation_new"
+      "eye_of_devastation_new",
+      "hell_salamander"
     ]
   },
   "ironhold_beast_caves": {
     "id": "ironhold_beast_caves",
     "cityId": "ironhold",
-    "name": "Cavernas das Feras",
-    "description": "Galerias profundas infestadas de insetos, lagartos e lobos.",
+    "name": "Grutas Serranas",
+    "description": "Cavernas frias e irregulares das montanhas, infestadas por insetos gigantes, répteis de pedra e vermes infernais.",
     "monsterIds": [
       "giant_ant",
       "giant_gecko",
-      "giant_leech",
       "giant_scorpion",
-      "giant_spore",
-      "giant_toad",
       "grey_rat",
-      "grey_bear",
-      "grey_wolf",
-      "guardian_serpent",
       "hell_lizard",
-      "hell_salamander",
       "hell_worm"
     ]
   },
@@ -2521,156 +2490,128 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "id": "ironhold_giant_valley",
     "cityId": "ironhold",
     "name": "Vale dos Gigantes",
-    "description": "Desfiladeiros onde ogros, gigantes e bandidos disputam território.",
+    "description": "Desfiladeiros de altitude onde gigantes, ogros e cavaleiros orcs disputam pontes naturais e antigas rotas de minério.",
     "monsterIds": [
       "hill_giant_new",
-      "human_bandit",
-      "infernal_serpent",
-      "jelly",
       "joree_giant",
-      "joree_plant",
       "joree_walker",
-      "labrat_unseen",
-      "mummy",
       "ogre_mage",
       "ogre",
-      "orc_knight",
-      "easter_bunny"
+      "orc_knight"
     ]
   },
   "valfria_orc_marsh": {
     "id": "valfria_orc_marsh",
     "cityId": "vila_de_valfria",
-    "name": "Brejo dos Orcs",
-    "description": "Charcos frios usados por orcs e aranhas como rota de emboscada.",
+    "name": "Cais do Sal Morto",
+    "description": "Porto seco de Valfria, cercado por salinas rachadas, armazéns queimados pelo sol e patrulhas orcs entre as docas.",
     "monsterIds": [
       "orc_warrior",
       "orc",
-      "pulsating_lump",
       "redback_new",
-      "rock_troll",
-      "salamander_firebrand",
       "salamander",
-      "sand_elemental",
-      "sand_spider"
+      "sand_spider",
+      "desert_walker"
     ]
   },
   "valfria_bone_fields": {
     "id": "valfria_bone_fields",
     "cityId": "vila_de_valfria",
-    "name": "Campos de Ossos",
-    "description": "Um cemiterio aberto onde esqueletos patrulham a neve.",
+    "name": "Dunas dos Ossos",
+    "description": "Mar de dunas pálidas onde esqueletos emergem da areia e criaturas colossais seguem rastros deixados pelo vento quente.",
     "monsterIds": [
+      "desert_giant",
+      "desert_worm",
+      "sand_elemental",
       "skeleton_bat",
-      "skeleton_centaur",
-      "skeleton_dragon",
-      "skeleton_naga",
-      "skeleton_quadruped_large_new",
-      "skeleton_quadruped_small",
       "skeleton_snake",
-      "skeleton_ugly_thing"
+      "skeleton_quadruped_small"
     ]
   },
   "valfria_spectral_mire": {
     "id": "valfria_spectral_mire",
     "cityId": "vila_de_valfria",
-    "name": "Pantano Espectral",
-    "description": "Neblina luminosa cobre espectros, aranhas e mortos inquietos.",
+    "name": "Salinas da Miragem",
+    "description": "Planícies de sal que distorcem a visão, escondendo monstros ressecados, salamandras flamejantes e ossadas ambulantes.",
     "monsterIds": [
-      "spectral_ant_old",
-      "spectral_bat_old",
-      "spectral_bee_old",
-      "spectral_centaur_old",
-      "spectral_dragon_old",
-      "spectral_fish_old",
-      "spectral_hydra_3_old",
-      "spectral_naga_old",
-      "spectral_quadruped_small_old",
-      "spectral_snake_old",
-      "spectral_spider_old",
-      "spectral_thing",
-      "spectral_worm",
-      "two_headed_ogre",
-      "viper",
-      "wolf_spider_new",
-      "wolf_spider_old",
-      "zombie_crab",
-      "zombie_drake_infected",
-      "zombie_drake",
-      "zombie_hound_infected",
-      "zombie_hound",
-      "zombie_kraken_head"
+      "demon_desert_giant",
+      "demoniac_elephant",
+      "salamander_firebrand",
+      "skeleton_centaur",
+      "skeleton_naga",
+      "skeleton_ugly_thing"
     ]
   },
   "rosindale_infected_coast": {
     "id": "rosindale_infected_coast",
     "cityId": "rosindale",
-    "name": "Costa Infectada",
-    "description": "Rochedos umidos onde mortos do mar chegaram primeiro.",
+    "name": "Gargantas de Rosindale",
+    "description": "Cânions largos e avermelhados onde enxames, morcegos e serpentes cruzam pontes naturais acima de abismos secos.",
     "monsterIds": [
-      "zombie_kraken_infected",
-      "zombie_lizard_infected",
-      "zombie_lizard",
-      "zombie_octopode_infected",
-      "zombie_octopode",
-      "zombie_turtle_infected",
-      "zombie_turtle"
+      "spectral_ant_old",
+      "spectral_bat_old",
+      "spectral_bee_old",
+      "spectral_centaur_old",
+      "spectral_naga_old",
+      "viper"
     ]
   },
   "rosindale_zombie_quarter": {
     "id": "rosindale_zombie_quarter",
     "cityId": "rosindale",
-    "name": "Bairro dos Mortos",
-    "description": "Ruas vazias ocupadas por mortos-vivos de várias formas.",
+    "name": "Fendas Rubras",
+    "description": "Ravinas estreitas e paredes quebradiças onde aranhas, ogros e miragens hostis atacam viajantes encurralados.",
     "monsterIds": [
-      "zombie_ogre_infected",
-      "zombie_ogre",
-      "zombie_rat",
-      "zombie_small",
-      "zombie_toad",
-      "zombie_ugly_thing_infected",
-      "zombie_ugly_thing"
+      "spectral_quadruped_small_old",
+      "spectral_spider_old",
+      "spectral_thing",
+      "spectral_worm",
+      "two_headed_ogre",
+      "wolf_spider_new"
     ]
   },
   "morthaly_black_docks": {
     "id": "morthaly_black_docks",
     "cityId": "porto_sombrio",
-    "name": "Docas Negras",
-    "description": "Cais quebrados onde a maré traz mortos-vivos e ecos do mar profundo.",
+    "name": "Docas do Luto",
+    "description": "Porto sombrio de Morthaly, onde correntes negras arrastam caranguejos mortos, krakens partidos e horrores vindos da maré.",
     "monsterIds": [
+      "zombie_crab",
+      "zombie_kraken_head",
       "zombie_kraken_infected",
-      "zombie_lizard_infected",
-      "zombie_lizard",
       "zombie_octopode_infected",
       "zombie_octopode",
-      "zombie_hound_infected",
-      "zombie_hound",
+      "zombie_turtle_infected",
       "spectral_fish_old"
     ]
   },
   "morthaly_runic_wastes": {
     "id": "morthaly_runic_wastes",
     "cityId": "necropole_de_morthaly",
-    "name": "Ermos Rúnicos",
-    "description": "Campos de pedra negra marcados por sigilos violetas e espectros inquietos.",
+    "name": "Muralhas da Necrópole",
+    "description": "Anéis externos do imenso castelo-necrópole, cobertos por runas mortas, ossadas de dragões e cães zumbis de patrulha.",
     "monsterIds": [
-      "spectral_naga_old",
-      "spectral_spider_old",
-      "spectral_thing",
-      "spectral_worm",
-      "zombie_ugly_thing_infected"
+      "damnation_mummy",
+      "skeleton_dragon",
+      "spectral_dragon_old",
+      "spectral_hydra_3_old",
+      "zombie_hound_infected",
+      "zombie_hound"
     ]
   },
   "morthaly_lich_spire": {
     "id": "morthaly_lich_spire",
     "cityId": "necropole_de_morthaly",
-    "name": "Pináculo do Litch",
-    "description": "Torres necromânticas onde dragões espectrais circulam acima das criptas.",
+    "name": "Pináculo do Trono Morto",
+    "description": "Torres mais altas da Necrópole de Morthaly, onde dracos, ogros e deformidades zumbis servem ao poder do castelo.",
     "monsterIds": [
-      "spectral_dragon_old",
-      "spectral_hydra_3_old",
-      "skeleton_dragon",
-      "zombie_drake_infected"
+      "zombie_drake_infected",
+      "zombie_drake",
+      "zombie_ogre_infected",
+      "zombie_ogre",
+      "zombie_small",
+      "zombie_ugly_thing_infected",
+      "zombie_ugly_thing"
     ]
   }
 };
@@ -2684,14 +2625,22 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "level": 1,
     "maxHp": 30,
     "strength": 10,
-    "defense": 0,
-    "agility": 0,
-    "experience": 39,
-    "gold": 58.5,
+    "defense": 1,
+    "agility": 1,
+    "experience": 35.0,
+    "gold": 52.5,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.3
+        "itemId": "material_celena",
+        "chance": 0.299
+      },
+      {
+        "itemId": "material_herb",
+        "chance": 0.2
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.13
       }
     ]
   },
@@ -2701,43 +2650,51 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Rato da Floresta",
     "imageUrl": "/assets/monsters/grey_rat.png",
     "level": 2,
-    "maxHp": 62,
-    "strength": 22,
-    "defense": 1,
-    "agility": 2,
-    "experience": 81.7,
-    "gold": 122.55,
+    "maxHp": 58,
+    "strength": 21,
+    "defense": 2,
+    "agility": 3,
+    "experience": 75.7,
+    "gold": 113.55,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.22
+        "itemId": "wolf_pelt",
+        "chance": 0.299
       },
       {
         "itemId": "material_celena",
-        "chance": 0.1
+        "chance": 0.199
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.129
       }
     ]
   },
   "aberr": {
     "id": "aberr",
     "cityId": "eldoria",
-    "name": "Aberração",
+    "name": "Aberração do Mangue",
     "imageUrl": "/assets/monsters/aberr.png",
-    "level": 3,
-    "maxHp": 92,
-    "strength": 32,
-    "defense": 2,
-    "agility": 2,
-    "experience": 127.8,
-    "gold": 191.7,
+    "level": 10,
+    "maxHp": 309,
+    "strength": 109,
+    "defense": 12,
+    "agility": 10,
+    "experience": 557.8,
+    "gold": 836.7,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.3
+        "itemId": "material_herb",
+        "chance": 0.293
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "misc_herb_moss",
+        "chance": 0.196
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.126
       }
     ]
   },
@@ -2747,24 +2704,20 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "name": "Anaconda",
     "imageUrl": "/assets/monsters/anaconda_new.png",
     "level": 4,
-    "maxHp": 125,
-    "strength": 45,
-    "defense": 2,
-    "agility": 5,
-    "experience": 179.7,
-    "gold": 269.55,
+    "maxHp": 123,
+    "strength": 43,
+    "defense": 5,
+    "agility": 4,
+    "experience": 162.4,
+    "gold": 243.6,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.26
+        "itemId": "misc_herb_moss",
+        "chance": 0.297
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
-      },
-      {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "health_potion_light",
+        "chance": 0.128
       }
     ]
   },
@@ -2773,48 +2726,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "eldoria",
     "name": "Lobo Cinzento",
     "imageUrl": "/assets/monsters/grey-wolf.png",
-    "level": 5,
-    "maxHp": 155,
-    "strength": 55,
-    "defense": 3,
-    "agility": 5,
-    "experience": 234.8,
-    "gold": 352.2,
+    "level": 3,
+    "maxHp": 87,
+    "strength": 33,
+    "defense": 4,
+    "agility": 4,
+    "experience": 119.3,
+    "gold": 178.95,
     "drops": [
       {
+        "itemId": "misc_herb_moss",
+        "chance": 0.298
+      },
+      {
         "itemId": "wolf_pelt",
-        "chance": 0.45
+        "chance": 0.199
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.15
-      },
-      {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_magic_essence",
+        "chance": 0.129
       }
     ]
   },
   "anubis_guard": {
     "id": "anubis_guard",
     "cityId": "eldoria",
-    "name": "Guarda de Anubis",
+    "name": "Guardião do Farol Verde",
     "imageUrl": "/assets/monsters/anubis_guard.png",
-    "level": 6,
-    "maxHp": 187,
-    "strength": 67,
-    "defense": 5,
-    "agility": 7,
-    "experience": 296.6,
-    "gold": 444.9,
+    "level": 9,
+    "maxHp": 278,
+    "strength": 98,
+    "defense": 11,
+    "agility": 9,
+    "experience": 475.3,
+    "gold": 712.95,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.3
+        "itemId": "material_herb",
+        "chance": 0.294
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "wolf_pelt",
+        "chance": 0.196
+      },
+      {
+        "itemId": "health_potion_light",
+        "chance": 0.126
       }
     ]
   },
@@ -2823,106 +2780,106 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "eldoria",
     "name": "Mamba Negra",
     "imageUrl": "/assets/monsters/black_mamba_new.png",
-    "level": 7,
-    "maxHp": 219,
-    "strength": 79,
-    "defense": 5,
-    "agility": 9,
-    "experience": 363.2,
-    "gold": 544.8,
+    "level": 5,
+    "maxHp": 154,
+    "strength": 54,
+    "defense": 6,
+    "agility": 5,
+    "experience": 213.7,
+    "gold": 320.55,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.26
-      },
-      {
-        "itemId": "misc_eran",
-        "chance": 0.2
-      },
-      {
         "itemId": "material_celena",
-        "chance": 0.1
+        "chance": 0.296
+      },
+      {
+        "itemId": "material_herb",
+        "chance": 0.198
+      },
+      {
+        "itemId": "health_potion_light",
+        "chance": 0.128
       }
     ]
   },
   "road_bandit": {
     "id": "road_bandit",
     "cityId": "ravenspire",
-    "name": "Bandido da Estrada",
+    "name": "Bandido da Estrada Verde",
     "imageUrl": "/assets/monsters/human-bandit.png",
-    "level": 8,
-    "maxHp": 248,
-    "strength": 88,
-    "defense": 6,
-    "agility": 8,
-    "experience": 435,
-    "gold": 652.5,
+    "level": 14,
+    "maxHp": 411,
+    "strength": 156,
+    "defense": 15,
+    "agility": 18,
+    "experience": 1008.5,
+    "gold": 1512.75,
     "drops": [
       {
-        "itemId": "iron_sword",
-        "chance": 0.08
+        "itemId": "misc_seed_rustic",
+        "chance": 0.29
       },
       {
-        "itemId": "crystal_dust",
-        "chance": 0.18
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.194
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "health_potion",
+        "chance": 0.124
       }
     ]
   },
   "brown_ooze": {
     "id": "brown_ooze",
     "cityId": "eldoria",
-    "name": "Lodo Marrom",
+    "name": "Lodo de Mangue",
     "imageUrl": "/assets/monsters/brown_ooze.png",
-    "level": 9,
-    "maxHp": 282,
-    "strength": 102,
+    "level": 6,
+    "maxHp": 185,
+    "strength": 65,
     "defense": 7,
-    "agility": 12,
-    "experience": 515.3,
-    "gold": 772.95,
+    "agility": 6,
+    "experience": 270.0,
+    "gold": 405.0,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.3
+        "itemId": "material_herb",
+        "chance": 0.296
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "misc_herb_moss",
+        "chance": 0.198
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "misc_seed_moss",
+        "chance": 0.127
       }
     ]
   },
   "centaur_demon": {
     "id": "centaur_demon",
     "cityId": "eldoria",
-    "name": "Demonio Centauro",
+    "name": "Centauro Corrompido",
     "imageUrl": "/assets/monsters/centaur_demon.png",
-    "level": 10,
-    "maxHp": 310,
-    "strength": 110,
-    "defense": 7,
-    "agility": 10,
-    "experience": 600.7,
-    "gold": 901.05,
+    "level": 11,
+    "maxHp": 347,
+    "strength": 134,
+    "defense": 12,
+    "agility": 12,
+    "experience": 694.0,
+    "gold": 1041.0,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.26
+        "itemId": "material_herb",
+        "chance": 0.292
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_celena",
+        "chance": 0.196
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "health_potion_light",
+        "chance": 0.125
       }
     ]
   },
@@ -2931,171 +2888,179 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ravenspire",
     "name": "Javali Espinhoso",
     "imageUrl": "/assets/monsters/grey-bear.png",
-    "level": 11,
-    "maxHp": 342,
-    "strength": 122,
-    "defense": 10,
-    "agility": 12,
-    "experience": 696.6,
-    "gold": 1044.9,
+    "level": 15,
+    "maxHp": 464,
+    "strength": 164,
+    "defense": 18,
+    "agility": 15,
+    "experience": 1112.0,
+    "gold": 1668.0,
     "drops": [
       {
-        "itemId": "energy_potion",
-        "chance": 0.2
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.289
       },
       {
-        "itemId": "crystal_dust",
-        "chance": 0.28
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.194
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "health_potion",
+        "chance": 0.123
       }
     ]
   },
   "clay_golem": {
     "id": "clay_golem",
     "cityId": "eldoria",
-    "name": "Golem de Argila",
+    "name": "Golem de Argila Viva",
     "imageUrl": "/assets/monsters/clay_golem.png",
-    "level": 12,
-    "maxHp": 371,
-    "strength": 131,
-    "defense": 10,
-    "agility": 11,
-    "experience": 800.3,
-    "gold": 1200.45,
+    "level": 8,
+    "maxHp": 291,
+    "strength": 90,
+    "defense": 13,
+    "agility": 6,
+    "experience": 432.3,
+    "gold": 648.45,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_herb",
+        "chance": 0.294
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_magic_essence",
+        "chance": 0.126
       }
     ]
   },
   "cursed_goblin": {
     "id": "cursed_goblin",
     "cityId": "eldoria",
-    "name": "Goblin Amaldiçoado",
+    "name": "Goblin da Raiz Negra",
     "imageUrl": "/assets/monsters/cursed-goblin.png",
-    "level": 13,
-    "maxHp": 403,
-    "strength": 143,
-    "defense": 10,
-    "agility": 13,
-    "experience": 914.9,
-    "gold": 1372.35,
+    "level": 7,
+    "maxHp": 216,
+    "strength": 76,
+    "defense": 9,
+    "agility": 7,
+    "experience": 332.1,
+    "gold": 498.15,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.26
+        "itemId": "material_herb",
+        "chance": 0.295
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_celena",
+        "chance": 0.197
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.127
       }
     ]
   },
   "damnation_elemental": {
     "id": "damnation_elemental",
     "cityId": "eldoria",
-    "name": "Elemental da Danação",
+    "name": "Elemental do Estuário",
     "imageUrl": "/assets/monsters/damnation_elemental.png",
-    "level": 14,
-    "maxHp": 433,
-    "strength": 153,
-    "defense": 13,
-    "agility": 13,
-    "experience": 1040.2,
-    "gold": 1560.3,
+    "level": 12,
+    "maxHp": 438,
+    "strength": 136,
+    "defense": 19,
+    "agility": 9,
+    "experience": 808.3,
+    "gold": 1212.45,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.26
+        "itemId": "wolf_pelt",
+        "chance": 0.292
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
-      },
-      {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "misc_seed_moss",
+        "chance": 0.125
       }
     ]
   },
   "damnation_cyclops": {
     "id": "damnation_cyclops",
     "cityId": "eldoria",
-    "name": "Ciclope da Danação",
+    "name": "Ciclope do Mangue Profundo",
     "imageUrl": "/assets/monsters/damnation_cyclops.png",
-    "level": 15,
-    "maxHp": 466,
-    "strength": 166,
-    "defense": 13,
-    "agility": 16,
-    "experience": 1178.1,
-    "gold": 1767.15,
+    "level": 13,
+    "maxHp": 474,
+    "strength": 148,
+    "defense": 20,
+    "agility": 9,
+    "experience": 927.0,
+    "gold": 1390.5,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_celena",
+        "chance": 0.291
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "material_herb",
+        "chance": 0.195
+      },
+      {
+        "itemId": "material_magic_essence",
+        "chance": 0.124
       }
     ]
   },
   "damnation_golem": {
     "id": "damnation_golem",
     "cityId": "ravenspire",
-    "name": "Golem da Danação",
+    "name": "Golem da Mata Danada",
     "imageUrl": "/assets/monsters/damnation_golem.png",
-    "level": 16,
-    "maxHp": 495,
-    "strength": 175,
-    "defense": 15,
-    "agility": 15,
-    "experience": 1328,
-    "gold": 1992,
+    "level": 18,
+    "maxHp": 657,
+    "strength": 205,
+    "defense": 28,
+    "agility": 13,
+    "experience": 1723.6,
+    "gold": 2585.4,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.26
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.287
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "wolf_pelt",
+        "chance": 0.193
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "material_green_coin",
+        "chance": 0.122
       }
     ]
   },
   "damnation_harpy": {
     "id": "damnation_harpy",
     "cityId": "ravenspire",
-    "name": "Harpia da Danação",
+    "name": "Harpia dos Campos",
     "imageUrl": "/assets/monsters/damnation_harpy.png",
-    "level": 17,
-    "maxHp": 524,
-    "strength": 184,
-    "defense": 15,
-    "agility": 14,
-    "experience": 1492.7,
-    "gold": 2239.05,
+    "level": 19,
+    "maxHp": 559,
+    "strength": 212,
+    "defense": 20,
+    "agility": 25,
+    "experience": 1844.3,
+    "gold": 2766.45,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.26
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.287
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.192
+      },
+      {
+        "itemId": "crystal_dust",
+        "chance": 0.121
       }
     ]
   },
@@ -3104,121 +3069,129 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Golem de Brasa",
     "imageUrl": "/assets/monsters/damnation_golem.png",
-    "level": 18,
-    "maxHp": 560,
-    "strength": 200,
-    "defense": 24,
-    "agility": 20,
-    "experience": 1675.4,
-    "gold": 2513.1,
+    "level": 33,
+    "maxHp": 1206,
+    "strength": 376,
+    "defense": 51,
+    "agility": 24,
+    "experience": 8401.1,
+    "gold": 12601.65,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.55
+        "itemId": "misc_stone_craft",
+        "chance": 0.277
       },
       {
-        "itemId": "crystal_dust",
-        "chance": 0.2
+        "itemId": "ember_core",
+        "chance": 0.187
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.115
       }
     ]
   },
   "damnation_mummy": {
     "id": "damnation_mummy",
-    "cityId": "ravenspire",
-    "name": "Múmia da Danação",
+    "cityId": "necropole_de_morthaly",
+    "name": "Múmia da Cripta Negra",
     "imageUrl": "/assets/monsters/damnation_mummy.png",
-    "level": 19,
-    "maxHp": 588,
-    "strength": 208,
-    "defense": 18,
-    "agility": 18,
-    "experience": 1873.2,
-    "gold": 2809.8,
+    "level": 105,
+    "maxHp": 3514,
+    "strength": 1131,
+    "defense": 138,
+    "agility": 88,
+    "experience": 8078184.3,
+    "gold": 12117276.45,
     "drops": [
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.26
+        "itemId": "misc_high_dungeon_key",
+        "chance": 0.226
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_dark_magic_rune",
+        "chance": 0.158
+      },
+      {
+        "itemId": "material_spectre_jewell",
+        "chance": 0.083
       }
     ]
   },
   "damnation_orc": {
     "id": "damnation_orc",
     "cityId": "ravenspire",
-    "name": "Orc da Danação",
+    "name": "Orc da Mata Danada",
     "imageUrl": "/assets/monsters/damnation_orc.png",
     "level": 20,
-    "maxHp": 617,
-    "strength": 217,
-    "defense": 18,
-    "agility": 17,
-    "experience": 2090.9,
-    "gold": 3136.35,
+    "maxHp": 631,
+    "strength": 245,
+    "defense": 23,
+    "agility": 21,
+    "experience": 2144.9,
+    "gold": 3217.35,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.26
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.286
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
-      },
-      {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "health_potion",
+        "chance": 0.121
       }
     ]
   },
   "damnation_scorpion": {
     "id": "damnation_scorpion",
-    "cityId": "ravenspire",
-    "name": "Escorpião da Danação",
+    "cityId": "vila_de_valfria",
+    "name": "Escorpião da Areia Rubra",
     "imageUrl": "/assets/monsters/damnation_scorpion.png",
-    "level": 21,
-    "maxHp": 649,
-    "strength": 229,
-    "defense": 20,
-    "agility": 19,
-    "experience": 2331.7,
-    "gold": 3497.55,
+    "level": 78,
+    "maxHp": 2465,
+    "strength": 960,
+    "defense": 91,
+    "agility": 82,
+    "experience": 633613.8,
+    "gold": 950420.7,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "misc_herb_bitter",
+        "chance": 0.245
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_old_stone",
+        "chance": 0.169
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "misc_seed_bitter",
+        "chance": 0.095
       }
     ]
   },
   "damnation_snake": {
     "id": "damnation_snake",
-    "cityId": "ravenspire",
-    "name": "Serpente da Danação",
+    "cityId": "vila_de_valfria",
+    "name": "Serpente da Areia Rubra",
     "imageUrl": "/assets/monsters/damnation_snake.png",
-    "level": 22,
-    "maxHp": 681,
-    "strength": 241,
-    "defense": 20,
-    "agility": 21,
-    "experience": 2595.3,
-    "gold": 3892.95,
+    "level": 79,
+    "maxHp": 2326,
+    "strength": 885,
+    "defense": 84,
+    "agility": 104,
+    "experience": 670956.1,
+    "gold": 1006434.15,
     "drops": [
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.26
+        "itemId": "material_bone",
+        "chance": 0.245
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "misc_herb_bitter",
+        "chance": 0.168
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.094
       }
     ]
   },
@@ -3227,370 +3200,414 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Serpe da Caverna",
     "imageUrl": "/assets/monsters/demon_dragon.png",
-    "level": 23,
-    "maxHp": 713,
-    "strength": 253,
-    "defense": 18,
-    "agility": 23,
-    "experience": 2884.7,
-    "gold": 4327.05,
+    "level": 34,
+    "maxHp": 1243,
+    "strength": 388,
+    "defense": 52,
+    "agility": 24,
+    "experience": 9279.0,
+    "gold": 13918.5,
     "drops": [
       {
-        "itemId": "hunter_charm",
-        "chance": 0.12
+        "itemId": "material_old_stone",
+        "chance": 0.276
       },
       {
         "itemId": "ember_core",
-        "chance": 0.3
+        "chance": 0.186
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.42
+        "itemId": "energy_potion_medium",
+        "chance": 0.115
       }
     ]
   },
   "damnation_spider": {
     "id": "damnation_spider",
     "cityId": "ravenspire",
-    "name": "Aranha da Danação",
+    "name": "Aranha da Mata Danada",
     "imageUrl": "/assets/monsters/damnation_spider.png",
-    "level": 24,
-    "maxHp": 745,
-    "strength": 265,
+    "level": 21,
+    "maxHp": 618,
+    "strength": 235,
     "defense": 23,
-    "agility": 25,
-    "experience": 3202.8,
-    "gold": 4804.2,
+    "agility": 28,
+    "experience": 2307.3,
+    "gold": 3460.95,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.285
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.192
+      },
+      {
+        "itemId": "health_potion",
+        "chance": 0.121
       }
     ]
   },
   "damnation_troll": {
     "id": "damnation_troll",
     "cityId": "ravenspire",
-    "name": "Troll da Danação",
+    "name": "Troll da Mata Danada",
     "imageUrl": "/assets/monsters/damnation_troll.png",
-    "level": 25,
-    "maxHp": 772,
-    "strength": 272,
-    "defense": 23,
-    "agility": 22,
-    "experience": 3550.9,
-    "gold": 5326.35,
+    "level": 22,
+    "maxHp": 804,
+    "strength": 251,
+    "defense": 35,
+    "agility": 16,
+    "experience": 2699.0,
+    "gold": 4048.5,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "misc_seed_rustic",
+        "chance": 0.285
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.191
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "crystal_dust",
+        "chance": 0.12
       }
     ]
   },
   "deathcap": {
     "id": "deathcap",
     "cityId": "ravenspire",
-    "name": "Chapeu-da-morte",
+    "name": "Chapéu-da-morte",
     "imageUrl": "/assets/monsters/deathcap.png",
-    "level": 26,
-    "maxHp": 805,
-    "strength": 285,
-    "defense": 26,
-    "agility": 25,
-    "experience": 3935.1,
-    "gold": 5902.65,
+    "level": 17,
+    "maxHp": 526,
+    "strength": 186,
+    "defense": 21,
+    "agility": 17,
+    "experience": 1419.1,
+    "gold": 2128.65,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.26
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.288
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.193
+      },
+      {
+        "itemId": "crystal_dust",
+        "chance": 0.122
       }
     ]
   },
   "deep_dwarf": {
     "id": "deep_dwarf",
-    "cityId": "ravenspire",
+    "cityId": "ironhold",
     "name": "Anão das Profundezas",
     "imageUrl": "/assets/monsters/deep-dwarf.png",
-    "level": 27,
-    "maxHp": 836,
-    "strength": 296,
-    "defense": 26,
-    "agility": 26,
-    "experience": 4356.4,
-    "gold": 6534.6,
+    "level": 32,
+    "maxHp": 991,
+    "strength": 351,
+    "defense": 39,
+    "agility": 32,
+    "experience": 7039.8,
+    "gold": 10559.7,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_old_stone",
+        "chance": 0.278
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "misc_dragon_stone",
+        "chance": 0.116
       }
     ]
   },
   "demon_bareon": {
     "id": "demon_bareon",
-    "cityId": "ravenspire",
-    "name": "Demonio Bareon",
+    "cityId": "necropole_de_morthaly",
+    "name": "Bareon Amaldiçoado",
     "imageUrl": "/assets/monsters/demon_bareon.png",
-    "level": 28,
-    "maxHp": 870,
-    "strength": 310,
-    "defense": 28,
-    "agility": 30,
-    "experience": 4820.8,
-    "gold": 7231.2,
+    "level": 106,
+    "maxHp": 3351,
+    "strength": 1305,
+    "defense": 124,
+    "agility": 111,
+    "experience": 9142367.2,
+    "gold": 13713550.8,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_spectre_fragment",
+        "chance": 0.226
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "misc_high_dungeon_key",
+        "chance": 0.158
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "major_health_potion",
+        "chance": 0.082
       }
     ]
   },
   "demon_desert_giant": {
     "id": "demon_desert_giant",
-    "cityId": "ravenspire",
+    "cityId": "vila_de_valfria",
     "name": "Gigante Demoníaco do Deserto",
     "imageUrl": "/assets/monsters/demon_desert_giant.png",
-    "level": 29,
-    "maxHp": 902,
-    "strength": 322,
-    "defense": 28,
-    "agility": 32,
-    "experience": 5330.4,
-    "gold": 7995.6,
+    "level": 57,
+    "maxHp": 2084,
+    "strength": 651,
+    "defense": 90,
+    "agility": 41,
+    "experience": 86093.9,
+    "gold": 129140.85,
     "drops": [
       {
-        "itemId": "health_potion_light",
+        "itemId": "misc_herb_bitter",
         "chance": 0.26
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_bone",
+        "chance": 0.177
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.104
       }
     ]
   },
   "demon_dragon": {
     "id": "demon_dragon",
     "cityId": "ravenspire",
-    "name": "Dragão Demoníaco",
+    "name": "Serpe Sombria dos Bosques",
     "imageUrl": "/assets/monsters/demon_dragon.png",
-    "level": 30,
-    "maxHp": 929,
-    "strength": 329,
-    "defense": 31,
-    "agility": 29,
-    "experience": 5888.8,
-    "gold": 8833.2,
+    "level": 31,
+    "maxHp": 1133,
+    "strength": 354,
+    "defense": 49,
+    "agility": 22,
+    "experience": 6877.5,
+    "gold": 10316.25,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.278
+      },
+      {
+        "itemId": "wolf_pelt",
+        "chance": 0.188
+      },
+      {
+        "itemId": "health_potion",
+        "chance": 0.116
       }
     ]
   },
   "demoniac_elephant": {
     "id": "demoniac_elephant",
-    "cityId": "ravenspire",
+    "cityId": "vila_de_valfria",
     "name": "Elefante Demoníaco",
     "imageUrl": "/assets/monsters/demoniac_elephant.png",
-    "level": 31,
-    "maxHp": 965,
-    "strength": 345,
-    "defense": 31,
-    "agility": 35,
-    "experience": 6505.6,
-    "gold": 9758.4,
+    "level": 58,
+    "maxHp": 1707,
+    "strength": 650,
+    "defense": 62,
+    "agility": 77,
+    "experience": 90354.9,
+    "gold": 135532.35,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_bone",
+        "chance": 0.259
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_stone_fragment",
+        "chance": 0.177
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.104
       }
     ]
   },
   "demoniac_wolf": {
     "id": "demoniac_wolf",
     "cityId": "ravenspire",
-    "name": "Lobo Demoníaco",
+    "name": "Lobo Danado",
     "imageUrl": "/assets/monsters/demoniac_wolf.png",
-    "level": 32,
-    "maxHp": 994,
-    "strength": 354,
-    "defense": 33,
-    "agility": 34,
-    "experience": 7180.5,
-    "gold": 10770.75,
+    "level": 23,
+    "maxHp": 676,
+    "strength": 257,
+    "defense": 25,
+    "agility": 30,
+    "experience": 2867.5,
+    "gold": 4301.25,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "misc_seed_rustic",
+        "chance": 0.284
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.191
+      },
+      {
+        "itemId": "material_green_coin",
+        "chance": 0.12
       }
     ]
   },
   "desert_giant": {
     "id": "desert_giant",
-    "cityId": "ravenspire",
-    "name": "Gigante do Deserto",
+    "cityId": "vila_de_valfria",
+    "name": "Gigante das Dunas",
     "imageUrl": "/assets/monsters/desert_giant.png",
-    "level": 33,
-    "maxHp": 1023,
-    "strength": 363,
-    "defense": 33,
-    "agility": 33,
-    "experience": 7923.2,
-    "gold": 11884.8,
+    "level": 59,
+    "maxHp": 2157,
+    "strength": 674,
+    "defense": 92,
+    "agility": 42,
+    "experience": 104253.0,
+    "gold": 156379.5,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_old_stone",
+        "chance": 0.259
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "material_bone",
+        "chance": 0.176
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.103
       }
     ]
   },
   "desert_worm": {
     "id": "desert_worm",
-    "cityId": "ravenspire",
-    "name": "Verme do Deserto",
+    "cityId": "vila_de_valfria",
+    "name": "Verme das Dunas",
     "imageUrl": "/assets/monsters/desert_worm.png",
-    "level": 34,
-    "maxHp": 1056,
-    "strength": 376,
-    "defense": 36,
-    "agility": 36,
-    "experience": 8741.4,
-    "gold": 13112.1,
+    "level": 61,
+    "maxHp": 1890,
+    "strength": 670,
+    "defense": 74,
+    "agility": 61,
+    "experience": 116875.4,
+    "gold": 175313.1,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "misc_herb_bitter",
+        "chance": 0.257
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.176
+      },
+      {
+        "itemId": "health_potion_medium",
+        "chance": 0.103
       }
     ]
   },
   "desert_walker": {
     "id": "desert_walker",
-    "cityId": "ravenspire",
-    "name": "Andarilho do Deserto",
+    "cityId": "vila_de_valfria",
+    "name": "Andarilho das Salinas",
     "imageUrl": "/assets/monsters/desert_walker.png",
-    "level": 35,
-    "maxHp": 1086,
-    "strength": 386,
-    "defense": 36,
-    "agility": 36,
-    "experience": 9639.4,
-    "gold": 14459.1,
+    "level": 60,
+    "maxHp": 1859,
+    "strength": 659,
+    "defense": 73,
+    "agility": 60,
+    "experience": 106218.6,
+    "gold": 159327.9,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_bone",
+        "chance": 0.258
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "health_potion_medium",
+        "chance": 0.103
       }
     ]
   },
   "dorrene_orc": {
     "id": "dorrene_orc",
     "cityId": "ironhold",
-    "name": "Orc de Dorrene",
+    "name": "Orc das Encostas de Dorrene",
     "imageUrl": "/assets/monsters/dorrene_orc.png",
-    "level": 36,
-    "maxHp": 1117,
-    "strength": 397,
-    "defense": 39,
-    "agility": 37,
-    "experience": 10628,
-    "gold": 15942,
+    "level": 35,
+    "maxHp": 1084,
+    "strength": 384,
+    "defense": 43,
+    "agility": 35,
+    "experience": 9485.9,
+    "gold": 14228.85,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.26
+        "itemId": "misc_stone_craft",
+        "chance": 0.275
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_old_stone",
+        "chance": 0.186
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "misc_dragon_stone",
+        "chance": 0.114
       }
     ]
   },
   "dorrene_snake": {
     "id": "dorrene_snake",
     "cityId": "ironhold",
-    "name": "Serpente de Dorrene",
+    "name": "Serpente das Rochas de Dorrene",
     "imageUrl": "/assets/monsters/dorrene_snake.png",
-    "level": 37,
-    "maxHp": 1150,
-    "strength": 410,
+    "level": 36,
+    "maxHp": 1059,
+    "strength": 403,
     "defense": 39,
-    "agility": 40,
-    "experience": 11714.9,
-    "gold": 17572.35,
+    "agility": 48,
+    "experience": 10783.5,
+    "gold": 16175.25,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_stone_fragment",
+        "chance": 0.275
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.114
       }
     ]
   },
   "easter_bunny": {
     "id": "easter_bunny",
     "cityId": "ironhold",
-    "name": "Coelho de Pascoa",
+    "name": "Lebre Alpina Encantada",
     "imageUrl": "/assets/monsters/easter_bunny.png",
-    "level": 38,
-    "maxHp": 1179,
-    "strength": 419,
-    "defense": 41,
-    "agility": 39,
-    "experience": 12908.8,
-    "gold": 19363.2,
+    "level": 56,
+    "maxHp": 1735,
+    "strength": 615,
+    "defense": 68,
+    "agility": 56,
+    "experience": 72437.8,
+    "gold": 108656.7,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "ember_core",
+        "chance": 0.261
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "energy_potion_medium",
+        "chance": 0.105
       }
     ]
   },
@@ -3599,25 +3616,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Escorpião Imperador",
     "imageUrl": "/assets/monsters/emperor_scorpion.png",
-    "level": 39,
-    "maxHp": 1210,
-    "strength": 430,
-    "defense": 41,
-    "agility": 40,
-    "experience": 14222.1,
-    "gold": 21333.15,
+    "level": 37,
+    "maxHp": 1146,
+    "strength": 406,
+    "defense": 45,
+    "agility": 37,
+    "experience": 11551.4,
+    "gold": 17327.1,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "misc_stone_craft",
+        "chance": 0.274
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "ember_core",
+        "chance": 0.185
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "energy_potion_medium",
+        "chance": 0.113
       }
     ]
   },
@@ -3626,21 +3643,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Olho da Devastação",
     "imageUrl": "/assets/monsters/eye_of_devastation_new.png",
-    "level": 40,
-    "maxHp": 1238,
-    "strength": 438,
+    "level": 38,
+    "maxHp": 1201,
+    "strength": 467,
     "defense": 44,
-    "agility": 38,
-    "experience": 15665.8,
-    "gold": 23498.7,
+    "agility": 40,
+    "experience": 13633.4,
+    "gold": 20450.1,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_old_stone",
+        "chance": 0.273
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "ember_core",
+        "chance": 0.185
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.113
       }
     ]
   },
@@ -3649,21 +3670,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Formiga Gigante",
     "imageUrl": "/assets/monsters/giant_ant.png",
-    "level": 41,
-    "maxHp": 1250,
-    "strength": 430,
-    "defense": 44,
-    "agility": 20,
-    "experience": 17248.4,
-    "gold": 25872.6,
+    "level": 39,
+    "maxHp": 1425,
+    "strength": 445,
+    "defense": 61,
+    "agility": 28,
+    "experience": 15174.7,
+    "gold": 22762.05,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_old_stone",
+        "chance": 0.273
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "material_stone_fragment",
+        "chance": 0.184
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.112
       }
     ]
   },
@@ -3672,52 +3697,48 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Lagartixa Gigante",
     "imageUrl": "/assets/monsters/giant_gecko.png",
-    "level": 42,
-    "maxHp": 1307,
-    "strength": 467,
-    "defense": 46,
-    "agility": 47,
-    "experience": 19003.7,
-    "gold": 28505.55,
+    "level": 40,
+    "maxHp": 1462,
+    "strength": 457,
+    "defense": 63,
+    "agility": 29,
+    "experience": 16730.0,
+    "gold": 25095.0,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "ember_core",
+        "chance": 0.272
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "energy_potion_medium",
+        "chance": 0.112
       }
     ]
   },
   "giant_leech": {
     "id": "giant_leech",
-    "cityId": "ironhold",
+    "cityId": "ravenspire",
     "name": "Sanguessuga Gigante",
     "imageUrl": "/assets/monsters/giant_leech.png",
-    "level": 43,
-    "maxHp": 1339,
-    "strength": 479,
-    "defense": 46,
-    "agility": 49,
-    "experience": 20925.3,
-    "gold": 31387.95,
+    "level": 30,
+    "maxHp": 1096,
+    "strength": 342,
+    "defense": 47,
+    "agility": 22,
+    "experience": 6217.9,
+    "gold": 9326.85,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.26
+        "itemId": "misc_seed_rustic",
+        "chance": 0.279
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.188
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "health_potion",
+        "chance": 0.117
       }
     ]
   },
@@ -3726,59 +3747,79 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Escorpião Gigante",
     "imageUrl": "/assets/monsters/giant_scorpion.png",
-    "level": 44,
-    "maxHp": 1372,
-    "strength": 492,
-    "defense": 49,
-    "agility": 52,
-    "experience": 23038.5,
-    "gold": 34557.75,
+    "level": 41,
+    "maxHp": 1499,
+    "strength": 468,
+    "defense": 64,
+    "agility": 30,
+    "experience": 18440.8,
+    "gold": 27661.2,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.26
+        "itemId": "ember_core",
+        "chance": 0.271
+      },
+      {
+        "itemId": "material_stone_fragment",
+        "chance": 0.184
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.112
       }
     ]
   },
   "giant_spore": {
     "id": "giant_spore",
-    "cityId": "ironhold",
+    "cityId": "ravenspire",
     "name": "Esporo Gigante",
     "imageUrl": "/assets/monsters/giant_spore.png",
-    "level": 45,
-    "maxHp": 1398,
-    "strength": 498,
-    "defense": 49,
-    "agility": 48,
-    "experience": 25360.3,
-    "gold": 38040.45,
+    "level": 25,
+    "maxHp": 913,
+    "strength": 285,
+    "defense": 38,
+    "agility": 18,
+    "experience": 3717.5,
+    "gold": 5576.25,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "misc_seed_rustic",
+        "chance": 0.282
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "wolf_pelt",
+        "chance": 0.19
+      },
+      {
+        "itemId": "material_green_coin",
+        "chance": 0.119
       }
     ]
   },
   "giant_toad": {
     "id": "giant_toad",
-    "cityId": "ironhold",
+    "cityId": "ravenspire",
     "name": "Sapo Gigante",
     "imageUrl": "/assets/monsters/giant_toad.png",
-    "level": 46,
-    "maxHp": 1431,
-    "strength": 511,
-    "defense": 52,
-    "agility": 51,
-    "experience": 27916.5,
-    "gold": 41874.75,
+    "level": 29,
+    "maxHp": 1060,
+    "strength": 331,
+    "defense": 45,
+    "agility": 21,
+    "experience": 5618.2,
+    "gold": 8427.3,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.28
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.188
+      },
+      {
+        "itemId": "health_potion",
+        "chance": 0.117
       }
     ]
   },
@@ -3787,98 +3828,102 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Rato Cinzento",
     "imageUrl": "/assets/monsters/grey_rat.png",
-    "level": 47,
-    "maxHp": 1459,
-    "strength": 519,
-    "defense": 52,
-    "agility": 49,
-    "experience": 30726.9,
-    "gold": 46090.35,
+    "level": 42,
+    "maxHp": 1236,
+    "strength": 470,
+    "defense": 45,
+    "agility": 55,
+    "experience": 19381.8,
+    "gold": 29072.7,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.26
+        "itemId": "material_old_stone",
+        "chance": 0.271
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "ember_core",
+        "chance": 0.183
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "energy_potion_medium",
+        "chance": 0.111
       }
     ]
   },
   "grey_bear": {
     "id": "grey_bear",
-    "cityId": "ironhold",
+    "cityId": "ravenspire",
     "name": "Urso Cinzento",
     "imageUrl": "/assets/monsters/grey-bear.png",
-    "level": 48,
-    "maxHp": 1499,
-    "strength": 539,
-    "defense": 54,
-    "agility": 59,
-    "experience": 33821.1,
-    "gold": 50731.65,
+    "level": 26,
+    "maxHp": 805,
+    "strength": 285,
+    "defense": 32,
+    "agility": 26,
+    "experience": 3821.4,
+    "gold": 5732.1,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "wolf_pelt",
+        "chance": 0.282
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.19
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "material_green_coin",
+        "chance": 0.118
       }
     ]
   },
   "grey_wolf": {
     "id": "grey_wolf",
-    "cityId": "ironhold",
+    "cityId": "ravenspire",
     "name": "Lobo Cinzento",
     "imageUrl": "/assets/monsters/grey-wolf.png",
-    "level": 49,
-    "maxHp": 1521,
-    "strength": 541,
-    "defense": 54,
-    "agility": 51,
-    "experience": 37217.7,
-    "gold": 55826.55,
+    "level": 27,
+    "maxHp": 794,
+    "strength": 302,
+    "defense": 29,
+    "agility": 36,
+    "experience": 4365.7,
+    "gold": 6548.55,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.281
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.189
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "health_potion",
+        "chance": 0.118
       }
     ]
   },
   "guardian_serpent": {
     "id": "guardian_serpent",
-    "cityId": "ironhold",
+    "cityId": "ravenspire",
     "name": "Serpente Guardiã",
     "imageUrl": "/assets/monsters/guardian_serpent.png",
-    "level": 50,
-    "maxHp": 1553,
-    "strength": 553,
-    "defense": 57,
-    "agility": 53,
-    "experience": 40957.6,
-    "gold": 61436.4,
+    "level": 28,
+    "maxHp": 824,
+    "strength": 313,
+    "defense": 30,
+    "agility": 37,
+    "experience": 4838.3,
+    "gold": 7257.45,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_seed_rustic",
+        "chance": 0.28
+      },
+      {
+        "itemId": "material_green_coin",
+        "chance": 0.117
       }
     ]
   },
@@ -3887,21 +3932,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Lagarto Infernal",
     "imageUrl": "/assets/monsters/hell_lizard.png",
-    "level": 51,
-    "maxHp": 1582,
-    "strength": 562,
-    "defense": 57,
-    "agility": 52,
-    "experience": 45070.3,
-    "gold": 67605.45,
+    "level": 43,
+    "maxHp": 1332,
+    "strength": 472,
+    "defense": 52,
+    "agility": 43,
+    "experience": 20734.0,
+    "gold": 31101.0,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_stone_craft",
+        "chance": 0.27
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "material_old_stone",
+        "chance": 0.183
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.111
       }
     ]
   },
@@ -3910,21 +3959,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Verme Infernal",
     "imageUrl": "/assets/monsters/hell_worm.png",
-    "level": 52,
-    "maxHp": 1613,
-    "strength": 573,
-    "defense": 59,
-    "agility": 53,
-    "experience": 49594.8,
-    "gold": 74392.2,
+    "level": 45,
+    "maxHp": 1394,
+    "strength": 494,
+    "defense": 55,
+    "agility": 45,
+    "experience": 25161.7,
+    "gold": 37742.55,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_old_stone",
+        "chance": 0.268
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "misc_stone_craft",
+        "chance": 0.182
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.11
       }
     ]
   },
@@ -3933,21 +3986,21 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Salamandra Infernal",
     "imageUrl": "/assets/monsters/hell_salamander.png",
-    "level": 53,
-    "maxHp": 1635,
-    "strength": 575,
-    "defense": 59,
-    "agility": 45,
-    "experience": 54567.4,
-    "gold": 81851.1,
+    "level": 44,
+    "maxHp": 1363,
+    "strength": 483,
+    "defense": 54,
+    "agility": 44,
+    "experience": 22842.4,
+    "gold": 34263.6,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.269
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "wyvern_scale",
+        "chance": 0.11
       }
     ]
   },
@@ -3956,40 +4009,48 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Gigante da Colina",
     "imageUrl": "/assets/monsters/hill_giant_new.png",
-    "level": 54,
-    "maxHp": 1663,
-    "strength": 583,
-    "defense": 62,
-    "agility": 43,
-    "experience": 60040.1,
-    "gold": 90060.15,
+    "level": 46,
+    "maxHp": 1682,
+    "strength": 525,
+    "defense": 72,
+    "agility": 33,
+    "experience": 29929.9,
+    "gold": 44894.85,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.268
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.182
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.109
       }
     ]
   },
   "human_bandit": {
     "id": "human_bandit",
-    "cityId": "ironhold",
-    "name": "Bandido Humano",
+    "cityId": "ravenspire",
+    "name": "Saqueador dos Campos",
     "imageUrl": "/assets/monsters/human-bandit.png",
-    "level": 55,
-    "maxHp": 1721,
-    "strength": 621,
-    "defense": 62,
-    "agility": 71,
-    "experience": 66067.5,
-    "gold": 99101.25,
+    "level": 16,
+    "maxHp": 470,
+    "strength": 178,
+    "defense": 18,
+    "agility": 21,
+    "experience": 1296.0,
+    "gold": 1944.0,
     "drops": [
       {
-        "itemId": "major_health_potion",
-        "chance": 0.34
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.289
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "health_potion",
+        "chance": 0.123
       }
     ]
   },
@@ -3998,17 +4059,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Serpente Infernal",
     "imageUrl": "/assets/monsters/infernal_serpent.png",
-    "level": 56,
-    "maxHp": 1755,
-    "strength": 635,
-    "defense": 65,
-    "agility": 75,
-    "experience": 72690,
-    "gold": 109035,
+    "level": 47,
+    "maxHp": 1383,
+    "strength": 526,
+    "defense": 50,
+    "agility": 62,
+    "experience": 31434.7,
+    "gold": 47152.05,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "ember_core",
+        "chance": 0.267
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.181
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.109
       }
     ]
   },
@@ -4017,25 +4086,21 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Geleia",
     "imageUrl": "/assets/monsters/jelly.png",
-    "level": 57,
-    "maxHp": 1791,
-    "strength": 651,
-    "defense": 65,
-    "agility": 81,
-    "experience": 79974.8,
-    "gold": 119962.2,
+    "level": 48,
+    "maxHp": 1517,
+    "strength": 590,
+    "defense": 57,
+    "agility": 50,
+    "experience": 35958.5,
+    "gold": 53937.75,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.266
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
-      },
-      {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "wyvern_scale",
+        "chance": 0.108
       }
     ]
   },
@@ -4044,40 +4109,48 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Gigante de Joree",
     "imageUrl": "/assets/monsters/joree_giant.png",
-    "level": 58,
-    "maxHp": 1796,
-    "strength": 636,
-    "defense": 67,
-    "agility": 56,
-    "experience": 87978.5,
-    "gold": 131967.75,
+    "level": 49,
+    "maxHp": 1791,
+    "strength": 560,
+    "defense": 77,
+    "agility": 35,
+    "experience": 39961.8,
+    "gold": 59942.7,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "ember_core",
+        "chance": 0.266
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_stone_fragment",
+        "chance": 0.18
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.108
       }
     ]
   },
   "joree_plant": {
     "id": "joree_plant",
-    "cityId": "ironhold",
+    "cityId": "ravenspire",
     "name": "Planta de Joree",
     "imageUrl": "/assets/monsters/joree_plant.png",
-    "level": 59,
-    "maxHp": 1823,
-    "strength": 643,
-    "defense": 67,
-    "agility": 53,
-    "experience": 96788.6,
-    "gold": 145182.9,
+    "level": 24,
+    "maxHp": 706,
+    "strength": 268,
+    "defense": 26,
+    "agility": 32,
+    "experience": 3190.3,
+    "gold": 4785.45,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_seed_rustic",
+        "chance": 0.283
+      },
+      {
+        "itemId": "material_green_coin",
+        "chance": 0.119
       }
     ]
   },
@@ -4086,67 +4159,79 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Andarilho de Joree",
     "imageUrl": "/assets/monsters/joree_walker.png",
-    "level": 60,
-    "maxHp": 1871,
-    "strength": 671,
-    "defense": 70,
-    "agility": 71,
-    "experience": 106486.3,
-    "gold": 159729.45,
+    "level": 50,
+    "maxHp": 1549,
+    "strength": 549,
+    "defense": 61,
+    "agility": 50,
+    "experience": 40736.8,
+    "gold": 61105.2,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_stone_craft",
+        "chance": 0.265
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_stone_fragment",
+        "chance": 0.18
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.108
       }
     ]
   },
   "labrat_unseen": {
     "id": "labrat_unseen",
     "cityId": "ironhold",
-    "name": "Rato de Laboratório Oculto",
+    "name": "Rato Oculto das Minas",
     "imageUrl": "/assets/monsters/labrat_unseen.png",
-    "level": 61,
-    "maxHp": 1889,
-    "strength": 669,
-    "defense": 70,
-    "agility": 59,
-    "experience": 117143.7,
-    "gold": 175715.55,
+    "level": 51,
+    "maxHp": 1501,
+    "strength": 571,
+    "defense": 55,
+    "agility": 67,
+    "experience": 46190.8,
+    "gold": 69286.2,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "ember_core",
+        "chance": 0.264
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.18
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.107
       }
     ]
   },
   "mummy": {
     "id": "mummy",
-    "cityId": "ironhold",
-    "name": "Múmia",
+    "cityId": "vila_de_valfria",
+    "name": "Múmia das Dunas",
     "imageUrl": "/assets/monsters/mummy.png",
-    "level": 62,
-    "maxHp": 1918,
-    "strength": 678,
-    "defense": 72,
-    "agility": 58,
-    "experience": 128869.6,
-    "gold": 193304.4,
+    "level": 77,
+    "maxHp": 2577,
+    "strength": 829,
+    "defense": 102,
+    "agility": 65,
+    "experience": 559829.6,
+    "gold": 839744.4,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.34
-      },
-      {
         "itemId": "material_old_stone",
-        "chance": 0.3
+        "chance": 0.246
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_stone_fragment",
+        "chance": 0.169
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.095
       }
     ]
   },
@@ -4155,21 +4240,21 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Ogro Mago",
     "imageUrl": "/assets/monsters/ogre_mage.png",
-    "level": 63,
-    "maxHp": 1935,
-    "strength": 675,
-    "defense": 72,
-    "agility": 45,
-    "experience": 141764.7,
-    "gold": 212647.05,
+    "level": 52,
+    "maxHp": 1901,
+    "strength": 594,
+    "defense": 81,
+    "agility": 37,
+    "experience": 53314.2,
+    "gold": 79971.3,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_stone_craft",
+        "chance": 0.264
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_dragons_tooth",
+        "chance": 0.107
       }
     ]
   },
@@ -4178,21 +4263,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Ogro",
     "imageUrl": "/assets/monsters/ogre.png",
-    "level": 64,
-    "maxHp": 1981,
-    "strength": 701,
-    "defense": 75,
-    "agility": 61,
-    "experience": 155958.8,
-    "gold": 233938.2,
+    "level": 53,
+    "maxHp": 1938,
+    "strength": 605,
+    "defense": 83,
+    "agility": 38,
+    "experience": 58683.5,
+    "gold": 88025.25,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_old_stone",
+        "chance": 0.263
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "misc_stone_craft",
+        "chance": 0.179
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.106
       }
     ]
   },
@@ -4201,21 +4290,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Cavaleiro Orc",
     "imageUrl": "/assets/monsters/orc_knight.png",
-    "level": 65,
-    "maxHp": 2018,
-    "strength": 718,
-    "defense": 75,
-    "agility": 68,
-    "experience": 171566.9,
-    "gold": 257350.35,
+    "level": 54,
+    "maxHp": 1673,
+    "strength": 593,
+    "defense": 66,
+    "agility": 54,
+    "experience": 59805.2,
+    "gold": 89707.8,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.262
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "misc_stone_craft",
+        "chance": 0.178
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.106
       }
     ]
   },
@@ -4224,21 +4317,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Guerreiro Orc",
     "imageUrl": "/assets/monsters/orc_warrior.png",
-    "level": 66,
-    "maxHp": 2046,
-    "strength": 726,
-    "defense": 78,
-    "agility": 66,
-    "experience": 188733.6,
-    "gold": 283100.4,
+    "level": 62,
+    "maxHp": 1921,
+    "strength": 681,
+    "defense": 76,
+    "agility": 62,
+    "experience": 128598.0,
+    "gold": 192897.0,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_old_stone",
+        "chance": 0.257
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "misc_herb_bitter",
+        "chance": 0.175
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.102
       }
     ]
   },
@@ -4247,63 +4344,75 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Orc",
     "imageUrl": "/assets/monsters/orc.png",
-    "level": 67,
-    "maxHp": 2077,
-    "strength": 737,
-    "defense": 78,
-    "agility": 67,
-    "experience": 207617.9,
-    "gold": 311426.85,
+    "level": 63,
+    "maxHp": 1952,
+    "strength": 692,
+    "defense": 77,
+    "agility": 63,
+    "experience": 141492.8,
+    "gold": 212239.2,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_bone",
+        "chance": 0.256
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "misc_herb_bitter",
+        "chance": 0.175
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.102
       }
     ]
   },
   "pulsating_lump": {
     "id": "pulsating_lump",
     "cityId": "vila_de_valfria",
-    "name": "Massa Pulsante",
+    "name": "Massa de Sal Pulsante",
     "imageUrl": "/assets/monsters/pulsating_lump.png",
-    "level": 68,
-    "maxHp": 2108,
-    "strength": 748,
-    "defense": 80,
-    "agility": 68,
-    "experience": 228389.4,
-    "gold": 342584.1,
+    "level": 64,
+    "maxHp": 2023,
+    "strength": 787,
+    "defense": 75,
+    "agility": 67,
+    "experience": 166574.4,
+    "gold": 249861.6,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_bone",
+        "chance": 0.255
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.101
       }
     ]
   },
   "redback_new": {
     "id": "redback_new",
     "cityId": "vila_de_valfria",
-    "name": "Aranha de Costas Vermelhas",
+    "name": "Aranha Rubra do Deserto",
     "imageUrl": "/assets/monsters/redback_new.png",
-    "level": 69,
-    "maxHp": 2139,
-    "strength": 759,
-    "defense": 80,
-    "agility": 69,
-    "experience": 251237.7,
-    "gold": 376856.55,
+    "level": 65,
+    "maxHp": 2014,
+    "strength": 714,
+    "defense": 79,
+    "agility": 65,
+    "experience": 171279.8,
+    "gold": 256919.7,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.34
+        "itemId": "material_old_stone",
+        "chance": 0.255
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_stone_fragment",
+        "chance": 0.174
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.101
       }
     ]
   },
@@ -4312,44 +4421,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Salamandra Flamejante",
     "imageUrl": "/assets/monsters/salamander_firebrand.png",
-    "level": 70,
-    "maxHp": 2172,
-    "strength": 772,
-    "defense": 83,
-    "agility": 72,
-    "experience": 276370.9,
-    "gold": 414556.35,
+    "level": 66,
+    "maxHp": 2045,
+    "strength": 725,
+    "defense": 81,
+    "agility": 66,
+    "experience": 188442.7,
+    "gold": 282664.05,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_bone",
+        "chance": 0.254
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_stone_fragment",
+        "chance": 0.174
+      },
+      {
+        "itemId": "health_potion_medium",
+        "chance": 0.1
       }
     ]
   },
   "rock_troll": {
     "id": "rock_troll",
-    "cityId": "vila_de_valfria",
+    "cityId": "ironhold",
     "name": "Troll de Pedra",
     "imageUrl": "/assets/monsters/rock_troll.png",
-    "level": 71,
-    "maxHp": 2204,
-    "strength": 784,
-    "defense": 83,
-    "agility": 74,
-    "experience": 304016.5,
-    "gold": 456024.75,
+    "level": 55,
+    "maxHp": 2011,
+    "strength": 628,
+    "defense": 86,
+    "agility": 40,
+    "experience": 71086.4,
+    "gold": 106629.6,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "ember_core",
+        "chance": 0.262
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "misc_stone_craft",
+        "chance": 0.178
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.105
       }
     ]
   },
@@ -4358,21 +4475,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Salamandra",
     "imageUrl": "/assets/monsters/salamander.png",
-    "level": 72,
-    "maxHp": 2233,
-    "strength": 793,
-    "defense": 85,
-    "agility": 73,
-    "experience": 334425.4,
-    "gold": 501638.1,
+    "level": 67,
+    "maxHp": 2076,
+    "strength": 736,
+    "defense": 82,
+    "agility": 67,
+    "experience": 207322.0,
+    "gold": 310983.0,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_bone",
+        "chance": 0.253
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "misc_herb_bitter",
+        "chance": 0.173
+      },
+      {
+        "itemId": "health_potion_medium",
+        "chance": 0.1
       }
     ]
   },
@@ -4381,21 +4502,21 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Elemental de Areia",
     "imageUrl": "/assets/monsters/sand_elemental.png",
-    "level": 73,
-    "maxHp": 2261,
-    "strength": 801,
-    "defense": 85,
-    "agility": 71,
-    "experience": 367874.8,
-    "gold": 551812.2,
+    "level": 68,
+    "maxHp": 2486,
+    "strength": 777,
+    "defense": 106,
+    "agility": 49,
+    "experience": 246336.3,
+    "gold": 369504.45,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_bone",
+        "chance": 0.252
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_energy_jewell",
+        "chance": 0.099
       }
     ]
   },
@@ -4404,25 +4525,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Aranha de Areia",
     "imageUrl": "/assets/monsters/sand_spider.png",
-    "level": 74,
-    "maxHp": 2297,
-    "strength": 817,
-    "defense": 88,
-    "agility": 77,
-    "experience": 404670.9,
-    "gold": 607006.3500000001,
+    "level": 69,
+    "maxHp": 2031,
+    "strength": 773,
+    "defense": 74,
+    "agility": 91,
+    "experience": 258461.1,
+    "gold": 387691.65,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_bone",
+        "chance": 0.252
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.3
+        "chance": 0.172
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "material_energy_jewell",
+        "chance": 0.099
       }
     ]
   },
@@ -4431,17 +4552,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Morcego Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_bat.png",
-    "level": 75,
-    "maxHp": 2328,
-    "strength": 828,
-    "defense": 88,
-    "agility": 78,
-    "experience": 445145.2,
-    "gold": 667717.8,
+    "level": 70,
+    "maxHp": 2061,
+    "strength": 784,
+    "defense": 75,
+    "agility": 92,
+    "experience": 284343.3,
+    "gold": 426514.95,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_herb_bitter",
+        "chance": 0.251
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.172
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.099
       }
     ]
   },
@@ -4450,44 +4579,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Centauro Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_centaur.png",
-    "level": 76,
-    "maxHp": 2360,
-    "strength": 840,
-    "defense": 91,
-    "agility": 80,
-    "experience": 489666.1,
-    "gold": 734499.1499999999,
+    "level": 71,
+    "maxHp": 2376,
+    "strength": 764,
+    "defense": 94,
+    "agility": 60,
+    "experience": 315850.7,
+    "gold": 473776.05,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.25
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_old_stone",
+        "chance": 0.172
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "misc_seed_bitter",
+        "chance": 0.098
       }
     ]
   },
   "skeleton_dragon": {
     "id": "skeleton_dragon",
-    "cityId": "vila_de_valfria",
+    "cityId": "necropole_de_morthaly",
     "name": "Dragão Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_dragon.png",
-    "level": 77,
-    "maxHp": 2386,
-    "strength": 846,
-    "defense": 91,
-    "agility": 76,
-    "experience": 538636.9,
-    "gold": 807955.3500000001,
+    "level": 107,
+    "maxHp": 3913,
+    "strength": 1223,
+    "defense": 168,
+    "agility": 77,
+    "experience": 10150628.6,
+    "gold": 15225942.9,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_high_dungeon_key",
+        "chance": 0.225
+      },
+      {
+        "itemId": "material_dark_residue",
+        "chance": 0.157
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.082
       }
     ]
   },
@@ -4496,21 +4633,21 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Naga Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_naga.png",
-    "level": 78,
-    "maxHp": 2417,
-    "strength": 857,
-    "defense": 93,
-    "agility": 77,
-    "experience": 592506.4,
-    "gold": 888759.6000000001,
+    "level": 72,
+    "maxHp": 2409,
+    "strength": 775,
+    "defense": 95,
+    "agility": 60,
+    "experience": 347472.1,
+    "gold": 521208.15,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.34
+        "itemId": "misc_herb_bitter",
+        "chance": 0.25
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_energy_jewell",
+        "chance": 0.098
       }
     ]
   },
@@ -4519,17 +4656,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Quadrupede Esqueleto Grande",
     "imageUrl": "/assets/monsters/skeleton_quadruped_large_new.png",
-    "level": 79,
-    "maxHp": 2450,
-    "strength": 870,
-    "defense": 93,
-    "agility": 80,
-    "experience": 651762.3,
-    "gold": 977643.4500000001,
+    "level": 73,
+    "maxHp": 2669,
+    "strength": 834,
+    "defense": 114,
+    "agility": 53,
+    "experience": 396957.9,
+    "gold": 595436.85,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.249
+      },
+      {
+        "itemId": "misc_herb_bitter",
+        "chance": 0.171
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.097
       }
     ]
   },
@@ -4538,17 +4683,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Quadrupede Esqueleto Pequeno",
     "imageUrl": "/assets/monsters/skeleton_quadruped_small.png",
-    "level": 80,
-    "maxHp": 2479,
-    "strength": 879,
-    "defense": 96,
-    "agility": 79,
-    "experience": 716943.3,
-    "gold": 1075414.9500000002,
+    "level": 74,
+    "maxHp": 2476,
+    "strength": 797,
+    "defense": 97,
+    "agility": 62,
+    "experience": 420517.7,
+    "gold": 630776.55,
     "drops": [
       {
-        "itemId": "health_potion_light",
-        "chance": 0.34
+        "itemId": "misc_herb_bitter",
+        "chance": 0.248
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.17
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.097
       }
     ]
   },
@@ -4557,25 +4710,25 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Serpente Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_snake.png",
-    "level": 81,
-    "maxHp": 2509,
-    "strength": 889,
-    "defense": 96,
-    "agility": 79,
-    "experience": 788641.3,
-    "gold": 1182961.9500000002,
+    "level": 75,
+    "maxHp": 2208,
+    "strength": 840,
+    "defense": 81,
+    "agility": 99,
+    "experience": 458157.8,
+    "gold": 687236.7,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.247
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_old_stone",
+        "chance": 0.17
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "material_energy_jewell",
+        "chance": 0.096
       }
     ]
   },
@@ -4584,884 +4737,980 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "vila_de_valfria",
     "name": "Coisa Feia Esqueleto",
     "imageUrl": "/assets/monsters/skeleton_ugly_thing.png",
-    "level": 82,
-    "maxHp": 2539,
-    "strength": 899,
-    "defense": 98,
-    "agility": 79,
-    "experience": 867508.5,
-    "gold": 1301262.75,
+    "level": 76,
+    "maxHp": 2543,
+    "strength": 818,
+    "defense": 100,
+    "agility": 64,
+    "experience": 508902.9,
+    "gold": 763354.35,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.34
+        "itemId": "material_stone_fragment",
+        "chance": 0.247
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "misc_seed_bitter",
+        "chance": 0.096
       }
     ]
   },
   "spectral_ant_old": {
     "id": "spectral_ant_old",
-    "cityId": "vila_de_valfria",
-    "name": "Formiga Espectral Antiga",
+    "cityId": "rosindale",
+    "name": "Formiga das Fendas",
     "imageUrl": "/assets/monsters/spectral_ant_old.png",
-    "level": 83,
-    "maxHp": 2569,
-    "strength": 909,
-    "defense": 98,
-    "agility": 79,
-    "experience": 954262.5,
-    "gold": 1431393.75,
+    "level": 80,
+    "maxHp": 2355,
+    "strength": 897,
+    "defense": 86,
+    "agility": 106,
+    "experience": 738087.8,
+    "gold": 1107131.7,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.34
+        "itemId": "material_strenght_jewell",
+        "chance": 0.244
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
-      },
-      {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "misc_serlen",
+        "chance": 0.094
       }
     ]
   },
   "spectral_bat_old": {
     "id": "spectral_bat_old",
-    "cityId": "vila_de_valfria",
-    "name": "Morcego Espectral Antigo",
+    "cityId": "rosindale",
+    "name": "Morcego do Cânion",
     "imageUrl": "/assets/monsters/spectral_bat_old.png",
-    "level": 84,
-    "maxHp": 2608,
-    "strength": 928,
-    "defense": 101,
-    "agility": 88,
-    "experience": 1049693.5,
-    "gold": 1574540.25,
+    "level": 81,
+    "maxHp": 2384,
+    "strength": 908,
+    "defense": 87,
+    "agility": 107,
+    "experience": 811932.6,
+    "gold": 1217898.9,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.34
+        "itemId": "material_strenght_jewell",
+        "chance": 0.243
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "crystal_dust",
+        "chance": 0.168
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.094
       }
     ]
   },
   "spectral_bee_old": {
     "id": "spectral_bee_old",
-    "cityId": "vila_de_valfria",
-    "name": "Abelha Espectral Antiga",
+    "cityId": "rosindale",
+    "name": "Abelha de Salitre",
     "imageUrl": "/assets/monsters/spectral_bee_old.png",
-    "level": 85,
-    "maxHp": 2638,
-    "strength": 938,
-    "defense": 101,
-    "agility": 88,
-    "experience": 1154665.5,
-    "gold": 1731998.25,
+    "level": 82,
+    "maxHp": 2414,
+    "strength": 919,
+    "defense": 88,
+    "agility": 108,
+    "experience": 893161.9,
+    "gold": 1339742.85,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.34
+        "itemId": "crystal_dust",
+        "chance": 0.243
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.167
+      },
+      {
+        "itemId": "misc_serlen",
+        "chance": 0.093
       }
     ]
   },
   "spectral_centaur_old": {
     "id": "spectral_centaur_old",
-    "cityId": "vila_de_valfria",
-    "name": "Centauro Espectral Antigo",
+    "cityId": "rosindale",
+    "name": "Centauro das Gargantas",
     "imageUrl": "/assets/monsters/spectral_centaur_old.png",
-    "level": 86,
-    "maxHp": 2668,
-    "strength": 948,
-    "defense": 104,
-    "agility": 88,
-    "experience": 1270133.8,
-    "gold": 1905200.7000000002,
+    "level": 83,
+    "maxHp": 2778,
+    "strength": 894,
+    "defense": 109,
+    "agility": 70,
+    "experience": 992053.1,
+    "gold": 1488079.65,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.34
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.242
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_stone_fragment",
+        "chance": 0.167
+      },
+      {
+        "itemId": "material_mysterious_jewell",
+        "chance": 0.093
       }
     ]
   },
   "spectral_dragon_old": {
     "id": "spectral_dragon_old",
-    "cityId": "vila_de_valfria",
+    "cityId": "necropole_de_morthaly",
     "name": "Dragão Espectral Antigo",
     "imageUrl": "/assets/monsters/spectral_dragon_old.png",
-    "level": 87,
-    "maxHp": 2698,
-    "strength": 958,
-    "defense": 104,
-    "agility": 88,
-    "experience": 1397147.8,
-    "gold": 2095721.7000000002,
+    "level": 108,
+    "maxHp": 3949,
+    "strength": 1234,
+    "defense": 169,
+    "agility": 78,
+    "experience": 11165729.3,
+    "gold": 16748593.95,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.34
+        "itemId": "material_dark_residue",
+        "chance": 0.224
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "misc_dragon_stone",
+        "chance": 0.081
       }
     ]
   },
   "spectral_hydra_3_old": {
     "id": "spectral_hydra_3_old",
-    "cityId": "vila_de_valfria",
+    "cityId": "necropole_de_morthaly",
     "name": "Hidra Espectral Antiga",
     "imageUrl": "/assets/monsters/spectral_hydra_3_old.png",
-    "level": 88,
-    "maxHp": 2727,
-    "strength": 967,
-    "defense": 106,
-    "agility": 87,
-    "experience": 1536862.7,
-    "gold": 2305294.05,
+    "level": 109,
+    "maxHp": 3986,
+    "strength": 1246,
+    "defense": 170,
+    "agility": 78,
+    "experience": 12282340.0,
+    "gold": 18423510.0,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_spectre_fragment",
+        "chance": 0.224
+      },
+      {
+        "itemId": "material_dark_residue",
+        "chance": 0.156
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.081
       }
     ]
   },
   "spectral_fish_old": {
     "id": "spectral_fish_old",
-    "cityId": "vila_de_valfria",
-    "name": "Peixe Espectral Antigo",
+    "cityId": "porto_sombrio",
+    "name": "Peixe Espectral do Porto",
     "imageUrl": "/assets/monsters/spectral_fish_old.png",
-    "level": 89,
-    "maxHp": 2760,
-    "strength": 980,
-    "defense": 106,
-    "agility": 90,
-    "experience": 1690550.6,
-    "gold": 2535825.9000000004,
+    "level": 101,
+    "maxHp": 3380,
+    "strength": 1088,
+    "defense": 133,
+    "agility": 85,
+    "experience": 5517393.2,
+    "gold": 8276089.8,
     "drops": [
       {
+        "itemId": "material_bone",
+        "chance": 0.229
+      },
+      {
+        "itemId": "material_spectre_fragment",
+        "chance": 0.16
+      },
+      {
         "itemId": "health_potion_medium",
-        "chance": 0.42
+        "chance": 0.085
       }
     ]
   },
   "spectral_naga_old": {
     "id": "spectral_naga_old",
-    "cityId": "vila_de_valfria",
-    "name": "Naga Espectral Antiga",
+    "cityId": "rosindale",
+    "name": "Naga do Desfiladeiro",
     "imageUrl": "/assets/monsters/spectral_naga_old.png",
-    "level": 90,
-    "maxHp": 2793,
-    "strength": 993,
-    "defense": 109,
-    "agility": 93,
-    "experience": 1859605.8,
-    "gold": 2789408.7,
+    "level": 84,
+    "maxHp": 2811,
+    "strength": 905,
+    "defense": 110,
+    "agility": 71,
+    "experience": 1091294.8,
+    "gold": 1636942.2,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_strenght_jewell",
+        "chance": 0.241
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "energy_potion_medium",
+        "chance": 0.092
       }
     ]
   },
   "spectral_quadruped_small_old": {
     "id": "spectral_quadruped_small_old",
-    "cityId": "vila_de_valfria",
-    "name": "Quadrupede Espectral Pequeno Antigo",
+    "cityId": "rosindale",
+    "name": "Quadrúpede das Fendas",
     "imageUrl": "/assets/monsters/spectral_quadruped_small_old.png",
-    "level": 91,
-    "maxHp": 2825,
-    "strength": 1005,
-    "defense": 109,
-    "agility": 95,
-    "experience": 2045566.4,
-    "gold": 3068349.5999999996,
+    "level": 85,
+    "maxHp": 2845,
+    "strength": 915,
+    "defense": 112,
+    "agility": 71,
+    "experience": 1200460.7,
+    "gold": 1800691.05,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_strenght_jewell",
+        "chance": 0.24
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "crystal_dust",
+        "chance": 0.166
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.092
       }
     ]
   },
   "spectral_snake_old": {
     "id": "spectral_snake_old",
-    "cityId": "vila_de_valfria",
-    "name": "Serpente Espectral Antiga",
+    "cityId": "rosindale",
+    "name": "Serpente da Miragem",
     "imageUrl": "/assets/monsters/spectral_snake_old.png",
-    "level": 92,
-    "maxHp": 2849,
-    "strength": 1009,
-    "defense": 111,
-    "agility": 89,
-    "experience": 2250120.8,
-    "gold": 3375181.1999999997,
+    "level": 93,
+    "maxHp": 2738,
+    "strength": 1042,
+    "defense": 99,
+    "agility": 123,
+    "experience": 2548963.2,
+    "gold": 3823444.8,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.235
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_strenght_jewell",
+        "chance": 0.163
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.088
       }
     ]
   },
   "spectral_spider_old": {
     "id": "spectral_spider_old",
-    "cityId": "vila_de_valfria",
-    "name": "Aranha Espectral Antiga",
+    "cityId": "rosindale",
+    "name": "Aranha Rubra das Ravinas",
     "imageUrl": "/assets/monsters/spectral_spider_old.png",
-    "level": 93,
-    "maxHp": 2881,
-    "strength": 1021,
-    "defense": 111,
-    "agility": 91,
-    "experience": 2475131.4,
-    "gold": 3712697.0999999996,
+    "level": 86,
+    "maxHp": 2532,
+    "strength": 964,
+    "defense": 92,
+    "agility": 114,
+    "experience": 1307845.7,
+    "gold": 1961768.55,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_strenght_jewell",
+        "chance": 0.24
+      },
+      {
+        "itemId": "material_stone_fragment",
+        "chance": 0.166
+      },
+      {
+        "itemId": "misc_serlen",
+        "chance": 0.091
       }
     ]
   },
   "spectral_thing": {
     "id": "spectral_thing",
-    "cityId": "vila_de_valfria",
-    "name": "Coisa Espectral",
+    "cityId": "rosindale",
+    "name": "Miragem Hostil",
     "imageUrl": "/assets/monsters/spectral_thing.png",
-    "level": 94,
-    "maxHp": 2913,
-    "strength": 1033,
+    "level": 87,
+    "maxHp": 2912,
+    "strength": 937,
     "defense": 114,
-    "agility": 93,
-    "experience": 2722643.3,
-    "gold": 4083964.9499999997,
+    "agility": 73,
+    "experience": 1452633.9,
+    "gold": 2178950.85,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "crystal_dust",
+        "chance": 0.239
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.165
+      },
+      {
+        "itemId": "misc_serlen",
+        "chance": 0.091
       }
     ]
   },
   "spectral_worm": {
     "id": "spectral_worm",
-    "cityId": "vila_de_valfria",
-    "name": "Verme Espectral",
+    "cityId": "rosindale",
+    "name": "Verme da Ravina",
     "imageUrl": "/assets/monsters/spectral_worm.png",
-    "level": 95,
-    "maxHp": 2941,
-    "strength": 1041,
-    "defense": 114,
-    "agility": 91,
-    "experience": 2994904.7,
-    "gold": 4492357.050000001,
+    "level": 88,
+    "maxHp": 2945,
+    "strength": 948,
+    "defense": 116,
+    "agility": 74,
+    "experience": 1597933.7,
+    "gold": 2396900.55,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_strenght_jewell",
+        "chance": 0.238
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
-      },
-      {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "misc_serlen",
+        "chance": 0.09
       }
     ]
   },
   "two_headed_ogre": {
     "id": "two_headed_ogre",
-    "cityId": "vila_de_valfria",
-    "name": "Ogro de Duas Cabecas",
+    "cityId": "rosindale",
+    "name": "Ogro de Duas Cabeças",
     "imageUrl": "/assets/monsters/two_headed_ogre.png",
-    "level": 96,
-    "maxHp": 2969,
-    "strength": 1049,
-    "defense": 117,
-    "agility": 89,
-    "experience": 3294392.4,
-    "gold": 4941588.6,
+    "level": 89,
+    "maxHp": 3254,
+    "strength": 1017,
+    "defense": 140,
+    "agility": 64,
+    "experience": 1825369.8,
+    "gold": 2738054.7,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_stone_fragment",
+        "chance": 0.238
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.164
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "misc_serlen",
+        "chance": 0.09
       }
     ]
   },
   "viper": {
     "id": "viper",
-    "cityId": "vila_de_valfria",
+    "cityId": "rosindale",
     "name": "Vibora",
     "imageUrl": "/assets/monsters/viper.png",
-    "level": 97,
-    "maxHp": 2990,
-    "strength": 1050,
-    "defense": 117,
-    "agility": 80,
-    "experience": 3623825.7,
-    "gold": 5435738.550000001,
+    "level": 90,
+    "maxHp": 2650,
+    "strength": 1009,
+    "defense": 97,
+    "agility": 119,
+    "experience": 1914984.2,
+    "gold": 2872476.3,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_strenght_jewell",
+        "chance": 0.237
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_stone_fragment",
+        "chance": 0.164
+      },
+      {
+        "itemId": "misc_serlen",
+        "chance": 0.089
       }
     ]
   },
   "wolf_spider_new": {
     "id": "wolf_spider_new",
-    "cityId": "vila_de_valfria",
-    "name": "Aranha-Lobo",
+    "cityId": "rosindale",
+    "name": "Aranha-Lobo das Fendas",
     "imageUrl": "/assets/monsters/wolf_spider_new.png",
-    "level": 98,
-    "maxHp": 3021,
-    "strength": 1061,
-    "defense": 119,
-    "agility": 81,
-    "experience": 3986205.2,
-    "gold": 5979307.800000001,
+    "level": 91,
+    "maxHp": 2679,
+    "strength": 1020,
+    "defense": 98,
+    "agility": 120,
+    "experience": 2106518.6,
+    "gold": 3159777.9,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "crystal_dust",
+        "chance": 0.236
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_strenght_jewell",
+        "chance": 0.164
+      },
+      {
+        "itemId": "material_mysterious_jewell",
+        "chance": 0.089
       }
     ]
   },
   "wolf_spider_old": {
     "id": "wolf_spider_old",
-    "cityId": "vila_de_valfria",
+    "cityId": "rosindale",
     "name": "Aranha-Lobo Antiga",
     "imageUrl": "/assets/monsters/wolf_spider_old.png",
-    "level": 99,
-    "maxHp": 3059,
-    "strength": 1079,
-    "defense": 119,
-    "agility": 89,
-    "experience": 4384824.6,
-    "gold": 6577236.899999999,
+    "level": 92,
+    "maxHp": 2708,
+    "strength": 1031,
+    "defense": 99,
+    "agility": 121,
+    "experience": 2317206.5,
+    "gold": 3475809.75,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_stone_fragment",
+        "chance": 0.236
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "energy_potion_medium",
+        "chance": 0.089
       }
     ]
   },
   "zombie_crab": {
     "id": "zombie_crab",
-    "cityId": "vila_de_valfria",
+    "cityId": "porto_sombrio",
     "name": "Caranguejo Zumbi",
     "imageUrl": "/assets/monsters/zombie_crab.png",
-    "level": 100,
-    "maxHp": 3099,
-    "strength": 1099,
-    "defense": 122,
-    "agility": 99,
-    "experience": 4823305.9,
-    "gold": 7234958.850000001,
+    "level": 94,
+    "maxHp": 3146,
+    "strength": 1012,
+    "defense": 124,
+    "agility": 79,
+    "experience": 2831117.9,
+    "gold": 4246676.85,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_bone",
+        "chance": 0.234
+      },
+      {
+        "itemId": "misc_dungeon_key",
+        "chance": 0.162
+      },
+      {
+        "itemId": "material_spectre_jewell",
+        "chance": 0.088
       }
     ]
   },
   "zombie_drake_infected": {
     "id": "zombie_drake_infected",
-    "cityId": "vila_de_valfria",
+    "cityId": "necropole_de_morthaly",
     "name": "Draco Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_drake_infected.png",
-    "level": 101,
-    "maxHp": 3130,
-    "strength": 1110,
-    "defense": 122,
-    "agility": 100,
-    "experience": 5305631.2,
-    "gold": 7958446.800000001,
+    "level": 112,
+    "maxHp": 3749,
+    "strength": 1206,
+    "defense": 148,
+    "agility": 94,
+    "experience": 15742441.2,
+    "gold": 23613661.8,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_spectre_fragment",
+        "chance": 0.222
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "material_dragon_essence",
+        "chance": 0.08
       }
     ]
   },
   "zombie_drake": {
     "id": "zombie_drake",
-    "cityId": "vila_de_valfria",
+    "cityId": "necropole_de_morthaly",
     "name": "Draco Zumbi",
     "imageUrl": "/assets/monsters/zombie_drake.png",
-    "level": 102,
-    "maxHp": 3161,
-    "strength": 1121,
-    "defense": 124,
-    "agility": 101,
-    "experience": 5836189.7,
-    "gold": 8754284.55,
+    "level": 113,
+    "maxHp": 3782,
+    "strength": 1217,
+    "defense": 149,
+    "agility": 95,
+    "experience": 17316721.7,
+    "gold": 25975082.55,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_dark_magic_rune",
+        "chance": 0.221
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_spectre_fragment",
+        "chance": 0.155
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.079
       }
     ]
   },
   "zombie_hound_infected": {
     "id": "zombie_hound_infected",
-    "cityId": "vila_de_valfria",
+    "cityId": "necropole_de_morthaly",
     "name": "Cão Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_hound_infected.png",
-    "level": 103,
-    "maxHp": 3192,
-    "strength": 1132,
-    "defense": 124,
-    "agility": 102,
-    "experience": 6419803,
-    "gold": 9629704.5,
+    "level": 110,
+    "maxHp": 3682,
+    "strength": 1185,
+    "defense": 145,
+    "agility": 92,
+    "experience": 13010218.8,
+    "gold": 19515328.2,
     "drops": [
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.42
+        "itemId": "material_dark_magic_rune",
+        "chance": 0.223
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_dark_residue",
+        "chance": 0.156
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "misc_dragon_stone",
+        "chance": 0.081
       }
     ]
   },
   "zombie_hound": {
     "id": "zombie_hound",
-    "cityId": "vila_de_valfria",
+    "cityId": "necropole_de_morthaly",
     "name": "Cão Zumbi",
     "imageUrl": "/assets/monsters/zombie_hound.png",
-    "level": 104,
-    "maxHp": 3223,
-    "strength": 1143,
-    "defense": 127,
-    "agility": 103,
-    "experience": 7061777.6,
-    "gold": 10592666.399999999,
+    "level": 111,
+    "maxHp": 3715,
+    "strength": 1196,
+    "defense": 146,
+    "agility": 93,
+    "experience": 14311277.1,
+    "gold": 21466915.65,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "misc_high_dungeon_key",
+        "chance": 0.222
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "material_dark_residue",
+        "chance": 0.156
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "misc_dragon_stone",
+        "chance": 0.08
       }
     ]
   },
   "zombie_kraken_head": {
     "id": "zombie_kraken_head",
-    "cityId": "vila_de_valfria",
-    "name": "Cabeca de Kraken Zumbi",
+    "cityId": "porto_sombrio",
+    "name": "Cabeça de Kraken Zumbi",
     "imageUrl": "/assets/monsters/zombie_kraken_head.png",
-    "level": 105,
-    "maxHp": 3254,
-    "strength": 1154,
-    "defense": 127,
-    "agility": 104,
-    "experience": 7767947.9,
-    "gold": 11651921.850000001,
+    "level": 95,
+    "maxHp": 3180,
+    "strength": 1023,
+    "defense": 125,
+    "agility": 80,
+    "experience": 3114266.1,
+    "gold": 4671399.15,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_spectre_fragment",
+        "chance": 0.233
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_bone",
+        "chance": 0.162
+      },
+      {
+        "itemId": "material_spectre_jewell",
+        "chance": 0.087
       }
     ]
   },
   "zombie_lizard_infected": {
     "id": "zombie_lizard_infected",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Lagarto Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_lizard_infected.png",
-    "level": 106,
-    "maxHp": 3285,
-    "strength": 1165,
-    "defense": 130,
-    "agility": 105,
-    "experience": 8544736.5,
-    "gold": 12817104.75,
+    "level": 102,
+    "maxHp": 3414,
+    "strength": 1099,
+    "defense": 134,
+    "agility": 86,
+    "experience": 6069168.9,
+    "gold": 9103753.35,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_dark_residue",
+        "chance": 0.229
+      },
+      {
+        "itemId": "material_spectre_fragment",
+        "chance": 0.159
+      },
+      {
+        "itemId": "ticket_ship",
+        "chance": 0.084
       }
     ]
   },
   "zombie_kraken_infected": {
     "id": "zombie_kraken_infected",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Kraken Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_kraken_infected.png",
-    "level": 107,
-    "maxHp": 3316,
-    "strength": 1176,
-    "defense": 130,
-    "agility": 106,
-    "experience": 9399202.8,
-    "gold": 14098804.200000001,
+    "level": 96,
+    "maxHp": 3213,
+    "strength": 1034,
+    "defense": 126,
+    "agility": 81,
+    "experience": 3425729.1,
+    "gold": 5138593.65,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_spectre_fragment",
+        "chance": 0.233
       },
       {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "health_potion_medium",
+        "chance": 0.087
       }
     ]
   },
   "zombie_lizard": {
     "id": "zombie_lizard",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Lagarto Zumbi",
     "imageUrl": "/assets/monsters/zombie_lizard.png",
-    "level": 108,
-    "maxHp": 3347,
-    "strength": 1187,
-    "defense": 132,
-    "agility": 107,
-    "experience": 10339115.3,
-    "gold": 15508672.950000001,
+    "level": 103,
+    "maxHp": 3447,
+    "strength": 1109,
+    "defense": 136,
+    "agility": 87,
+    "experience": 6676122.2,
+    "gold": 10014183.3,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "misc_dungeon_key",
+        "chance": 0.228
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_spectre_fragment",
+        "chance": 0.159
+      },
+      {
+        "itemId": "health_potion_medium",
+        "chance": 0.084
       }
     ]
   },
   "zombie_octopode_infected": {
     "id": "zombie_octopode_infected",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Octopode Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_octopode_infected.png",
-    "level": 109,
-    "maxHp": 3378,
-    "strength": 1198,
-    "defense": 132,
-    "agility": 108,
-    "experience": 11373018.6,
-    "gold": 17059527.9,
+    "level": 97,
+    "maxHp": 3246,
+    "strength": 1045,
+    "defense": 127,
+    "agility": 81,
+    "experience": 3768338.4,
+    "gold": 5652507.6,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "misc_dungeon_key",
+        "chance": 0.232
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_dark_residue",
+        "chance": 0.161
+      },
+      {
+        "itemId": "ticket_ship",
+        "chance": 0.086
       }
     ]
   },
   "zombie_octopode": {
     "id": "zombie_octopode",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Octopode Zumbi",
     "imageUrl": "/assets/monsters/zombie_octopode.png",
-    "level": 110,
-    "maxHp": 3409,
-    "strength": 1209,
-    "defense": 135,
-    "agility": 109,
-    "experience": 12510311.2,
-    "gold": 18765466.799999997,
+    "level": 98,
+    "maxHp": 3280,
+    "strength": 1055,
+    "defense": 130,
+    "agility": 82,
+    "experience": 4145208.6,
+    "gold": 6217812.9,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_spectre_fragment",
+        "chance": 0.231
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
+        "itemId": "material_dark_residue",
+        "chance": 0.161
+      },
+      {
+        "itemId": "health_potion_medium",
+        "chance": 0.086
       }
     ]
   },
   "zombie_ogre_infected": {
     "id": "zombie_ogre_infected",
-    "cityId": "rosindale",
+    "cityId": "necropole_de_morthaly",
     "name": "Ogro Zumbi Infectado",
     "imageUrl": "/assets/monsters/zombie_ogre_infected.png",
-    "level": 111,
-    "maxHp": 3440,
-    "strength": 1220,
-    "defense": 135,
-    "agility": 110,
-    "experience": 13761333.5,
-    "gold": 20642000.25,
+    "level": 114,
+    "maxHp": 4169,
+    "strength": 1303,
+    "defense": 178,
+    "agility": 82,
+    "experience": 19781062.2,
+    "gold": 29671593.3,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "misc_high_dungeon_key",
+        "chance": 0.22
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_spectre_fragment",
+        "chance": 0.154
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_dragon_essence",
+        "chance": 0.079
       }
     ]
   },
   "zombie_ogre": {
     "id": "zombie_ogre",
-    "cityId": "rosindale",
+    "cityId": "necropole_de_morthaly",
     "name": "Ogro Zumbi",
     "imageUrl": "/assets/monsters/zombie_ogre.png",
-    "level": 112,
-    "maxHp": 3471,
-    "strength": 1231,
-    "defense": 137,
-    "agility": 111,
-    "experience": 15137457,
-    "gold": 22706185.5,
+    "level": 115,
+    "maxHp": 4206,
+    "strength": 1315,
+    "defense": 179,
+    "agility": 83,
+    "experience": 21759206.2,
+    "gold": 32638809.3,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_dark_residue",
+        "chance": 0.219
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "material_spectre_fragment",
+        "chance": 0.154
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.078
       }
     ]
   },
   "zombie_rat": {
     "id": "zombie_rat",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Rato Zumbi",
     "imageUrl": "/assets/monsters/zombie_rat.png",
-    "level": 113,
-    "maxHp": 3502,
-    "strength": 1242,
-    "defense": 137,
-    "agility": 112,
-    "experience": 16651192.3,
-    "gold": 24976788.450000003,
+    "level": 104,
+    "maxHp": 3062,
+    "strength": 1166,
+    "defense": 112,
+    "agility": 137,
+    "experience": 7273157.6,
+    "gold": 10909736.4,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_dark_residue",
+        "chance": 0.227
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
-      },
-      {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "health_potion_medium",
+        "chance": 0.083
       }
     ]
   },
   "zombie_small": {
     "id": "zombie_small",
-    "cityId": "rosindale",
+    "cityId": "necropole_de_morthaly",
     "name": "Zumbi Pequeno",
     "imageUrl": "/assets/monsters/zombie_small.png",
-    "level": 114,
-    "maxHp": 3533,
-    "strength": 1253,
-    "defense": 140,
-    "agility": 113,
-    "experience": 18316301.9,
-    "gold": 27474452.849999998,
+    "level": 116,
+    "maxHp": 3883,
+    "strength": 1250,
+    "defense": 153,
+    "agility": 97,
+    "experience": 23048677.1,
+    "gold": 34573015.65,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_dark_residue",
+        "chance": 0.219
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.078
       }
     ]
   },
   "zombie_toad": {
     "id": "zombie_toad",
-    "cityId": "rosindale",
+    "cityId": "necropole_de_morthaly",
     "name": "Sapo Zumbi",
     "imageUrl": "/assets/monsters/zombie_toad.png",
-    "level": 115,
-    "maxHp": 3564,
-    "strength": 1264,
-    "defense": 140,
-    "agility": 114,
-    "experience": 20147921.2,
-    "gold": 30221881.799999997,
+    "level": 117,
+    "maxHp": 3916,
+    "strength": 1260,
+    "defense": 154,
+    "agility": 98,
+    "experience": 25353581.2,
+    "gold": 38030371.8,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_spectre_fragment",
+        "chance": 0.218
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_dark_residue",
+        "chance": 0.153
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "misc_dragon_stone",
+        "chance": 0.077
       }
     ]
   },
   "zombie_turtle_infected": {
     "id": "zombie_turtle_infected",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Tartaruga Zumbi Infectada",
     "imageUrl": "/assets/monsters/zombie_turtle_infected.png",
-    "level": 116,
-    "maxHp": 3595,
-    "strength": 1275,
-    "defense": 143,
-    "agility": 115,
-    "experience": 22162701.8,
-    "gold": 33244052.700000003,
+    "level": 99,
+    "maxHp": 3620,
+    "strength": 1132,
+    "defense": 155,
+    "agility": 71,
+    "experience": 4735141.5,
+    "gold": 7102712.25,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_spectre_fragment",
+        "chance": 0.231
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.3
+        "itemId": "material_bone",
+        "chance": 0.16
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.5
+        "itemId": "health_potion_medium",
+        "chance": 0.085
       }
     ]
   },
   "zombie_turtle": {
     "id": "zombie_turtle",
-    "cityId": "rosindale",
+    "cityId": "porto_sombrio",
     "name": "Tartaruga Zumbi",
     "imageUrl": "/assets/monsters/zombie_turtle.png",
-    "level": 117,
-    "maxHp": 3626,
-    "strength": 1286,
-    "defense": 143,
-    "agility": 116,
-    "experience": 24378960.1,
-    "gold": 36568440.150000006,
+    "level": 100,
+    "maxHp": 3657,
+    "strength": 1143,
+    "defense": 156,
+    "agility": 72,
+    "experience": 5208693.5,
+    "gold": 7813040.25,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_bone",
+        "chance": 0.23
       },
       {
-        "itemId": "misc_eran",
-        "chance": 0.2
-      },
-      {
-        "itemId": "material_midran",
-        "chance": 0.1
+        "itemId": "material_spectre_jewell",
+        "chance": 0.085
       }
     ]
   },
   "zombie_ugly_thing_infected": {
     "id": "zombie_ugly_thing_infected",
-    "cityId": "rosindale",
+    "cityId": "necropole_de_morthaly",
     "name": "Coisa Feia Zumbi Infectada",
     "imageUrl": "/assets/monsters/zombie_ugly_thing_infected.png",
     "level": 118,
-    "maxHp": 3657,
-    "strength": 1297,
-    "defense": 145,
-    "agility": 117,
-    "experience": 26816843.6,
-    "gold": 40225265.400000006,
+    "maxHp": 3950,
+    "strength": 1271,
+    "defense": 156,
+    "agility": 99,
+    "experience": 27888975.7,
+    "gold": 41833463.55,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "material_dark_magic_rune",
+        "chance": 0.217
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.1
+        "itemId": "material_dark_residue",
+        "chance": 0.153
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.077
       }
     ]
   },
   "zombie_ugly_thing": {
     "id": "zombie_ugly_thing",
-    "cityId": "rosindale",
+    "cityId": "necropole_de_morthaly",
     "name": "Coisa Feia Zumbi",
     "imageUrl": "/assets/monsters/zombie_ugly_thing.png",
     "level": 119,
-    "maxHp": 3688,
-    "strength": 1308,
-    "defense": 145,
-    "agility": 118,
-    "experience": 29498515.9,
-    "gold": 44247773.849999994,
+    "maxHp": 3983,
+    "strength": 1282,
+    "defense": 157,
+    "agility": 100,
+    "experience": 30677909.7,
+    "gold": 46016864.55,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.42
+        "itemId": "misc_high_dungeon_key",
+        "chance": 0.217
       },
       {
-        "itemId": "material_old_stone",
-        "chance": 0.3
+        "itemId": "material_dark_residue",
+        "chance": 0.152
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.076
       }
     ]
   }
