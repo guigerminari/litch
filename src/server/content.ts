@@ -97,11 +97,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/00-leather.png",
     "minLevel": 1,
-    "price": 120,
+    "price": 165,
     "stats": {
-      "defense": 6,
+      "defense": 11,
       "constitution": 1
-    }
+    },
+    "description": "Equipamento de armadura de nível 1, distribuído conforme a progressão dos armeiros."
   },
   "armor_steel": {
     "id": "armor_steel",
@@ -109,12 +110,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/01-steel.png",
-    "minLevel": 5,
-    "price": 320,
+    "minLevel": 10,
+    "price": 1010,
     "stats": {
-      "defense": 18,
+      "defense": 38,
       "constitution": 1
-    }
+    },
+    "description": "Equipamento de armadura de nível 10, distribuído conforme a progressão dos armeiros."
   },
   "armor_mystic": {
     "id": "armor_mystic",
@@ -122,12 +124,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/02-mystic.png",
-    "minLevel": 9,
-    "price": 520,
+    "minLevel": 20,
+    "price": 3050,
     "stats": {
-      "defense": 30,
-      "constitution": 2
-    }
+      "defense": 68,
+      "constitution": 3
+    },
+    "description": "Equipamento de armadura de nível 20, distribuído conforme a progressão dos armeiros."
   },
   "armor_kharlee": {
     "id": "armor_kharlee",
@@ -135,12 +138,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/03-kharlee.png",
-    "minLevel": 13,
-    "price": 720,
+    "minLevel": 30,
+    "price": 6250,
     "stats": {
-      "defense": 42,
-      "constitution": 3
-    }
+      "defense": 98,
+      "constitution": 4
+    },
+    "description": "Equipamento de armadura de nível 30, distribuído conforme a progressão dos armeiros."
   },
   "armor_cursed": {
     "id": "armor_cursed",
@@ -148,12 +152,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/04-cursed.png",
-    "minLevel": 17,
-    "price": 920,
+    "minLevel": 40,
+    "price": 10610,
     "stats": {
-      "defense": 54,
-      "constitution": 4
-    }
+      "defense": 128,
+      "constitution": 6
+    },
+    "description": "Equipamento de armadura de nível 40, distribuído conforme a progressão dos armeiros."
   },
   "armor_justice": {
     "id": "armor_justice",
@@ -161,12 +166,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/05-justice.png",
-    "minLevel": 21,
-    "price": 1120,
+    "minLevel": 50,
+    "price": 16130,
     "stats": {
-      "defense": 66,
-      "constitution": 5
-    }
+      "defense": 158,
+      "constitution": 7
+    },
+    "description": "Equipamento de armadura de nível 50, distribuído conforme a progressão dos armeiros."
   },
   "armor_obscure": {
     "id": "armor_obscure",
@@ -174,12 +180,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/96-obscure.png",
-    "minLevel": 25,
-    "price": 1320,
+    "minLevel": 60,
+    "price": 22810,
     "stats": {
-      "defense": 78,
-      "constitution": 6
-    }
+      "defense": 188,
+      "constitution": 9
+    },
+    "description": "Equipamento de armadura de nível 60, distribuído conforme a progressão dos armeiros."
   },
   "armor_death": {
     "id": "armor_death",
@@ -187,12 +194,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/106-death.png",
-    "minLevel": 29,
-    "price": 1520,
+    "minLevel": 70,
+    "price": 30650,
     "stats": {
-      "defense": 90,
-      "constitution": 7
-    }
+      "defense": 218,
+      "constitution": 10
+    },
+    "description": "Equipamento de armadura de nível 70, distribuído conforme a progressão dos armeiros."
   },
   "armor_dragon": {
     "id": "armor_dragon",
@@ -200,12 +208,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/114-dragon.png",
-    "minLevel": 33,
-    "price": 1720,
+    "minLevel": 80,
+    "price": 39650,
     "stats": {
-      "defense": 102,
-      "constitution": 8
-    }
+      "defense": 248,
+      "constitution": 11
+    },
+    "description": "Equipamento de armadura de nível 80, distribuído conforme a progressão dos armeiros."
   },
   "armor_dhron": {
     "id": "armor_dhron",
@@ -213,12 +222,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/124-dhron.png",
-    "minLevel": 37,
-    "price": 1920,
+    "minLevel": 90,
+    "price": 49810,
     "stats": {
-      "defense": 114,
-      "constitution": 9
-    }
+      "defense": 278,
+      "constitution": 13
+    },
+    "description": "Equipamento de armadura de nível 90, distribuído conforme a progressão dos armeiros."
   },
   "armor_erins": {
     "id": "armor_erins",
@@ -226,12 +236,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/140-erins.png",
-    "minLevel": 41,
-    "price": 2120,
+    "minLevel": 100,
+    "price": 61130,
     "stats": {
-      "defense": 126,
-      "constitution": 10
-    }
+      "defense": 308,
+      "constitution": 14
+    },
+    "description": "Equipamento de armadura de nível 100, distribuído conforme a progressão dos armeiros."
   },
   "material_blue_coin": {
     "id": "material_blue_coin",
@@ -269,10 +280,10 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Celena",
     "kind": "material",
     "imageUrl": "/assets/items/materials/celena.png",
-    "minLevel": 1,
-    "price": 15,
+    "minLevel": 60,
+    "price": 620,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Material de aprimoramento de terceiro grau. Requer Eran e Pedra Antiga em sua cadeia."
   },
   "material_chimera_jewell": {
     "id": "material_chimera_jewell",
@@ -289,20 +300,20 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Runa de Magia Sombria",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dark_magic_rune.png",
-    "minLevel": 2,
-    "price": 22,
+    "minLevel": 80,
+    "price": 460,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Runa sombria usada em criações amaldiçoadas."
   },
   "material_dark_residue": {
     "id": "material_dark_residue",
     "name": "Residuo Sombrio",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dark_residue.png",
-    "minLevel": 2,
-    "price": 22,
+    "minLevel": 80,
+    "price": 420,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Resíduo sombrio usado em criações de Morthaly."
   },
   "material_dexerity_jewell": {
     "id": "material_dexerity_jewell",
@@ -369,10 +380,10 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Fragmento de Eran",
     "kind": "material",
     "imageUrl": "/assets/items/materials/eran_fragment.png",
-    "minLevel": 4,
-    "price": 36,
+    "minLevel": 25,
+    "price": 80,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Fragmento usado para refinar Eran."
   },
   "material_green_coin": {
     "id": "material_green_coin",
@@ -419,20 +430,20 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Essência Mágica",
     "kind": "material",
     "imageUrl": "/assets/items/materials/magic_essence.png",
-    "minLevel": 5,
-    "price": 43,
+    "minLevel": 25,
+    "price": 110,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Essência usada em alquimia e forjas arcanas."
   },
   "material_midran": {
     "id": "material_midran",
     "name": "Midran",
     "kind": "material",
     "imageUrl": "/assets/items/materials/midran.png",
-    "minLevel": 5,
-    "price": 43,
+    "minLevel": 80,
+    "price": 1250,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Material de aprimoramento de quarto grau. Requer Celena, Eran e Pedra Antiga em sua cadeia."
   },
   "material_mycelium_fungus": {
     "id": "material_mycelium_fungus",
@@ -449,20 +460,20 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Joia Misteriosa",
     "kind": "material",
     "imageUrl": "/assets/items/materials/mysterious_jewell.png",
-    "minLevel": 6,
-    "price": 50,
+    "minLevel": 55,
+    "price": 260,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Joia rara usada em refinamentos superiores."
   },
   "material_old_stone": {
     "id": "material_old_stone",
     "name": "Pedra Antiga",
     "kind": "material",
     "imageUrl": "/assets/items/materials/old_stone.png",
-    "minLevel": 6,
-    "price": 50,
+    "minLevel": 20,
+    "price": 140,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Material de aprimoramento de primeiro grau. Base obrigatória das cadeias superiores."
   },
   "material_purple_coin": {
     "id": "material_purple_coin",
@@ -499,10 +510,10 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Fragmento de Pedra",
     "kind": "material",
     "imageUrl": "/assets/items/materials/stone_fragment.png",
-    "minLevel": 7,
-    "price": 57,
+    "minLevel": 10,
+    "price": 45,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Fragmento mineral usado para formar Pedra Antiga."
   },
   "material_strenght_jewell": {
     "id": "material_strenght_jewell",
@@ -569,10 +580,10 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Pedra de Eran",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/eran.png",
-    "minLevel": 1,
-    "price": 20,
+    "minLevel": 40,
+    "price": 300,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Material de aprimoramento de segundo grau. Requer Pedra Antiga em sua cadeia."
   },
   "misc_erins_chest_1": {
     "id": "misc_erins_chest_1",
@@ -789,22 +800,22 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Pedra de Criação",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/stone-craft.png",
-    "minLevel": 6,
-    "price": 60,
+    "minLevel": 1,
+    "price": 95,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Pedra da Criação usada em toda receita. A quantidade necessária escala conforme o nível do item criado."
   },
   "energy_potion": {
     "id": "energy_potion",
     "name": "Poção de Energia",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-30.png",
-    "minLevel": 1,
+    "minLevel": 35,
     "price": 3000,
     "stats": {
       "energyPercent": 0.3
     },
-    "description": "Recupera 30% da energia máxima"
+    "description": "Recupera 30% da energia máxima. Poção percentual rara."
   },
   "energy_potion_light": {
     "id": "energy_potion_light",
@@ -812,48 +823,48 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-light.png",
     "minLevel": 1,
-    "price": 30,
+    "price": 35,
     "stats": {
-      "energy": 6
+      "energy": 8
     },
-    "description": "Recupera 6 de energia"
+    "description": "Recupera 8 de energia. Grau leve."
   },
   "energy_potion_medium": {
     "id": "energy_potion_medium",
     "name": "Poção de Energia Media",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-medium.png",
-    "minLevel": 1,
-    "price": 400,
+    "minLevel": 15,
+    "price": 450,
     "stats": {
-      "energy": 50
+      "energy": 60
     },
-    "description": "Recupera 50 de energia"
+    "description": "Recupera 60 de energia. Grau médio."
   },
   "energy_potion_high": {
     "id": "energy_potion_high",
     "name": "Poção de Energia Alta",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-high.png",
-    "minLevel": 1,
-    "price": 5000,
+    "minLevel": 45,
+    "price": 5200,
     "goldCoinPrice": 8,
     "stats": {
-      "energy": 400
+      "energy": 420
     },
-    "description": "Recupera 400 de energia"
+    "description": "Recupera 420 de energia. Grau alto."
   },
   "health_potion": {
     "id": "health_potion",
     "name": "Poção de Vida",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-30.png",
-    "minLevel": 1,
+    "minLevel": 35,
     "price": 3000,
     "stats": {
       "healPercent": 0.3
     },
-    "description": "Recupera 30% da vida máxima"
+    "description": "Recupera 30% da vida máxima. Poção percentual rara."
   },
   "health_potion_light": {
     "id": "health_potion_light",
@@ -861,48 +872,48 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-light.png",
     "minLevel": 1,
-    "price": 30,
+    "price": 35,
     "stats": {
-      "heal": 30
+      "heal": 35
     },
-    "description": "Recupera 30 de vida"
+    "description": "Recupera 35 de vida. Grau leve."
   },
   "health_potion_medium": {
     "id": "health_potion_medium",
     "name": "Poção de Vida Media",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-medium.png",
-    "minLevel": 1,
-    "price": 400,
+    "minLevel": 15,
+    "price": 450,
     "stats": {
-      "heal": 300
+      "heal": 360
     },
-    "description": "Recupera 300 de vida"
+    "description": "Recupera 360 de vida. Grau médio."
   },
   "health_potion_high": {
     "id": "health_potion_high",
     "name": "Poção de Vida Alta",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-high.png",
-    "minLevel": 1,
-    "price": 5000,
+    "minLevel": 45,
+    "price": 5200,
     "goldCoinPrice": 8,
     "stats": {
-      "heal": 3000
+      "heal": 3200
     },
-    "description": "Recupera 3000 de vida"
+    "description": "Recupera 3200 de vida. Grau alto."
   },
   "potion_mana": {
     "id": "potion_mana",
     "name": "Poção de Mana",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/mana.png",
-    "minLevel": 1,
-    "price": 20,
+    "minLevel": 20,
+    "price": 900,
     "stats": {
       "energyPercent": 0.2
     },
-    "description": "Recupera 20% da energia máxima"
+    "description": "Recupera 20% da energia máxima. Poção arcana incomum."
   },
   "weapon_assassin_sword": {
     "id": "weapon_assassin_sword",
@@ -911,11 +922,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/assassin_sword.png",
     "minLevel": 1,
-    "price": 105,
+    "price": 150,
     "stats": {
-      "strength": 7,
+      "strength": 9,
       "agility": 1
-    }
+    },
+    "description": "Arma de nível 1, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_chaos_axe": {
     "id": "weapon_chaos_axe",
@@ -923,11 +935,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/chaos_axe.png",
-    "minLevel": 3,
-    "price": 195,
+    "minLevel": 5,
+    "price": 410,
     "stats": {
-      "strength": 13
-    }
+      "strength": 22
+    },
+    "description": "Arma de nível 5, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_claymore_3": {
     "id": "weapon_claymore_3",
@@ -935,11 +948,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/claymore_3.png",
-    "minLevel": 5,
-    "price": 285,
+    "minLevel": 10,
+    "price": 995,
     "stats": {
-      "strength": 19
-    }
+      "strength": 37
+    },
+    "description": "Arma de nível 10, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_claymore": {
     "id": "weapon_claymore",
@@ -947,11 +961,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/claymore.png",
-    "minLevel": 7,
-    "price": 375,
+    "minLevel": 15,
+    "price": 1870,
     "stats": {
-      "strength": 25
-    }
+      "strength": 53
+    },
+    "description": "Arma de nível 15, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_double_sword_2": {
     "id": "weapon_double_sword_2",
@@ -959,12 +974,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/double_sword_2.png",
-    "minLevel": 9,
-    "price": 465,
+    "minLevel": 20,
+    "price": 3035,
     "stats": {
-      "strength": 31,
+      "strength": 68,
       "agility": 3
-    }
+    },
+    "description": "Arma de nível 20, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_double_sword_new": {
     "id": "weapon_double_sword_new",
@@ -972,12 +988,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/double_sword_new.png",
-    "minLevel": 11,
-    "price": 555,
+    "minLevel": 25,
+    "price": 4490,
     "stats": {
-      "strength": 37,
-      "agility": 3
-    }
+      "strength": 84,
+      "agility": 4
+    },
+    "description": "Arma de nível 25, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_executioner_axe_6": {
     "id": "weapon_executioner_axe_6",
@@ -985,11 +1002,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/executioner_axe_6.png",
-    "minLevel": 13,
-    "price": 645,
+    "minLevel": 30,
+    "price": 6235,
     "stats": {
-      "strength": 43
-    }
+      "strength": 99
+    },
+    "description": "Arma de nível 30, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_executioner_axe": {
     "id": "weapon_executioner_axe",
@@ -997,11 +1015,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/executioner_axe.png",
-    "minLevel": 15,
-    "price": 735,
+    "minLevel": 35,
+    "price": 8270,
     "stats": {
-      "strength": 49
-    }
+      "strength": 115
+    },
+    "description": "Arma de nível 35, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_extreme_axe": {
     "id": "weapon_extreme_axe",
@@ -1009,11 +1028,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/extreme_axe.png",
-    "minLevel": 17,
-    "price": 825,
+    "minLevel": 40,
+    "price": 10595,
     "stats": {
-      "strength": 55
-    }
+      "strength": 130
+    },
+    "description": "Arma de nível 40, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_greatsword_2": {
     "id": "weapon_greatsword_2",
@@ -1021,11 +1041,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/greatsword_2.png",
-    "minLevel": 19,
-    "price": 915,
+    "minLevel": 45,
+    "price": 13210,
     "stats": {
-      "strength": 61
-    }
+      "strength": 146
+    },
+    "description": "Arma de nível 45, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_greatsword_4": {
     "id": "weapon_greatsword_4",
@@ -1033,11 +1054,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/greatsword_4.png",
-    "minLevel": 21,
-    "price": 1005,
+    "minLevel": 50,
+    "price": 16115,
     "stats": {
-      "strength": 67
-    }
+      "strength": 161
+    },
+    "description": "Arma de nível 50, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_insane_axe": {
     "id": "weapon_insane_axe",
@@ -1045,11 +1067,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/insane_axe.png",
-    "minLevel": 23,
-    "price": 1095,
+    "minLevel": 55,
+    "price": 19310,
     "stats": {
-      "strength": 73
-    }
+      "strength": 177
+    },
+    "description": "Arma de nível 55, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_long_sword": {
     "id": "weapon_long_sword",
@@ -1057,11 +1080,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/long_sword.png",
-    "minLevel": 25,
-    "price": 1185,
+    "minLevel": 60,
+    "price": 22795,
     "stats": {
-      "strength": 79
-    }
+      "strength": 192
+    },
+    "description": "Arma de nível 60, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_obs_axe": {
     "id": "weapon_obs_axe",
@@ -1069,11 +1093,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/obs_axe.png",
-    "minLevel": 27,
-    "price": 1275,
+    "minLevel": 65,
+    "price": 26570,
     "stats": {
-      "strength": 85
-    }
+      "strength": 208
+    },
+    "description": "Arma de nível 65, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_orcish_dagger": {
     "id": "weapon_orcish_dagger",
@@ -1081,12 +1106,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/orcish_dagger.png",
-    "minLevel": 29,
-    "price": 1365,
+    "minLevel": 70,
+    "price": 30635,
     "stats": {
-      "strength": 91,
-      "agility": 9
-    }
+      "strength": 223,
+      "agility": 13
+    },
+    "description": "Arma de nível 70, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_real_axe": {
     "id": "weapon_real_axe",
@@ -1094,11 +1120,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/real_axe.png",
-    "minLevel": 31,
-    "price": 1455,
+    "minLevel": 80,
+    "price": 39635,
     "stats": {
-      "strength": 97
-    }
+      "strength": 254
+    },
+    "description": "Arma de nível 80, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_triple_sword_2": {
     "id": "weapon_triple_sword_2",
@@ -1106,12 +1133,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/triple_sword_2.png",
-    "minLevel": 33,
-    "price": 1545,
+    "minLevel": 85,
+    "price": 44570,
     "stats": {
-      "strength": 103,
-      "agility": 11
-    }
+      "strength": 270,
+      "agility": 15
+    },
+    "description": "Arma de nível 85, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_triple_sword_3": {
     "id": "weapon_triple_sword_3",
@@ -1119,12 +1147,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/triple_sword_3.png",
-    "minLevel": 35,
-    "price": 1635,
+    "minLevel": 90,
+    "price": 49795,
     "stats": {
-      "strength": 109,
-      "agility": 11
-    }
+      "strength": 285,
+      "agility": 16
+    },
+    "description": "Arma de nível 90, ajustada para a progressão de lojas, drops e forjas."
   },
   "weapon_vorgonax": {
     "id": "weapon_vorgonax",
@@ -1132,11 +1161,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/vorgonax.png",
-    "minLevel": 37,
-    "price": 1725,
+    "minLevel": 100,
+    "price": 61115,
     "stats": {
-      "strength": 115
-    }
+      "strength": 316
+    },
+    "description": "Arma de nível 100, ajustada para a progressão de lojas, drops e forjas."
   },
   "training_sword": {
     "id": "training_sword",
@@ -1145,10 +1175,11 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/long_sword.png",
     "minLevel": 1,
-    "price": 30,
+    "price": 45,
     "stats": {
-      "strength": 2
-    }
+      "strength": 3
+    },
+    "description": "Arma inicial simples para recrutas de Eldoria."
   },
   "iron_sword": {
     "id": "iron_sword",
@@ -1156,11 +1187,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/claymore.png",
-    "minLevel": 2,
-    "price": 90,
+    "minLevel": 5,
+    "price": 165,
     "stats": {
-      "strength": 6
-    }
+      "strength": 18
+    },
+    "description": "Arma básica de ferro usada como base para criações iniciais."
   },
   "leather_armor": {
     "id": "leather_armor",
@@ -1169,11 +1201,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/00-leather.png",
     "minLevel": 1,
-    "price": 45,
+    "price": 55,
     "stats": {
-      "defense": 2,
+      "defense": 5,
       "constitution": 1
-    }
+    },
+    "description": "Armadura inicial simples para recrutas de Eldoria."
   },
   "iron_armor": {
     "id": "iron_armor",
@@ -1181,24 +1214,27 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/01-steel.png",
-    "minLevel": 3,
-    "price": 110,
+    "minLevel": 5,
+    "price": 180,
     "stats": {
-      "defense": 6
-    }
+      "defense": 22,
+      "constitution": 1
+    },
+    "description": "Armadura básica de ferro usada como base para criações iniciais."
   },
   "novice_amulet": {
     "id": "novice_amulet",
     "name": "Amuleto do Aprendiz",
-    "kind": "amulet", 
+    "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/bone_gray.png",
     "minLevel": 1,
-    "price": 70,
+    "price": 120,
     "stats": {
       "agility": 2,
       "constitution": 1
-    }
+    },
+    "description": "Amuleto inicial usado também como base de criações superiores."
   },
   "hunter_charm": {
     "id": "hunter_charm",
@@ -1207,12 +1243,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/cylinder_gray.png",
     "minLevel": 10,
-    "price": 160,
+    "price": 420,
     "stats": {
-      "agility": 3,
+      "agility": 5,
       "constitution": 3,
-      "strength": 2
-    }
+      "strength": 3
+    },
+    "description": "Talismã intermediário usado também como base de criações superiores."
   },
   "ember_blade": {
     "id": "ember_blade",
@@ -1220,12 +1257,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/chaos_axe.png",
-    "minLevel": 6,
-    "price": 360,
+    "minLevel": 20,
+    "price": 0,
     "stats": {
-      "strength": 15,
-      "agility": 3
-    }
+      "strength": 82,
+      "agility": 8
+    },
+    "description": "Arma forjada do kit de nível 20 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
   },
   "guardian_mail": {
     "id": "guardian_mail",
@@ -1233,12 +1271,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "armor",
     "slot": "armor",
     "imageUrl": "/assets/items/armor/05-justice.png",
-    "minLevel": 6,
-    "price": 330,
+    "minLevel": 20,
+    "price": 0,
     "stats": {
-      "defense": 14,
-      "constitution": 4
-    }
+      "defense": 78,
+      "constitution": 10
+    },
+    "description": "Armadura forjada do kit de nível 20 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
   },
   "moon_amulet": {
     "id": "moon_amulet",
@@ -1247,11 +1286,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/stone_2_blue.png",
     "minLevel": 25,
-    "price": 420,
+    "price": 1250,
     "stats": {
-      "agility": 7,
-      "constitution": 4
-    }
+      "agility": 12,
+      "constitution": 6
+    },
+    "description": "Amuleto avançado usado na forja do Cristal Branco."
   },
   "acid_amulet": {
     "id": "acid_amulet",
@@ -1260,11 +1300,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/stone_2_green.png",
     "minLevel": 25,
-    "price": 420,
+    "price": 1250,
     "stats": {
-      "strength": 5,
-      "defense": 10
-    }
+      "strength": 10,
+      "defense": 18
+    },
+    "description": "Amuleto avançado usado na forja do Cristal Branco."
   },
   "crystal_white_amulet": {
     "id": "crystal_white_amulet",
@@ -1273,10 +1314,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/crystal_white.png",
     "minLevel": 45,
-    "price": 4200,
+    "price": 0,
     "stats": {
-      "agility": 35
-    }
+      "agility": 35,
+      "constitution": 10
+    },
+    "description": "Amuleto forjado. Não é vendido por armeiros e possui drop raríssimo."
   },
   "celtic_yellow_amulet": {
     "id": "celtic_yellow_amulet",
@@ -1284,12 +1327,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/celtic_yellow.png",
-    "minLevel": 45,
-    "price": 4200,
+    "minLevel": 60,
+    "price": 12500,
     "stats": {
-      "strength": 45,
-      "constitution": 20
-    }
+      "strength": 55,
+      "constitution": 24
+    },
+    "description": "Amuleto raro vendido em regiões avançadas e usado em forjas superiores."
   },
   "celtic_magenta_amulet": {
     "id": "celtic_magenta_amulet",
@@ -1297,12 +1341,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/stone_3_magenta.png",
-    "minLevel": 55,
-    "price": 4200,
+    "minLevel": 70,
+    "price": 0,
     "stats": {
-      "defense": 65,
-      "constitution": 35
-    }
+      "defense": 80,
+      "constitution": 42
+    },
+    "description": "Amuleto forjado em Valfria. Não é vendido por armeiros e possui drop raríssimo."
   },
   "celtic_orange_amulet": {
     "id": "celtic_orange_amulet",
@@ -1310,12 +1355,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/penta_orange.png",
-    "minLevel": 65,
-    "price": 4200,
+    "minLevel": 85,
+    "price": 24000,
     "stats": {
-      "agility": 75,
-      "strength": 55,
-    }
+      "agility": 90,
+      "strength": 68
+    },
+    "description": "Amuleto raro de alto nível, usado como componente para o Amuleto Ciano."
   },
   "celtic_cyan_amulet": {
     "id": "celtic_cyan_amulet",
@@ -1323,40 +1369,41 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/ring_cyan.png",
-    "minLevel": 75,
-    "price": 4200,
+    "minLevel": 100,
+    "price": 0,
     "stats": {
-      "agility": 80,
-      "strength": 80,
-      "defense": 80,
-      "constitution": 80
-    }
+      "agility": 120,
+      "strength": 120,
+      "defense": 120,
+      "constitution": 120
+    },
+    "description": "Amuleto supremo forjado em Porto Sombrio. Não é vendido por armeiros e possui drop quase lendário."
   },
   "major_health_potion": {
     "id": "major_health_potion",
     "name": "Poção Vital Rara",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health.png",
-    "minLevel": 5,
-    "price": 6000,
+    "minLevel": 70,
+    "price": 7600,
     "goldCoinPrice": 5,
     "stats": {
       "healPercent": 0.55
     },
-    "description": "Recupera 55% da vida máxima"
+    "description": "Recupera 55% da vida máxima. Grau maior."
   },
   "major_energy_potion": {
     "id": "major_energy_potion",
     "name": "Poção Energética Rara",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy.png",
-    "minLevel": 5,
-    "price": 6000,
+    "minLevel": 70,
+    "price": 7600,
     "goldCoinPrice": 5,
     "stats": {
       "energyPercent": 0.55
     },
-    "description": "Recupera 55% da energia máxima"
+    "description": "Recupera 55% da energia máxima. Grau maior."
   },
   "oblivion_scroll": {
     "id": "oblivion_scroll",
@@ -1395,100 +1442,1021 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Nucleo de Brasa",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dark_residue.png",
-    "minLevel": 4,
-    "price": 55,
+    "minLevel": 20,
+    "price": 130,
     "stats": {},
-    "description": "Material raro e quente ao toque"
+    "description": "Núcleo quente usado em armas forjadas."
   },
   "crystal_dust": {
     "id": "crystal_dust",
     "name": "Po de Cristal",
     "kind": "material",
     "imageUrl": "/assets/items/materials/magic_essence.png",
-    "minLevel": 3,
-    "price": 38,
+    "minLevel": 15,
+    "price": 85,
     "stats": {},
-    "description": "Catalisador usado por alquimistas"
+    "description": "Catalisador alquímico usado em poções e amuletos."
   },
   "wyvern_scale": {
     "id": "wyvern_scale",
     "name": "Escama de Serpe",
     "kind": "material",
     "imageUrl": "/assets/items/materials/dragon_nail.png",
-    "minLevel": 7,
-    "price": 82,
+    "minLevel": 25,
+    "price": 160,
     "stats": {},
-    "description": "Material resistente e raro"
+    "description": "Escama resistente usada em armaduras forjadas."
+  },
+  "forged_ironhold_axe_40": {
+    "id": "forged_ironhold_axe_40",
+    "name": "Machado Rúnico de Ironhold",
+    "kind": "weapon",
+    "slot": "weapon",
+    "imageUrl": "/assets/items/weapons/executioner_axe.png",
+    "minLevel": 40,
+    "price": 0,
+    "stats": {
+      "strength": 145,
+      "defense": 8
+    },
+    "description": "Arma forjada do kit de nível 40 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_ironhold_plate_40": {
+    "id": "forged_ironhold_plate_40",
+    "name": "Couraça Rúnica de Ironhold",
+    "kind": "armor",
+    "slot": "armor",
+    "imageUrl": "/assets/items/armor/05-justice.png",
+    "minLevel": 40,
+    "price": 0,
+    "stats": {
+      "defense": 145,
+      "constitution": 18
+    },
+    "description": "Armadura forjada do kit de nível 40 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_valfria_sabre_50": {
+    "id": "forged_valfria_sabre_50",
+    "name": "Sabre Solar de Valfria",
+    "kind": "weapon",
+    "slot": "weapon",
+    "imageUrl": "/assets/items/weapons/long_sword.png",
+    "minLevel": 50,
+    "price": 0,
+    "stats": {
+      "strength": 178,
+      "agility": 14
+    },
+    "description": "Arma forjada do kit de nível 50 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_valfria_scale_50": {
+    "id": "forged_valfria_scale_50",
+    "name": "Brunea Solar de Valfria",
+    "kind": "armor",
+    "slot": "armor",
+    "imageUrl": "/assets/items/armor/114-dragon.png",
+    "minLevel": 50,
+    "price": 0,
+    "stats": {
+      "defense": 178,
+      "constitution": 23
+    },
+    "description": "Armadura forjada do kit de nível 50 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_valfria_sunblade_70": {
+    "id": "forged_valfria_sunblade_70",
+    "name": "Lâmina do Sol Seco",
+    "kind": "weapon",
+    "slot": "weapon",
+    "imageUrl": "/assets/items/weapons/triple_sword_2.png",
+    "minLevel": 70,
+    "price": 0,
+    "stats": {
+      "strength": 244,
+      "agility": 22
+    },
+    "description": "Arma forjada do kit de nível 70 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_valfria_sandmail_70": {
+    "id": "forged_valfria_sandmail_70",
+    "name": "Armadura das Dunas Rubras",
+    "kind": "armor",
+    "slot": "armor",
+    "imageUrl": "/assets/items/armor/124-dhron.png",
+    "minLevel": 70,
+    "price": 0,
+    "stats": {
+      "defense": 244,
+      "constitution": 34
+    },
+    "description": "Armadura forjada do kit de nível 70 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_morthaly_scythe_80": {
+    "id": "forged_morthaly_scythe_80",
+    "name": "Foice do Porto Sombrio",
+    "kind": "weapon",
+    "slot": "weapon",
+    "imageUrl": "/assets/items/weapons/obs_axe.png",
+    "minLevel": 80,
+    "price": 0,
+    "stats": {
+      "strength": 282,
+      "defense": 18
+    },
+    "description": "Arma forjada do kit de nível 80 de Porto Sombrio. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_morthaly_boneplate_80": {
+    "id": "forged_morthaly_boneplate_80",
+    "name": "Placas Ósseas do Porto Sombrio",
+    "kind": "armor",
+    "slot": "armor",
+    "imageUrl": "/assets/items/armor/04-cursed.png",
+    "minLevel": 80,
+    "price": 0,
+    "stats": {
+      "defense": 282,
+      "constitution": 44
+    },
+    "description": "Armadura forjada do kit de nível 80 de Porto Sombrio. Não é vendida por armeiros e possui drop raríssimo."
+  },
+  "forged_morthaly_voidblade_100": {
+    "id": "forged_morthaly_voidblade_100",
+    "name": "Vorgonax do Vazio",
+    "kind": "weapon",
+    "slot": "weapon",
+    "imageUrl": "/assets/items/weapons/vorgonax.png",
+    "minLevel": 100,
+    "price": 0,
+    "stats": {
+      "strength": 360,
+      "agility": 30,
+      "defense": 30
+    },
+    "description": "Arma forjada do kit de nível 100 de Porto Sombrio. Não é vendida por armeiros e possui drop quase lendário."
+  },
+  "forged_morthaly_voidarmor_100": {
+    "id": "forged_morthaly_voidarmor_100",
+    "name": "Armadura do Vazio de Morthaly",
+    "kind": "armor",
+    "slot": "armor",
+    "imageUrl": "/assets/items/armor/106-death.png",
+    "minLevel": 100,
+    "price": 0,
+    "stats": {
+      "defense": 360,
+      "constitution": 62,
+      "strength": 20
+    },
+    "description": "Armadura forjada do kit de nível 100 de Porto Sombrio. Não é vendida por armeiros e possui drop quase lendário."
   }
 };
 
 export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
-  forge_ember_blade: {
-    id: "forge_ember_blade",
-    station: "blacksmith",
-    cityIds: ["ravenspire", "ironhold"],
-    name: "Forjar Lâmina de brasa",
-    resultItemId: "ember_blade",
-    resultQuantity: 1,
-    goldCost: 120,
-    ingredients: [
-      { itemId: "iron_sword", quantity: 1 },
-      { itemId: "ember_core", quantity: 2 },
-      { itemId: "wolf_pelt", quantity: 2 }
+  "refine_old_stone": {
+    "id": "refine_old_stone",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Condensar Pedra Antiga",
+    "resultItemId": "material_old_stone",
+    "resultQuantity": 1,
+    "goldCost": 180,
+    "ingredients": [
+      {
+        "itemId": "material_stone_fragment",
+        "quantity": 6
+      },
+      {
+        "itemId": "material_magic_essence",
+        "quantity": 1
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 1
+      }
     ]
   },
-  forge_guardian_mail: {
-    id: "forge_guardian_mail",
-    station: "blacksmith",
-    cityIds: ["ironhold"],
-    name: "Forjar Cota do guardião",
-    resultItemId: "guardian_mail",
-    resultQuantity: 1,
-    goldCost: 150,
-    ingredients: [
-      { itemId: "iron_armor", quantity: 1 },
-      { itemId: "wyvern_scale", quantity: 2 },
-      { itemId: "ember_core", quantity: 1 }
+  "refine_eran": {
+    "id": "refine_eran",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Refinar Pedra de Eran",
+    "resultItemId": "misc_eran",
+    "resultQuantity": 1,
+    "goldCost": 420,
+    "ingredients": [
+      {
+        "itemId": "material_old_stone",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "quantity": 2
+      },
+      {
+        "itemId": "crystal_dust",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 1
+      }
     ]
   },
-  brew_major_health: {
-    id: "brew_major_health",
-    station: "alchemist",
-    cityIds: ["eldoria", "ravenspire", "ironhold"],
-    name: "Destilar Poção vital rara",
-    resultItemId: "major_health_potion",
-    resultQuantity: 1,
-    goldCost: 40,
-    ingredients: [
-      { itemId: "health_potion", quantity: 3 },
-      { itemId: "crystal_dust", quantity: 1 }
+  "refine_celena": {
+    "id": "refine_celena",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Lapidar Celena",
+    "resultItemId": "material_celena",
+    "resultQuantity": 1,
+    "goldCost": 820,
+    "ingredients": [
+      {
+        "itemId": "misc_eran",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_magic_essence",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_mysterious_jewell",
+        "quantity": 1
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 2
+      }
     ]
   },
-  brew_major_energy: {
-    id: "brew_major_energy",
-    station: "alchemist",
-    cityIds: ["ravenspire", "ironhold"],
-    name: "Destilar Poção energética rara",
-    resultItemId: "major_energy_potion",
-    resultQuantity: 1,
-    goldCost: 45,
-    ingredients: [
-      { itemId: "energy_potion", quantity: 3 },
-      { itemId: "crystal_dust", quantity: 1 }
+  "refine_midran": {
+    "id": "refine_midran",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Forjar Núcleo de Midran",
+    "resultItemId": "material_midran",
+    "resultQuantity": 1,
+    "goldCost": 1600,
+    "ingredients": [
+      {
+        "itemId": "material_celena",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_dark_magic_rune",
+        "quantity": 1
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 3
+      }
     ]
   },
-  bind_moon_amulet: {
-    id: "bind_moon_amulet",
-    station: "alchemist",
-    cityIds: ["ironhold"],
-    name: "Imbuir Amuleto lunar",
-    resultItemId: "moon_amulet",
-    resultQuantity: 1,
-    goldCost: 180,
-    ingredients: [
-      { itemId: "hunter_charm", quantity: 1 },
-      { itemId: "wyvern_scale", quantity: 1 },
-      { itemId: "crystal_dust", quantity: 3 }
+  "brew_high_health": {
+    "id": "brew_high_health",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Destilar Poção de Vida Alta",
+    "resultItemId": "health_potion_high",
+    "resultQuantity": 1,
+    "goldCost": 360,
+    "ingredients": [
+      {
+        "itemId": "health_potion_medium",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_herb",
+        "quantity": 5
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "quantity": 1
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 2
+      }
+    ]
+  },
+  "brew_high_energy": {
+    "id": "brew_high_energy",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Destilar Poção de Energia Alta",
+    "resultItemId": "energy_potion_high",
+    "resultQuantity": 1,
+    "goldCost": 360,
+    "ingredients": [
+      {
+        "itemId": "energy_potion_medium",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "quantity": 3
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "quantity": 1
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 2
+      }
+    ]
+  },
+  "brew_major_health": {
+    "id": "brew_major_health",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Destilar Poção de Vida Maior",
+    "resultItemId": "major_health_potion",
+    "resultQuantity": 1,
+    "goldCost": 760,
+    "ingredients": [
+      {
+        "itemId": "health_potion_high",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_magic_essence",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 3
+      }
+    ]
+  },
+  "brew_major_energy": {
+    "id": "brew_major_energy",
+    "station": "alchemist",
+    "cityIds": [
+      "ravenspire",
+      "rosindale",
+      "necropole_de_morthaly"
+    ],
+    "name": "Destilar Poção de Energia Maior",
+    "resultItemId": "major_energy_potion",
+    "resultQuantity": 1,
+    "goldCost": 760,
+    "ingredients": [
+      {
+        "itemId": "energy_potion_high",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 3
+      }
+    ]
+  },
+  "forge_ember_blade": {
+    "id": "forge_ember_blade",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Lâmina de Brasa",
+    "resultItemId": "ember_blade",
+    "resultQuantity": 1,
+    "goldCost": 900,
+    "ingredients": [
+      {
+        "itemId": "iron_sword",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 2
+      },
+      {
+        "itemId": "ember_core",
+        "quantity": 2
+      },
+      {
+        "itemId": "wolf_pelt",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 1
+      }
+    ]
+  },
+  "forge_guardian_mail": {
+    "id": "forge_guardian_mail",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Cota do Guardião",
+    "resultItemId": "guardian_mail",
+    "resultQuantity": 1,
+    "goldCost": 920,
+    "ingredients": [
+      {
+        "itemId": "iron_armor",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 2
+      },
+      {
+        "itemId": "wyvern_scale",
+        "quantity": 2
+      },
+      {
+        "itemId": "crystal_dust",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 1
+      }
+    ]
+  },
+  "forge_ironhold_axe_40": {
+    "id": "forge_ironhold_axe_40",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Machado Rúnico de Ironhold",
+    "resultItemId": "forged_ironhold_axe_40",
+    "resultQuantity": 1,
+    "goldCost": 1850,
+    "ingredients": [
+      {
+        "itemId": "weapon_claymore_3",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 2
+      },
+      {
+        "itemId": "ember_core",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 2
+      }
+    ]
+  },
+  "forge_ironhold_plate_40": {
+    "id": "forge_ironhold_plate_40",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Couraça Rúnica de Ironhold",
+    "resultItemId": "forged_ironhold_plate_40",
+    "resultQuantity": 1,
+    "goldCost": 1850,
+    "ingredients": [
+      {
+        "itemId": "armor_mystic",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 2
+      },
+      {
+        "itemId": "wyvern_scale",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 2
+      }
+    ]
+  },
+  "forge_crystal_white_amulet": {
+    "id": "forge_crystal_white_amulet",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Amuleto de Cristal Branco",
+    "resultItemId": "crystal_white_amulet",
+    "resultQuantity": 1,
+    "goldCost": 2600,
+    "ingredients": [
+      {
+        "itemId": "novice_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "hunter_charm",
+        "quantity": 1
+      },
+      {
+        "itemId": "moon_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "acid_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "crystal_dust",
+        "quantity": 6
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 3
+      }
+    ]
+  },
+  "forge_valfria_sabre_50": {
+    "id": "forge_valfria_sabre_50",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Sabre Solar de Valfria",
+    "resultItemId": "forged_valfria_sabre_50",
+    "resultQuantity": 1,
+    "goldCost": 2800,
+    "ingredients": [
+      {
+        "itemId": "weapon_greatsword_2",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "quantity": 3
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 3
+      }
+    ]
+  },
+  "forge_valfria_scale_50": {
+    "id": "forge_valfria_scale_50",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Brunea Solar de Valfria",
+    "resultItemId": "forged_valfria_scale_50",
+    "resultQuantity": 1,
+    "goldCost": 2800,
+    "ingredients": [
+      {
+        "itemId": "armor_cursed",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 1
+      },
+      {
+        "itemId": "wyvern_scale",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 3
+      }
+    ]
+  },
+  "forge_valfria_sunblade_70": {
+    "id": "forge_valfria_sunblade_70",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Lâmina do Sol Seco",
+    "resultItemId": "forged_valfria_sunblade_70",
+    "resultQuantity": 1,
+    "goldCost": 4300,
+    "ingredients": [
+      {
+        "itemId": "weapon_long_sword",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 6
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "quantity": 3
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 4
+      }
+    ]
+  },
+  "forge_valfria_sandmail_70": {
+    "id": "forge_valfria_sandmail_70",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Armadura das Dunas Rubras",
+    "resultItemId": "forged_valfria_sandmail_70",
+    "resultQuantity": 1,
+    "goldCost": 4300,
+    "ingredients": [
+      {
+        "itemId": "armor_obscure",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 6
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 1
+      },
+      {
+        "itemId": "wyvern_scale",
+        "quantity": 6
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 4
+      }
+    ]
+  },
+  "forge_celtic_magenta_amulet": {
+    "id": "forge_celtic_magenta_amulet",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Amuleto Divino",
+    "resultItemId": "celtic_magenta_amulet",
+    "resultQuantity": 1,
+    "goldCost": 5200,
+    "ingredients": [
+      {
+        "itemId": "celtic_yellow_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 1
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 4
+      }
+    ]
+  },
+  "forge_morthaly_scythe_80": {
+    "id": "forge_morthaly_scythe_80",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Foice do Porto Sombrio",
+    "resultItemId": "forged_morthaly_scythe_80",
+    "resultQuantity": 1,
+    "goldCost": 6200,
+    "ingredients": [
+      {
+        "itemId": "weapon_obs_axe",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 8
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 5
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_dark_magic_rune",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_dark_residue",
+        "quantity": 5
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 5
+      }
+    ]
+  },
+  "forge_morthaly_boneplate_80": {
+    "id": "forge_morthaly_boneplate_80",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Placas Ósseas do Porto Sombrio",
+    "resultItemId": "forged_morthaly_boneplate_80",
+    "resultQuantity": 1,
+    "goldCost": 6200,
+    "ingredients": [
+      {
+        "itemId": "armor_death",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 8
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 5
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_bone",
+        "quantity": 8
+      },
+      {
+        "itemId": "material_dark_residue",
+        "quantity": 5
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 5
+      }
+    ]
+  },
+  "forge_morthaly_voidblade_100": {
+    "id": "forge_morthaly_voidblade_100",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Vorgonax do Vazio",
+    "resultItemId": "forged_morthaly_voidblade_100",
+    "resultQuantity": 1,
+    "goldCost": 9800,
+    "ingredients": [
+      {
+        "itemId": "weapon_triple_sword_3",
+        "quantity": 1
+      },
+      {
+        "itemId": "forged_morthaly_scythe_80",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 10
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 8
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 5
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_dark_magic_rune",
+        "quantity": 5
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 6
+      }
+    ]
+  },
+  "forge_morthaly_voidarmor_100": {
+    "id": "forge_morthaly_voidarmor_100",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Armadura do Vazio de Morthaly",
+    "resultItemId": "forged_morthaly_voidarmor_100",
+    "resultQuantity": 1,
+    "goldCost": 9800,
+    "ingredients": [
+      {
+        "itemId": "armor_dhron",
+        "quantity": 1
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_old_stone",
+        "quantity": 10
+      },
+      {
+        "itemId": "misc_eran",
+        "quantity": 8
+      },
+      {
+        "itemId": "material_celena",
+        "quantity": 5
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_dark_residue",
+        "quantity": 8
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 6
+      }
+    ]
+  },
+  "forge_celtic_cyan_amulet": {
+    "id": "forge_celtic_cyan_amulet",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Amuleto Ciano",
+    "resultItemId": "celtic_cyan_amulet",
+    "resultQuantity": 1,
+    "goldCost": 12000,
+    "ingredients": [
+      {
+        "itemId": "novice_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "hunter_charm",
+        "quantity": 1
+      },
+      {
+        "itemId": "moon_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "acid_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "celtic_yellow_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "celtic_magenta_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "celtic_orange_amulet",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_midran",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_dark_magic_rune",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "quantity": 6
+      }
     ]
   }
 };
@@ -1927,25 +2895,28 @@ export const CITIES: CityDefinition[] = [
       "damnation_cyclops"
     ],
     "armorerItemIds": [
-      "armor_leather",
-      "armor_steel",
+      "training_sword",
+      "leather_armor",
+      "iron_sword",
+      "iron_armor",
       "weapon_assassin_sword",
       "weapon_chaos_axe",
       "weapon_claymore_3",
-      "training_sword",
-      "iron_sword",
-      "leather_armor",
-      "iron_armor",
+      "weapon_claymore",
+      "weapon_double_sword_2",
+      "weapon_double_sword_new",
+      "armor_leather",
+      "armor_steel",
+      "armor_mystic",
+      "armor_kharlee",
       "novice_amulet",
-      "hunter_charm",
-      "ember_blade",
-      "guardian_mail"
+      "hunter_charm"
     ],
     "apothecaryItemIds": [
-      "misc_eran",
-      "scroll_fraddo_parchment",
+      "health_potion_light",
       "energy_potion_light",
-      "health_potion_light"
+      "health_potion_medium",
+      "energy_potion_medium"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -1983,6 +2954,12 @@ export const CITIES: CityDefinition[] = [
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
+      "refine_old_stone",
+      "refine_eran",
+      "refine_celena",
+      "refine_midran",
+      "brew_high_health",
+      "brew_high_energy",
       "brew_major_health",
       "brew_major_energy"
     ],
@@ -2039,7 +3016,10 @@ export const CITIES: CityDefinition[] = [
     ],
     "blacksmithRecipeIds": [
       "forge_ember_blade",
-      "forge_guardian_mail"
+      "forge_guardian_mail",
+      "forge_ironhold_axe_40",
+      "forge_ironhold_plate_40",
+      "forge_crystal_white_amulet"
     ],
     "huntLocationIds": [
       "ironhold_ember_mines",
@@ -2074,13 +3054,6 @@ export const CITIES: CityDefinition[] = [
       "easter_bunny"
     ],
     "armorerItemIds": [
-      "armor_mystic",
-      "armor_kharlee",
-      "armor_cursed",
-      "armor_justice",
-      "armor_obscure",
-      "weapon_claymore",
-      "weapon_double_sword_2",
       "weapon_double_sword_new",
       "weapon_executioner_axe_6",
       "weapon_executioner_axe",
@@ -2090,7 +3063,15 @@ export const CITIES: CityDefinition[] = [
       "weapon_insane_axe",
       "weapon_long_sword",
       "weapon_obs_axe",
-      "moon_amulet"
+      "weapon_orcish_dagger",
+      "armor_kharlee",
+      "armor_cursed",
+      "armor_justice",
+      "armor_obscure",
+      "armor_death",
+      "moon_amulet",
+      "acid_amulet",
+      "celtic_yellow_amulet"
     ]
   },
   {
@@ -2122,8 +3103,11 @@ export const CITIES: CityDefinition[] = [
       "skeleton_ugly_thing"
     ],
     "blacksmithRecipeIds": [
-      "forge_ember_blade",
-      "forge_guardian_mail"
+      "forge_valfria_sabre_50",
+      "forge_valfria_scale_50",
+      "forge_valfria_sunblade_70",
+      "forge_valfria_sandmail_70",
+      "forge_celtic_magenta_amulet"
     ],
     "huntLocationIds": [
       "valfria_orc_marsh",
@@ -2156,17 +3140,10 @@ export const CITIES: CityDefinition[] = [
       "damnation_snake"
     ],
     "apothecaryItemIds": [
-      "misc_eran",
-      "misc_laede",
-      "misc_stone_craft",
-      "material_old_stone",
-      "material_eran_fragment",
-      "material_celena",
-      "material_midran",
-      "energy_potion_light",
+      "health_potion_medium",
       "energy_potion_medium",
-      "health_potion_light",
-      "health_potion_medium"
+      "health_potion_high",
+      "energy_potion_high"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
@@ -2209,9 +3186,14 @@ export const CITIES: CityDefinition[] = [
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
+      "refine_old_stone",
+      "refine_eran",
+      "refine_celena",
+      "refine_midran",
+      "brew_high_health",
+      "brew_high_energy",
       "brew_major_health",
-      "brew_major_energy",
-      "bind_moon_amulet"
+      "brew_major_energy"
     ],
     "huntLocationIds": [
       "rosindale_infected_coast",
@@ -2234,11 +3216,6 @@ export const CITIES: CityDefinition[] = [
       "spectral_snake_old"
     ],
     "armorerItemIds": [
-      "armor_obscure",
-      "armor_death",
-      "armor_dragon",
-      "armor_dhron",
-      "armor_erins",
       "weapon_long_sword",
       "weapon_obs_axe",
       "weapon_orcish_dagger",
@@ -2246,7 +3223,13 @@ export const CITIES: CityDefinition[] = [
       "weapon_triple_sword_2",
       "weapon_triple_sword_3",
       "weapon_vorgonax",
-      "acid_amulet"
+      "armor_obscure",
+      "armor_death",
+      "armor_dragon",
+      "armor_dhron",
+      "armor_erins",
+      "celtic_yellow_amulet",
+      "celtic_orange_amulet"
     ],
     "goldCoinMerchantItemIds": [
       "material_blue_coin",
@@ -2285,8 +3268,11 @@ export const CITIES: CityDefinition[] = [
       "spectral_fish_old"
     ],
     "blacksmithRecipeIds": [
-      "forge_ember_blade",
-      "forge_guardian_mail"
+      "forge_morthaly_scythe_80",
+      "forge_morthaly_boneplate_80",
+      "forge_morthaly_voidblade_100",
+      "forge_morthaly_voidarmor_100",
+      "forge_celtic_cyan_amulet"
     ],
     "huntLocationIds": [
       "morthaly_black_docks"
@@ -2343,9 +3329,14 @@ export const CITIES: CityDefinition[] = [
     ],
     "blacksmithEnhancement": true,
     "alchemistRecipeIds": [
+      "refine_old_stone",
+      "refine_eran",
+      "refine_celena",
+      "refine_midran",
+      "brew_high_health",
+      "brew_high_energy",
       "brew_major_health",
-      "brew_major_energy",
-      "bind_moon_amulet"
+      "brew_major_energy"
     ],
     "huntLocationIds": [
       "morthaly_runic_wastes",
@@ -2369,15 +3360,12 @@ export const CITIES: CityDefinition[] = [
       "zombie_ugly_thing"
     ],
     "armorerItemIds": [
-      "armor_death",
-      "armor_dragon",
-      "armor_dhron",
-      "armor_erins",
-      "weapon_real_axe",
       "weapon_triple_sword_2",
       "weapon_triple_sword_3",
       "weapon_vorgonax",
-      "celtic_cyan_amulet"
+      "armor_dhron",
+      "armor_erins",
+      "celtic_orange_amulet"
     ]
   }
 ];
@@ -2627,20 +3615,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 10,
     "defense": 1,
     "agility": 1,
-    "experience": 35.0,
+    "experience": 35,
     "gold": 52.5,
     "drops": [
       {
-        "itemId": "material_celena",
-        "chance": 0.299
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "material_herb",
-        "chance": 0.2
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "misc_seed_moss",
-        "chance": 0.13
+        "itemId": "material_bone",
+        "chance": 0.022
+      },
+      {
+        "itemId": "misc_doemia",
+        "chance": 0.016
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.0819
       }
     ]
   },
@@ -2658,16 +3654,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 113.55,
     "drops": [
       {
-        "itemId": "wolf_pelt",
-        "chance": 0.299
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.199
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "misc_seed_moss",
-        "chance": 0.129
+        "itemId": "material_chimera_jewell",
+        "chance": 0.0221
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.016
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0817
       }
     ]
   },
@@ -2685,16 +3689,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 836.7,
     "drops": [
       {
+        "itemId": "health_potion_light",
+        "chance": 0.11
+      },
+      {
+        "itemId": "energy_potion_light",
+        "chance": 0.08
+      },
+      {
         "itemId": "material_herb",
-        "chance": 0.293
+        "chance": 0.0223
       },
       {
-        "itemId": "misc_herb_moss",
-        "chance": 0.196
+        "itemId": "misc_dragon_stone",
+        "chance": 0.0162
       },
       {
-        "itemId": "misc_seed_moss",
-        "chance": 0.126
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0805
       }
     ]
   },
@@ -2712,12 +3724,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 243.6,
     "drops": [
       {
-        "itemId": "misc_herb_moss",
-        "chance": 0.297
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "health_potion_light",
-        "chance": 0.128
+        "itemId": "energy_potion_light",
+        "chance": 0.08
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0221
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.0161
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.0814
       }
     ]
   },
@@ -2735,16 +3759,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 178.95,
     "drops": [
       {
-        "itemId": "misc_herb_moss",
-        "chance": 0.298
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "wolf_pelt",
-        "chance": 0.199
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "material_magic_essence",
-        "chance": 0.129
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.0221
+      },
+      {
+        "itemId": "misc_herb_rustic",
+        "chance": 0.0161
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0815
       }
     ]
   },
@@ -2762,16 +3794,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 712.95,
     "drops": [
       {
-        "itemId": "material_herb",
-        "chance": 0.294
-      },
-      {
-        "itemId": "wolf_pelt",
-        "chance": 0.196
-      },
-      {
         "itemId": "health_potion_light",
-        "chance": 0.126
+        "chance": 0.11
+      },
+      {
+        "itemId": "energy_potion_light",
+        "chance": 0.08
+      },
+      {
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.0223
+      },
+      {
+        "itemId": "material_udania",
+        "chance": 0.0162
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.0806
       }
     ]
   },
@@ -2789,16 +3829,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 320.55,
     "drops": [
       {
-        "itemId": "material_celena",
-        "chance": 0.296
-      },
-      {
-        "itemId": "material_herb",
-        "chance": 0.198
-      },
-      {
         "itemId": "health_potion_light",
-        "chance": 0.128
+        "chance": 0.11
+      },
+      {
+        "itemId": "energy_potion_light",
+        "chance": 0.08
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "chance": 0.0221
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.0161
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0813
       }
     ]
   },
@@ -2816,16 +3864,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1512.75,
     "drops": [
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.29
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.194
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.124
+        "itemId": "material_spectre_jewell",
+        "chance": 0.0224
+      },
+      {
+        "itemId": "material_laede_fragment",
+        "chance": 0.0163
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0799
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.0509
       }
     ]
   },
@@ -2839,20 +3899,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 65,
     "defense": 7,
     "agility": 6,
-    "experience": 270.0,
-    "gold": 405.0,
+    "experience": 270,
+    "gold": 405,
     "drops": [
       {
-        "itemId": "material_herb",
-        "chance": 0.296
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "misc_herb_moss",
-        "chance": 0.198
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "misc_seed_moss",
-        "chance": 0.127
+        "itemId": "material_dragon_nail",
+        "chance": 0.0222
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0161
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.0811
       }
     ]
   },
@@ -2866,20 +3934,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 134,
     "defense": 12,
     "agility": 12,
-    "experience": 694.0,
-    "gold": 1041.0,
+    "experience": 694,
+    "gold": 1041,
     "drops": [
       {
-        "itemId": "material_herb",
-        "chance": 0.292
-      },
-      {
-        "itemId": "material_celena",
-        "chance": 0.196
-      },
-      {
         "itemId": "health_potion_light",
-        "chance": 0.125
+        "chance": 0.11
+      },
+      {
+        "itemId": "energy_potion_light",
+        "chance": 0.08
+      },
+      {
+        "itemId": "material_laede_fragment",
+        "chance": 0.0223
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.0162
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0804
       }
     ]
   },
@@ -2893,20 +3969,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 164,
     "defense": 18,
     "agility": 15,
-    "experience": 1112.0,
-    "gold": 1668.0,
+    "experience": 1112,
+    "gold": 1668,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.289
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.194
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.123
+        "itemId": "material_stone_fragment",
+        "chance": 0.0224
+      },
+      {
+        "itemId": "material_spectre_jewell",
+        "chance": 0.0163
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0798
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0508
       }
     ]
   },
@@ -2924,12 +4012,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 648.45,
     "drops": [
       {
-        "itemId": "material_herb",
-        "chance": 0.294
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "material_magic_essence",
-        "chance": 0.126
+        "itemId": "energy_potion_light",
+        "chance": 0.08
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.0222
+      },
+      {
+        "itemId": "material_laede_fragment",
+        "chance": 0.0162
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0808
       }
     ]
   },
@@ -2947,16 +4047,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 498.15,
     "drops": [
       {
-        "itemId": "material_herb",
-        "chance": 0.295
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "material_celena",
-        "chance": 0.197
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "misc_seed_moss",
-        "chance": 0.127
+        "itemId": "material_dragons_tooth",
+        "chance": 0.0222
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.0161
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.081
       }
     ]
   },
@@ -2974,12 +4082,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1212.45,
     "drops": [
       {
-        "itemId": "wolf_pelt",
-        "chance": 0.292
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "misc_seed_moss",
-        "chance": 0.125
+        "itemId": "energy_potion_light",
+        "chance": 0.08
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.0224
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.0162
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0802
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.051
       }
     ]
   },
@@ -2993,20 +4117,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 148,
     "defense": 20,
     "agility": 9,
-    "experience": 927.0,
+    "experience": 927,
     "gold": 1390.5,
     "drops": [
       {
-        "itemId": "material_celena",
-        "chance": 0.291
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "material_herb",
-        "chance": 0.195
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "material_magic_essence",
-        "chance": 0.124
+        "itemId": "material_spectre_fragment",
+        "chance": 0.0224
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.0163
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0801
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.051
       }
     ]
   },
@@ -3024,16 +4160,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2585.4,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.287
+        "itemId": "health_potion_medium",
+        "chance": 0.105
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
         "itemId": "wolf_pelt",
-        "chance": 0.193
+        "chance": 0.0225
       },
       {
-        "itemId": "material_green_coin",
-        "chance": 0.122
+        "itemId": "misc_seed_rustic",
+        "chance": 0.0164
+      },
+      {
+        "itemId": "hunter_charm",
+        "chance": 0.0793
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0506
       }
     ]
   },
@@ -3051,16 +4199,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2766.45,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.287
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.192
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
         "itemId": "crystal_dust",
-        "chance": 0.121
+        "chance": 0.0226
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0164
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0791
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0505
       }
     ]
   },
@@ -3078,16 +4238,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 12601.65,
     "drops": [
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.277
-      },
-      {
-        "itemId": "ember_core",
-        "chance": 0.187
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
         "itemId": "energy_potion_medium",
-        "chance": 0.115
+        "chance": 0.075
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.023
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0167
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0384
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0771
+      },
+      {
+        "itemId": "acid_amulet",
+        "chance": 0.0494
       }
     ]
   },
@@ -3105,16 +4281,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 12117276.45,
     "drops": [
       {
-        "itemId": "misc_high_dungeon_key",
-        "chance": 0.226
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_magic_rune",
-        "chance": 0.158
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "material_spectre_jewell",
-        "chance": 0.083
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0348
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0243
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_obscure",
+        "chance": 0.044
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -3132,12 +4348,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3217.35,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.286
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.121
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "crystal_dust",
+        "chance": 0.0226
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.0164
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.039
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.079
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0504
       }
     ]
   },
@@ -3155,16 +4391,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 950420.7,
     "drops": [
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.245
+        "itemId": "health_potion_high",
+        "chance": 0.075
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.0243
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0176
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.169
+        "chance": 0.0361
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.095
+        "itemId": "misc_eran",
+        "chance": 0.0253
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0184
+      },
+      {
+        "itemId": "celtic_yellow_amulet",
+        "chance": 0.0703
+      },
+      {
+        "itemId": "armor_kharlee",
+        "chance": 0.0458
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -3182,16 +4454,48 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1006434.15,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.245
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.168
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.094
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.0244
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.036
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0252
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0184
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0702
+      },
+      {
+        "itemId": "weapon_long_sword",
+        "chance": 0.0457
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -3205,20 +4509,36 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 388,
     "defense": 52,
     "agility": 24,
-    "experience": 9279.0,
+    "experience": 9279,
     "gold": 13918.5,
     "drops": [
       {
-        "itemId": "material_old_stone",
-        "chance": 0.276
-      },
-      {
-        "itemId": "ember_core",
-        "chance": 0.186
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
         "itemId": "energy_potion_medium",
-        "chance": 0.115
+        "chance": 0.075
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.023
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.0167
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0383
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0769
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.0493
       }
     ]
   },
@@ -3236,16 +4556,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3460.95,
     "drops": [
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.285
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.192
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.121
+        "itemId": "misc_doemia",
+        "chance": 0.0226
+      },
+      {
+        "itemId": "material_laede_fragment",
+        "chance": 0.0164
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0389
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.0789
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0503
       }
     ]
   },
@@ -3259,20 +4595,36 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 251,
     "defense": 35,
     "agility": 16,
-    "experience": 2699.0,
+    "experience": 2699,
     "gold": 4048.5,
     "drops": [
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.285
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.191
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "crystal_dust",
-        "chance": 0.12
+        "itemId": "misc_dragon_stone",
+        "chance": 0.0227
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0164
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0389
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0787
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0502
       }
     ]
   },
@@ -3290,16 +4642,24 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2128.65,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.288
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.193
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "crystal_dust",
-        "chance": 0.122
+        "itemId": "material_udania",
+        "chance": 0.0225
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0163
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0795
       }
     ]
   },
@@ -3317,12 +4677,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 10559.7,
     "drops": [
       {
-        "itemId": "material_old_stone",
-        "chance": 0.278
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.116
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "misc_seed_mycelium_fungus",
+        "chance": 0.023
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.0166
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0384
+      },
+      {
+        "itemId": "weapon_double_sword_2",
+        "chance": 0.0772
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0494
       }
     ]
   },
@@ -3340,16 +4720,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 13713550.8,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.226
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_high_dungeon_key",
-        "chance": 0.158
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
         "itemId": "major_health_potion",
-        "chance": 0.082
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_herb_rustic",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0347
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0243
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "moon_amulet",
+        "chance": 0.067
+      },
+      {
+        "itemId": "weapon_triple_sword_3",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -3367,16 +4787,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 129140.85,
     "drops": [
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.26
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_bone",
-        "chance": 0.177
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.104
+        "itemId": "ember_core",
+        "chance": 0.0237
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0171
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0372
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.026
+      },
+      {
+        "itemId": "armor_kharlee",
+        "chance": 0.0735
+      },
+      {
+        "itemId": "weapon_executioner_axe_6",
+        "chance": 0.0474
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -3394,16 +4838,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 10316.25,
     "drops": [
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.278
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "wolf_pelt",
-        "chance": 0.188
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.116
+        "itemId": "misc_seed_moss",
+        "chance": 0.0229
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0166
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0384
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0774
+      },
+      {
+        "itemId": "hunter_charm",
+        "chance": 0.0495
       }
     ]
   },
@@ -3421,16 +4881,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 135532.35,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.259
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.177
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.104
+        "itemId": "crystal_dust",
+        "chance": 0.0237
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.0172
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0371
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.026
+      },
+      {
+        "itemId": "weapon_greatsword_4",
+        "chance": 0.0733
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0474
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -3448,16 +4932,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 4301.25,
     "drops": [
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.284
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.191
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "material_green_coin",
-        "chance": 0.12
+        "itemId": "misc_misc_phial",
+        "chance": 0.0227
+      },
+      {
+        "itemId": "misc_doemia",
+        "chance": 0.0165
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0389
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0786
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0502
       }
     ]
   },
@@ -3471,20 +4971,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 674,
     "defense": 92,
     "agility": 42,
-    "experience": 104253.0,
+    "experience": 104253,
     "gold": 156379.5,
     "drops": [
       {
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.0238
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.0172
+      },
+      {
         "itemId": "material_old_stone",
-        "chance": 0.259
+        "chance": 0.037
       },
       {
-        "itemId": "material_bone",
-        "chance": 0.176
+        "itemId": "misc_eran",
+        "chance": 0.0259
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.103
+        "itemId": "iron_sword",
+        "chance": 0.0732
+      },
+      {
+        "itemId": "moon_amulet",
+        "chance": 0.0473
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "chance": 0.0025
       }
     ]
   },
@@ -3502,16 +5026,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 175313.1,
     "drops": [
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.257
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_bone",
-        "chance": 0.176
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.103
+        "itemId": "misc_dragon_stone",
+        "chance": 0.0238
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.0172
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.037
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0259
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0188
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0728
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.0471
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -3529,12 +5081,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 159327.9,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.258
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.103
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "misc_doemia",
+        "chance": 0.0238
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0172
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.037
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0259
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0188
+      },
+      {
+        "itemId": "armor_justice",
+        "chance": 0.073
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.0472
+      },
+      {
+        "itemId": "forged_ironhold_axe_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -3552,16 +5136,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 14228.85,
     "drops": [
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.275
+        "itemId": "health_potion_medium",
+        "chance": 0.105
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.023
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0167
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.186
+        "chance": 0.0382
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.114
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0767
+      },
+      {
+        "itemId": "moon_amulet",
+        "chance": 0.0492
       }
     ]
   },
@@ -3579,12 +5179,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 16175.25,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.275
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.114
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_chimera_jewell",
+        "chance": 0.0231
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.0167
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0382
+      },
+      {
+        "itemId": "armor_kharlee",
+        "chance": 0.0766
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0491
       }
     ]
   },
@@ -3602,12 +5222,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 108656.7,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.261
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "energy_potion_medium",
-        "chance": 0.105
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "wolf_pelt",
+        "chance": 0.0237
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.0171
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0372
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.026
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0736
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0475
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -3625,16 +5273,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 17327.1,
     "drops": [
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.274
-      },
-      {
-        "itemId": "ember_core",
-        "chance": 0.185
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
         "itemId": "energy_potion_medium",
-        "chance": 0.113
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.0231
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.0167
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0382
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0765
+      },
+      {
+        "itemId": "weapon_executioner_axe_6",
+        "chance": 0.049
       }
     ]
   },
@@ -3652,16 +5316,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 20450.1,
     "drops": [
       {
-        "itemId": "material_old_stone",
-        "chance": 0.273
-      },
-      {
-        "itemId": "ember_core",
-        "chance": 0.185
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
         "itemId": "energy_potion_medium",
-        "chance": 0.113
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0231
+      },
+      {
+        "itemId": "material_udania",
+        "chance": 0.0168
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0381
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.0763
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.049
       }
     ]
   },
@@ -3679,16 +5359,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 22762.05,
     "drops": [
       {
+        "itemId": "health_potion_medium",
+        "chance": 0.105
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "chance": 0.0232
+      },
+      {
+        "itemId": "misc_doemia",
+        "chance": 0.0168
+      },
+      {
         "itemId": "material_old_stone",
-        "chance": 0.273
+        "chance": 0.0381
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.184
+        "itemId": "armor_leather",
+        "chance": 0.0762
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.112
+        "itemId": "novice_amulet",
+        "chance": 0.0489
       }
     ]
   },
@@ -3702,16 +5398,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 457,
     "defense": 63,
     "agility": 29,
-    "experience": 16730.0,
-    "gold": 25095.0,
+    "experience": 16730,
+    "gold": 25095,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.272
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
         "itemId": "energy_potion_medium",
-        "chance": 0.112
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.0232
+      },
+      {
+        "itemId": "misc_herb_rustic",
+        "chance": 0.0168
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.038
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0266
+      },
+      {
+        "itemId": "weapon_double_sword_2",
+        "chance": 0.076
+      },
+      {
+        "itemId": "weapon_claymore",
+        "chance": 0.0488
       }
     ]
   },
@@ -3729,16 +5449,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 9326.85,
     "drops": [
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.279
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.188
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.117
+        "itemId": "misc_seed_bitter",
+        "chance": 0.0229
+      },
+      {
+        "itemId": "material_magic_essence",
+        "chance": 0.0166
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0385
+      },
+      {
+        "itemId": "weapon_double_sword_new",
+        "chance": 0.0775
+      },
+      {
+        "itemId": "moon_amulet",
+        "chance": 0.0496
       }
     ]
   },
@@ -3756,16 +5492,36 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 27661.2,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.271
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.184
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.112
+        "itemId": "material_dragons_tooth",
+        "chance": 0.0232
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.0168
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0379
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0266
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.0759
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0487
       }
     ]
   },
@@ -3783,16 +5539,28 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 5576.25,
     "drops": [
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.282
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "wolf_pelt",
-        "chance": 0.19
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "material_green_coin",
-        "chance": 0.119
+        "itemId": "misc_dragon_stone",
+        "chance": 0.0227
+      },
+      {
+        "itemId": "crystal_dust",
+        "chance": 0.0165
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0387
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.0783
       }
     ]
   },
@@ -3810,16 +5578,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 8427.3,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.28
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.188
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.117
+        "itemId": "misc_herb_rustic",
+        "chance": 0.0229
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.0166
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0386
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.0776
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0497
       }
     ]
   },
@@ -3837,16 +5621,36 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 29072.7,
     "drops": [
       {
-        "itemId": "material_old_stone",
-        "chance": 0.271
-      },
-      {
-        "itemId": "ember_core",
-        "chance": 0.183
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
         "itemId": "energy_potion_medium",
-        "chance": 0.111
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.0233
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "chance": 0.0168
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0379
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0265
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0757
+      },
+      {
+        "itemId": "weapon_double_sword_2",
+        "chance": 0.0486
       }
     ]
   },
@@ -3864,16 +5668,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 5732.1,
     "drops": [
       {
-        "itemId": "wolf_pelt",
-        "chance": 0.282
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.19
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "material_green_coin",
-        "chance": 0.118
+        "itemId": "misc_misc_phial",
+        "chance": 0.0228
+      },
+      {
+        "itemId": "misc_herb_bitter",
+        "chance": 0.0165
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0387
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0781
+      },
+      {
+        "itemId": "weapon_claymore",
+        "chance": 0.0499
       }
     ]
   },
@@ -3891,16 +5711,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 6548.55,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.281
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_mycelium_fungus",
-        "chance": 0.189
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.118
+        "itemId": "misc_herb_bitter",
+        "chance": 0.0228
+      },
+      {
+        "itemId": "misc_seed_mycelium_fungus",
+        "chance": 0.0165
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0387
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.078
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.0498
       }
     ]
   },
@@ -3918,12 +5754,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 7257.45,
     "drops": [
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.28
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_green_coin",
-        "chance": 0.117
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0228
+      },
+      {
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.0166
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0386
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0778
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0498
       }
     ]
   },
@@ -3937,20 +5793,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 472,
     "defense": 52,
     "agility": 43,
-    "experience": 20734.0,
-    "gold": 31101.0,
+    "experience": 20734,
+    "gold": 31101,
     "drops": [
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.27
+        "itemId": "health_potion_medium",
+        "chance": 0.105
+      },
+      {
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.0233
+      },
+      {
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.0169
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.183
+        "chance": 0.0379
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.111
+        "itemId": "misc_eran",
+        "chance": 0.0265
+      },
+      {
+        "itemId": "acid_amulet",
+        "chance": 0.0756
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0486
       }
     ]
   },
@@ -3968,16 +5844,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 37742.55,
     "drops": [
       {
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "material_herb",
+        "chance": 0.0233
+      },
+      {
+        "itemId": "wolf_pelt",
+        "chance": 0.0169
+      },
+      {
         "itemId": "material_old_stone",
-        "chance": 0.268
+        "chance": 0.0377
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.182
+        "itemId": "misc_eran",
+        "chance": 0.0264
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.11
+        "itemId": "armor_leather",
+        "chance": 0.0753
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0484
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -3995,12 +5895,36 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 34263.6,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.269
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.11
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.0233
+      },
+      {
+        "itemId": "material_spectre_fragment",
+        "chance": 0.0169
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0378
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0265
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.0754
+      },
+      {
+        "itemId": "moon_amulet",
+        "chance": 0.0485
       }
     ]
   },
@@ -4018,16 +5942,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 44894.85,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.268
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.182
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.109
+        "itemId": "material_laede_fragment",
+        "chance": 0.0234
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.0169
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0377
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0264
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0751
+      },
+      {
+        "itemId": "weapon_double_sword_2",
+        "chance": 0.0483
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -4041,16 +5989,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 178,
     "defense": 18,
     "agility": 21,
-    "experience": 1296.0,
-    "gold": 1944.0,
+    "experience": 1296,
+    "gold": 1944,
     "drops": [
       {
-        "itemId": "material_gromin_mycelium",
-        "chance": 0.289
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "health_potion",
-        "chance": 0.123
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0225
+      },
+      {
+        "itemId": "crystal_dust",
+        "chance": 0.0163
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0796
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0507
       }
     ]
   },
@@ -4068,16 +6032,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 47152.05,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.267
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.181
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.109
+        "itemId": "material_magic_essence",
+        "chance": 0.0234
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.0169
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0377
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0264
+      },
+      {
+        "itemId": "acid_amulet",
+        "chance": 0.075
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0482
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4095,12 +6083,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 53937.75,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.266
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.108
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.0234
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.017
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0376
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0263
+      },
+      {
+        "itemId": "weapon_extreme_axe",
+        "chance": 0.0748
+      },
+      {
+        "itemId": "weapon_double_sword_2",
+        "chance": 0.0482
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -4118,16 +6134,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 59942.7,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.266
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.18
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.108
+        "itemId": "material_spectre_fragment",
+        "chance": 0.0235
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.017
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0376
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0263
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0747
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0481
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4145,12 +6185,32 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 4785.45,
     "drops": [
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.283
+        "itemId": "health_potion_medium",
+        "chance": 0.105
       },
       {
-        "itemId": "material_green_coin",
-        "chance": 0.119
+        "itemId": "energy_potion_medium",
+        "chance": 0.075
+      },
+      {
+        "itemId": "misc_herb_bitter",
+        "chance": 0.0227
+      },
+      {
+        "itemId": "misc_herb_rustic",
+        "chance": 0.0165
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0388
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0784
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0501
       }
     ]
   },
@@ -4168,16 +6228,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 61105.2,
     "drops": [
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.265
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.18
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "wyvern_scale",
-        "chance": 0.108
+        "itemId": "material_spectre_jewell",
+        "chance": 0.0235
+      },
+      {
+        "itemId": "material_herb",
+        "chance": 0.017
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0375
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0263
+      },
+      {
+        "itemId": "weapon_extreme_axe",
+        "chance": 0.0745
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.048
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -4195,16 +6279,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 69286.2,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.264
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.18
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.107
+        "itemId": "material_stone_fragment",
+        "chance": 0.0235
+      },
+      {
+        "itemId": "material_spectre_jewell",
+        "chance": 0.017
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0374
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0262
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0743
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.0479
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4222,16 +6330,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 839744.4,
     "drops": [
       {
+        "itemId": "health_potion_high",
+        "chance": 0.075
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.0243
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.0175
+      },
+      {
         "itemId": "material_old_stone",
-        "chance": 0.246
+        "chance": 0.0362
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.169
+        "itemId": "misc_eran",
+        "chance": 0.0253
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.095
+        "itemId": "material_celena",
+        "chance": 0.0185
+      },
+      {
+        "itemId": "armor_cursed",
+        "chance": 0.0704
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0458
+      },
+      {
+        "itemId": "forged_valfria_sabre_50",
+        "chance": 0.0025
       }
     ]
   },
@@ -4249,12 +6393,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 79971.3,
     "drops": [
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.264
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.107
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0236
+      },
+      {
+        "itemId": "ember_core",
+        "chance": 0.017
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0374
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0262
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.0742
+      },
+      {
+        "itemId": "weapon_claymore",
+        "chance": 0.0478
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -4272,16 +6444,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 88025.25,
     "drops": [
       {
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "material_udania",
+        "chance": 0.0236
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "chance": 0.0171
+      },
+      {
         "itemId": "material_old_stone",
-        "chance": 0.263
+        "chance": 0.0374
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.179
+        "itemId": "misc_eran",
+        "chance": 0.0261
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.106
+        "itemId": "weapon_executioner_axe",
+        "chance": 0.0741
+      },
+      {
+        "itemId": "weapon_greatsword_2",
+        "chance": 0.0478
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4299,16 +6495,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 89707.8,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.262
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.178
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.106
+        "itemId": "wolf_pelt",
+        "chance": 0.0236
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.0171
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0373
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0261
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0739
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0477
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4322,20 +6542,48 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 681,
     "defense": 76,
     "agility": 62,
-    "experience": 128598.0,
-    "gold": 192897.0,
+    "experience": 128598,
+    "gold": 192897,
     "drops": [
       {
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "chance": 0.0239
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0172
+      },
+      {
         "itemId": "material_old_stone",
-        "chance": 0.257
+        "chance": 0.0369
       },
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.175
+        "itemId": "misc_eran",
+        "chance": 0.0258
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.102
+        "itemId": "material_celena",
+        "chance": 0.0188
+      },
+      {
+        "itemId": "weapon_claymore",
+        "chance": 0.0727
+      },
+      {
+        "itemId": "armor_justice",
+        "chance": 0.047
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -4353,16 +6601,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 212239.2,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.256
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
         "itemId": "misc_herb_bitter",
-        "chance": 0.175
+        "chance": 0.0239
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.102
+        "itemId": "misc_seed_rustic",
+        "chance": 0.0173
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0369
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0258
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0187
+      },
+      {
+        "itemId": "weapon_executioner_axe_6",
+        "chance": 0.0726
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.047
+      },
+      {
+        "itemId": "forged_valfria_sabre_50",
+        "chance": 0.0025
       }
     ]
   },
@@ -4380,12 +6656,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 249861.6,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.255
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.101
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0239
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0173
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0368
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0258
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0187
+      },
+      {
+        "itemId": "weapon_insane_axe",
+        "chance": 0.0724
+      },
+      {
+        "itemId": "weapon_executioner_axe",
+        "chance": 0.0469
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4403,16 +6711,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 256919.7,
     "drops": [
       {
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "misc_herb_rustic",
+        "chance": 0.0239
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.0173
+      },
+      {
         "itemId": "material_old_stone",
-        "chance": 0.255
+        "chance": 0.0367
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.174
+        "itemId": "misc_eran",
+        "chance": 0.0257
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.101
+        "itemId": "material_celena",
+        "chance": 0.0187
+      },
+      {
+        "itemId": "weapon_double_sword_2",
+        "chance": 0.0723
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0468
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4430,16 +6766,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 282664.05,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.254
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.174
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.1
+        "itemId": "misc_seed_bitter",
+        "chance": 0.024
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.0173
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0367
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0257
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0187
+      },
+      {
+        "itemId": "armor_cursed",
+        "chance": 0.0721
+      },
+      {
+        "itemId": "weapon_extreme_axe",
+        "chance": 0.0467
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "chance": 0.0025
       }
     ]
   },
@@ -4457,16 +6821,40 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 106629.6,
     "drops": [
       {
-        "itemId": "ember_core",
-        "chance": 0.262
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_stone_craft",
-        "chance": 0.178
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "material_dragons_tooth",
-        "chance": 0.105
+        "itemId": "material_udania",
+        "chance": 0.0236
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0171
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0372
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0261
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0738
+      },
+      {
+        "itemId": "weapon_extreme_axe",
+        "chance": 0.0476
+      },
+      {
+        "itemId": "forged_ironhold_axe_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4480,20 +6868,48 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 736,
     "defense": 82,
     "agility": 67,
-    "experience": 207322.0,
-    "gold": 310983.0,
+    "experience": 207322,
+    "gold": 310983,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.253
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.173
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.1
+        "itemId": "misc_seed_moss",
+        "chance": 0.024
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0173
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0367
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0257
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0187
+      },
+      {
+        "itemId": "celtic_yellow_amulet",
+        "chance": 0.072
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0466
+      },
+      {
+        "itemId": "forged_ironhold_axe_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4511,12 +6927,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 369504.45,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.252
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.099
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "misc_seed_mycelium_fungus",
+        "chance": 0.024
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.0174
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0366
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0256
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0186
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0718
+      },
+      {
+        "itemId": "acid_amulet",
+        "chance": 0.0466
+      },
+      {
+        "itemId": "forged_valfria_scale_50",
+        "chance": 0.0025
       }
     ]
   },
@@ -4534,16 +6982,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 387691.65,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.252
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.0241
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0174
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.172
+        "chance": 0.0365
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.099
+        "itemId": "misc_eran",
+        "chance": 0.0256
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0186
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.0717
+      },
+      {
+        "itemId": "weapon_insane_axe",
+        "chance": 0.0465
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -4561,16 +7037,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 426514.95,
     "drops": [
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.251
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.0241
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.0174
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.172
+        "chance": 0.0365
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.099
+        "itemId": "misc_eran",
+        "chance": 0.0255
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0186
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0715
+      },
+      {
+        "itemId": "weapon_claymore",
+        "chance": 0.0464
+      },
+      {
+        "itemId": "forged_valfria_sabre_50",
+        "chance": 0.0025
       }
     ]
   },
@@ -4588,16 +7092,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 473776.05,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.25
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.0241
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0174
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.172
+        "chance": 0.0365
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.098
+        "itemId": "misc_eran",
+        "chance": 0.0255
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0186
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0713
+      },
+      {
+        "itemId": "weapon_greatsword_2",
+        "chance": 0.0463
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4615,16 +7147,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 15225942.9,
     "drops": [
       {
-        "itemId": "misc_high_dungeon_key",
-        "chance": 0.225
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.157
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.082
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0347
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0243
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "weapon_greatsword_2",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -4642,12 +7214,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 521208.15,
     "drops": [
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.25
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.098
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "material_chimera_jewell",
+        "chance": 0.0242
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.0174
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0364
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0255
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0186
+      },
+      {
+        "itemId": "armor_kharlee",
+        "chance": 0.0712
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0462
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4665,16 +7269,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 595436.85,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.249
+        "itemId": "health_potion_high",
+        "chance": 0.085
       },
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.171
+        "itemId": "energy_potion_high",
+        "chance": 0.055
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.097
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.0242
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.0175
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0364
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0254
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0185
+      },
+      {
+        "itemId": "weapon_greatsword_4",
+        "chance": 0.0711
+      },
+      {
+        "itemId": "acid_amulet",
+        "chance": 0.0462
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "chance": 0.0025
       }
     ]
   },
@@ -4692,16 +7324,44 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 630776.55,
     "drops": [
       {
-        "itemId": "misc_herb_bitter",
-        "chance": 0.248
+        "itemId": "health_potion_high",
+        "chance": 0.085
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.055
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0242
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0175
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.17
+        "chance": 0.0363
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.097
+        "itemId": "misc_eran",
+        "chance": 0.0254
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0185
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.0709
+      },
+      {
+        "itemId": "weapon_insane_axe",
+        "chance": 0.0461
+      },
+      {
+        "itemId": "forged_ironhold_axe_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4719,16 +7379,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 687236.7,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.247
+        "itemId": "health_potion_high",
+        "chance": 0.075
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "chance": 0.0243
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.0175
       },
       {
         "itemId": "material_old_stone",
-        "chance": 0.17
+        "chance": 0.0362
       },
       {
-        "itemId": "material_energy_jewell",
-        "chance": 0.096
+        "itemId": "misc_eran",
+        "chance": 0.0254
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0185
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0708
+      },
+      {
+        "itemId": "weapon_double_sword_new",
+        "chance": 0.046
+      },
+      {
+        "itemId": "forged_valfria_scale_50",
+        "chance": 0.0025
       }
     ]
   },
@@ -4746,12 +7442,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 763354.35,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.247
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_seed_bitter",
-        "chance": 0.096
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.0243
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.0175
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0362
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0253
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0185
+      },
+      {
+        "itemId": "weapon_double_sword_2",
+        "chance": 0.0706
+      },
+      {
+        "itemId": "celtic_yellow_amulet",
+        "chance": 0.0459
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -4769,12 +7505,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1107131.7,
     "drops": [
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.244
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_serlen",
-        "chance": 0.094
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.0244
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "chance": 0.0176
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.036
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0252
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0184
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0132
+      },
+      {
+        "itemId": "hunter_charm",
+        "chance": 0.07
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.0456
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "chance": 0.0025
       }
     ]
   },
@@ -4792,16 +7572,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1217898.9,
     "drops": [
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.243
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "crystal_dust",
-        "chance": 0.168
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "energy_potion_medium",
-        "chance": 0.094
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "chance": 0.0244
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.0176
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.036
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0252
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0184
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0132
+      },
+      {
+        "itemId": "weapon_double_sword_new",
+        "chance": 0.0699
+      },
+      {
+        "itemId": "weapon_executioner_axe_6",
+        "chance": 0.0455
+      },
+      {
+        "itemId": "forged_ironhold_axe_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4819,16 +7639,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1339742.85,
     "drops": [
       {
-        "itemId": "crystal_dust",
-        "chance": 0.243
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dexerity_jewell",
-        "chance": 0.167
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_serlen",
-        "chance": 0.093
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.0245
+      },
+      {
+        "itemId": "material_chimera_jewell",
+        "chance": 0.0176
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0359
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0251
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0184
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0132
+      },
+      {
+        "itemId": "armor_justice",
+        "chance": 0.0697
+      },
+      {
+        "itemId": "weapon_obs_axe",
+        "chance": 0.0454
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -4846,16 +7706,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1488079.65,
     "drops": [
       {
-        "itemId": "material_dexerity_jewell",
-        "chance": 0.242
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.167
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "material_mysterious_jewell",
-        "chance": 0.093
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.0245
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0358
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0251
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0183
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0132
+      },
+      {
+        "itemId": "armor_death",
+        "chance": 0.0696
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.0454
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -4873,12 +7773,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 16748593.95,
     "drops": [
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.224
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.081
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0346
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0242
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "weapon_obs_axe",
+        "chance": 0.067
+      },
+      {
+        "itemId": "weapon_executioner_axe",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "chance": 0.0018
       }
     ]
   },
@@ -4892,20 +7836,60 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "strength": 1246,
     "defense": 170,
     "agility": 78,
-    "experience": 12282340.0,
-    "gold": 18423510.0,
+    "experience": 12282340,
+    "gold": 18423510,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.224
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.156
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.081
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_seed_mycelium_fungus",
+        "chance": 0.025
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0345
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0242
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "armor_dhron",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_death",
+        "chance": 0.044
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4923,16 +7907,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 8276089.8,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.229
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.16
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.085
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_doemia",
+        "chance": 0.025
+      },
+      {
+        "itemId": "wolf_pelt",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.035
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0245
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "weapon_double_sword_new",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_leather",
+        "chance": 0.044
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -4950,12 +7974,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1636942.2,
     "drops": [
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.241
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "energy_potion_medium",
-        "chance": 0.092
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.0245
+      },
+      {
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0358
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0251
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0183
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0132
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0694
+      },
+      {
+        "itemId": "weapon_executioner_axe",
+        "chance": 0.0453
+      },
+      {
+        "itemId": "celtic_magenta_amulet",
+        "chance": 0.0025
       }
     ]
   },
@@ -4973,16 +8041,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1800691.05,
     "drops": [
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.24
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "crystal_dust",
-        "chance": 0.166
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "energy_potion_medium",
-        "chance": 0.092
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_eran_fragment",
+        "chance": 0.0245
+      },
+      {
+        "itemId": "material_mysterious_jewell",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0358
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0183
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0132
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0693
+      },
+      {
+        "itemId": "armor_steel",
+        "chance": 0.0452
+      },
+      {
+        "itemId": "forged_ironhold_axe_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -5000,16 +8108,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3823444.8,
     "drops": [
       {
-        "itemId": "material_dexerity_jewell",
-        "chance": 0.235
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.163
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "energy_potion_medium",
-        "chance": 0.088
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_spectre_jewell",
+        "chance": 0.0248
+      },
+      {
+        "itemId": "material_stone_fragment",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0353
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0247
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0181
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "armor_dragon",
+        "chance": 0.068
+      },
+      {
+        "itemId": "iron_sword",
+        "chance": 0.0446
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -5027,16 +8175,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 1961768.55,
     "drops": [
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.24
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.166
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_serlen",
-        "chance": 0.091
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_gromin_mycelium",
+        "chance": 0.0246
+      },
+      {
+        "itemId": "material_udania",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0357
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0183
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "armor_kharlee",
+        "chance": 0.0691
+      },
+      {
+        "itemId": "weapon_executioner_axe",
+        "chance": 0.0451
+      },
+      {
+        "itemId": "forged_valfria_scale_50",
+        "chance": 0.0025
       }
     ]
   },
@@ -5054,16 +8242,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2178950.85,
     "drops": [
       {
-        "itemId": "crystal_dust",
-        "chance": 0.239
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.165
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_serlen",
-        "chance": 0.091
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_herb",
+        "chance": 0.0246
+      },
+      {
+        "itemId": "misc_doemia",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0357
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0183
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "weapon_greatsword_4",
+        "chance": 0.069
+      },
+      {
+        "itemId": "armor_death",
+        "chance": 0.045
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "chance": 0.0025
       }
     ]
   },
@@ -5081,12 +8309,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2396900.55,
     "drops": [
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.238
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_serlen",
-        "chance": 0.09
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_laede_fragment",
+        "chance": 0.0246
+      },
+      {
+        "itemId": "misc_herb_rustic",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0356
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0249
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0182
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "weapon_orcish_dagger",
+        "chance": 0.0688
+      },
+      {
+        "itemId": "weapon_chaos_axe",
+        "chance": 0.045
+      },
+      {
+        "itemId": "guardian_mail",
+        "chance": 0.0025
       }
     ]
   },
@@ -5104,16 +8376,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2738054.7,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.238
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dexerity_jewell",
-        "chance": 0.164
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_serlen",
-        "chance": 0.09
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_magic_essence",
+        "chance": 0.0247
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0355
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0249
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0182
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "weapon_assassin_sword",
+        "chance": 0.0687
+      },
+      {
+        "itemId": "weapon_executioner_axe_6",
+        "chance": 0.0449
+      },
+      {
+        "itemId": "forged_valfria_sabre_50",
+        "chance": 0.0025
       }
     ]
   },
@@ -5131,16 +8443,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 2872476.3,
     "drops": [
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.237
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.164
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_serlen",
-        "chance": 0.089
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "chance": 0.0247
+      },
+      {
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0355
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0249
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0182
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "weapon_claymore",
+        "chance": 0.0685
+      },
+      {
+        "itemId": "hunter_charm",
+        "chance": 0.0448
+      },
+      {
+        "itemId": "forged_valfria_sandmail_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -5158,16 +8510,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3159777.9,
     "drops": [
       {
-        "itemId": "crystal_dust",
-        "chance": 0.236
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_strenght_jewell",
-        "chance": 0.164
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
       },
       {
         "itemId": "material_mysterious_jewell",
-        "chance": 0.089
+        "chance": 0.0247
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0355
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0248
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0182
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "weapon_executioner_axe_6",
+        "chance": 0.0684
+      },
+      {
+        "itemId": "armor_cursed",
+        "chance": 0.0447
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -5185,12 +8577,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 3475809.75,
     "drops": [
       {
-        "itemId": "material_stone_fragment",
-        "chance": 0.236
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "energy_potion_medium",
-        "chance": 0.089
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_spectre_fragment",
+        "chance": 0.0248
+      },
+      {
+        "itemId": "material_magic_essence",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0354
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0248
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0182
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "weapon_insane_axe",
+        "chance": 0.0682
+      },
+      {
+        "itemId": "weapon_orcish_dagger",
+        "chance": 0.0446
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "chance": 0.0018
       }
     ]
   },
@@ -5208,16 +8644,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 4246676.85,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.234
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_dungeon_key",
-        "chance": 0.162
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "material_spectre_jewell",
-        "chance": 0.088
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_stone_fragment",
+        "chance": 0.0248
+      },
+      {
+        "itemId": "crystal_dust",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0353
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0247
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0181
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.0679
+      },
+      {
+        "itemId": "armor_kharlee",
+        "chance": 0.0445
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -5235,12 +8711,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 23613661.8,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.222
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dragon_essence",
-        "chance": 0.08
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_dark_residue",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0344
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0241
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "armor_kharlee",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_justice",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -5258,16 +8778,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 25975082.55,
     "drops": [
       {
-        "itemId": "material_dark_magic_rune",
-        "chance": 0.221
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.155
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "material_dragon_essence",
-        "chance": 0.079
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_chimera_jewell",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0343
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.024
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "weapon_greatsword_4",
+        "chance": 0.067
+      },
+      {
+        "itemId": "celtic_orange_amulet",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -5285,16 +8845,60 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 19515328.2,
     "drops": [
       {
-        "itemId": "material_dark_magic_rune",
-        "chance": 0.223
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.156
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.081
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.025
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0345
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0242
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "training_sword",
+        "chance": 0.067
+      },
+      {
+        "itemId": "leather_armor",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
+      },
+      {
+        "itemId": "forged_morthaly_voidblade_100",
+        "chance": 0.001
       }
     ]
   },
@@ -5312,16 +8916,60 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 21466915.65,
     "drops": [
       {
-        "itemId": "misc_high_dungeon_key",
-        "chance": 0.222
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.156
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.08
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_stone_craft",
+        "chance": 0.025
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0345
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0241
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0178
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
+      },
+      {
+        "itemId": "forged_morthaly_voidarmor_100",
+        "chance": 0.001
       }
     ]
   },
@@ -5339,16 +8987,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 4671399.15,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.233
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_bone",
-        "chance": 0.162
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "material_spectre_jewell",
-        "chance": 0.087
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "chance": 0.0248
+      },
+      {
+        "itemId": "misc_herb_bitter",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0353
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0247
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0181
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0131
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.0678
+      },
+      {
+        "itemId": "weapon_claymore_3",
+        "chance": 0.0444
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -5366,16 +9054,52 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 9103753.35,
     "drops": [
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.229
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.159
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "ticket_ship",
-        "chance": 0.084
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0349
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0244
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "armor_justice",
+        "chance": 0.067
+      },
+      {
+        "itemId": "weapon_claymore",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -5393,12 +9117,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 5138593.65,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.233
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.087
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_udania",
+        "chance": 0.0249
+      },
+      {
+        "itemId": "misc_seed_mycelium_fungus",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0352
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0246
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0181
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "weapon_executioner_axe",
+        "chance": 0.0676
+      },
+      {
+        "itemId": "weapon_extreme_axe",
+        "chance": 0.0443
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "chance": 0.0018
       }
     ]
   },
@@ -5416,16 +9184,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 10014183.3,
     "drops": [
       {
-        "itemId": "misc_dungeon_key",
-        "chance": 0.228
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.159
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.084
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "chance": 0.025
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0348
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0244
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "armor_death",
+        "chance": 0.067
+      },
+      {
+        "itemId": "weapon_greatsword_2",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -5443,16 +9251,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 5652507.6,
     "drops": [
       {
-        "itemId": "misc_dungeon_key",
-        "chance": 0.232
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.161
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "ticket_ship",
-        "chance": 0.086
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "wolf_pelt",
+        "chance": 0.0249
+      },
+      {
+        "itemId": "material_dark_magic_rune",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0352
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0246
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0181
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "armor_obscure",
+        "chance": 0.0675
+      },
+      {
+        "itemId": "armor_dragon",
+        "chance": 0.0442
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -5470,16 +9318,60 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 6217812.9,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.231
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.161
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.086
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "ember_core",
+        "chance": 0.0249
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0351
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0246
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "weapon_real_axe",
+        "chance": 0.0673
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.0442
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
+      },
+      {
+        "itemId": "forged_morthaly_scythe_80",
+        "chance": 0.0015
       }
     ]
   },
@@ -5497,16 +9389,60 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 29671593.3,
     "drops": [
       {
-        "itemId": "misc_high_dungeon_key",
-        "chance": 0.22
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.154
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "material_dragon_essence",
-        "chance": 0.079
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dark_magic_rune",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_laede_fragment",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0343
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.024
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "weapon_orcish_dagger",
+        "chance": 0.067
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "chance": 0.0018
+      },
+      {
+        "itemId": "celtic_cyan_amulet",
+        "chance": 0.001
       }
     ]
   },
@@ -5524,16 +9460,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 32638809.3,
     "drops": [
       {
+        "itemId": "health_potion_high",
+        "chance": 0.075
+      },
+      {
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
         "itemId": "material_dark_residue",
-        "chance": 0.219
+        "chance": 0.025
       },
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.154
+        "itemId": "material_spectre_jewell",
+        "chance": 0.018
       },
       {
-        "itemId": "material_dragon_essence",
-        "chance": 0.078
+        "itemId": "material_old_stone",
+        "chance": 0.0343
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.024
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0129
+      },
+      {
+        "itemId": "armor_erins",
+        "chance": 0.067
+      },
+      {
+        "itemId": "weapon_double_sword_new",
+        "chance": 0.044
+      },
+      {
+        "itemId": "crystal_white_amulet",
+        "chance": 0.0025
       }
     ]
   },
@@ -5551,12 +9527,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 10909736.4,
     "drops": [
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.227
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.083
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "misc_herb_bitter",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_bone",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0348
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0244
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0179
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "weapon_triple_sword_3",
+        "chance": 0.067
+      },
+      {
+        "itemId": "weapon_real_axe",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "chance": 0.0018
       }
     ]
   },
@@ -5574,12 +9594,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 34573015.65,
     "drops": [
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.219
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.078
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dexerity_jewell",
+        "chance": 0.025
+      },
+      {
+        "itemId": "ember_core",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0342
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0239
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0128
+      },
+      {
+        "itemId": "iron_armor",
+        "chance": 0.067
+      },
+      {
+        "itemId": "celtic_yellow_amulet",
+        "chance": 0.044
+      },
+      {
+        "itemId": "ember_blade",
+        "chance": 0.0025
       }
     ]
   },
@@ -5597,16 +9661,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 38030371.8,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.218
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.153
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.077
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "chance": 0.025
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0341
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0239
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0177
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0128
+      },
+      {
+        "itemId": "armor_mystic",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_erins",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_ironhold_plate_40",
+        "chance": 0.0025
       }
     ]
   },
@@ -5624,16 +9728,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 7102712.25,
     "drops": [
       {
-        "itemId": "material_spectre_fragment",
-        "chance": 0.231
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_bone",
-        "chance": 0.16
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "health_potion_medium",
-        "chance": 0.085
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "crystal_dust",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_herb",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.035
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0245
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "novice_amulet",
+        "chance": 0.0672
+      },
+      {
+        "itemId": "weapon_double_sword_new",
+        "chance": 0.0441
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -5651,12 +9795,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 7813040.25,
     "drops": [
       {
-        "itemId": "material_bone",
-        "chance": 0.23
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_spectre_jewell",
-        "chance": 0.085
+        "itemId": "energy_potion_high",
+        "chance": 0.05
+      },
+      {
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "wyvern_scale",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_spectre_fragment",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.035
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0245
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.013
+      },
+      {
+        "itemId": "hunter_charm",
+        "chance": 0.067
+      },
+      {
+        "itemId": "celtic_yellow_amulet",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "chance": 0.0018
       }
     ]
   },
@@ -5674,16 +9862,56 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 41833463.55,
     "drops": [
       {
-        "itemId": "material_dark_magic_rune",
-        "chance": 0.217
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.153
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.077
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "chance": 0.025
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.0341
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0239
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0176
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0128
+      },
+      {
+        "itemId": "weapon_executioner_axe",
+        "chance": 0.067
+      },
+      {
+        "itemId": "hunter_charm",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_valfria_sunblade_70",
+        "chance": 0.0025
       }
     ]
   },
@@ -5701,17 +9929,58 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "gold": 46016864.55,
     "drops": [
       {
-        "itemId": "misc_high_dungeon_key",
-        "chance": 0.217
+        "itemId": "health_potion_high",
+        "chance": 0.075
       },
       {
-        "itemId": "material_dark_residue",
-        "chance": 0.152
+        "itemId": "energy_potion_high",
+        "chance": 0.05
       },
       {
-        "itemId": "misc_dragon_stone",
-        "chance": 0.076
+        "itemId": "major_health_potion",
+        "chance": 0.026
+      },
+      {
+        "itemId": "major_energy_potion",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "chance": 0.025
+      },
+      {
+        "itemId": "material_chimera_jewell",
+        "chance": 0.018
+      },
+      {
+        "itemId": "material_old_stone",
+        "chance": 0.034
+      },
+      {
+        "itemId": "misc_eran",
+        "chance": 0.0238
+      },
+      {
+        "itemId": "material_celena",
+        "chance": 0.0176
+      },
+      {
+        "itemId": "material_midran",
+        "chance": 0.0128
+      },
+      {
+        "itemId": "armor_obscure",
+        "chance": 0.067
+      },
+      {
+        "itemId": "armor_cursed",
+        "chance": 0.044
+      },
+      {
+        "itemId": "forged_morthaly_boneplate_80",
+        "chance": 0.0018
       }
     ]
   }
 };
+
