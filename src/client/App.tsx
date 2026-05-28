@@ -3495,10 +3495,13 @@ const CRAFT_RARITY_TABLE: Array<{ rarity: Rarity; pct: number }> = [
   { rarity: "legendary", pct: Math.round(RARITY_CHANCES.legendary * 100) },
 ];
 
+const CRAFT_ANIMATION_MS = 2400;
+
 function CraftingPanel({ game, station }: { game: GameState; station: "blacksmith" | "alchemist" }) {
   const recipes = game.availableCraftingRecipes[station];
   const [selectedRecipeId, setSelectedRecipeId] = useState("");
   const [craftedRecipePulseId, setCraftedRecipePulseId] = useState("");
+  const [craftingRecipeId, setCraftingRecipeId] = useState("");
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
   const icon = station === "blacksmith" ? <GameIcon name="blacksmith" size={26} /> : <GameIcon name="alchemist" size={26} />;
   const npcName = station === "blacksmith" ? game.currentCity.npcs.blacksmith : game.currentCity.npcs.alchemist;
@@ -3515,9 +3518,14 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
 
   const recipeEntries = recipes.map((recipe) => {
     const result = game.itemCatalog[recipe.resultItemId];
-    const hasMaterials = recipe.ingredients.every((ingredient) => countInventoryItem(game, ingredient.itemId) >= ingredient.quantity);
+    const craftableByMaterials = recipe.ingredients.reduce((minCrafts, ingredient) => {
+      const owned = countInventoryItem(game, ingredient.itemId);
+      return Math.min(minCrafts, Math.floor(owned / ingredient.quantity));
+    }, Number.POSITIVE_INFINITY);
+    const hasMaterials = craftableByMaterials > 0;
     const canCraft = hasMaterials && game.character.gold >= recipe.goldCost;
-    return { recipe, result, hasMaterials, canCraft };
+    const craftableTotal = craftableByMaterials * recipe.resultQuantity;
+    return { recipe, result, hasMaterials, canCraft, craftableTotal };
   });
 
   const selectedEntry = recipeEntries.find((entry) => entry.recipe.id === selectedRecipeId) ?? null;
@@ -3532,10 +3540,12 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
 
   function handleCreate(recipeId: string) {
     socket.emit("craft:create", { recipeId });
+    setCraftingRecipeId(recipeId);
     setCraftedRecipePulseId(recipeId);
     window.setTimeout(() => {
       setCraftedRecipePulseId((current) => (current === recipeId ? "" : current));
-    }, 820);
+      setCraftingRecipeId((current) => (current === recipeId ? "" : current));
+    }, CRAFT_ANIMATION_MS);
   }
 
   return (
@@ -3550,7 +3560,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
       {station === "blacksmith" && game.currentCity.blacksmithEnhancement && <EquipmentEnhancementPanel game={game} />}
       <div className="crafting-panel-layout">
         <div className="crafting-grid" role="list" aria-label="Itens criáveis">
-          {recipeEntries.map(({ recipe, result, hasMaterials }) => {
+          {recipeEntries.map(({ recipe, result, hasMaterials, craftableTotal }) => {
             const selected = selectedRecipeId === recipe.id;
             return (
               <button
@@ -3562,6 +3572,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
                 aria-label={recipe.name}
               >
                 <ItemVisual item={result} className="craft-grid-art" quantity={recipe.resultQuantity} />
+                {hasMaterials && <span className="asset-qty craft-grid-total">x{craftableTotal}</span>}
               </button>
             );
           })}
@@ -3620,11 +3631,17 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
             </div>
 
             <button
-              className="primary-button"
-              disabled={!selectedEntry.canCraft}
+              className={`primary-button craft-create-button${craftingRecipeId === selectedRecipe.id ? " is-building" : ""}`}
+              disabled={!selectedEntry.canCraft || craftingRecipeId === selectedRecipe.id}
               onClick={() => handleCreate(selectedRecipe.id)}
             >
-              Criar
+              {craftingRecipeId === selectedRecipe.id ? (
+                <>
+                  <Hammer size={15} className="craft-building-icon" /> Construindo...
+                </>
+              ) : (
+                "Criar"
+              )}
             </button>
           </article>
         )}
