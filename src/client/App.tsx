@@ -54,6 +54,7 @@ import type {
   BattleParticipant,
   ChatMessage,
   ClanRankingEntry,
+  ClanSummary,
   Currency,
   GameState,
   InventoryItem,
@@ -2267,6 +2268,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
   const [pending, setPending] = useState<Attributes>({ strength: 0, constitution: 0, agility: 0 });
   const [showAvatarChoices, setShowAvatarChoices] = useState(false);
   const [resetModal, setResetModal] = useState<"attributes" | "talents" | null>(null);
+  const [selectedEquipmentInstanceId, setSelectedEquipmentInstanceId] = useState<string | null>(null);
   const [avatarOptionsSeen, setAvatarOptionsSeen] = useState(() => readAvatarOptionsSeen(game.player.id));
   const { preferences } = useQuickPotionSettings();
   const pendingTotal = pending.strength + pending.constitution + pending.agility;
@@ -2279,6 +2281,10 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
   const memoryScroll = game.itemCatalog[MEMORY_SCROLL_ID];
   const hpProgress = Math.min(100, Math.round((game.character.currentHp / game.derived.maxHp) * 100));
   const energyProgress = Math.min(100, Math.round((game.character.currentEnergy / game.derived.maxEnergy) * 100));
+  const selectedEquipmentEntry = selectedEquipmentInstanceId
+    ? game.character.inventory.find((item) => item.instanceId === selectedEquipmentInstanceId) ?? null
+    : null;
+  const selectedEquipmentItem = selectedEquipmentEntry ? game.itemCatalog[selectedEquipmentEntry.itemId] ?? null : null;
 
   useEffect(() => {
     setAvatarOptionsSeen(readAvatarOptionsSeen(game.player.id));
@@ -2461,7 +2467,14 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
             const definition = inventoryItem ? game.itemCatalog[inventoryItem.itemId] : null;
             const slotEmoji = { weapon: "⚔️", armor: "🛡️", amulet: "📿" };
             return (
-              <div className={`equip-slot${definition ? " has-item" : ""}`} key={slot}>
+              <button
+                type="button"
+                className={`equip-slot${definition ? " has-item" : ""}`}
+                key={slot}
+                disabled={!definition || !inventoryItem}
+                onClick={() => inventoryItem && setSelectedEquipmentInstanceId(inventoryItem.instanceId)}
+                title={definition ? `Ver detalhes de ${formatInventoryItemName(definition, inventoryItem)}` : EQUIPMENT_LABEL[slot]}
+              >
                 {definition ? (
                   <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={inventoryItem?.enhancementLevel} rarity={inventoryItem?.rarity} />
                 ) : (
@@ -2472,10 +2485,17 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
                   <strong>{definition?.name ?? "—"}</strong>
                   {definition && <span className="equip-desc">{definition.description}</span>}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
+        {selectedEquipmentEntry && selectedEquipmentItem && (
+          <EquippedItemDetailModal
+            item={selectedEquipmentItem}
+            inventoryItem={selectedEquipmentEntry}
+            onClose={() => setSelectedEquipmentInstanceId(null)}
+          />
+        )}
       </section>
 
       <section className="compact-section">
@@ -2547,6 +2567,60 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         <ResetChoiceModal game={game} target={resetModal} onClose={() => setResetModal(null)} />
       )}
     </section>
+  );
+}
+
+function EquippedItemDetailModal({
+  item,
+  inventoryItem,
+  onClose
+}: {
+  item: ItemDefinition;
+  inventoryItem: InventoryItem;
+  onClose: () => void;
+}) {
+  const stats = getEnhancedItemStats(item, inventoryItem);
+  const rarity = getItemRarity(item, inventoryItem);
+
+  return (
+    <div className="drawer-backdrop inventory-item-backdrop" role="presentation" onClick={onClose}>
+      <div className="inv-action-bar inventory-item-modal equipped-item-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <ItemVisual
+          item={item}
+          className="inventory-modal-visual"
+          enhancementLevel={inventoryItem.enhancementLevel}
+          rarity={inventoryItem.rarity}
+        />
+        <div className="inv-action-info">
+          <strong>{formatInventoryItemName(item, inventoryItem)}</strong>
+          <span>{item.description}</span>
+          <div className="inventory-item-meta">
+            <small>{EQUIPMENT_LABEL[item.slot ?? "weapon"]}</small>
+            {rarity && <div className={`item-rarity ${rarity}`}>{RARITY_LABELS[rarity]}</div>}
+            <small>Nível mínimo: {item.minLevel}</small>
+            {(inventoryItem.enhancementLevel ?? 0) > 0 && <small>Melhoria: +{inventoryItem.enhancementLevel ?? 0}</small>}
+          </div>
+          <div className="market-modal-stats">
+            <h4>Atributos</h4>
+            <div className="stat-list">
+              {stats.strength !== undefined && <div><span>Força</span> <strong>+{stats.strength}</strong></div>}
+              {stats.constitution !== undefined && <div><span>Constituição</span> <strong>+{stats.constitution}</strong></div>}
+              {stats.agility !== undefined && <div><span>Agilidade</span> <strong>+{stats.agility}</strong></div>}
+              {stats.defense !== undefined && <div><span>Defesa</span> <strong>+{stats.defense}</strong></div>}
+            </div>
+          </div>
+        </div>
+        <div className="inv-action-buttons">
+          <span className="equipped-label">Equipado</span>
+          <button className="ghost-button" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -3708,6 +3782,12 @@ function getClanCrestLabel(icon: string) {
   return getClanCrestDefinition(icon).label;
 }
 
+const CLAN_CATEGORY_LABELS: Record<ClanBenefitCategory, string> = {
+  combat: "Combate",
+  defense: "Defesa",
+  prosperity: "Prosperidade"
+};
+
 function ClanPanel({ game }: { game: GameState }) {
   const [activeTab, setActiveTab] = useState<"benefits" | "members" | "admin">("benefits");
   const [name, setName] = useState("");
@@ -3717,7 +3797,12 @@ function ClanPanel({ game }: { game: GameState }) {
   const [editCrestIcon, setEditCrestIcon] = useState<ClanCrestId>(normalizeClanCrestId());
   const [gold, setGold] = useState(0);
   const [diamonds, setDiamonds] = useState(0);
+  const [now, setNow] = useState(Date.now());
+  const [selectedClanId, setSelectedClanId] = useState<string | null>(null);
   const clan = game.clan;
+  const clanJoinCooldownRemaining = Math.max(0, (game.character.clanJoinCooldownUntil ?? 0) - now);
+  const clanJoinBlocked = clanJoinCooldownRemaining > 0;
+  const selectedClan = selectedClanId ? game.clanDirectory.find((entry) => entry.id === selectedClanId) ?? null : null;
 
   const createClan = (event: FormEvent) => {
     event.preventDefault();
@@ -3751,10 +3836,15 @@ function ClanPanel({ game }: { game: GameState }) {
     }
   }, [activeTab, leader]);
 
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
   if (!clan) {
     const levelReq = 15;
     const diamondCost = 10;
-    const canCreateClan = game.character.level >= levelReq && game.character.diamonds >= diamondCost && name.trim().length >= 3;
+    const canCreateClan = game.character.level >= levelReq && game.character.diamonds >= diamondCost && name.trim().length >= 3 && !clanJoinBlocked;
     const levelOk = game.character.level >= levelReq;
     const diamondsOk = game.character.diamonds >= diamondCost;
 
@@ -3764,9 +3854,9 @@ function ClanPanel({ game }: { game: GameState }) {
         <div className="clan-create-section">
           <button
             className="primary-button clan-create-button"
-            disabled={!levelOk || !diamondsOk}
+            disabled={!levelOk || !diamondsOk || clanJoinBlocked}
             onClick={() => setShowCreateForm(!showCreateForm)}
-            title={!levelOk || !diamondsOk ? `Requer nível ${levelReq} e ${diamondCost} diamantes` : ""}
+            title={clanJoinBlocked ? `Disponível em ${formatDuration(clanJoinCooldownRemaining)}` : !levelOk || !diamondsOk ? `Requer nível ${levelReq} e ${diamondCost} diamantes` : ""}
           >
             <ChevronRight size={16} style={{ transform: showCreateForm ? "rotate(90deg)" : "none", transition: "transform 200ms" }} />
             Criar novo clã
@@ -3776,8 +3866,13 @@ function ClanPanel({ game }: { game: GameState }) {
               ⚠️ Requer nível {levelReq} {!levelOk && `(atual: ${game.character.level})`} e {diamondCost} <Gem size={12} style={{ color: "var(--cyan)" }} /> {!diamondsOk && `(atual: ${game.character.diamonds})`}
             </p>
           ) : null}
+          {clanJoinBlocked && (
+            <p className="market-form-hint requirement-hint">
+              Você poderá entrar ou criar outro clã em {formatDuration(clanJoinCooldownRemaining)}.
+            </p>
+          )}
         </div>
-        {showCreateForm && (levelOk && diamondsOk) && (
+        {showCreateForm && (levelOk && diamondsOk && !clanJoinBlocked) && (
           <form className="market-form clan-create-form" onSubmit={createClan}>
             <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome do clã" maxLength={28} autoFocus />
             <div className="crest-picker" aria-label="Brasão do clã">
@@ -3811,13 +3906,17 @@ function ClanPanel({ game }: { game: GameState }) {
                   <span>Líder: {entry.leaderName} - Nv {entry.level}</span>
                 </div>
                 <b>{entry.memberCount}/{entry.memberCapacity}</b>
-                <button className="ghost-button" onClick={() => socket.emit("clan:join", { clanId: entry.id })}>
+                <button className="ghost-button" type="button" onClick={() => setSelectedClanId(entry.id)}>
+                  <Info size={14} /> Ver
+                </button>
+                <button className="ghost-button" disabled={clanJoinBlocked} onClick={() => socket.emit("clan:join", { clanId: entry.id })}>
                   Entrar
                 </button>
               </article>
             ))}
           </div>
         </section>
+        {selectedClan && <ClanInfoModal clan={selectedClan} onClose={() => setSelectedClanId(null)} />}
       </section>
     );
   }
@@ -3982,6 +4081,51 @@ function ClanPanel({ game }: { game: GameState }) {
         </>
       )}
     </section>
+  );
+}
+
+function ClanInfoModal({ clan, onClose }: { clan: ClanSummary; onClose: () => void }) {
+  const categoryLevels = clan.benefitCategoryLevels ?? { combat: 0, defense: 0, prosperity: 0 };
+  const members = clan.members ?? [];
+
+  return (
+    <div className="drawer-backdrop clan-info-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal clan-info-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <header className="clan-info-heading">
+          <span className="clan-info-crest">{getClanCrestIcon(clan.icon, 74)}</span>
+          <div>
+            <h2>{clan.name}</h2>
+            <small>Nível {clan.level} • {clan.memberCount}/{clan.memberCapacity} membros</small>
+            <small>Líder: <PlayerName playerId={clan.leaderPlayerId} name={clan.leaderName} /></small>
+          </div>
+        </header>
+        <div className="clan-info-category-grid">
+          {(Object.keys(CLAN_CATEGORY_LABELS) as ClanBenefitCategory[]).map((category) => (
+            <div key={category}>
+              <span>{CLAN_CATEGORY_LABELS[category]}</span>
+              <strong>{categoryLevels[category] ?? 0}</strong>
+            </div>
+          ))}
+        </div>
+        <section className="clan-info-members">
+          <h3>Membros</h3>
+          <div className="market-list">
+            {members.length === 0 && <p className="empty-state">Nenhum membro listado.</p>}
+            {members.map((member) => (
+              <article className="market-row clan-member-row" key={member.playerId}>
+                <div>
+                  <strong><PlayerName playerId={member.playerId} name={member.name} /></strong>
+                  <span>{member.isLeader ? "Líder" : "Membro"}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </section>
+    </div>
   );
 }
 

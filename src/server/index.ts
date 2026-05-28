@@ -98,7 +98,7 @@ import {
   takeAutoPveTurn
 } from "./domain/battle";
 import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, removeItem } from "./domain/inventory";
-import { deriveStats, grantExperience } from "./domain/stats";
+import { deriveStats, experienceForNextLevel, grantExperience } from "./domain/stats";
 import { store, type AuthAccount } from "./store";
 import { closePersistentStore, flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
 import { sendGameEmail } from "./mailer";
@@ -131,6 +131,8 @@ const CLAN_CREATE_MIN_LEVEL = 15;
 const CLAN_CREATE_DIAMOND_COST = 10;
 const CLAN_BENEFIT_RESET_DIAMOND_COST = 1000;
 const CLAN_BENEFIT_RESET_REFUND_RATE = 0.8;
+const CLAN_JOIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const DEATH_XP_PENALTY_PERCENT = 0.2;
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_AVATAR_ID = "recruta";
@@ -158,12 +160,9 @@ const ARENA_RANKED_WIN_POINTS = 5;
 const ARENA_RANKED_LOSS_POINTS = 2;
 const ARENA_RANKED_BLUE_COIN_COST = 1;
 const ARENA_RANKED_DAILY_BLUE_COINS = 10;
-const ARENA_RANKED_LOSS_GOLD_COIN = 1;
-const ARENA_RANKED_WIN_GOLD_COIN = 3;
-const ARENA_RANKED_LOSS_XP = 80;
-const ARENA_RANKED_WIN_XP = 240;
-const ARENA_RANKED_LOSS_GOLD = 100;
-const ARENA_RANKED_WIN_GOLD = 300;
+const ARENA_RANKED_LOSS_GOLD = 5000;
+const ARENA_RANKED_WIN_GOLD = 10000;
+const ARENA_RANKED_WIN_CREATION_STONES = 1;
 const ARENA_BLUE_COIN_ID = "material_blue_coin";
 const ARENA_GOLD_COIN_ID = "material_gold_coin";
 const ARENA_CHAMPION_AVATAR_ID = "campeao_arena";
@@ -391,7 +390,8 @@ function createCharacter(player: Player): Character {
     monarchAttempts: { dayKey: "", count: 0 },
     activeWork: null,
     workAptitudes: {},
-    workBonusClaims: {}
+    workBonusClaims: {},
+    clanJoinCooldownUntil: 0
   };
 
   addItem(character, "training_sword", ITEM_CATALOG, 1);
@@ -441,6 +441,7 @@ function currentCharacter(playerId: string) {
   normalizeActiveWorkDuration(character);
   character.workAptitudes ??= {};
   character.workBonusClaims ??= {};
+  character.clanJoinCooldownUntil ??= 0;
   ensureQuestProgress(character);
   return character;
 }
@@ -1648,12 +1649,38 @@ function getClanMemberCapacity(clan: { benefitAllocations: Record<string, number
   );
 }
 
+function getClanBenefitCategoryLevels(clan: { benefitAllocations: Record<string, number> }) {
+  const ranks = clan.benefitAllocations ?? {};
+  return {
+    combat: CLAN_BENEFITS.filter((benefit) => benefit.category === "combat").reduce((total, benefit) => total + (ranks[benefit.id] ?? 0), 0),
+    defense: CLAN_BENEFITS.filter((benefit) => benefit.category === "defense").reduce((total, benefit) => total + (ranks[benefit.id] ?? 0), 0),
+    prosperity: CLAN_BENEFITS.filter((benefit) => benefit.category === "prosperity").reduce((total, benefit) => total + (ranks[benefit.id] ?? 0), 0)
+  };
+}
+
 function normalizeClanIcon(icon?: string) {
   return normalizeClanCrestId(icon);
 }
 
 function normalizeClanName(name: string) {
   return name.trim().replace(/\s+/g, " ").slice(0, 28);
+}
+
+function formatServerDuration(ms: number) {
+  const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+  return `${minutes}m`;
+}
+
+function ensureClanJoinCooldownExpired(character: Character) {
+  const remaining = Math.max(0, (character.clanJoinCooldownUntil ?? 0) - Date.now());
+  if (remaining > 0) {
+    throw new Error(`Você precisa aguardar ${formatServerDuration(remaining)} para entrar em outro clã.`);
+  }
 }
 
 function buildClanMembers(clan: { leaderPlayerId: string; memberPlayerIds: string[] }) {
@@ -1673,9 +1700,45 @@ function getBattleMonsterId(battle: { participants: Array<{ kind: "player" | "mo
   return monster ? monster.id.replace("monster:", "") : null;
 }
 
+function applyDeathPenaltyForBattle(battle: NonNullable<GameState["activeBattle"]>) {
+  if (battle.status !== "ended") {
+    return;
+  }
+
+  battle.deathPenaltyAppliedPlayerIds ??= [];
+  const alreadyApplied = new Set(battle.deathPenaltyAppliedPlayerIds);
+
+  for (const participant of battle.participants) {
+    if (!participant.ownerPlayerId || participant.hp > 0 || alreadyApplied.has(participant.ownerPlayerId)) {
+      continue;
+    }
+
+    const character = store.characters.get(participant.ownerPlayerId);
+    if (!character) {
+      continue;
+    }
+
+    const penalty = Math.max(1, Math.floor(experienceForNextLevel(character.level) * DEATH_XP_PENALTY_PERCENT));
+    const lost = Math.min(character.experience, penalty);
+    character.experience = Math.max(0, character.experience - penalty);
+    battle.deathPenaltyAppliedPlayerIds.push(participant.ownerPlayerId);
+    if (lost > 0) {
+      battle.log.unshift({
+        id: randomUUID(),
+        createdAt: Date.now(),
+        text: `${character.name} perdeu ${lost} XP pela derrota.`
+      });
+    }
+  }
+}
+
 function applyBattleProgress(character: Character, playerId: string, battle: GameState["activeBattle"], wasActive: boolean) {
   if (!battle) {
     return;
+  }
+
+  if (wasActive && battle.status === "ended") {
+    applyDeathPenaltyForBattle(battle);
   }
 
   if ((battle.mode === "pve" || battle.mode === "dungeon") && wasActive && battle.status === "ended") {
@@ -1734,6 +1797,7 @@ function decorateClan<T extends { benefitAllocations: Record<string, number>; le
     icon: normalizeClanIcon(clan.icon),
     level: getClanLevel(clan),
     memberCapacity: getClanMemberCapacity(clan),
+    benefitCategoryLevels: getClanBenefitCategoryLevels(clan),
     members: buildClanMembers(clan)
   };
 }
@@ -1754,7 +1818,9 @@ function buildClanDirectory() {
         memberCapacity: clanView.memberCapacity,
         level: clanView.level,
         gold: clan.gold,
-        diamonds: clan.diamonds
+        diamonds: clan.diamonds,
+        members: clanView.members,
+        benefitCategoryLevels: clanView.benefitCategoryLevels
       };
     })
     .sort((a, b) => b.level - a.level || b.memberCount - a.memberCount || b.gold + b.diamonds * 100 - (a.gold + a.diamonds * 100));
@@ -1783,6 +1849,7 @@ function createClan(character: Character, name: string, icon?: string) {
   if (character.clanId) {
     throw new Error("Você já participa de um clã.");
   }
+  ensureClanJoinCooldownExpired(character);
   if (character.level < CLAN_CREATE_MIN_LEVEL) {
     throw new Error(`Você precisa estar no nível ${CLAN_CREATE_MIN_LEVEL} para criar um clã.`);
   }
@@ -1814,6 +1881,7 @@ function createClan(character: Character, name: string, icon?: string) {
   store.clans.set(clan.id, clan);
   character.diamonds -= CLAN_CREATE_DIAMOND_COST;
   character.clanId = clan.id;
+  character.clanJoinCooldownUntil = 0;
   syncClanBenefits(character);
 }
 
@@ -1888,6 +1956,7 @@ function joinClan(character: Character, clanId: string) {
   if (character.clanId) {
     throw new Error("Você já participa de um clã.");
   }
+  ensureClanJoinCooldownExpired(character);
   const clan = store.clans.get(clanId);
   if (!clan) {
     throw new Error("Clã não encontrado.");
@@ -1897,6 +1966,7 @@ function joinClan(character: Character, clanId: string) {
   }
   clan.memberPlayerIds.push(character.playerId);
   character.clanId = clan.id;
+  character.clanJoinCooldownUntil = 0;
   syncClanBenefits(character);
 }
 
@@ -1912,6 +1982,7 @@ function leaveClan(character: Character) {
 
   clan.memberPlayerIds = clan.memberPlayerIds.filter((playerId) => playerId !== character.playerId);
   character.clanId = null;
+  character.clanJoinCooldownUntil = Date.now() + CLAN_JOIN_COOLDOWN_MS;
   syncClanBenefits(character);
 
   if (clan.memberPlayerIds.length === 0) {
@@ -2088,12 +2159,9 @@ function recordArenaResult(battleId: string) {
     challenger.questProgress.dailyArenaBattles += 1;
     challenger.questProgress.arenaBattles += 1;
     if (challengerWon) {
-      grantPackageStack(challenger, ARENA_GOLD_COIN_ID, ARENA_RANKED_WIN_GOLD_COIN);
-      challenger.experience += ARENA_RANKED_WIN_XP;
+      grantPackageStack(challenger, ENHANCEMENT_ITEMS.creationStone, ARENA_RANKED_WIN_CREATION_STONES);
       challenger.gold += ARENA_RANKED_WIN_GOLD;
     } else {
-      grantPackageStack(challenger, ARENA_GOLD_COIN_ID, ARENA_RANKED_LOSS_GOLD_COIN);
-      challenger.experience += ARENA_RANKED_LOSS_XP;
       challenger.gold += ARENA_RANKED_LOSS_GOLD;
     }
     battle.log.unshift({
@@ -2102,6 +2170,13 @@ function recordArenaResult(battleId: string) {
       text: challengerWon
         ? `${challenger.name} ganhou ${ARENA_RANKED_WIN_POINTS} pontos ranqueados.`
         : `${challenger.name} perdeu ${ARENA_RANKED_LOSS_POINTS} pontos ranqueados.`
+    });
+    battle.log.unshift({
+      id: randomUUID(),
+      createdAt: Date.now(),
+      text: challengerWon
+        ? `${challenger.name} recebeu ${ARENA_RANKED_WIN_GOLD} ouro e Pedra de Criação.`
+        : `${challenger.name} recebeu ${ARENA_RANKED_LOSS_GOLD} ouro.`
     });
     store.arenaRecordedBattleIds.add(battleId);
     return;
@@ -2371,13 +2446,15 @@ function leaveArenaQueue(playerId: string) {
 
 function findRankedArenaOpponent(character: Character) {
   const currentPoints = character.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS;
-  return Array.from(store.characters.values())
+  const closest = Array.from(store.characters.values())
     .filter((candidate) => candidate.playerId !== character.playerId)
     .sort((left, right) => {
       const leftDiff = Math.abs((left.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS) - currentPoints);
       const rightDiff = Math.abs((right.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS) - currentPoints);
       return leftDiff - rightDiff || right.level - left.level || left.name.localeCompare(right.name);
-    })[0] ?? null;
+    })
+    .slice(0, 10);
+  return closest[Math.floor(Math.random() * closest.length)] ?? null;
 }
 
 function activePlayerIdsForBattle(battleId: string) {
@@ -3339,6 +3416,9 @@ io.on("connection", (socket: AuthedSocket) => {
         }
         if (payload.action === "usePotion") {
           recordPotionProgress(character, potionDefinition);
+        }
+        if (wasActive && battle.status === "ended") {
+          applyDeathPenaltyForBattle(battle);
         }
         syncBattleVitals(battle.id);
         broadcastWorldState();

@@ -3359,16 +3359,32 @@ button:disabled .game-icon {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel-soft);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
   transition: border-color 120ms ease;
 }
 
 .equip-slot.has-item {
   border-color: rgba(189, 147, 249, 0.4);
   background: rgba(189, 147, 249, 0.06);
+  cursor: pointer;
+}
+
+.equip-slot.has-item:hover,
+.equip-slot.has-item:focus-visible {
+  border-color: var(--theme-active-border);
+  background: rgba(124, 77, 255, 0.12);
+  outline: none;
+}
+
+.equip-slot:disabled {
+  cursor: default;
 }
 
 .equip-emoji {
@@ -6206,7 +6222,79 @@ button:disabled .game-icon {
 }
 
 .clan-directory-row {
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto auto auto;
+}
+
+.clan-info-backdrop {
+  z-index: 72;
+}
+
+.clan-info-modal {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.clan-info-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.clan-info-heading h2 {
+  margin: 0 0 4px;
+  font-family: var(--font-title);
+  color: var(--text);
+}
+
+.clan-info-heading small {
+  display: block;
+  color: var(--muted);
+}
+
+.clan-info-crest {
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(220, 203, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(11, 9, 18, 0.48);
+}
+
+.clan-info-category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.clan-info-category-grid div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(11, 9, 18, 0.42);
+}
+
+.clan-info-category-grid span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.clan-info-category-grid strong {
+  color: var(--lavender);
+  font-size: 1.1rem;
+}
+
+.clan-info-members {
+  display: grid;
+  gap: 8px;
+}
+
+.clan-info-members h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.94rem;
 }
 
 .clan-reset-panel,
@@ -8393,8 +8481,13 @@ button:disabled {
     justify-items: start;
   }
 
+  .clan-info-category-grid {
+    grid-template-columns: 1fr;
+  }
+
   .clan-create-form .primary-button,
-  .clan-reset-panel .ghost-button {
+  .clan-reset-panel .ghost-button,
+  .clan-directory-row .ghost-button {
     width: 100%;
   }
 

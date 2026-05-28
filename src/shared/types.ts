@@ -106,6 +106,7 @@ export interface Character {
   workAptitudes?: Record<string, WorkAptitudeState>;
   workBonusClaims?: Record<string, number>;
   lastDailyBlueCoinGrantKey?: string;
+  clanJoinCooldownUntil?: number;
 }
 
 export interface QuestProgress {
@@ -435,6 +436,7 @@ export interface BattleState {
   updatedAt: number;
   monarch?: MonarchBattleProgress;
   arena?: ArenaBattleState;
+  deathPenaltyAppliedPlayerIds?: string[];
 }
 
 export interface ChatMessage {
@@ -581,6 +583,8 @@ export interface ClanSummary {
   level: number;
   gold: number;
   diamonds: number;
+  members?: ClanMemberView[];
+  benefitCategoryLevels?: Record<ClanBenefitCategory, number>;
 }
 
 export interface GameShopPackage {

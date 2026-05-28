@@ -262,12 +262,14 @@ async function ensureMysqlSchema() {
       work_aptitudes JSON NOT NULL,
       work_bonus_claims JSON NOT NULL,
       last_daily_blue_coin_grant_key VARCHAR(32) NULL,
+      clan_join_cooldown_until BIGINT NULL,
       UNIQUE KEY uq_characters_id (id),
       KEY idx_characters_clan (clan_id),
       CONSTRAINT fk_characters_player FOREIGN KEY (player_id) REFERENCES ${table("players")}(id) ON DELETE CASCADE,
       CONSTRAINT fk_characters_clan FOREIGN KEY (clan_id) REFERENCES ${table("clans")}(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_characters`, "clan_join_cooldown_until", "BIGINT NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("character_inventory")} (
@@ -446,6 +448,17 @@ async function mysqlTableExists(connection: PoolConnection, tableName: string) {
   return Number(rows[0]?.count ?? 0) > 0;
 }
 
+async function ensureMysqlColumn(pool: Pool, tableName: string, columnName: string, definition: string) {
+  const [rows] = await pool.execute<Array<RowDataPacket & { count: number }>>(
+    "SELECT COUNT(*) AS count FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?",
+    [tableName, columnName]
+  );
+  if (Number(rows[0]?.count ?? 0) > 0) {
+    return;
+  }
+  await pool.execute(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${columnName}\` ${definition}`);
+}
+
 async function loadLegacyMysqlSnapshot(target: GameStore, connection: PoolConnection) {
   if (!(await mysqlTableExists(connection, LEGACY_MYSQL_STATE_TABLE))) {
     return false;
@@ -613,6 +626,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     work_aptitudes: unknown;
     work_bonus_claims: unknown;
     last_daily_blue_coin_grant_key: string | null;
+    clan_join_cooldown_until: number | null;
   }>>(`SELECT * FROM ${table("characters")}`);
   const characters = new Map<string, Character>();
   for (const row of characterRows) {
@@ -675,7 +689,8 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
       activeWork: parseJson(row.active_work, null),
       workAptitudes: parseJson(row.work_aptitudes, {}),
       workBonusClaims: parseJson(row.work_bonus_claims, {}),
-      lastDailyBlueCoinGrantKey: row.last_daily_blue_coin_grant_key ?? undefined
+      lastDailyBlueCoinGrantKey: row.last_daily_blue_coin_grant_key ?? undefined,
+      clanJoinCooldownUntil: maybeNumber(row.clan_join_cooldown_until) ?? 0
     });
   }
 
@@ -967,8 +982,8 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           talent_allocations, clan_id, last_regen_at, clan_benefit_allocations, arena_wins, arena_losses,
           arena_ranked_points, dungeon_clears, market_history, pve_auto_until, royal_seal_until, avatar_id,
           unlocked_avatar_ids, referral_rewards_claimed_for, monarch_attempts, active_work, work_aptitudes,
-          work_bonus_claims, last_daily_blue_coin_grant_key
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          work_bonus_claims, last_daily_blue_coin_grant_key, clan_join_cooldown_until
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           character.playerId,
           character.id,
@@ -1005,7 +1020,8 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           json(character.activeWork ?? null),
           json(character.workAptitudes ?? {}),
           json(character.workBonusClaims ?? {}),
-          character.lastDailyBlueCoinGrantKey ?? null
+          character.lastDailyBlueCoinGrantKey ?? null,
+          character.clanJoinCooldownUntil ?? null
         ]
       );
       for (const item of character.inventory ?? []) {
