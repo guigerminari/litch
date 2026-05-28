@@ -78,7 +78,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "price": 500,
     "imageUrl": "/assets/items/misc/train-ticket.png",
     "stats": {},
-    "description": "Usado para viajar entre cidades do mesmo país."
+    "description": "Permite viajar de trem entre cidades do mesmo país."
   },
   "ticket_ship": {
     "id": "ticket_ship",
@@ -88,7 +88,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "imageUrl": "/assets/items/misc/ship-ticket.png",
     "price": 5000,
     "stats": {},
-    "description": "Usado para viajar entre países. A chegada sempre acontece na cidade porto."
+    "description": "Permite cruzar mares e chegar aos portos de outros países."
   },
   "armor_leather": {
     "id": "armor_leather",
@@ -102,7 +102,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 11,
       "constitution": 1
     },
-    "description": "Equipamento de armadura de nível 1, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção leve que aumenta defesa e constituição."
   },
   "armor_steel": {
     "id": "armor_steel",
@@ -116,7 +116,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 38,
       "constitution": 1
     },
-    "description": "Equipamento de armadura de nível 10, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção resistente que aumenta defesa e constituição."
   },
   "armor_mystic": {
     "id": "armor_mystic",
@@ -130,7 +130,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 68,
       "constitution": 3
     },
-    "description": "Equipamento de armadura de nível 20, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção arcana que aumenta defesa e constituição."
   },
   "armor_kharlee": {
     "id": "armor_kharlee",
@@ -144,7 +144,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 98,
       "constitution": 4
     },
-    "description": "Equipamento de armadura de nível 30, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção refinada que aumenta defesa e constituição."
   },
   "armor_cursed": {
     "id": "armor_cursed",
@@ -158,7 +158,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 128,
       "constitution": 6
     },
-    "description": "Equipamento de armadura de nível 40, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção maldita que aumenta defesa e constituição."
   },
   "armor_justice": {
     "id": "armor_justice",
@@ -172,7 +172,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 158,
       "constitution": 7
     },
-    "description": "Equipamento de armadura de nível 50, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção justa que aumenta defesa e constituição."
   },
   "armor_obscure": {
     "id": "armor_obscure",
@@ -186,7 +186,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 188,
       "constitution": 9
     },
-    "description": "Equipamento de armadura de nível 60, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção sombria que aumenta defesa e constituição."
   },
   "armor_death": {
     "id": "armor_death",
@@ -200,7 +200,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 218,
       "constitution": 10
     },
-    "description": "Equipamento de armadura de nível 70, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção fúnebre que aumenta defesa e constituição."
   },
   "armor_dragon": {
     "id": "armor_dragon",
@@ -214,7 +214,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 248,
       "constitution": 11
     },
-    "description": "Equipamento de armadura de nível 80, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção dracônica que aumenta defesa e constituição."
   },
   "armor_dhron": {
     "id": "armor_dhron",
@@ -228,7 +228,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 278,
       "constitution": 13
     },
-    "description": "Equipamento de armadura de nível 90, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção ancestral que aumenta defesa e constituição."
   },
   "armor_erins": {
     "id": "armor_erins",
@@ -242,7 +242,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 308,
       "constitution": 14
     },
-    "description": "Equipamento de armadura de nível 100, distribuído conforme a progressão dos armeiros."
+    "description": "Proteção lendária que aumenta defesa e constituição."
   },
   "material_blue_coin": {
     "id": "material_blue_coin",
@@ -253,7 +253,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "price": 15,
     "goldCoinPrice": 2,
     "stats": {},
-    "description": "Moeda para participar da arena."
+    "description": "Entrada azul para desafios e recompensas da arena."
   },
   "material_gold_coin": {
     "id": "material_gold_coin",
@@ -263,7 +263,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Moeda recompensa da arena."
+    "description": "Moeda conquistada na arena, trocada por recompensas especiais."
   },
   "material_bone": {
     "id": "material_bone",
@@ -273,7 +273,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Osso resistente para receitas rústicas e aprimoramentos básicos."
   },
   "material_celena": {
     "id": "material_celena",
@@ -283,7 +283,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 60,
     "price": 620,
     "stats": {},
-    "description": "Material de aprimoramento de terceiro grau. Requer Eran e Pedra Antiga em sua cadeia."
+    "description": "Catalisador superior para aprimorar equipamentos de alto nível."
   },
   "material_chimera_jewell": {
     "id": "material_chimera_jewell",
@@ -293,7 +293,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 15,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Joia híbrida usada em criações instáveis e poderosas."
   },
   "material_dark_magic_rune": {
     "id": "material_dark_magic_rune",
@@ -303,7 +303,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 80,
     "price": 460,
     "stats": {},
-    "description": "Runa sombria usada em criações amaldiçoadas."
+    "description": "Runa sombria para forjas amaldiçoadas e rituais obscuros."
   },
   "material_dark_residue": {
     "id": "material_dark_residue",
@@ -323,7 +323,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 22,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Joia precisa para criações focadas em agilidade."
   },
   "material_dragon_essence": {
     "id": "material_dragon_essence",
@@ -333,7 +333,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 22,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Essência dracônica para criações raras e poderosas."
   },
   "material_dragon_jewell": {
     "id": "material_dragon_jewell",
@@ -343,7 +343,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Joia dracônica usada em equipamentos de grande poder."
   },
   "material_dragon_nail": {
     "id": "material_dragon_nail",
@@ -353,7 +353,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Garra dracônica para armas afiadas e reforços resistentes."
   },
   "material_dragons_tooth": {
     "id": "material_dragons_tooth",
@@ -363,7 +363,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Dente dracônico para forjas agressivas e materiais raros."
   },
   "material_energy_jewell": {
     "id": "material_energy_jewell",
@@ -373,7 +373,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 29,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Joia energética usada em poções e artefatos de vigor."
   },
   "material_eran_fragment": {
     "id": "material_eran_fragment",
@@ -383,7 +383,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 25,
     "price": 80,
     "stats": {},
-    "description": "Fragmento usado para refinar Eran."
+    "description": "Fragmento usado para refinar a Pedra de Eran."
   },
   "material_green_coin": {
     "id": "material_green_coin",
@@ -393,7 +393,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 36,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Moeda verde usada em trocas especiais de criação."
   },
   "material_gromin_mycelium": {
     "id": "material_gromin_mycelium",
@@ -403,7 +403,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 36,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Micélio raro para alquimia, poções e receitas naturais."
   },
   "material_herb": {
     "id": "material_herb",
@@ -413,7 +413,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 36,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Erva simples para poções leves e receitas básicas."
   },
   "material_laede_fragment": {
     "id": "material_laede_fragment",
@@ -423,7 +423,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 43,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Fragmento místico usado em receitas arcanas intermediárias."
   },
   "material_magic_essence": {
     "id": "material_magic_essence",
@@ -433,7 +433,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 25,
     "price": 110,
     "stats": {},
-    "description": "Essência usada em alquimia e forjas arcanas."
+    "description": "Essência arcana para alquimia e forjas mágicas."
   },
   "material_midran": {
     "id": "material_midran",
@@ -443,7 +443,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 80,
     "price": 1250,
     "stats": {},
-    "description": "Material de aprimoramento de quarto grau. Requer Celena, Eran e Pedra Antiga em sua cadeia."
+    "description": "Material supremo para aprimorar equipamentos lendários."
   },
   "material_mycelium_fungus": {
     "id": "material_mycelium_fungus",
@@ -453,7 +453,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 43,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Fungo micelial para misturas alquímicas e receitas orgânicas."
   },
   "material_mysterious_jewell": {
     "id": "material_mysterious_jewell",
@@ -463,7 +463,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 55,
     "price": 260,
     "stats": {},
-    "description": "Joia rara usada em refinamentos superiores."
+    "description": "Joia enigmática para refinamentos superiores e amuletos raros."
   },
   "material_old_stone": {
     "id": "material_old_stone",
@@ -473,7 +473,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 20,
     "price": 140,
     "stats": {},
-    "description": "Material de aprimoramento de primeiro grau. Base obrigatória das cadeias superiores."
+    "description": "Base mineral para a primeira etapa de aprimoramentos."
   },
   "material_purple_coin": {
     "id": "material_purple_coin",
@@ -483,7 +483,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 6,
     "price": 50,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Moeda roxa usada em trocas raras e receitas especiais."
   },
   "material_spectre_fragment": {
     "id": "material_spectre_fragment",
@@ -493,7 +493,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 6,
     "price": 50,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Fragmento etéreo para criações sombrias e encantamentos leves."
   },
   "material_spectre_jewell": {
     "id": "material_spectre_jewell",
@@ -503,7 +503,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 7,
     "price": 57,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Joia espectral usada em equipamentos e amuletos sombrios."
   },
   "material_stone_fragment": {
     "id": "material_stone_fragment",
@@ -523,7 +523,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 7,
     "price": 57,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Joia robusta para criações focadas em força."
   },
   "material_udania": {
     "id": "material_udania",
@@ -533,7 +533,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 7,
     "price": 57,
     "stats": {},
-    "description": "Material de criação e aprimoramento."
+    "description": "Ingrediente raro para receitas exóticas e aprimoramentos arcanos."
   },
   "misc_doemia": {
     "id": "misc_doemia",
@@ -543,7 +543,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 20,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Ingrediente incomum para receitas, chaves e eventos especiais."
   },
   "misc_dragon_stone": {
     "id": "misc_dragon_stone",
@@ -553,7 +553,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 20,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Pedra dracônica para criações raras e forjas poderosas."
   },
   "misc_dungeon_key": {
     "id": "misc_dungeon_key",
@@ -563,7 +563,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 20,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Abre masmorras simples e caminhos de aventura."
   },
   "scroll_enhanced_parchment": {
     "id": "scroll_enhanced_parchment",
@@ -573,7 +573,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 20,
     "stats": {},
-    "description": "Pergaminho usado em receitas e efeitos especiais."
+    "description": "Pergaminho refinado para receitas e efeitos especiais."
   },
   "misc_eran": {
     "id": "misc_eran",
@@ -583,7 +583,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 40,
     "price": 300,
     "stats": {},
-    "description": "Material de aprimoramento de segundo grau. Requer Pedra Antiga em sua cadeia."
+    "description": "Pedra superior usada na segunda etapa de aprimoramentos."
   },
   "misc_erins_chest_1": {
     "id": "misc_erins_chest_1",
@@ -593,7 +593,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 28,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Baú simples com recompensas ligadas a Erins."
   },
   "misc_erins_chest_2": {
     "id": "misc_erins_chest_2",
@@ -603,7 +603,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 28,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Baú reforçado com recompensas ligadas a Erins."
   },
   "misc_erins_chest_3": {
     "id": "misc_erins_chest_3",
@@ -613,7 +613,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 28,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Baú valioso com recompensas ligadas a Erins."
   },
   "misc_erins_chest": {
     "id": "misc_erins_chest",
@@ -623,7 +623,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 28,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Baú de Erins com recompensas variadas."
   },
   "scroll_fraddo_parchment": {
     "id": "scroll_fraddo_parchment",
@@ -633,7 +633,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 2,
     "price": 28,
     "stats": {},
-    "description": "Pergaminho usado em receitas e efeitos especiais."
+    "description": "Pergaminho antigo para receitas e efeitos especiais."
   },
   "misc_herb_bitter": {
     "id": "misc_herb_bitter",
@@ -643,7 +643,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 36,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Erva amarga usada em poções fortes e misturas secas."
   },
   "misc_herb_moss": {
     "id": "misc_herb_moss",
@@ -653,7 +653,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 36,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Erva musgosa usada em poções naturais e receitas úmidas."
   },
   "misc_herb_rustic": {
     "id": "misc_herb_rustic",
@@ -663,7 +663,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 36,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Erva rústica para poções simples e receitas iniciais."
   },
   "misc_high_dungeon_key": {
     "id": "misc_high_dungeon_key",
@@ -673,7 +673,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 36,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Abre masmorras avançadas e desafios mais perigosos."
   },
   "misc_hozir_box": {
     "id": "misc_hozir_box",
@@ -683,7 +683,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 3,
     "price": 36,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Caixa misteriosa com componentes raros de Hozir."
   },
   "misc_kaede_stone": {
     "id": "misc_kaede_stone",
@@ -693,7 +693,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 44,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Pedra de Kaede usada em receitas místicas."
   },
   "misc_laede": {
     "id": "misc_laede",
@@ -703,7 +703,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 44,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Reagente de Laede para criações arcanas intermediárias."
   },
   "scroll_magic_lands_parchment": {
     "id": "scroll_magic_lands_parchment",
@@ -713,7 +713,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 44,
     "stats": {},
-    "description": "Pergaminho usado em receitas e efeitos especiais."
+    "description": "Pergaminho das terras mágicas para receitas arcanas."
   },
   "misc_maginia": {
     "id": "misc_maginia",
@@ -723,7 +723,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 44,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Reagente mágico usado em receitas e eventos especiais."
   },
   "misc_misc_phial": {
     "id": "misc_misc_phial",
@@ -733,7 +733,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 4,
     "price": 44,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Frasco neutro para preparar poções e misturas."
   },
   "misc_ressu": {
     "id": "misc_ressu",
@@ -743,7 +743,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 52,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Ingrediente exótico usado em receitas raras."
   },
   "misc_seed_bitter": {
     "id": "misc_seed_bitter",
@@ -753,7 +753,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 52,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Semente amarga para cultivar ervas de poções fortes."
   },
   "misc_seed_moss": {
     "id": "misc_seed_moss",
@@ -763,7 +763,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 52,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Semente de musgo para receitas naturais e alquimia."
   },
   "misc_seed_mycelium_fungus": {
     "id": "misc_seed_mycelium_fungus",
@@ -773,7 +773,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 52,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Semente fúngica para cultivar ingredientes miceliais."
   },
   "misc_seed_rustic": {
     "id": "misc_seed_rustic",
@@ -783,7 +783,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 5,
     "price": 52,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Semente rústica para cultivo de ervas básicas."
   },
   "misc_serlen": {
     "id": "misc_serlen",
@@ -793,7 +793,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 6,
     "price": 60,
     "stats": {},
-    "description": "Item variado usado em receitas, chaves e eventos."
+    "description": "Reagente de Serlen usado em receitas especiais."
   },
   "misc_stone_craft": {
     "id": "misc_stone_craft",
@@ -803,7 +803,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 95,
     "stats": {},
-    "description": "Pedra da Criação usada em toda receita. A quantidade necessária escala conforme o nível do item criado."
+    "description": "Pedra essencial consumida em todas as criações."
   },
   "energy_potion": {
     "id": "energy_potion",
@@ -815,7 +815,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energyPercent": 0.3
     },
-    "description": "Recupera 30% da energia máxima. Poção percentual rara."
+    "description": "Restaura 30% da energia máxima em jornadas longas."
   },
   "energy_potion_light": {
     "id": "energy_potion_light",
@@ -827,7 +827,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energy": 8
     },
-    "description": "Recupera 8 de energia. Grau leve."
+    "description": "Recupera 8 de energia para continuar caçando."
   },
   "energy_potion_medium": {
     "id": "energy_potion_medium",
@@ -839,7 +839,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energy": 60
     },
-    "description": "Recupera 60 de energia. Grau médio."
+    "description": "Recupera 60 de energia para continuar caçando."
   },
   "energy_potion_high": {
     "id": "energy_potion_high",
@@ -852,7 +852,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energy": 420
     },
-    "description": "Recupera 420 de energia. Grau alto."
+    "description": "Recupera 420 de energia para continuar caçando."
   },
   "health_potion": {
     "id": "health_potion",
@@ -864,7 +864,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "healPercent": 0.3
     },
-    "description": "Recupera 30% da vida máxima. Poção percentual rara."
+    "description": "Restaura 30% da vida máxima em emergências."
   },
   "health_potion_light": {
     "id": "health_potion_light",
@@ -876,7 +876,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "heal": 35
     },
-    "description": "Recupera 35 de vida. Grau leve."
+    "description": "Recupera 35 de vida durante combates."
   },
   "health_potion_medium": {
     "id": "health_potion_medium",
@@ -888,7 +888,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "heal": 360
     },
-    "description": "Recupera 360 de vida. Grau médio."
+    "description": "Recupera 360 de vida durante combates."
   },
   "health_potion_high": {
     "id": "health_potion_high",
@@ -901,7 +901,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "heal": 3200
     },
-    "description": "Recupera 3200 de vida. Grau alto."
+    "description": "Recupera 3200 de vida durante combates."
   },
   "potion_mana": {
     "id": "potion_mana",
@@ -913,7 +913,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energyPercent": 0.2
     },
-    "description": "Recupera 20% da energia máxima. Poção arcana incomum."
+    "description": "Restaura 20% da energia máxima em jornadas longas."
   },
   "weapon_assassin_sword": {
     "id": "weapon_assassin_sword",
@@ -927,7 +927,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 9,
       "agility": 1
     },
-    "description": "Arma de nível 1, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma furtiva que aumenta força e agilidade."
   },
   "weapon_chaos_axe": {
     "id": "weapon_chaos_axe",
@@ -940,7 +940,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 22
     },
-    "description": "Arma de nível 5, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma caótica que aumenta força."
   },
   "weapon_claymore_3": {
     "id": "weapon_claymore_3",
@@ -953,7 +953,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 37
     },
-    "description": "Arma de nível 10, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma pesada que aumenta força."
   },
   "weapon_claymore": {
     "id": "weapon_claymore",
@@ -966,7 +966,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 53
     },
-    "description": "Arma de nível 15, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma pesada que aumenta força."
   },
   "weapon_double_sword_2": {
     "id": "weapon_double_sword_2",
@@ -980,7 +980,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 68,
       "agility": 3
     },
-    "description": "Arma de nível 20, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma ágil que aumenta força e agilidade."
   },
   "weapon_double_sword_new": {
     "id": "weapon_double_sword_new",
@@ -994,7 +994,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 84,
       "agility": 4
     },
-    "description": "Arma de nível 25, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma ágil que aumenta força e agilidade."
   },
   "weapon_executioner_axe_6": {
     "id": "weapon_executioner_axe_6",
@@ -1007,7 +1007,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 99
     },
-    "description": "Arma de nível 30, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma implacável que aumenta força."
   },
   "weapon_executioner_axe": {
     "id": "weapon_executioner_axe",
@@ -1020,7 +1020,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 115
     },
-    "description": "Arma de nível 35, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma implacável que aumenta força."
   },
   "weapon_extreme_axe": {
     "id": "weapon_extreme_axe",
@@ -1033,7 +1033,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 130
     },
-    "description": "Arma de nível 40, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma brutal que aumenta força."
   },
   "weapon_greatsword_2": {
     "id": "weapon_greatsword_2",
@@ -1046,7 +1046,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 146
     },
-    "description": "Arma de nível 45, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma imponente que aumenta força."
   },
   "weapon_greatsword_4": {
     "id": "weapon_greatsword_4",
@@ -1059,7 +1059,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 161
     },
-    "description": "Arma de nível 50, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma imponente que aumenta força."
   },
   "weapon_insane_axe": {
     "id": "weapon_insane_axe",
@@ -1072,7 +1072,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 177
     },
-    "description": "Arma de nível 55, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma feroz que aumenta força."
   },
   "weapon_long_sword": {
     "id": "weapon_long_sword",
@@ -1085,7 +1085,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 192
     },
-    "description": "Arma de nível 60, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma equilibrada que aumenta força."
   },
   "weapon_obs_axe": {
     "id": "weapon_obs_axe",
@@ -1098,7 +1098,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 208
     },
-    "description": "Arma de nível 65, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma sombria que aumenta força."
   },
   "weapon_orcish_dagger": {
     "id": "weapon_orcish_dagger",
@@ -1112,7 +1112,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 223,
       "agility": 13
     },
-    "description": "Arma de nível 70, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma selvagem que aumenta força e agilidade."
   },
   "weapon_real_axe": {
     "id": "weapon_real_axe",
@@ -1125,7 +1125,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 254
     },
-    "description": "Arma de nível 80, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma nobre que aumenta força."
   },
   "weapon_triple_sword_2": {
     "id": "weapon_triple_sword_2",
@@ -1139,7 +1139,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 270,
       "agility": 15
     },
-    "description": "Arma de nível 85, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma técnica que aumenta força e agilidade."
   },
   "weapon_triple_sword_3": {
     "id": "weapon_triple_sword_3",
@@ -1153,7 +1153,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 285,
       "agility": 16
     },
-    "description": "Arma de nível 90, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma técnica que aumenta força e agilidade."
   },
   "weapon_vorgonax": {
     "id": "weapon_vorgonax",
@@ -1166,7 +1166,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 316
     },
-    "description": "Arma de nível 100, ajustada para a progressão de lojas, drops e forjas."
+    "description": "Arma lendária que aumenta força."
   },
   "training_sword": {
     "id": "training_sword",
@@ -1179,7 +1179,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 3
     },
-    "description": "Arma inicial simples para recrutas de Eldoria."
+    "description": "Arma simples que aumenta força."
   },
   "iron_sword": {
     "id": "iron_sword",
@@ -1192,7 +1192,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "strength": 18
     },
-    "description": "Arma básica de ferro usada como base para criações iniciais."
+    "description": "Arma confiável que aumenta força."
   },
   "leather_armor": {
     "id": "leather_armor",
@@ -1206,7 +1206,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 5,
       "constitution": 1
     },
-    "description": "Armadura inicial simples para recrutas de Eldoria."
+    "description": "Proteção leve que aumenta defesa e constituição."
   },
   "iron_armor": {
     "id": "iron_armor",
@@ -1220,7 +1220,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 22,
       "constitution": 1
     },
-    "description": "Armadura básica de ferro usada como base para criações iniciais."
+    "description": "Proteção resistente que aumenta defesa e constituição."
   },
   "novice_amulet": {
     "id": "novice_amulet",
@@ -1234,7 +1234,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "agility": 2,
       "constitution": 1
     },
-    "description": "Amuleto inicial usado também como base de criações superiores."
+    "description": "Amuleto inicial que aumenta agilidade e constituição."
   },
   "hunter_charm": {
     "id": "hunter_charm",
@@ -1249,7 +1249,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "constitution": 3,
       "strength": 3
     },
-    "description": "Talismã intermediário usado também como base de criações superiores."
+    "description": "Amuleto selvagem que aumenta força, agilidade e constituição."
   },
   "ember_blade": {
     "id": "ember_blade",
@@ -1263,7 +1263,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 82,
       "agility": 8
     },
-    "description": "Arma forjada do kit de nível 20 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Arma flamejante que aumenta força e agilidade."
   },
   "guardian_mail": {
     "id": "guardian_mail",
@@ -1277,7 +1277,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 78,
       "constitution": 10
     },
-    "description": "Armadura forjada do kit de nível 20 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Proteção guardiã que aumenta defesa e constituição."
   },
   "moon_amulet": {
     "id": "moon_amulet",
@@ -1291,7 +1291,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "agility": 12,
       "constitution": 6
     },
-    "description": "Amuleto avançado usado na forja do Cristal Branco."
+    "description": "Amuleto lunar que aumenta agilidade e constituição."
   },
   "acid_amulet": {
     "id": "acid_amulet",
@@ -1305,7 +1305,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 10,
       "defense": 18
     },
-    "description": "Amuleto avançado usado na forja do Cristal Branco."
+    "description": "Amuleto corrosivo que aumenta força e defesa."
   },
   "crystal_white_amulet": {
     "id": "crystal_white_amulet",
@@ -1319,7 +1319,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "agility": 35,
       "constitution": 10
     },
-    "description": "Amuleto forjado. Não é vendido por armeiros e possui drop raríssimo."
+    "description": "Amuleto cristalino que aumenta agilidade e constituição."
   },
   "celtic_yellow_amulet": {
     "id": "celtic_yellow_amulet",
@@ -1333,7 +1333,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 55,
       "constitution": 24
     },
-    "description": "Amuleto raro vendido em regiões avançadas e usado em forjas superiores."
+    "description": "Amuleto celta que aumenta força e constituição."
   },
   "celtic_magenta_amulet": {
     "id": "celtic_magenta_amulet",
@@ -1347,7 +1347,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 80,
       "constitution": 42
     },
-    "description": "Amuleto forjado em Valfria. Não é vendido por armeiros e possui drop raríssimo."
+    "description": "Amuleto sagrado que aumenta defesa e constituição."
   },
   "celtic_orange_amulet": {
     "id": "celtic_orange_amulet",
@@ -1361,7 +1361,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "agility": 90,
       "strength": 68
     },
-    "description": "Amuleto raro de alto nível, usado como componente para o Amuleto Ciano."
+    "description": "Amuleto radiante que aumenta força e agilidade."
   },
   "celtic_cyan_amulet": {
     "id": "celtic_cyan_amulet",
@@ -1377,7 +1377,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 120,
       "constitution": 120
     },
-    "description": "Amuleto supremo forjado em Porto Sombrio. Não é vendido por armeiros e possui drop quase lendário."
+    "description": "Amuleto supremo que amplia todos os atributos principais."
   },
   "major_health_potion": {
     "id": "major_health_potion",
@@ -1390,7 +1390,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "healPercent": 0.55
     },
-    "description": "Recupera 55% da vida máxima. Grau maior."
+    "description": "Restaura 55% da vida máxima em emergências."
   },
   "major_energy_potion": {
     "id": "major_energy_potion",
@@ -1403,7 +1403,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {
       "energyPercent": 0.55
     },
-    "description": "Recupera 55% da energia máxima. Grau maior."
+    "description": "Restaura 55% da energia máxima em jornadas longas."
   },
   "oblivion_scroll": {
     "id": "oblivion_scroll",
@@ -1414,7 +1414,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "price": 180000,
     "goldCoinPrice": 3,
     "stats": {},
-    "description": "Reseta talentos sem gastar diamantes"
+    "description": "Reseta talentos sem gastar diamantes."
   },
   "memory_scroll": {
     "id": "memory_scroll",
@@ -1425,7 +1425,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "price": 180000,
     "goldCoinPrice": 3,
     "stats": {},
-    "description": "Reseta atributos sem gastar diamantes"
+    "description": "Reseta atributos sem gastar diamantes."
   },
   "wolf_pelt": {
     "id": "wolf_pelt",
@@ -1435,7 +1435,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 1,
     "price": 18,
     "stats": {},
-    "description": "Material comum de caça"
+    "description": "Pele resistente usada em receitas de caça."
   },
   "ember_core": {
     "id": "ember_core",
@@ -1445,7 +1445,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 20,
     "price": 130,
     "stats": {},
-    "description": "Núcleo quente usado em armas forjadas."
+    "description": "Núcleo flamejante usado em armas forjadas."
   },
   "crystal_dust": {
     "id": "crystal_dust",
@@ -1455,7 +1455,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 15,
     "price": 85,
     "stats": {},
-    "description": "Catalisador alquímico usado em poções e amuletos."
+    "description": "Catalisador cristalino para poções e amuletos."
   },
   "wyvern_scale": {
     "id": "wyvern_scale",
@@ -1479,7 +1479,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 145,
       "defense": 8
     },
-    "description": "Arma forjada do kit de nível 40 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Arma rúnica que aumenta força e defesa."
   },
   "forged_ironhold_plate_40": {
     "id": "forged_ironhold_plate_40",
@@ -1493,7 +1493,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 145,
       "constitution": 18
     },
-    "description": "Armadura forjada do kit de nível 40 de Ironhold. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Proteção rúnica que aumenta defesa e constituição."
   },
   "forged_valfria_sabre_50": {
     "id": "forged_valfria_sabre_50",
@@ -1507,7 +1507,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 178,
       "agility": 14
     },
-    "description": "Arma forjada do kit de nível 50 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Arma solar que aumenta força e agilidade."
   },
   "forged_valfria_scale_50": {
     "id": "forged_valfria_scale_50",
@@ -1521,7 +1521,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 178,
       "constitution": 23
     },
-    "description": "Armadura forjada do kit de nível 50 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Proteção solar que aumenta defesa e constituição."
   },
   "forged_valfria_sunblade_70": {
     "id": "forged_valfria_sunblade_70",
@@ -1535,7 +1535,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 244,
       "agility": 22
     },
-    "description": "Arma forjada do kit de nível 70 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Arma solar que aumenta força e agilidade."
   },
   "forged_valfria_sandmail_70": {
     "id": "forged_valfria_sandmail_70",
@@ -1549,21 +1549,21 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 244,
       "constitution": 34
     },
-    "description": "Armadura forjada do kit de nível 70 de Vila de Valfria. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Proteção desértica que aumenta defesa e constituição."
   },
   "forged_morthaly_scythe_80": {
     "id": "forged_morthaly_scythe_80",
     "name": "Foice do Porto Sombrio",
     "kind": "weapon",
     "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/obs_axe.png",
+    "imageUrl": "/assets/items/weapons/death_scythe.png",
     "minLevel": 80,
     "price": 0,
     "stats": {
       "strength": 282,
       "defense": 18
     },
-    "description": "Arma forjada do kit de nível 80 de Porto Sombrio. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Arma sombria que aumenta força e defesa."
   },
   "forged_morthaly_boneplate_80": {
     "id": "forged_morthaly_boneplate_80",
@@ -1577,7 +1577,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "defense": 282,
       "constitution": 44
     },
-    "description": "Armadura forjada do kit de nível 80 de Porto Sombrio. Não é vendida por armeiros e possui drop raríssimo."
+    "description": "Proteção óssea que aumenta defesa e constituição."
   },
   "forged_morthaly_voidblade_100": {
     "id": "forged_morthaly_voidblade_100",
@@ -1592,7 +1592,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "agility": 30,
       "defense": 30
     },
-    "description": "Arma forjada do kit de nível 100 de Porto Sombrio. Não é vendida por armeiros e possui drop quase lendário."
+    "description": "Arma lendária que aumenta força, agilidade e defesa."
   },
   "forged_morthaly_voidarmor_100": {
     "id": "forged_morthaly_voidarmor_100",
@@ -1607,7 +1607,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "constitution": 62,
       "strength": 20
     },
-    "description": "Armadura forjada do kit de nível 100 de Porto Sombrio. Não é vendida por armeiros e possui drop quase lendário."
+    "description": "Proteção abissal que aumenta força, defesa e constituição."
   }
 };
 

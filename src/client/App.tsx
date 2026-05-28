@@ -76,7 +76,7 @@ import type {
   WorkReward,
   WorkServiceDefinition
 } from "../shared/types";
-import { RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
+import { RARITY_CHANCES, RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
 import { experienceForNextLevel } from "../shared/progression";
 import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL, MONARCH_BATTLE_ATTACK_LIMIT } from "../shared/types";
 import {
@@ -2740,7 +2740,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
         <Metric icon={<Zap size={18} style={{color: "var(--green)"}} />} label="Energia" value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`} />
         <Metric icon={<Swords size={18} style={{color: "var(--red)"}} />} label="FORÇA" value={game.derived.totalStrength} />
         <Metric icon={<Shield size={18} style={{color: "var(--purple)"}} />} label="DEFESA" value={game.derived.defense} />
-        <Metric icon={<Crosshair size={18} style={{color: "var(--gold)"}} />} label="AGI" value={game.derived.agility} />
+        <Metric icon={<Crosshair size={18} style={{color: "var(--gold)"}} />} label="AGILIDADE" value={game.derived.agility} />
       </div>
 
       <div className="chance-row">
@@ -3485,6 +3485,16 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
   );
 }
 
+const CRAFT_COMMON_CHANCE = 1 - RARITY_CHANCES.uncommon - RARITY_CHANCES.rare - RARITY_CHANCES.epic - RARITY_CHANCES.legendary;
+
+const CRAFT_RARITY_TABLE: Array<{ rarity: Rarity; pct: number }> = [
+  { rarity: "common", pct: Math.round(CRAFT_COMMON_CHANCE * 100) },
+  { rarity: "uncommon", pct: Math.round(RARITY_CHANCES.uncommon * 100) },
+  { rarity: "rare", pct: Math.round(RARITY_CHANCES.rare * 100) },
+  { rarity: "epic", pct: Math.round(RARITY_CHANCES.epic * 100) },
+  { rarity: "legendary", pct: Math.round(RARITY_CHANCES.legendary * 100) },
+];
+
 function CraftingPanel({ game, station }: { game: GameState; station: "blacksmith" | "alchemist" }) {
   const recipes = game.availableCraftingRecipes[station];
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
@@ -3505,24 +3515,60 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
         {recipes.length === 0 && <p className="empty-state">Nenhuma receita disponível nesta cidade.</p>}
         {recipes.map((recipe) => {
           const result = game.itemCatalog[recipe.resultItemId];
+          const isEquipment = Boolean(result?.slot);
           const canCraft =
             game.character.gold >= recipe.goldCost &&
             recipe.ingredients.every((ingredient) => countInventoryItem(game, ingredient.itemId) >= ingredient.quantity);
+          const statEntries = isEquipment
+            ? EQUIPMENT_STAT_KEYS
+                .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: result?.stats?.[key] }))
+                .filter((entry) => entry.value != null && (entry.value as number) !== 0)
+            : [];
           return (
-            <article className="entity-card" key={recipe.id}>
-              <div>
-                <strong>{recipe.name}</strong>
-                <span>
-                  {result.name} x{recipe.resultQuantity}
-                </span>
+            <article className="entity-card craft-recipe-card" key={recipe.id}>
+              <div className="craft-result-header">
+                <ItemVisual item={result} className="craft-result-art" />
+                <div className="craft-result-info">
+                  <strong>{recipe.name}</strong>
+                  <span>{result?.name}{recipe.resultQuantity > 1 ? ` x${recipe.resultQuantity}` : ""}</span>
+                  {result?.description && <p className="craft-result-desc">{result.description}</p>}
+                  <div className="craft-result-meta">
+                    {result?.minLevel != null && <small>Nível {result.minLevel}</small>}
+                  </div>
+                </div>
               </div>
+              {statEntries.length > 0 && (
+                <div className="recipe-ingredients">
+                  {statEntries.map(({ key, label, value }) => (
+                    <small key={key}>
+                      {getGuideItemStatIcon(key as keyof typeof EQUIPMENT_STAT_LABELS)} {label}: <b>{value as number}</b>
+                    </small>
+                  ))}
+                </div>
+              )}
+              {isEquipment && (
+                <div className="craft-rarity-table">
+                  <span className="craft-rarity-label">Chances de raridade</span>
+                  <div className="craft-rarity-row">
+                    {CRAFT_RARITY_TABLE.map(({ rarity, pct }) => (
+                      <span key={rarity} className={`item-rarity ${rarity}`}>{RARITY_LABELS[rarity]} {pct}%</span>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="recipe-ingredients">
-                {recipe.ingredients.map((ingredient) => (
-                  <small key={ingredient.itemId}>
-                    {game.itemCatalog[ingredient.itemId].name}: {countInventoryItem(game, ingredient.itemId)}/{ingredient.quantity}
-                  </small>
-                ))}
-                <small>{recipe.goldCost} <Coins size={12} style={{ color: "var(--gold)" }} /></small>
+                {recipe.ingredients.map((ingredient) => {
+                  const ingItem = game.itemCatalog[ingredient.itemId];
+                  const owned = countInventoryItem(game, ingredient.itemId);
+                  const hasEnough = owned >= ingredient.quantity;
+                  return (
+                    <small key={ingredient.itemId} className={hasEnough ? "" : "ingredient-missing"}>
+                      <ItemVisual item={ingItem} className="ingredient-art" />
+                      {ingItem?.name}: <b>{owned}/{ingredient.quantity}</b>
+                    </small>
+                  );
+                })}
+                <small><Coins size={15} style={{ color: "var(--gold)" }} /> {recipe.goldCost} </small>
               </div>
               <button className="primary-button" disabled={!canCraft} onClick={() => socket.emit("craft:create", { recipeId: recipe.id })}>
                 Criar

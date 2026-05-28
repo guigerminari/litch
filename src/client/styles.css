@@ -4160,10 +4160,107 @@ button:disabled .game-icon {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 7px;
-  border: 1px solid var(--line);
+  padding: 0 7px;
   border-radius: 999px;
   color: var(--muted);
+}
+
+/* Craft Panel */
+.craft-recipe-card {
+  gap: 14px !important;
+}
+
+.craft-result-header {
+  display: flex !important;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.craft-result-art {
+  width: 72px !important;
+  height: 72px !important;
+  flex: 0 0 72px;
+  border-radius: 10px;
+}
+
+.craft-result-info {
+  display: flex !important;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.craft-result-info strong {
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.craft-result-info > span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.craft-result-desc {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.craft-result-meta {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.craft-result-meta small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.craft-rarity-table {
+  display: grid;
+  gap: 6px;
+}
+
+.craft-rarity-label {
+  font-size: 0.74rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.craft-rarity-row {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.craft-rarity-row .item-rarity {
+  font-size: 0.76rem;
+  padding: 3px 8px;
+}
+
+.ingredient-art {
+  width: 24px !important;
+  height: 24px !important;
+  flex: 0 0 24px;
+  border-radius: 3px;
+}
+
+.ingredient-art img {
+  padding: 1px !important;
+}
+
+.ingredient-missing {
+  border-color: rgba(255, 85, 85, 0.45) !important;
+  color: rgba(255, 85, 85, 0.9) !important;
 }
 
 .monster-stats small {
