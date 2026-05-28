@@ -5878,16 +5878,15 @@ function BattlePanel({ game }: { game: GameState }) {
           <span>{monarchHitsLeft === 1 ? "hit" : "hits"}</span>
         </div>
       )}
-      {battle.status === "active" && (
-        <BattlePotionDock
-          battleId={battle.id}
-          healthPotion={healthPotion}
-          energyPotion={energyPotion}
-          canAct={myTurn && !animationsPending}
-          hpFull={game.character.currentHp >= game.derived.maxHp}
-          energyFull={game.character.currentEnergy >= game.derived.maxEnergy}
-        />
-      )}
+      <BattlePotionDock
+        battleId={battle.id}
+        battleActive={battle.status === "active"}
+        healthPotion={healthPotion}
+        energyPotion={energyPotion}
+        canAct={myTurn && !animationsPending}
+        hpFull={game.character.currentHp >= game.derived.maxHp}
+        energyFull={game.character.currentEnergy >= game.derived.maxEnergy}
+      />
       <div className="battle-actions">
         {battle.status === "active" ? (
           <>
@@ -5988,6 +5987,7 @@ function BattlePanel({ game }: { game: GameState }) {
 
 function BattlePotionDock({
   battleId,
+  battleActive,
   healthPotion,
   energyPotion,
   canAct,
@@ -5995,6 +5995,7 @@ function BattlePotionDock({
   energyFull
 }: {
   battleId: string;
+  battleActive: boolean;
   healthPotion: PotionQuickOption | null;
   energyPotion: PotionQuickOption | null;
   canAct: boolean;
@@ -6003,6 +6004,12 @@ function BattlePotionDock({
 }) {
   const usePotion = (potion: PotionQuickOption | null) => {
     if (!potion) {
+      return;
+    }
+    if (!battleActive) {
+      socket.emit("inventory:use", {
+        instanceId: potion.inventoryItem.instanceId
+      });
       return;
     }
     socket.emit("battle:action", {
@@ -6016,35 +6023,29 @@ function BattlePotionDock({
     <aside className="battle-potion-dock" aria-label="Poções de batalha">
       <button
         className="battle-potion-button health"
-        disabled={!canAct || !healthPotion || hpFull}
+        disabled={(battleActive && !canAct) || !healthPotion || hpFull}
         title={healthPotion?.definition.name ?? "Nenhuma poção de vida"}
         onClick={() => usePotion(healthPotion)}
       >
         {healthPotion ? (
-          <ItemVisual item={healthPotion.definition} className="battle-potion-visual" quantity={healthPotion.quantity} />
+          <ItemVisual item={healthPotion.definition} className="battle-potion-visual" />
         ) : (
           <span className="battle-potion-visual empty"><Heart size={18} /></span>
         )}
-        <span>
-          <strong>Vida</strong>
-          <small>{healthPotion ? getPotionEffectLabel(healthPotion.definition, "health") : "x0"}</small>
-        </span>
+        <span className="battle-potion-count">x{healthPotion?.quantity ?? 0}</span>
       </button>
       <button
         className="battle-potion-button energy"
-        disabled={!canAct || !energyPotion || energyFull}
+        disabled={(battleActive && !canAct) || !energyPotion || energyFull}
         title={energyPotion?.definition.name ?? "Nenhuma poção de energia"}
         onClick={() => usePotion(energyPotion)}
       >
         {energyPotion ? (
-          <ItemVisual item={energyPotion.definition} className="battle-potion-visual" quantity={energyPotion.quantity} />
+          <ItemVisual item={energyPotion.definition} className="battle-potion-visual" />
         ) : (
           <span className="battle-potion-visual empty"><Zap size={18} /></span>
         )}
-        <span>
-          <strong>Energia</strong>
-          <small>{energyPotion ? getPotionEffectLabel(energyPotion.definition, "energy") : "x0"}</small>
-        </span>
+        <span className="battle-potion-count">x{energyPotion?.quantity ?? 0}</span>
       </button>
     </aside>
   );

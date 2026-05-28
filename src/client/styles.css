@@ -5323,8 +5323,9 @@ button:disabled .game-icon {
   bottom: 88px;
   z-index: 48;
   display: grid;
+  grid-template-columns: repeat(2, 70px);
   gap: 8px;
-  width: min(260px, calc(100vw - 36px));
+  width: auto;
   padding: 10px;
   border: 1px solid rgba(220, 203, 255, 0.14);
   border-radius: 16px;
@@ -5371,9 +5372,46 @@ button:disabled .game-icon {
   font-size: 0.74rem;
 }
 
+.battle-potion-dock .battle-potion-button {
+  position: relative;
+  width: 70px;
+  min-height: 70px;
+  grid-template-columns: 1fr;
+  place-items: center;
+  gap: 0;
+  padding: 7px;
+  text-align: center;
+}
+
+.battle-potion-count {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  min-width: 24px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 1px solid rgba(220, 203, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(11, 9, 18, 0.86);
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 0 12px rgba(124, 77, 255, 0.14);
+}
+
+.battle-potion-button:disabled .battle-potion-count {
+  color: var(--muted);
+  border-color: rgba(220, 203, 255, 0.08);
+  background: rgba(11, 9, 18, 0.62);
+}
+
 .battle-potion-visual {
-  width: 42px;
-  height: 42px;
+  width: min(54px, 100%);
+  height: min(54px, 100%);
   border-radius: 10px;
 }
 
@@ -8602,19 +8640,20 @@ button:disabled {
   .battle-potion-dock {
     left: 8px;
     bottom: calc(56px + env(safe-area-inset-bottom));
-    width: min(238px, calc(100vw - 72px));
+    grid-template-columns: repeat(2, 60px);
+    width: auto;
     padding: 8px;
   }
 
-  .battle-potion-button {
-    min-height: 48px;
-    grid-template-columns: 36px minmax(0, 1fr);
-    padding: 6px 8px;
+  .battle-potion-dock .battle-potion-button {
+    width: 60px;
+    min-height: 60px;
+    padding: 6px;
   }
 
-  .battle-potion-visual {
-    width: 36px;
-    height: 36px;
+  .battle-potion-dock .battle-potion-visual {
+    width: min(54px, 100%);
+    height: min(54px, 100%);
   }
 
   .toast {
