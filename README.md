@@ -42,17 +42,23 @@ MYSQL_PASSWORD=senha
 MYSQL_DATABASE=litch
 ```
 
-O servidor cria automaticamente a tabela `litch_game_state` e salva um snapshot JSON completo do jogo. Para usar outro nome:
+O servidor cria automaticamente tabelas relacionais com o prefixo `litch_`, separando jogadores, contas, personagens, inventário, clãs, sessões, batalhas, mercado, mensagens, fila de arena, monarca e metadados. Para usar outro prefixo:
+
+```bash
+LITCH_MYSQL_TABLE_PREFIX=litch
+```
+
+Se as tabelas relacionais estiverem vazias, o servidor tenta importar primeiro o snapshot legado `litch_game_state`; se ele não existir, importa `data/game-state.json` automaticamente na primeira inicialização. Para desativar a importação do JSON local:
+
+```bash
+LITCH_MYSQL_IMPORT_JSON_ON_EMPTY=false
+```
+
+O snapshot legado continua sendo reconhecido apenas como fonte de migração:
 
 ```bash
 LITCH_MYSQL_STATE_TABLE=litch_game_state
 LITCH_MYSQL_STATE_ID=default
-```
-
-Se o MySQL estiver vazio e `data/game-state.json` existir, o servidor importa o JSON automaticamente na primeira inicialização. Para desativar:
-
-```bash
-LITCH_MYSQL_IMPORT_JSON_ON_EMPTY=false
 ```
 
 ## E-mail
