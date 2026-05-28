@@ -4318,6 +4318,34 @@ button:disabled .game-icon {
   font-size: 1rem;
 }
 
+.arena-reward-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.arena-reward-item-visual {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.arena-reward-item-visual img {
+  padding: 0;
+}
+
+.arena-reward-item-visual .asset-fallback {
+  font-size: 0.62rem;
+}
+
+.arena-reward-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
 .arena-reward-card span {
   color: rgba(244, 240, 255, 0.72);
   font-size: 0.84rem;

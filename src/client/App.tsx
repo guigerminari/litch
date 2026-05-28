@@ -1882,7 +1882,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               </article>
               <article>
                 <strong>Recompensas por batalha</strong>
-                <span>Vitória concede 3 Moedas de Arena, 240 XP e 300 ouro. Derrota concede 1 Moeda de Arena, 80 XP e 100 ouro.</span>
+                <span>Vitória concede 10000 ouro + 1 Pedra de Criação, além das Moedas de Arena. Derrota concede 5000 ouro, além das Moedas de Arena.</span>
               </article>
               <article>
                 <strong>Temporada</strong>
@@ -4502,6 +4502,8 @@ function ArenaPanel({ game }: { game: GameState }) {
   const [rankedStatus, setRankedStatus] = useState<string | null>(null);
   const queued = game.arenaQueueSize > 0;
   const blueCoins = countInventoryItem(game, "material_blue_coin");
+  const arenaCoinItem = game.itemCatalog["material_gold_coin"];
+  const creationStoneItem = game.itemCatalog["misc_stone_craft"];
   const currentArenaRank = game.rankings.arena.findIndex((entry) => entry.playerId === game.player.id) + 1;
   const hasArenaRank = currentArenaRank > 0;
   const today = new Date().toLocaleDateString("pt-BR", { timeZone: "UTC" });
@@ -4638,16 +4640,29 @@ function ArenaPanel({ game }: { game: GameState }) {
             <div className="arena-ranked-rewards">
               <div className="arena-reward-card win">
                 <small>Vitória</small>
-                <strong>3 Moedas de Arena</strong>
-                <span><Star size={12} style={{color: "var(--cyan)"}} /> 240 <Coins size={12} style={{ color: "var(--gold)" }} /> 300</span>
+                <strong className="arena-reward-primary">
+                  {arenaCoinItem && <ItemVisual item={arenaCoinItem} className="arena-reward-item-visual" />}
+                  3x Moedas de Arena
+                </strong>
+                <span className="arena-reward-secondary">
+                  <Coins size={12} style={{ color: "var(--gold)" }} /> 10000
+                </span>
+                <span className="arena-reward-secondary">
+                  {creationStoneItem && <ItemVisual item={creationStoneItem} className="arena-reward-item-visual" />} 1x Pedra de Criação
+                </span>
               </div>
               <div className="arena-reward-card loss">
                 <small>Derrota</small>
-                <strong>1 Moeda de Arena</strong>
-                <span><Star size={12} style={{color: "var(--cyan)"}} /> 80 <Coins size={12} style={{ color: "var(--gold)" }} /> 100</span>
+                <strong className="arena-reward-primary">
+                  {arenaCoinItem && <ItemVisual item={arenaCoinItem} className="arena-reward-item-visual" />}
+                  1x Moeda de Arena
+                </strong>
+                <span className="arena-reward-secondary">
+                  <Coins size={12} style={{ color: "var(--gold)" }} /> 5000
+                </span>
               </div>
             </div>
-            <small style={{ opacity: 0.7 }}>Custo: 1 Moeda Azul por duelo. As moedas diárias são concedidas automaticamente ao buscar um duelo.</small>
+            <small style={{ opacity: 0.7 }}>Custo: 1 Moeda Azul por duelo. As moedas diárias são resgatadas pelo botão na Arena.</small>
             <button className="primary-button" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
               <Swords size={16} style={{color: "var(--white)", marginRight: "8px"}} />
               {rankedSearching ? "Buscando..." : "Buscar Oponente"}

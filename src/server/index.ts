@@ -1705,6 +1705,11 @@ function applyDeathPenaltyForBattle(battle: NonNullable<GameState["activeBattle"
     return;
   }
 
+  // Arena battles should not change XP; keep only arena-specific rewards/penalties.
+  if (battle.mode === "pvp") {
+    return;
+  }
+
   battle.deathPenaltyAppliedPlayerIds ??= [];
   const alreadyApplied = new Set(battle.deathPenaltyAppliedPlayerIds);
 
