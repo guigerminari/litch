@@ -2969,7 +2969,7 @@ function AgencyPanel({ game }: { game: GameState }) {
                     disabled={!periodicReady}
                     onClick={() => socket.emit("work:claimBonus", { serviceId: service.id })}
                   >
-                    {periodicReady ? <><GameIcon name="agency" size={16} className="button-game-icon" /> Resgatar bônus</> : `Pronto em ${formatDuration(getWorkBonusReadyAt(game, service) - now)}`}
+                    {periodicReady ? "Resgatar bônus" : `Pronto em ${formatDuration(getWorkBonusReadyAt(game, service) - now)}`}
                   </button>
                 )}
               </div>
@@ -2978,7 +2978,7 @@ function AgencyPanel({ game }: { game: GameState }) {
                 disabled={Boolean(activeWork)}
                 onClick={() => socket.emit("work:start", { serviceId: service.id, minutes: selectedMinutes })}
               >
-                <GameIcon name="agency" size={16} className="button-game-icon" /> Iniciar serviço
+                Iniciar serviço
               </button>
             </article>
           );

@@ -7,7 +7,7 @@ Base de webapp para um RPG text-based com combate por turno, chat, mercado entre
 - React + Vite + TypeScript no cliente.
 - Node + TypeScript + Socket.IO no servidor realtime.
 - Domínio modular com servidor autoritativo.
-- Persistência local em `data/game-state.json`, incluindo contas, personagens, mercado, chat, clãs e batalhas.
+- Persistência local em `data/game-state.json` ou MySQL, incluindo contas, personagens, mercado, chat, clãs e batalhas.
 
 ## Rodando
 
@@ -19,6 +19,41 @@ npm run dev
 Cliente: http://127.0.0.1:5173
 
 Servidor realtime: http://127.0.0.1:3001
+
+## Persistência
+
+Por padrão, o servidor salva todo o estado em `data/game-state.json`.
+
+Para usar MySQL, configure uma URL de conexão e ative o driver:
+
+```bash
+LITCH_PERSISTENCE=mysql
+MYSQL_DATABASE_URL=mysql://usuario:senha@localhost:3306/litch
+```
+
+Também é possível configurar por partes:
+
+```bash
+LITCH_PERSISTENCE=mysql
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=usuario
+MYSQL_PASSWORD=senha
+MYSQL_DATABASE=litch
+```
+
+O servidor cria automaticamente a tabela `litch_game_state` e salva um snapshot JSON completo do jogo. Para usar outro nome:
+
+```bash
+LITCH_MYSQL_STATE_TABLE=litch_game_state
+LITCH_MYSQL_STATE_ID=default
+```
+
+Se o MySQL estiver vazio e `data/game-state.json` existir, o servidor importa o JSON automaticamente na primeira inicialização. Para desativar:
+
+```bash
+LITCH_MYSQL_IMPORT_JSON_ON_EMPTY=false
+```
 
 ## E-mail
 

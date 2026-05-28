@@ -100,7 +100,7 @@ import {
 import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, removeItem } from "./domain/inventory";
 import { deriveStats, grantExperience } from "./domain/stats";
 import { store, type AuthAccount } from "./store";
-import { flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
+import { closePersistentStore, flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
 import { sendGameEmail } from "./mailer";
 import {
   calculateWorkReward,
@@ -275,7 +275,7 @@ const DAILY_EXTRA_MISSIONS = [
   { id: "daily-arena-win-1", category: "arena" as const, title: "Glória da Arena", description: "Vença 1 batalha de Arena hoje.", progressKey: "dailyArenaWins" as const, target: 1, reward: { experience: 320, diamonds: 1 } }
 ];
 
-loadPersistentStore();
+await loadPersistentStore();
 
 function getCurrentSeasonKey() {
   const now = new Date();
@@ -3716,17 +3716,35 @@ httpServer.listen(PORT, () => {
   console.log(`Litch realtime server running on http://127.0.0.1:${PORT}`);
 });
 
-function flushAndExit(code = 0) {
+let shuttingDown = false;
+let beforeExitFlushed = false;
+
+async function flushAndExit(code = 0) {
+  if (shuttingDown) {
+    return;
+  }
+  shuttingDown = true;
   try {
-    flushPersistentStore();
+    await flushPersistentStore();
+    await closePersistentStore();
+  } catch (error) {
+    console.error("Failed to flush persistent store:", error);
   } finally {
     process.exit(code);
   }
 }
 
-process.on("SIGINT", () => flushAndExit(0));
-process.on("SIGTERM", () => flushAndExit(0));
-process.on("beforeExit", () => flushPersistentStore());
+process.on("SIGINT", () => void flushAndExit(0));
+process.on("SIGTERM", () => void flushAndExit(0));
+process.on("beforeExit", () => {
+  if (beforeExitFlushed) {
+    return;
+  }
+  beforeExitFlushed = true;
+  void flushPersistentStore()
+    .then(() => closePersistentStore())
+    .catch((error) => console.error("Failed to flush persistent store:", error));
+});
 
 // Regen tick: every 2 real minutes restore 10% HP and Energy
 const REGEN_INTERVAL_MS = 2 * 60 * 1000;

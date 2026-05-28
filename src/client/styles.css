@@ -8651,11 +8651,6 @@ button:disabled {
     height: 26px;
   }
 
-  .character-chip-avatar svg {
-    width: 16px;
-    height: 16px;
-  }
-
   .character-chip strong {
     font-size: 0.78rem;
   }
