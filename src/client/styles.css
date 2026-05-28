@@ -441,6 +441,14 @@ button:disabled {
   box-shadow: 0 0 14px var(--theme-glow-soft);
 }
 
+.guide-station-tabs {
+  margin-bottom: 2px;
+}
+
+.guide-station-tabs .mini-tab {
+  min-width: 96px;
+}
+
 .guide-modal > .panel-title {
   flex: 0 0 auto;
 }
@@ -917,6 +925,22 @@ button:disabled {
   font-size: 0.78rem;
 }
 
+.guide-material-chips span {
+  gap: 6px;
+}
+
+.guide-material-art {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.guide-material-art img {
+  padding: 0 !important;
+}
+
 .guide-mini-entity-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -1134,7 +1158,7 @@ button:disabled {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) auto;
   gap: 9px;
-  align-items: center;
+  align-items: start;
   min-height: 54px;
   padding: 7px;
   border: 1px solid var(--line);
@@ -1165,6 +1189,33 @@ button:disabled {
 .guide-result-art {
   width: 40px;
   height: 40px;
+}
+
+.guide-result-art img {
+  padding: 2px !important;
+}
+
+.guide-result-info {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.guide-result-materials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.guide-result-material-art {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.guide-result-count {
+  align-self: start;
+  padding-top: 1px;
 }
 
 .guide-detail-card {

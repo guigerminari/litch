@@ -69,6 +69,7 @@ import type {
   TalentCategory,
   QuestView,
   QuestCategory,
+  CraftingRecipe,
   Rarity,
   TalentDefinition,
   TemporaryEventBonusDefinition,
@@ -97,6 +98,7 @@ import {
 } from "../shared/work";
 import { formatTemporaryEventBonusPercent } from "../shared/temporaryEvents";
 import { CLAN_CRESTS, getClanCrestDefinition, normalizeClanCrestId, type ClanCrestId } from "../shared/clan";
+import { CRAFTING_RECIPES } from "../server/content";
 import { socket } from "./socket";
 
 type View =
@@ -197,7 +199,8 @@ type GameIconName =
   | "faq"
   | "history"
   | "dev"
-  | "stats";
+  | "stats"
+  | "craft";
 
 const GAME_ICON_SRC: Record<GameIconName, string> = {
   agency: "/assets/icons/agency.png",
@@ -224,6 +227,7 @@ const GAME_ICON_SRC: Record<GameIconName, string> = {
   faq: "/assets/icons/faq.png",
   history: "/assets/icons/history.png",
   stats: "/assets/icons/stats.png",
+  craft: "/assets/icons/craft.png"
 };
 
 const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
@@ -1470,7 +1474,8 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
   );
 }
 
-type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "items" | "monsters" | "monarchs" | "developer" | "stats";
+type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "creation" | "items" | "monsters" | "monarchs" | "developer" | "stats";
+type CraftingStationTab = "blacksmith" | "alchemist";
 
 function HistoryGuide() {
   return (
@@ -1563,6 +1568,7 @@ function HistoryGuide() {
 
 function GuideModal({ game, onClose }: { game: GameState; onClose: () => void }) {
   const [tab, setTab] = useState<GuideTab>("history");
+  const [creationStation, setCreationStation] = useState<CraftingStationTab>("blacksmith");
   const [worldFilter, setWorldFilter] = useState("");
   const [itemFilter, setItemFilter] = useState("");
   const [itemKind, setItemKind] = useState<"all" | ItemKind>("all");
@@ -1650,6 +1656,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     { id: "world", label: "Mundo", icon: <GameIcon name="travel" size={18} /> },
     { id: "work", label: "Trabalhos", icon: <GameIcon name="agency" size={18} /> },
     { id: "arena", label: "Arena", icon: <GameIcon name="arena" size={18} /> },
+    { id: "creation", label: "Criação", icon: <GameIcon name="craft" size={18} /> },
     { id: "items", label: "Itens", icon: <GameIcon name="inventory" size={18} /> },
     { id: "monsters", label: "Monstros", icon: <GameIcon name="hunt" size={18} /> },
     { id: "monarchs", label: "Monarcas", icon: <GameIcon name="monarch" size={18} /> },
@@ -1916,6 +1923,8 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
           </div>
         )}
 
+        {tab === "creation" && <CraftingGuide game={game} station={creationStation} onStationChange={setCreationStation} />}
+
         {tab === "items" && (
           <div className="guide-catalog">
             <div className="guide-filters">
@@ -2174,6 +2183,216 @@ function GuideMonsterDetail({ monster, game, onClose }: { monster: GameState["ci
       </aside>
     </div>
   );
+}
+
+function CraftingGuide({
+  game,
+  station,
+  onStationChange
+}: {
+  game: GameState;
+  station: CraftingStationTab;
+  onStationChange: (station: CraftingStationTab) => void;
+}) {
+  const [kindFilter, setKindFilter] = useState<"all" | ItemKind>("all");
+  const [levelFilter, setLevelFilter] = useState<string>("all");
+  const [selectedRecipeId, setSelectedRecipeId] = useState("");
+
+  const recipes = getCraftingGuideRecipes(game, station);
+  const itemLevels = Array.from(new Set(recipes.map((entry) => entry.level))).sort((a, b) => a - b);
+  const filteredRecipes = recipes.filter((entry) => {
+    const matchesKind = kindFilter === "all" || entry.result.kind === kindFilter;
+    const matchesLevel = levelFilter === "all" || String(entry.level) === levelFilter;
+    return matchesKind && matchesLevel;
+  });
+  const selectedRecipe = filteredRecipes.find((entry) => entry.recipe.id === selectedRecipeId) ?? filteredRecipes[0] ?? null;
+  const stationTabs: Array<{ id: CraftingStationTab; label: string; icon: React.ReactNode }> = [
+    { id: "blacksmith", label: "Forja", icon: <GameIcon name="blacksmith" size={18} /> },
+    { id: "alchemist", label: "Alquimista", icon: <GameIcon name="alchemist" size={18} /> }
+  ];
+  const stationLabel = station === "blacksmith" ? "Forja" : "Alquimista";
+
+  useEffect(() => {
+    if (!filteredRecipes.some((entry) => entry.recipe.id === selectedRecipeId)) {
+      setSelectedRecipeId(filteredRecipes[0]?.recipe.id ?? "");
+    }
+  }, [filteredRecipes, selectedRecipeId]);
+
+  return (
+    <div className="guide-catalog split">
+      <div className="guide-list-pane">
+        <div className="guide-tabs guide-station-tabs">
+          {stationTabs.map((entry) => (
+            <button key={entry.id} className={station === entry.id ? "mini-tab active" : "mini-tab"} onClick={() => onStationChange(entry.id)}>
+              <span className="guide-tab-icon">{entry.icon}</span>
+              <span className="guide-tab-label">{entry.label}</span>
+            </button>
+          ))}
+        </div>
+        <div className="guide-filters">
+          <select value={kindFilter} onChange={(event) => setKindFilter(event.target.value as "all" | ItemKind)}>
+            <option value="all">Todos os tipos</option>
+            {Object.entries(ITEM_KIND_LABELS).map(([kind, label]) => (
+              <option value={kind} key={kind}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <select value={levelFilter} onChange={(event) => setLevelFilter(event.target.value)}>
+            <option value="all">Todos os níveis</option>
+            {itemLevels.map((level) => (
+              <option value={String(level)} key={`craft-lvl-${station}-${level}`}>
+                Nível {level}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="guide-result-list">
+          {filteredRecipes.map((entry) => (
+            <button
+              key={entry.recipe.id}
+              className={selectedRecipe?.recipe.id === entry.recipe.id ? "guide-result active" : "guide-result"}
+              onClick={() => setSelectedRecipeId(entry.recipe.id)}
+              title={entry.result.name}
+            >
+              <ItemVisual item={entry.result} className="guide-result-art" />
+              <div className="guide-result-info">
+                <span>{entry.result.name}</span>
+                <small>{ITEM_KIND_LABELS[entry.result.kind]} · Nv {entry.level}</small>
+                
+              </div>
+              <small className="guide-result-count">{entry.cities.length} loca{entry.cities.length === 1 ? "l" : "is"}</small>
+            </button>
+          ))}
+          {filteredRecipes.length === 0 && <p className="empty-state">Nenhuma receita encontrada.</p>}
+        </div>
+      </div>
+
+      {selectedRecipe ? (
+        <aside className="guide-detail-card">
+          <ItemVisual item={selectedRecipe.result} className="guide-detail-art" />
+          <div>
+            <span className="eyebrow">{stationLabel}</span>
+            <h3>{selectedRecipe.result.name}</h3>
+            <p>{selectedRecipe.result.description ?? "Sem descrição."}</p>
+          </div>
+          <div className="guide-detail-stats">
+            <span>
+              Tipo <strong>{ITEM_KIND_LABELS[selectedRecipe.result.kind]}</strong>
+            </span>
+            <span>
+              Nível <strong>{selectedRecipe.level}</strong>
+            </span>
+            <span>
+              Quantidade <strong>x{selectedRecipe.recipe.resultQuantity}</strong>
+            </span>
+            <span>
+              Custo <strong>{formatCurrency(selectedRecipe.recipe.goldCost)} ouro</strong>
+            </span>
+            {selectedRecipe.result.rarity && (
+              <span>
+                Raridade <strong>{RARITY_LABELS[selectedRecipe.result.rarity]}</strong>
+              </span>
+            )}
+            {EQUIPMENT_STAT_KEYS.map((key) => {
+              const value = selectedRecipe.result.stats[key];
+              if (value === undefined) return null;
+              return (
+                <span key={key}>
+                  <b className="guide-stat-label">
+                    {getGuideItemStatIcon(key)} {EQUIPMENT_STAT_LABELS[key]}
+                  </b>
+                  <strong>+{value}</strong>
+                </span>
+              );
+            })}
+            {selectedRecipe.result.stats.healPercent && (
+              <span>
+                <b className="guide-stat-label">
+                  <Heart size={13} /> Vida
+                </b>
+                <strong>+{Math.round(selectedRecipe.result.stats.healPercent * 100)}%</strong>
+              </span>
+            )}
+            {selectedRecipe.result.stats.energyPercent && (
+              <span>
+                <b className="guide-stat-label">
+                  <Zap size={13} /> Energia
+                </b>
+                <strong>+{Math.round(selectedRecipe.result.stats.energyPercent * 100)}%</strong>
+              </span>
+            )}
+          </div>
+
+          <section className="guide-detail-section">
+            <h4>Local de criação</h4>
+            <div className="guide-chip-group">
+              <b>Estação</b>
+              <div>
+                <span>{stationLabel}</span>
+              </div>
+            </div>
+            <div className="guide-chip-group">
+              <b>Cidades</b>
+              <div>
+                {selectedRecipe.cities.map((city) => (
+                  <span key={city.id}>
+                    {city.name} · Nv {city.minLevel}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="guide-detail-section">
+            <h4>Materiais</h4>
+            <div className="guide-chip-group">
+              <b>Itens e ouro</b>
+              <div className="guide-material-chips">
+                {selectedRecipe.recipe.ingredients.map((ingredient) => {
+                  const material = game.itemCatalog[ingredient.itemId];
+                  return (
+                    <span key={ingredient.itemId}>
+                      <ItemVisual item={material} className="guide-material-art" />
+                      {material.name} x{ingredient.quantity} ({countInventoryItem(game, ingredient.itemId)})
+                    </span>
+                  );
+                })}
+                <span>{formatCurrency(selectedRecipe.recipe.goldCost)} ouro</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+      ) : (
+        <aside className="guide-detail-card">
+          <p className="empty-state">Nenhuma receita disponível neste filtro.</p>
+        </aside>
+      )}
+    </div>
+  );
+}
+
+function getCraftingGuideRecipes(game: GameState, station: CraftingStationTab) {
+  const citiesById = new Map(game.cities.map((city) => [city.id, city]));
+
+  return Object.values(CRAFTING_RECIPES)
+    .filter((recipe) => recipe.station === station)
+    .map((recipe) => {
+      const result = game.itemCatalog[recipe.resultItemId];
+      if (!result) {
+        return null;
+      }
+      const cities = recipe.cityIds.map((cityId) => citiesById.get(cityId)).filter((city): city is GameState["cities"][number] => Boolean(city));
+      return {
+        recipe,
+        result,
+        cities,
+        level: result.minLevel ?? 0
+      };
+    })
+    .filter((entry): entry is { recipe: CraftingRecipe; result: ItemDefinition; cities: GameState["cities"][number][]; level: number } => entry !== null)
+    .sort((a, b) => a.level - b.level || ITEM_KIND_LABELS[a.result.kind].localeCompare(ITEM_KIND_LABELS[b.result.kind]) || a.result.name.localeCompare(b.result.name));
 }
 
 function getItemDropSources(game: GameState, itemId: string) {

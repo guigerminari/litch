@@ -75,7 +75,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Ticket de Trem",
     "kind": "ticket",
     "minLevel": 1,
-    "price": 80,
+    "price": 500,
     "imageUrl": "/assets/items/misc/train-ticket.png",
     "stats": {},
     "description": "Usado para viajar entre cidades do mesmo país."
@@ -86,7 +86,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "ticket",
     "minLevel": 1,
     "imageUrl": "/assets/items/misc/ship-ticket.png",
-    "price": 250,
+    "price": 5000,
     "stats": {},
     "description": "Usado para viajar entre países. A chegada sempre acontece na cidade porto."
   },
@@ -810,7 +810,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção de Energia",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-30.png",
-    "minLevel": 35,
+    "minLevel": 1,
     "price": 3000,
     "stats": {
       "energyPercent": 0.3
@@ -834,7 +834,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção de Energia Media",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-medium.png",
-    "minLevel": 15,
+    "minLevel": 1,
     "price": 450,
     "stats": {
       "energy": 60
@@ -846,7 +846,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção de Energia Alta",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-high.png",
-    "minLevel": 45,
+    "minLevel": 1,
     "price": 5200,
     "goldCoinPrice": 8,
     "stats": {
@@ -859,7 +859,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção de Vida",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-30.png",
-    "minLevel": 35,
+    "minLevel": 1,
     "price": 3000,
     "stats": {
       "healPercent": 0.3
@@ -883,7 +883,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção de Vida Media",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-medium.png",
-    "minLevel": 15,
+    "minLevel": 1,
     "price": 450,
     "stats": {
       "heal": 360
@@ -895,7 +895,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção de Vida Alta",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-high.png",
-    "minLevel": 45,
+    "minLevel": 1,
     "price": 5200,
     "goldCoinPrice": 8,
     "stats": {
@@ -1285,7 +1285,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/stone_2_blue.png",
-    "minLevel": 25,
+    "minLevel": 15,
     "price": 1250,
     "stats": {
       "agility": 12,
@@ -1299,7 +1299,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/stone_2_green.png",
-    "minLevel": 25,
+    "minLevel": 20,
     "price": 1250,
     "stats": {
       "strength": 10,
@@ -1313,7 +1313,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/crystal_white.png",
-    "minLevel": 45,
+    "minLevel": 25,
     "price": 0,
     "stats": {
       "agility": 35,
@@ -1327,7 +1327,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/celtic_yellow.png",
-    "minLevel": 60,
+    "minLevel": 30,
     "price": 12500,
     "stats": {
       "strength": 55,
@@ -1341,7 +1341,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/stone_3_magenta.png",
-    "minLevel": 70,
+    "minLevel": 35,
     "price": 0,
     "stats": {
       "defense": 80,
@@ -1355,7 +1355,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/penta_orange.png",
-    "minLevel": 85,
+    "minLevel": 35,
     "price": 24000,
     "stats": {
       "agility": 90,
@@ -1369,7 +1369,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "amulet",
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/ring_cyan.png",
-    "minLevel": 100,
+    "minLevel": 40,
     "price": 0,
     "stats": {
       "agility": 120,
@@ -1384,7 +1384,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção Vital Rara",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health.png",
-    "minLevel": 70,
+    "minLevel": 1,
     "price": 7600,
     "goldCoinPrice": 5,
     "stats": {
@@ -1397,7 +1397,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Poção Energética Rara",
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy.png",
-    "minLevel": 70,
+    "minLevel": 1,
     "price": 7600,
     "goldCoinPrice": 5,
     "stats": {
@@ -1411,7 +1411,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "scroll",
     "imageUrl": "/assets/items/misc/enhanced-parchment.png",
     "minLevel": 1,
-    "price": 180,
+    "price": 180000,
     "goldCoinPrice": 3,
     "stats": {},
     "description": "Reseta talentos sem gastar diamantes"
@@ -1422,7 +1422,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "scroll",
     "imageUrl": "/assets/items/misc/fraddo-parchment.png",
     "minLevel": 1,
-    "price": 180,
+    "price": 180000,
     "goldCoinPrice": 3,
     "stats": {},
     "description": "Reseta atributos sem gastar diamantes"
@@ -2921,8 +2921,6 @@ export const CITIES: CityDefinition[] = [
     "moneyChangerItemIds": [
       "ticket_train",
       "ticket_ship",
-      "scroll_enhanced_parchment",
-      "scroll_fraddo_parchment",
       "oblivion_scroll",
       "memory_scroll"
     ]
@@ -2931,7 +2929,7 @@ export const CITIES: CityDefinition[] = [
     "id": "ravenspire",
     "countryId": "aurevia",
     "name": "Ravenspire",
-    "minLevel": 14,
+    "minLevel": 5,
     "travelCost": 45,
     "description": "Cidade de torres antigas entre campos abertos e florestas densas, vigiando rotas usadas por caçadores e saqueadores.",
     "inhabitants": [
@@ -2993,7 +2991,7 @@ export const CITIES: CityDefinition[] = [
     "id": "ironhold",
     "countryId": "aurevia",
     "name": "Ironhold",
-    "minLevel": 32,
+    "minLevel": 10,
     "travelCost": 130,
     "description": "Fortaleza montanhosa de Aurevia, cravada em picos de pedra, minas profundas e vales tomados por feras de altitude.",
     "inhabitants": [
@@ -3078,7 +3076,7 @@ export const CITIES: CityDefinition[] = [
     "id": "vila_de_valfria",
     "countryId": "valfria",
     "name": "Vila de Valfria",
-    "minLevel": 57,
+    "minLevel": 20,
     "travelCost": 130,
     "description": "Vila portuária de Valfria, onde navios chegam por canais de sal e caravanas partem rumo ao deserto seco.",
     "isPort": true,
@@ -3148,9 +3146,6 @@ export const CITIES: CityDefinition[] = [
     "moneyChangerItemIds": [
       "ticket_train",
       "ticket_ship",
-      "scroll_enhanced_parchment",
-      "scroll_fraddo_parchment",
-      "scroll_magic_lands_parchment",
       "oblivion_scroll",
       "memory_scroll"
     ]
@@ -3159,7 +3154,7 @@ export const CITIES: CityDefinition[] = [
     "id": "rosindale",
     "countryId": "valfria",
     "name": "Rosindale",
-    "minLevel": 80,
+    "minLevel": 25,
     "travelCost": 130,
     "description": "Cidade entre cânions de Valfria, cercada por gargantas avermelhadas, pontes estreitas e ravinas cheias de ecos.",
     "inhabitants": [
@@ -3229,7 +3224,6 @@ export const CITIES: CityDefinition[] = [
       "armor_dhron",
       "armor_erins",
       "celtic_yellow_amulet",
-      "celtic_orange_amulet"
     ],
     "goldCoinMerchantItemIds": [
       "material_blue_coin",
@@ -3245,7 +3239,7 @@ export const CITIES: CityDefinition[] = [
     "id": "porto_sombrio",
     "countryId": "morthaly",
     "name": "Porto Sombrio",
-    "minLevel": 94,
+    "minLevel": 30,
     "travelCost": 180,
     "description": "Porto amaldiçoado de Morthaly, com cais de pedra negra, navios silenciosos e marés que trazem restos de criaturas mortas.",
     "isPort": true,
@@ -3293,9 +3287,6 @@ export const CITIES: CityDefinition[] = [
     "moneyChangerItemIds": [
       "ticket_train",
       "ticket_ship",
-      "scroll_enhanced_parchment",
-      "scroll_fraddo_parchment",
-      "scroll_magic_lands_parchment",
       "oblivion_scroll",
       "memory_scroll"
     ]
@@ -3304,7 +3295,7 @@ export const CITIES: CityDefinition[] = [
     "id": "necropole_de_morthaly",
     "countryId": "morthaly",
     "name": "Necrópole de Morthaly",
-    "minLevel": 105,
+    "minLevel": 35,
     "travelCost": 220,
     "description": "Imenso castelo-necrópole de Morthaly, feito de muralhas, criptas, torres violetas e salões onde a morte ainda governa.",
     "inhabitants": [
@@ -8554,6 +8545,10 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0684
       },
       {
+        "itemId": "celtic_magenta_amulet",
+        "chance": 0.044
+      },
+      {
         "itemId": "armor_cursed",
         "chance": 0.0447
       },
@@ -8615,6 +8610,10 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "material_midran",
         "chance": 0.0131
+      },
+      {
+        "itemId": "celtic_magenta_amulet",
+        "chance": 0.044
       },
       {
         "itemId": "weapon_insane_axe",
@@ -8692,6 +8691,10 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0445
       },
       {
+        "itemId": "celtic_magenta_amulet",
+        "chance": 0.044
+      },
+      {
         "itemId": "forged_ironhold_plate_40",
         "chance": 0.0025
       }
@@ -8759,6 +8762,10 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.044
       },
       {
+        "itemId": "celtic_magenta_amulet",
+        "chance": 0.044
+      },
+      {
         "itemId": "forged_ironhold_plate_40",
         "chance": 0.0025
       }
@@ -8822,7 +8829,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.067
       },
       {
-        "itemId": "celtic_orange_amulet",
+        "itemId": "celtic_magenta_amulet",
         "chance": 0.044
       },
       {
