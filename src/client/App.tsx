@@ -1566,6 +1566,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   const [worldFilter, setWorldFilter] = useState("");
   const [itemFilter, setItemFilter] = useState("");
   const [itemKind, setItemKind] = useState<"all" | ItemKind>("all");
+  const [itemLevel, setItemLevel] = useState<string>("all");
   const [selectedItemId, setSelectedItemId] = useState("");
   const [monsterFilter, setMonsterFilter] = useState("");
   const [monsterCity, setMonsterCity] = useState("all");
@@ -1574,12 +1575,18 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   const [developerMessage, setDeveloperMessage] = useState("");
   const countriesById = new Map(game.countries.map((country) => [country.id, country]));
   const citiesById = new Map(game.cities.map((city) => [city.id, city]));
-  const allItems = Object.values(game.itemCatalog).sort((a, b) => a.price - b.price || a.name.localeCompare(b.name));
+  const allItems = Object.values(game.itemCatalog).sort((a, b) => {
+    const equipmentOrder = Number(Boolean(a.slot)) === Number(Boolean(b.slot)) ? 0 : a.slot ? -1 : 1;
+    const levelOrder = getGuideItemRequiredLevel(a) - getGuideItemRequiredLevel(b);
+    return equipmentOrder || levelOrder || a.name.localeCompare(b.name);
+  });
+  const itemLevels = Array.from(new Set(allItems.map((item) => getGuideItemRequiredLevel(item)))).sort((a, b) => a - b);
   const filteredItems = allItems.filter((item) => {
     const matchesKind = itemKind === "all" || item.kind === itemKind;
+    const matchesLevel = itemLevel === "all" || String(getGuideItemRequiredLevel(item)) === itemLevel;
     const term = itemFilter.trim().toLowerCase();
     const matchesTerm = !term || item.name.toLowerCase().includes(term) || ITEM_KIND_LABELS[item.kind].toLowerCase().includes(term);
-    return matchesKind && matchesTerm;
+    return matchesKind && matchesLevel && matchesTerm;
   });
   const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] ?? null : null;
   const allMonsters = Object.values(game.monsterCatalog).sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
@@ -1919,6 +1926,14 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                   <option value={kind} key={kind}>{label}</option>
                 ))}
               </select>
+              <select value={itemLevel} onChange={(event) => setItemLevel(event.target.value)}>
+                <option value="all">Todos os níveis</option>
+                {itemLevels.map((level) => (
+                  <option value={String(level)} key={`lvl-${level}`}>
+                    {level > 0 ? `Nível ${level}` : "Sem nível"}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="guide-card-grid">
               {filteredItems.map((item) => (
@@ -2026,9 +2041,10 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
 
 function GuideItemDetail({ item, game, onClose }: { item: ItemDefinition; game: GameState; onClose: () => void }) {
   const statEntries = EQUIPMENT_STAT_KEYS
-    .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: item.stats[key] }))
+    .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: item.stats[key], icon: getGuideItemStatIcon(key) }))
     .filter((entry) => entry.value !== undefined);
   const dropSources = getItemDropSources(game, item.id);
+  const forgers = getItemForgers(game, item.id);
   const vendors = getItemVendors(game, item.id);
 
   return (
@@ -2048,10 +2064,10 @@ function GuideItemDetail({ item, game, onClose }: { item: ItemDefinition; game: 
           <span>Valor <strong>{formatCurrency(item.price)} ouro</strong></span>
           {item.rarity && <span>Raridade <strong>{RARITY_LABELS[item.rarity]}</strong></span>}
           {statEntries.map((entry) => (
-            <span key={entry.key}>{entry.label} <strong>+{entry.value}</strong></span>
+            <span key={entry.key}><b className="guide-stat-label">{entry.icon} {entry.label}</b> <strong>+{entry.value}</strong></span>
           ))}
-          {item.stats.healPercent && <span>Vida <strong>+{Math.round(item.stats.healPercent * 100)}%</strong></span>}
-          {item.stats.energyPercent && <span>Energia <strong>+{Math.round(item.stats.energyPercent * 100)}%</strong></span>}
+          {item.stats.healPercent && <span><b className="guide-stat-label"><Heart size={13} /> Vida</b> <strong>+{Math.round(item.stats.healPercent * 100)}%</strong></span>}
+          {item.stats.energyPercent && <span><b className="guide-stat-label"><Zap size={13} /> Energia</b> <strong>+{Math.round(item.stats.energyPercent * 100)}%</strong></span>}
         </div>
         <section className="guide-detail-section">
           <h4>Monstros que dropam</h4>
@@ -2064,7 +2080,25 @@ function GuideItemDetail({ item, game, onClose }: { item: ItemDefinition; game: 
                   <MonsterVisual monster={source.monster} className="guide-mini-art" />
                   <div>
                     <strong>{source.monster.name}</strong>
-                    <span>{source.city?.name ?? "Cidade desconhecida"} - {Math.round(source.chance * 100)}%</span>
+                    <span>{source.city?.name ?? "Cidade desconhecida"} - {formatDropChance(source.chance)}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+        <section className="guide-detail-section">
+          <h4>Quem forja</h4>
+          {forgers.length === 0 ? (
+            <p className="empty-state">Este item não é forjado na cidade atual.</p>
+          ) : (
+            <div className="guide-detail-list">
+              {forgers.map((forger) => (
+                <article key={`${forger.city.id}-${forger.role}-${forger.name}`}>
+                  {forger.station === "blacksmith" ? <Hammer size={20} /> : <FlaskConical size={20} />}
+                  <div>
+                    <strong>{forger.name}</strong>
+                    <span>{forger.role} - {forger.city.name}, {forger.country?.name ?? "País desconhecido"}</span>
                   </div>
                 </article>
               ))}
@@ -2120,13 +2154,20 @@ function GuideMonsterDetail({ monster, game, onClose }: { monster: GameState["ci
         </div>
         <section className="guide-detail-section">
           <h4>Drops</h4>
-          <div className="guide-detail-stats">
-            {monster.drops.length === 0 && <span>Drop <strong>Nenhum</strong></span>}
+          <div className="guide-detail-list">
+            {monster.drops.length === 0 && <article><Backpack size={20} /><div><strong>Drop</strong><span>Nenhum</span></div></article>}
             {monster.drops.map((drop) => (
-              <span key={drop.itemId}>
-                {game.itemCatalog[drop.itemId]?.name ?? drop.itemId}
-                <strong>{Math.round(drop.chance * 100)}%</strong>
-              </span>
+              <article key={drop.itemId}>
+                {game.itemCatalog[drop.itemId] ? (
+                  <ItemVisual item={game.itemCatalog[drop.itemId]} className="guide-mini-art" />
+                ) : (
+                  <span className="asset-frame guide-mini-art"><span className="asset-fallback">?</span></span>
+                )}
+                <div>
+                  <strong>{game.itemCatalog[drop.itemId]?.name ?? drop.itemId}</strong>
+                  <span>{formatDropChance(drop.chance)}</span>
+                </div>
+              </article>
             ))}
           </div>
         </section>
@@ -2145,6 +2186,54 @@ function getItemDropSources(game: GameState, itemId: string) {
         city: game.cities.find((city) => city.id === monster.cityId)
       }))
   );
+}
+
+function getGuideItemRequiredLevel(item: ItemDefinition) {
+  return item.slot ? Math.max(0, item.minLevel ?? 0) : 0;
+}
+
+function getGuideItemStatIcon(key: keyof typeof EQUIPMENT_STAT_LABELS) {
+  switch (key) {
+    case "strength":
+      return <Swords size={13} />;
+    case "constitution":
+      return <Heart size={13} />;
+    case "agility":
+      return <Crosshair size={13} />;
+    case "defense":
+      return <Shield size={13} />;
+    default:
+      return <Sparkles size={13} />;
+  }
+}
+
+function formatDropChance(chance: number) {
+  const percent = chance * 100;
+  if (Number.isInteger(percent)) {
+    return `${percent}%`;
+  }
+  return `${percent.toFixed(2).replace(/\.?0+$/, "")}%`;
+}
+
+function getItemForgers(game: GameState, itemId: string) {
+  const city = game.currentCity;
+  const country = game.currentCountry;
+  const forgers: Array<{
+    city: GameState["cities"][number];
+    country: GameState["countries"][number];
+    role: string;
+    name: string;
+    station: "blacksmith" | "alchemist";
+  }> = [];
+
+  if (game.availableCraftingRecipes.blacksmith.some((recipe) => recipe.resultItemId === itemId) && city.npcs.blacksmith) {
+    forgers.push({ city, country, role: "Ferreiro", name: city.npcs.blacksmith, station: "blacksmith" });
+  }
+  if (game.availableCraftingRecipes.alchemist.some((recipe) => recipe.resultItemId === itemId) && city.npcs.alchemist) {
+    forgers.push({ city, country, role: "Alquimista", name: city.npcs.alchemist, station: "alchemist" });
+  }
+
+  return forgers;
 }
 
 function getItemVendors(game: GameState, itemId: string) {

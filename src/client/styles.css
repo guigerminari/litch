@@ -1056,6 +1056,10 @@ button:disabled {
   font-size: 0.82rem;
 }
 
+.guide-detail-list span img {
+  padding: 0;
+}
+
 .referral-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1111,7 +1115,7 @@ button:disabled {
 
 .guide-filters {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 8px;
 }
 
@@ -1182,12 +1186,20 @@ button:disabled {
 .guide-detail-stats span {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
   padding: 8px 9px;
   border: 1px solid rgba(220, 203, 255, 0.1);
   border-radius: 7px;
   background: rgba(16, 13, 26, 0.52);
   color: var(--muted);
+}
+
+.guide-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
 }
 
 .guide-detail-stats strong {
