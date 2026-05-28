@@ -610,8 +610,8 @@ export function App() {
 
   if (!game) {
     return (
-      <main className="auth-screen">
-        <form className="auth-panel" style={{backgroundColor:"#020007"}} onSubmit={submitAuth}>
+      <main className="auth-screen" style={{ backgroundColor:"#020007" }}>
+        <form className="auth-panel" style={{ border: "none", boxShadow: "none"}} onSubmit={submitAuth}>
           <h1 className="sr-only">Litch RPG</h1>
           <img className="auth-wordmark" src={BRAND_WORDMARK_URL} alt="Litch RPG" />
           <div className="auth-tabs">
@@ -2382,38 +2382,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           progress={energyProgress}
         />
       </section>
-
-      <div className="stat-grid">
-        <Metric icon={<Heart size={18} style={{color: "var(--red)"}} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
-        <Metric icon={<Zap size={18} style={{color: "var(--green)"}} />} label="Energia" value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`} />
-        <Metric icon={<Swords size={18} style={{color: "var(--red)"}} />} label="FORÇA" value={game.derived.totalStrength} />
-        <Metric icon={<Shield size={18} style={{color: "var(--purple)"}} />} label="DEFESA" value={game.derived.defense} />
-        <Metric icon={<Crosshair size={18} style={{color: "var(--gold)"}} />} label="AGI" value={game.derived.agility} />
-      </div>
-
-      <div className="chance-row">
-        <span>
-          <strong>Crítico {formatSecondaryIndex(game.derived.criticalChance)}</strong>
-          <small>contra Resistência Crítica</small>
-        </span>
-        <span>
-          <strong>Precisão {formatSecondaryIndex(game.derived.accuracy)}</strong>
-          <small>contra Esquiva</small>
-        </span>
-        <span>
-          <strong>Esquiva {formatSecondaryIndex(game.derived.dodgeChance)}</strong>
-          <small>contra Precisão</small>
-        </span>
-        <span>
-          <strong>Resist. crítico {formatSecondaryIndex(game.derived.criticalResistance)}</strong>
-          <small>contra Crítico</small>
-        </span>
-        <span>
-          <strong>Dano crítico x{game.derived.criticalDamageMultiplier.toFixed(2)}</strong>
-          <small>ao acertar crítico</small>
-        </span>
-      </div>
-
+      
       <section className="compact-section">
         <h3>Poções</h3>
         <div className="potion-actions">
@@ -2451,6 +2420,37 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           </button>
         </div>
       </section>
+
+      <div className="stat-grid">
+        <Metric icon={<Heart size={18} style={{color: "var(--red)"}} />} label="Vida" value={`${game.character.currentHp}/${game.derived.maxHp}`} />
+        <Metric icon={<Zap size={18} style={{color: "var(--green)"}} />} label="Energia" value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`} />
+        <Metric icon={<Swords size={18} style={{color: "var(--red)"}} />} label="FORÇA" value={game.derived.totalStrength} />
+        <Metric icon={<Shield size={18} style={{color: "var(--purple)"}} />} label="DEFESA" value={game.derived.defense} />
+        <Metric icon={<Crosshair size={18} style={{color: "var(--gold)"}} />} label="AGI" value={game.derived.agility} />
+      </div>
+
+      <div className="chance-row">
+        <span>
+          <strong>Crítico {formatSecondaryIndex(game.derived.criticalChance)}</strong>
+          <small>contra Resistência Crítica</small>
+        </span>
+        <span>
+          <strong>Precisão {formatSecondaryIndex(game.derived.accuracy)}</strong>
+          <small>contra Esquiva</small>
+        </span>
+        <span>
+          <strong>Esquiva {formatSecondaryIndex(game.derived.dodgeChance)}</strong>
+          <small>contra Precisão</small>
+        </span>
+        <span>
+          <strong>Resist. crítico {formatSecondaryIndex(game.derived.criticalResistance)}</strong>
+          <small>contra Crítico</small>
+        </span>
+        <span>
+          <strong>Dano crítico x{game.derived.criticalDamageMultiplier.toFixed(2)}</strong>
+          <small>ao acertar crítico</small>
+        </span>
+      </div>
 
       <section className="compact-section">
         <h3>Equipamentos</h3>

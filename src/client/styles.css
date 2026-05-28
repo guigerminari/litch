@@ -235,7 +235,7 @@ button:disabled {
 
 .auth-tabs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 6px;
 }
 
@@ -2029,7 +2029,7 @@ button:disabled {
 .potion-actions {
   display: grid;
   gap: 8px;
-  grid-template-columns: auto auto;
+  grid-template-columns: 1fr 1fr;
 }
 
 .quick-potion-settings {
