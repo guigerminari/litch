@@ -3497,9 +3497,37 @@ const CRAFT_RARITY_TABLE: Array<{ rarity: Rarity; pct: number }> = [
 
 function CraftingPanel({ game, station }: { game: GameState; station: "blacksmith" | "alchemist" }) {
   const recipes = game.availableCraftingRecipes[station];
+  const [selectedRecipeId, setSelectedRecipeId] = useState("");
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
   const icon = station === "blacksmith" ? <GameIcon name="blacksmith" size={26} /> : <GameIcon name="alchemist" size={26} />;
   const npcName = station === "blacksmith" ? game.currentCity.npcs.blacksmith : game.currentCity.npcs.alchemist;
+
+  useEffect(() => {
+    if (recipes.length === 0) {
+      setSelectedRecipeId("");
+      return;
+    }
+    if (selectedRecipeId && !recipes.some((recipe) => recipe.id === selectedRecipeId)) {
+      setSelectedRecipeId("");
+    }
+  }, [recipes, selectedRecipeId]);
+
+  const recipeEntries = recipes.map((recipe) => {
+    const result = game.itemCatalog[recipe.resultItemId];
+    const hasMaterials = recipe.ingredients.every((ingredient) => countInventoryItem(game, ingredient.itemId) >= ingredient.quantity);
+    const canCraft = hasMaterials && game.character.gold >= recipe.goldCost;
+    return { recipe, result, hasMaterials, canCraft };
+  });
+
+  const selectedEntry = recipeEntries.find((entry) => entry.recipe.id === selectedRecipeId) ?? null;
+  const selectedResult = selectedEntry?.result;
+  const selectedRecipe = selectedEntry?.recipe;
+  const selectedIsEquipment = Boolean(selectedResult?.slot);
+  const selectedStatEntries = selectedIsEquipment
+    ? EQUIPMENT_STAT_KEYS
+        .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: selectedResult?.stats?.[key] }))
+        .filter((entry) => entry.value != null && (entry.value as number) !== 0)
+    : [];
 
   return (
     <section className="content-panel">
@@ -3511,71 +3539,88 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
         </div>
       )}
       {station === "blacksmith" && game.currentCity.blacksmithEnhancement && <EquipmentEnhancementPanel game={game} />}
-      <div className="list-grid monster-battle-list">
-        {recipes.length === 0 && <p className="empty-state">Nenhuma receita disponível nesta cidade.</p>}
-        {recipes.map((recipe) => {
-          const result = game.itemCatalog[recipe.resultItemId];
-          const isEquipment = Boolean(result?.slot);
-          const canCraft =
-            game.character.gold >= recipe.goldCost &&
-            recipe.ingredients.every((ingredient) => countInventoryItem(game, ingredient.itemId) >= ingredient.quantity);
-          const statEntries = isEquipment
-            ? EQUIPMENT_STAT_KEYS
-                .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: result?.stats?.[key] }))
-                .filter((entry) => entry.value != null && (entry.value as number) !== 0)
-            : [];
-          return (
-            <article className="entity-card craft-recipe-card" key={recipe.id}>
-              <div className="craft-result-header">
-                <ItemVisual item={result} className="craft-result-art" />
-                <div className="craft-result-info">
-                  <strong>{recipe.name}</strong>
-                  <span>{result?.name}{recipe.resultQuantity > 1 ? ` x${recipe.resultQuantity}` : ""}</span>
-                  {result?.description && <p className="craft-result-desc">{result.description}</p>}
-                  <div className="craft-result-meta">
-                    {result?.minLevel != null && <small>Nível {result.minLevel}</small>}
-                  </div>
+      <div className="crafting-panel-layout">
+        <div className="crafting-grid" role="list" aria-label="Itens criáveis">
+          {recipeEntries.map(({ recipe, result, hasMaterials }) => {
+            const selected = selectedRecipeId === recipe.id;
+            return (
+              <button
+                type="button"
+                key={recipe.id}
+                role="listitem"
+                className={`craft-grid-item${selected ? " selected" : ""}${hasMaterials ? " ready" : ""}`}
+                onClick={() => setSelectedRecipeId(recipe.id)}
+                aria-label={recipe.name}
+              >
+                <ItemVisual item={result} className="craft-grid-art" quantity={recipe.resultQuantity} />
+              </button>
+            );
+          })}
+        </div>
+
+        {selectedEntry && selectedResult && selectedRecipe && (
+          <article className="entity-card craft-recipe-card craft-detail-card">
+            <div className="craft-result-header">
+              <ItemVisual item={selectedResult} className="craft-result-art" quantity={selectedRecipe.resultQuantity} />
+              <div className="craft-result-info">
+                <strong>{selectedRecipe.name}</strong>
+                <span>{selectedResult.name}{selectedRecipe.resultQuantity > 1 ? ` x${selectedRecipe.resultQuantity}` : ""}</span>
+                {selectedResult.description && <p className="craft-result-desc">{selectedResult.description}</p>}
+                <div className="craft-result-meta">
+                  {selectedResult.minLevel != null && <small>Nível {selectedResult.minLevel}</small>}
                 </div>
               </div>
-              {statEntries.length > 0 && (
-                <div className="recipe-ingredients">
-                  {statEntries.map(({ key, label, value }) => (
-                    <small key={key}>
-                      {getGuideItemStatIcon(key as keyof typeof EQUIPMENT_STAT_LABELS)} {label}: <b>{value as number}</b>
-                    </small>
+            </div>
+
+            {selectedStatEntries.length > 0 && (
+              <div className="recipe-ingredients">
+                {selectedStatEntries.map(({ key, label, value }) => (
+                  <small key={key}>
+                    {getGuideItemStatIcon(key as keyof typeof EQUIPMENT_STAT_LABELS)} {label}: <b>{value as number}</b>
+                  </small>
+                ))}
+              </div>
+            )}
+
+            {selectedIsEquipment && (
+              <div className="craft-rarity-table">
+                <span className="craft-rarity-label">Chances de raridade</span>
+                <div className="craft-rarity-row">
+                  {CRAFT_RARITY_TABLE.map(({ rarity, pct }) => (
+                    <span key={rarity} className={`item-rarity ${rarity}`}>{RARITY_LABELS[rarity]} {pct}%</span>
                   ))}
                 </div>
-              )}
-              {isEquipment && (
-                <div className="craft-rarity-table">
-                  <span className="craft-rarity-label">Chances de raridade</span>
-                  <div className="craft-rarity-row">
-                    {CRAFT_RARITY_TABLE.map(({ rarity, pct }) => (
-                      <span key={rarity} className={`item-rarity ${rarity}`}>{RARITY_LABELS[rarity]} {pct}%</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <div className="recipe-ingredients">
-                {recipe.ingredients.map((ingredient) => {
-                  const ingItem = game.itemCatalog[ingredient.itemId];
-                  const owned = countInventoryItem(game, ingredient.itemId);
-                  const hasEnough = owned >= ingredient.quantity;
-                  return (
-                    <small key={ingredient.itemId} className={hasEnough ? "" : "ingredient-missing"}>
-                      <ItemVisual item={ingItem} className="ingredient-art" />
-                      {ingItem?.name}: <b>{owned}/{ingredient.quantity}</b>
-                    </small>
-                  );
-                })}
-                <small><Coins size={15} style={{ color: "var(--gold)" }} /> {recipe.goldCost} </small>
               </div>
-              <button className="primary-button" disabled={!canCraft} onClick={() => socket.emit("craft:create", { recipeId: recipe.id })}>
-                Criar
-              </button>
-            </article>
-          );
-        })}
+            )}
+
+            <div className="recipe-ingredients">
+              {selectedRecipe.ingredients.map((ingredient) => {
+                const ingItem = game.itemCatalog[ingredient.itemId];
+                const owned = countInventoryItem(game, ingredient.itemId);
+                const hasEnough = owned >= ingredient.quantity;
+                return (
+                  <small key={ingredient.itemId} className={hasEnough ? "" : "ingredient-missing"}>
+                    <ItemVisual item={ingItem} className="ingredient-art" />
+                    {ingItem?.name}: <b>{owned}/{ingredient.quantity}</b>
+                  </small>
+                );
+              })}
+              <small className={game.character.gold >= selectedRecipe.goldCost ? "" : "ingredient-missing"}>
+                <Coins size={15} style={{ color: "var(--gold)" }} /> {game.character.gold}/{selectedRecipe.goldCost}
+              </small>
+            </div>
+
+            <button
+              className="primary-button"
+              disabled={!selectedEntry.canCraft}
+              onClick={() => socket.emit("craft:create", { recipeId: selectedRecipe.id })}
+            >
+              Criar
+            </button>
+          </article>
+        )}
+
+        {recipes.length === 0 && <p className="empty-state">Nenhuma receita disponível nesta cidade.</p>}
       </div>
     </section>
   );
