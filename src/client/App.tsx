@@ -5290,8 +5290,8 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
     }, {});
   const filledSlots = [...equipmentItems, ...Object.values(stackableMap)];
 
-  // Pad to exactly 40 slots (5 columns × 8 rows)
-  const TOTAL_SLOTS = 40;
+  // Pad to player's real inventory capacity from server state
+  const TOTAL_SLOTS = Math.max(game.inventoryCapacity, filledSlots.length);
   const slots: Array<InventorySlotEntry | null> = [
     ...filledSlots,
     ...Array(Math.max(0, TOTAL_SLOTS - filledSlots.length)).fill(null),
