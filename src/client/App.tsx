@@ -3498,6 +3498,7 @@ const CRAFT_RARITY_TABLE: Array<{ rarity: Rarity; pct: number }> = [
 function CraftingPanel({ game, station }: { game: GameState; station: "blacksmith" | "alchemist" }) {
   const recipes = game.availableCraftingRecipes[station];
   const [selectedRecipeId, setSelectedRecipeId] = useState("");
+  const [craftedRecipePulseId, setCraftedRecipePulseId] = useState("");
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
   const icon = station === "blacksmith" ? <GameIcon name="blacksmith" size={26} /> : <GameIcon name="alchemist" size={26} />;
   const npcName = station === "blacksmith" ? game.currentCity.npcs.blacksmith : game.currentCity.npcs.alchemist;
@@ -3529,6 +3530,14 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
         .filter((entry) => entry.value != null && (entry.value as number) !== 0)
     : [];
 
+  function handleCreate(recipeId: string) {
+    socket.emit("craft:create", { recipeId });
+    setCraftedRecipePulseId(recipeId);
+    window.setTimeout(() => {
+      setCraftedRecipePulseId((current) => (current === recipeId ? "" : current));
+    }, 820);
+  }
+
   return (
     <section className="content-panel">
       <PanelTitle icon={icon} title={title} />
@@ -3548,7 +3557,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
                 type="button"
                 key={recipe.id}
                 role="listitem"
-                className={`craft-grid-item${selected ? " selected" : ""}${hasMaterials ? " ready" : ""}`}
+                className={`craft-grid-item${selected ? " selected" : ""}${hasMaterials ? " ready" : ""}${craftedRecipePulseId === recipe.id ? " craft-created-burst" : ""}`}
                 onClick={() => setSelectedRecipeId(recipe.id)}
                 aria-label={recipe.name}
               >
@@ -3559,7 +3568,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
         </div>
 
         {selectedEntry && selectedResult && selectedRecipe && (
-          <article className="entity-card craft-recipe-card craft-detail-card">
+          <article className={`entity-card craft-recipe-card craft-detail-card${craftedRecipePulseId === selectedRecipe.id ? " craft-created-burst" : ""}`}>
             <div className="craft-result-header">
               <ItemVisual item={selectedResult} className="craft-result-art" quantity={selectedRecipe.resultQuantity} />
               <div className="craft-result-info">
@@ -3613,7 +3622,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
             <button
               className="primary-button"
               disabled={!selectedEntry.canCraft}
-              onClick={() => socket.emit("craft:create", { recipeId: selectedRecipe.id })}
+              onClick={() => handleCreate(selectedRecipe.id)}
             >
               Criar
             </button>
