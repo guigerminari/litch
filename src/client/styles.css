@@ -8587,9 +8587,32 @@ button:disabled {
   color: var(--text);
 }
 
+.bottom-button.inventory-full .game-icon,
+.bottom-button.inventory-full .clan-crest-image {
+  filter: saturate(1.2);
+}
+.bottom-badge.inventory-full {
+  background: rgba(185, 74, 89, 0.98);
+  color: #fff;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 14px rgba(185, 74, 89, 0.7);
+}
 .ranking-row,
 .talent-row,
 .clan-manage-form,
+.battle-log-entry.discard {
+  border-color: rgba(185, 74, 89, 0.55);
+  background: rgba(91, 33, 47, 0.45);
+}
+.battle-log-entry.discard .battle-log-icon {
+  color: #ff8fa3;
+  background: rgba(185, 74, 89, 0.22);
+}
 .crest-option,
 .clan-bonus-chip,
 .clan-benefit-node {

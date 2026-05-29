@@ -548,19 +548,31 @@ function grantPveRewards(battle: BattleState, character: Character) {
     battle.log.unshift(entry(levelMessage));
   }
 
+  const discardedDropNames: string[] = [];
+
   for (const drop of monster.drops) {
     const baseDropChance = Math.min(0.95, drop.chance + stats.dropBonusPercent);
     const eventDropChance = Math.min(0.95, baseDropChance * (1 + eventBonus.dropChanceBonusPercent));
     if (Math.random() <= eventDropChance) {
-      if (hasCapacity(character, 1)) {
-        const definition = ITEM_CATALOG[drop.itemId];
+      const definition = ITEM_CATALOG[drop.itemId];
+      const isStackable = definition && !definition.slot;
+      const alreadyHasStack = isStackable && character.inventory.some((inv) => inv.itemId === drop.itemId);
+      if (alreadyHasStack || hasCapacity(character, 1)) {
         const rarity = definition?.slot ? getRarityFromRoll() : undefined;
         addItem(character, drop.itemId, ITEM_CATALOG, 1, { rarity });
         battle.log.unshift(entry(`${character.name} encontrou ${ITEM_CATALOG[drop.itemId].name}.`));
       } else {
-        battle.log.unshift(entry(`${ITEM_CATALOG[drop.itemId].name} caiu no chão. Inventário cheio.`));
+        const dropName = ITEM_CATALOG[drop.itemId].name;
+        discardedDropNames.push(dropName);
+        battle.log.unshift(entry(`${dropName} caiu no chão. Inventário cheio.`));
       }
     }
+  }
+
+  if (discardedDropNames.length > 0) {
+    const listed = discardedDropNames.slice(0, 3).join(", ");
+    const extra = discardedDropNames.length > 3 ? ` +${discardedDropNames.length - 3}` : "";
+    battle.log.unshift(entry(`Itens descartados por inventário cheio: ${listed}${extra}.`));
   }
 }
 

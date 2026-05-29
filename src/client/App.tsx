@@ -1279,12 +1279,21 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
   const working = isWorkInProgress(game.character.activeWork);
   const completedMissions = countClaimable(game.quests.daily) + countClaimable(game.quests.fixed);
   const myListings = game.marketplaceListings.filter((l) => l.sellerPlayerId === game.player.id).length;
+  const inventoryFull = game.inventoryUsed >= game.inventoryCapacity;
 
   const items = [
     { view: "city" as View, label: "Cidade", icon: <GameIcon name="city" size={40} />, disabled: locked, badge: null },
     { view: "hunt" as View, label: "Caça", icon: <GameIcon name="hunt" size={40} />, disabled: locked, badge: null },
     { view: "arena" as View, label: "Arena", icon: <GameIcon name="arena" size={40} />, disabled: locked || working, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
-    { view: "inventory" as View, label: "Inventário", icon: <GameIcon name="inventory" size={40} />, disabled: false, badge: `${game.inventoryUsed}/${game.inventoryCapacity}` },
+    {
+      view: "inventory" as View,
+      label: "Inventário",
+      icon: <GameIcon name="inventory" size={40} />,
+      disabled: false,
+      badge: `${game.inventoryUsed}/${game.inventoryCapacity}`,
+      badgeClass: inventoryFull ? "inventory-full" : "",
+      buttonClass: inventoryFull ? "inventory-full" : ""
+    },
     { view: "market" as View, label: "Mercado", icon: <GameIcon name="market" size={40} />, disabled: locked, badge: myListings > 0 ? myListings : null },
     { view: "missions" as View, label: "Missões", icon: <GameIcon name="missions" size={40} />, disabled: locked, badge: completedMissions > 0 ? completedMissions : null },
     { view: "clan" as View, label: "Clã", icon: game.clan ? getClanCrestIcon(game.clan.icon, 40, "bottom-clan-crest") : <GameIcon name="clan" size={40} />, disabled: locked, badge: null },
@@ -1296,7 +1305,7 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
       {items.map((item) => (
         <button
           key={item.view}
-          className={view === item.view ? "bottom-button active" : "bottom-button"}
+          className={["bottom-button", view === item.view ? "active" : "", item.buttonClass].filter(Boolean).join(" ")}
           disabled={item.disabled}
           title={item.label}
           aria-label={item.label}
@@ -1304,7 +1313,7 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
         >
           {item.icon}
           {item.badge !== null && item.badge !== undefined && (
-            <span className="bottom-badge">{item.badge}</span>
+            <span className={["bottom-badge", item.badgeClass].filter(Boolean).join(" ")}>{item.badge}</span>
           )}
         </button>
       ))}
@@ -6162,6 +6171,11 @@ function BattlePanel({ game }: { game: GameState }) {
   const firstPotion = healthPotion?.inventoryItem ?? null;
   const autoPveActive = isAutoPveActive(game);
   const canUseAutoPve = (battle.mode === "pve" || battle.mode === "dungeon") && autoPveActive;
+  const hasInventoryDiscardInBattle = battle.log.some((entry) => {
+    const lower = entry.text.toLowerCase();
+    const plain = lower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return plain.includes("inventario cheio") && (plain.includes("descart") || plain.includes("caiu no chao"));
+  });
   const rematchMonsterId = getBattleMonsterId(battle);
   const rematchMonster = rematchMonsterId ? game.cityMonsters.find((monster) => monster.id === rematchMonsterId) : null;
   const rematchEnergyCost = rematchMonster ? rematchMonster.level + (battle.mode === "dungeon" ? 1 : 0) : 0;
@@ -6367,6 +6381,11 @@ function BattlePanel({ game }: { game: GameState }) {
 
     const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
     const playerWon = winner?.ownerPlayerId === game.player.id;
+    if (playerWon && hasInventoryDiscardInBattle) {
+      stopAutoPve();
+      return;
+    }
+
     if (playerWon && rematchMonsterId && canRematch) {
       const key = `${battle.id}:${battle.updatedAt}:next`;
       if (lastAutoPveStepKeyRef.current === key) {
@@ -6390,6 +6409,7 @@ function BattlePanel({ game }: { game: GameState }) {
     battle.mode,
     battle.winnerParticipantId,
     battle.participants,
+    hasInventoryDiscardInBattle,
     myTurn,
     rematchMonsterId,
     canRematch,
@@ -6757,6 +6777,7 @@ function parseBattleHpChange(text: string, participants: BattleParticipant[]): B
 function getBattleLogKind(text: string) {
   const lower = text.toLowerCase();
   const plain = lower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (plain.includes("inventario cheio") && (plain.includes("descart") || plain.includes("caiu no chao"))) return "discard";
   if (lower.includes("causou")) return plain.includes("critico") ? "critical" : "damage";
   if (lower.includes("esquivou")) return "dodge";
   if (lower.includes("energia") && (lower.includes("usou") || lower.includes("recuperou"))) return "energy";
@@ -6770,6 +6791,7 @@ function getBattleLogKind(text: string) {
 
 function getBattleLogIcon(text: string) {
   const kind = getBattleLogKind(text);
+  if (kind === "discard") return <X size={15} />;
   if (kind === "critical") return <Flame size={15} />;
   if (kind === "damage") return <Swords size={15} />;
   if (kind === "dodge") return <Crosshair size={15} />;
