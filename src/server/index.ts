@@ -2974,6 +2974,12 @@ io.on("connection", (socket: AuthedSocket) => {
       ensureNotInBattle(character);
       const result = enhanceEquipment(character, payload);
       emitState(playerId);
+      socket.emit("blacksmith:enhanceResult", {
+        success: result.success,
+        itemName: result.itemName,
+        nextLevel: result.nextLevel,
+        successChance: result.successChance
+      });
       socket.emit("game:error", {
         message: result.success
           ? `${result.itemName} aprimorado para +${result.nextLevel}.`

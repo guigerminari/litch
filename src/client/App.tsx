@@ -3663,8 +3663,11 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
 
 function EquipmentEnhancementPanel({ game }: { game: GameState }) {
   const equipmentItems = game.character.inventory.filter((entry) => Boolean(game.itemCatalog[entry.itemId]?.slot));
-  const [selectedInstanceId, setSelectedInstanceId] = useState(equipmentItems[0]?.instanceId ?? "");
+  const [selectedInstanceId, setSelectedInstanceId] = useState("");
   const [creationStones, setCreationStones] = useState(0);
+  const [enhancementFx, setEnhancementFx] = useState<{ kind: "success" | "failure"; token: number } | null>(null);
+  const [enhanceBusy, setEnhanceBusy] = useState(false);
+  const enhancementFxTimerRef = useRef<number | null>(null);
   const selectedEntry = equipmentItems.find((entry) => entry.instanceId === selectedInstanceId) ?? null;
   const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
   const creationStoneItem = game.itemCatalog[ENHANCEMENT_ITEMS.creationStone];
@@ -3679,8 +3682,8 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
   const canEnhance = Boolean(selectedEntry && selectedItem && plan?.allowed && requirementsMet && game.character.gold >= plan.goldCost);
 
   useEffect(() => {
-    if (!equipmentItems.some((entry) => entry.instanceId === selectedInstanceId)) {
-      setSelectedInstanceId(equipmentItems[0]?.instanceId ?? "");
+    if (selectedInstanceId && !equipmentItems.some((entry) => entry.instanceId === selectedInstanceId)) {
+      setSelectedInstanceId("");
     }
   }, [equipmentItems, selectedInstanceId]);
 
@@ -3689,6 +3692,46 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
       setCreationStones(plan.maxCreationStones);
     }
   }, [creationStones, plan]);
+
+  useEffect(() => {
+    const handleEnhancementResult = (payload: { success: boolean }) => {
+      setEnhanceBusy(false);
+      const kind = payload.success ? "success" : "failure";
+      setEnhancementFx({ kind, token: Date.now() });
+      if (enhancementFxTimerRef.current) {
+        window.clearTimeout(enhancementFxTimerRef.current);
+      }
+      enhancementFxTimerRef.current = window.setTimeout(() => setEnhancementFx(null), 1450);
+    };
+
+    const handleEnhancementErrorFallback = (payload: { message: string }) => {
+      if (!payload?.message) {
+        return;
+      }
+      if (payload.message.includes("Aprimoramento") || payload.message.includes("aprimorado para +")) {
+        setEnhanceBusy(false);
+      }
+    };
+
+    socket.on("blacksmith:enhanceResult", handleEnhancementResult);
+    socket.on("game:error", handleEnhancementErrorFallback);
+
+    return () => {
+      socket.off("blacksmith:enhanceResult", handleEnhancementResult);
+      socket.off("game:error", handleEnhancementErrorFallback);
+      if (enhancementFxTimerRef.current) {
+        window.clearTimeout(enhancementFxTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleEnhance = () => {
+    if (!selectedEntry || !plan || !canEnhance || enhanceBusy) {
+      return;
+    }
+    setEnhanceBusy(true);
+    socket.emit("blacksmith:enhance", { instanceId: selectedEntry.instanceId, creationStones: plan.creationStones });
+  };
 
   if (equipmentItems.length === 0) {
     return (
@@ -3714,23 +3757,44 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
         </div>
       </div>
 
-      <label className="enhancement-field">
-        <span>Equipamento</span>
-        <select value={selectedInstanceId} onChange={(event) => setSelectedInstanceId(event.target.value)}>
+      <div className="enhancement-selector">
+        <span>Escolha o equipamento</span>
+        <div className="enhancement-item-grid" role="listbox" aria-label="Equipamentos disponíveis para aprimorar">
           {equipmentItems.map((entry) => {
             const item = game.itemCatalog[entry.itemId];
+            const selected = selectedInstanceId === entry.instanceId;
+            const equipped = isItemEquipped(game, entry.instanceId);
+            const rarityColor = getEquipmentRarityColor(item, entry.rarity);
+            const enhancement = Math.max(0, entry.enhancementLevel ?? 0);
+            const enhancementClasses = [
+              enhancement >= 4 ? "enhance-tier-4" : "",
+              enhancement >= 7 ? "enhance-tier-7" : "",
+              enhancement >= 10 ? "enhance-tier-10" : "",
+              enhancement >= 13 ? "enhance-tier-13" : ""
+            ].filter(Boolean).join(" ");
             return (
-              <option key={entry.instanceId} value={entry.instanceId}>
-                {formatInventoryItemName(item, entry)}{isItemEquipped(game, entry.instanceId) ? " (equipado)" : ""}
-              </option>
+              <button
+                key={entry.instanceId}
+                type="button"
+                className={`inv-slot enhancement-select-slot${selected ? " selected" : ""}${equipped ? " equipped" : ""} ${enhancementClasses}`}
+                title={formatInventoryItemName(item, entry)}
+                aria-selected={selected}
+                style={rarityColor ? ({ borderColor: rarityColor, "--rarity-color": rarityColor } as React.CSSProperties) : undefined}
+                onClick={() => setSelectedInstanceId(selected ? "" : entry.instanceId)}
+              >
+                <ItemVisual item={item} className="slot-visual" enhancementLevel={entry.enhancementLevel} rarity={entry.rarity} />
+                {equipped && <span className="enhancement-equipped-badge">E</span>}
+                {enhancement >= 10 && <span className="inv-slot-light-sweep" aria-hidden="true" />}
+              </button>
             );
           })}
-        </select>
-      </label>
+        </div>
+        <small className="enhancement-selector-hint">Clique em um item da grade para abrir os detalhes do aprimoramento.</small>
+      </div>
 
       {selectedEntry && selectedItem && plan && currentStats && nextStats && (
         <div className="enhancement-grid">
-          <div className="enhancement-item-card">
+          <div className={`enhancement-item-card${enhancementFx ? ` fx-${enhancementFx.kind}` : ""}`}>
             <ItemVisual item={selectedItem} className="enhancement-item-visual" enhancementLevel={selectedEntry.enhancementLevel} rarity={selectedEntry.rarity} />
             <div>
               <strong>{formatInventoryItemName(selectedItem, selectedEntry)}</strong>
@@ -3805,14 +3869,24 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
 
           <button
             className="primary-button"
-            disabled={!canEnhance}
+            disabled={!canEnhance || enhanceBusy}
             title={plan.allowed ? "Aprimorar equipamento" : plan.blockReason}
-            onClick={() => socket.emit("blacksmith:enhance", { instanceId: selectedEntry.instanceId, creationStones: plan.creationStones })}
+            onClick={handleEnhance}
           >
-            Aprimorar
+            {enhanceBusy ? "Aprimorando..." : "Aprimorar"}
           </button>
+
+          {enhancementFx && (
+            <div key={enhancementFx.token} className={`enhancement-result-fx ${enhancementFx.kind}`} aria-hidden="true">
+              <span className="enhancement-result-ring" />
+              <span className="enhancement-result-wave" />
+              <strong>{enhancementFx.kind === "success" ? "SUCESSO" : "FALHA"}</strong>
+            </div>
+          )}
         </div>
       )}
+
+      {!selectedEntry && <p className="enhancement-empty-selection">Selecione um equipamento para visualizar custos e chance de sucesso.</p>}
     </section>
   );
 }
@@ -5331,15 +5405,23 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
           const equipped = isItemEquipped(game, slot.instanceId);
           const selected = selectedInstanceId === slot.instanceId;
           const rarityColor = getEquipmentRarityColor(item, slot.rarity);
+          const enhancement = item.slot ? Math.max(0, slot.enhancementLevel ?? 0) : 0;
+          const enhancementClasses = [
+            enhancement >= 4 ? "enhance-tier-4" : "",
+            enhancement >= 7 ? "enhance-tier-7" : "",
+            enhancement >= 10 ? "enhance-tier-10" : "",
+            enhancement >= 13 ? "enhance-tier-13" : ""
+          ].filter(Boolean).join(" ");
           return (
             <button
               key={slot.instanceId}
-              className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""}`}
+              className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""} ${enhancementClasses}`}
               title={formatInventoryItemName(item, slot)}
-              style={{ borderColor: rarityColor }}
+              style={rarityColor ? ({ borderColor: rarityColor, "--rarity-color": rarityColor } as React.CSSProperties) : undefined}
               onClick={() => setSelectedInstanceId(slot.instanceId)}
             >
               <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} enhancementLevel={slot.enhancementLevel} rarity={slot.rarity} />
+              {enhancement >= 10 && <span className="inv-slot-light-sweep" aria-hidden="true" />}
             </button>
           );
         })}
@@ -5846,13 +5928,20 @@ function MarketPanel({ game }: { game: GameState }) {
                 const item = game.itemCatalog[slot.itemId];
                 const selected = instanceId === slot.instanceId;
                 const rarityColor = getEquipmentRarityColor(item, slot.rarity);
+                const enhancement = item.slot ? Math.max(0, slot.enhancementLevel ?? 0) : 0;
+                const enhancementClasses = [
+                  enhancement >= 4 ? "enhance-tier-4" : "",
+                  enhancement >= 7 ? "enhance-tier-7" : "",
+                  enhancement >= 10 ? "enhance-tier-10" : "",
+                  enhancement >= 13 ? "enhance-tier-13" : ""
+                ].filter(Boolean).join(" ");
                 return (
                   <button
                     key={slot.instanceId}
                     type="button"
-                    className={`inv-slot${selected ? " selected" : ""}`}
+                    className={`inv-slot${selected ? " selected" : ""} ${enhancementClasses}`}
                     title={formatInventoryItemName(item, slot)}
-                    style={{ borderColor: rarityColor }}
+                    style={rarityColor ? ({ borderColor: rarityColor, "--rarity-color": rarityColor } as React.CSSProperties) : undefined}
                     onClick={() => setInstanceId(selected ? "" : slot.instanceId)}
                   >
                     <ItemVisual
@@ -5862,6 +5951,7 @@ function MarketPanel({ game }: { game: GameState }) {
                       enhancementLevel={slot.enhancementLevel}
                       rarity={slot.rarity}
                     />
+                    {enhancement >= 10 && <span className="inv-slot-light-sweep" aria-hidden="true" />}
                   </button>
                 );
               })}
@@ -7243,9 +7333,20 @@ function ItemVisual({
 }) {
   const rarityColor = getEquipmentRarityColor(item, rarity);
   const enhancement = item.slot ? Math.max(0, enhancementLevel ?? 0) : 0;
+  const enhancementClasses = [
+    enhancement >= 4 ? "enhance-tier-4" : "",
+    enhancement >= 7 ? "enhance-tier-7" : "",
+    enhancement >= 10 ? "enhance-tier-10" : "",
+    enhancement >= 13 ? "enhance-tier-13" : ""
+  ].filter(Boolean).join(" ");
+  const visualStyle = rarityColor
+    ? ({ borderColor: rarityColor, "--rarity-color": rarityColor } as React.CSSProperties)
+    : undefined;
+
   return (
-    <span className={`asset-frame item-visual ${className ?? ""}`} style={rarityColor ? { borderColor: rarityColor } : undefined}>
+    <span className={`asset-frame item-visual ${className ?? ""} ${enhancementClasses}`} style={visualStyle}>
       <AssetImage src={item.imageUrl} alt={item.name} fallback={ITEM_KIND_EMOJI[item.kind] ?? "?"} />
+      {enhancement >= 10 && <span className="item-visual-light-sweep" aria-hidden="true" />}
       {enhancement > 0 && <span className="asset-enhancement">+{enhancement}</span>}
       {quantity !== undefined && quantity > 1 && <span className="asset-qty">x{quantity}</span>}
     </span>

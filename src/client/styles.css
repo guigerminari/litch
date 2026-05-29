@@ -3849,6 +3849,57 @@ button:disabled .game-icon {
   font-size: 0.82rem;
 }
 
+.enhancement-selector {
+  display: grid;
+  gap: 6px;
+}
+
+.enhancement-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 6px;
+  padding: 2px;
+}
+
+.enhancement-select-slot {
+  min-width: 0;
+  min-height: 52px;
+  border-radius: 8px;
+}
+
+.enhancement-select-slot .slot-visual {
+  width: 100%;
+  height: 100%;
+}
+
+.enhancement-select-slot .slot-visual img {
+  padding: 5px;
+}
+
+.enhancement-equipped-badge {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(80, 250, 123, 0.45);
+  background: rgba(80, 250, 123, 0.18);
+  color: #8cffb8;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 13px;
+  text-align: center;
+  z-index: 7;
+}
+
+.enhancement-selector-hint,
+.enhancement-empty-selection {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
 .enhancement-field select,
 .enhancement-boost input {
   width: 100%;
@@ -3861,10 +3912,12 @@ button:disabled .game-icon {
 }
 
 .enhancement-grid {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(180px, 1.1fr) minmax(170px, 1fr);
   gap: 12px;
   align-items: stretch;
+  overflow: hidden;
 }
 
 .enhancement-item-card,
@@ -3882,6 +3935,14 @@ button:disabled .game-icon {
   grid-template-columns: 64px minmax(0, 1fr);
   gap: 10px;
   align-items: center;
+}
+
+.enhancement-item-card.fx-success {
+  animation: enhancementCardSuccess 700ms ease-out;
+}
+
+.enhancement-item-card.fx-failure {
+  animation: enhancementCardFailure 560ms ease-out;
 }
 
 .enhancement-item-card div {
@@ -3998,6 +4059,64 @@ button:disabled .game-icon {
   grid-column: 1 / -1;
 }
 
+.enhancement-result-fx {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 8;
+  animation: enhancementFxFade 1.25s ease-out forwards;
+}
+
+.enhancement-result-fx strong {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+}
+
+.enhancement-result-ring,
+.enhancement-result-wave {
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.enhancement-result-ring {
+  width: 96px;
+  height: 96px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  animation: enhancementFxRing 0.85s ease-out forwards;
+}
+
+.enhancement-result-wave {
+  width: 140px;
+  height: 140px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: enhancementFxWave 1s ease-out forwards;
+}
+
+.enhancement-result-fx.success {
+  background: radial-gradient(circle, rgba(46, 204, 113, 0.28) 0%, transparent 64%);
+}
+
+.enhancement-result-fx.success strong {
+  border: 1px solid rgba(46, 204, 113, 0.66);
+  background: rgba(46, 204, 113, 0.2);
+  color: #9ff3b8;
+}
+
+.enhancement-result-fx.failure {
+  background: radial-gradient(circle, rgba(201, 78, 107, 0.26) 0%, transparent 64%);
+}
+
+.enhancement-result-fx.failure strong {
+  border: 1px solid rgba(201, 78, 107, 0.7);
+  background: rgba(201, 78, 107, 0.2);
+  color: #ffc6d4;
+}
+
 .asset-frame {
   position: relative;
   display: grid;
@@ -4032,6 +4151,7 @@ button:disabled .game-icon {
   color: var(--gold);
   font-size: 0.7rem;
   font-weight: 800;
+  z-index: 5;
 }
 
 .asset-enhancement {
@@ -4042,6 +4162,320 @@ button:disabled .game-icon {
   color: var(--green);
   font-size: 0.7rem;
   font-weight: 900;
+  z-index: 5;
+}
+
+.item-visual.enhance-tier-4:not(.slot-visual),
+.item-visual.enhance-tier-7:not(.slot-visual),
+.item-visual.enhance-tier-10:not(.slot-visual),
+.item-visual.enhance-tier-13:not(.slot-visual) {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.item-visual.enhance-tier-4:not(.slot-visual)::before {
+  content: "";
+  position: absolute;
+  inset: -14%;
+  border-radius: 14px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rarity-color, #9ca3af) 52%, transparent) 0%, transparent 66%);
+  opacity: 0.2;
+  filter: blur(8px);
+  z-index: -1;
+  pointer-events: none;
+  animation: itemEnhancePulse 3.2s ease-in-out infinite;
+}
+
+.item-visual.enhance-tier-7:not(.slot-visual)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--ie-angle, 0deg),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 38%, #000 62%),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 74%, #fff 26%),
+    var(--rarity-color, #9ca3af),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 86%, #fff 14%),
+    var(--rarity-color, #9ca3af),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 74%, #fff 26%),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 38%, #000 62%)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.82;
+  pointer-events: none;
+  animation: ie-spin-slow 2.2s linear infinite;
+}
+
+.item-visual-light-sweep {
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.item-visual-light-sweep::before,
+.item-visual-light-sweep::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -40%;
+  width: 32%;
+  height: 220%;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 60%, #ffffff 40%) 45%,
+    color-mix(in srgb, #ffffff 75%, var(--rarity-color, #9ca3af) 25%) 55%,
+    transparent 100%
+  );
+  opacity: 0;
+  transform: rotate(20deg) translateX(-130%);
+}
+
+.item-visual-light-sweep::before {
+  animation: itemEnhanceSweep 2.8s ease-in-out infinite;
+}
+
+.item-visual-light-sweep::after {
+  animation: itemEnhanceSweep 2.8s ease-in-out 1.25s infinite;
+}
+
+.item-visual.enhance-tier-13:not(.slot-visual)::before {
+  opacity: 0.34;
+  filter: blur(10px);
+  animation-duration: 2.05s;
+}
+
+.item-visual.enhance-tier-13:not(.slot-visual)::after {
+  opacity: 1;
+  animation-duration: 1.45s;
+}
+
+.item-visual.enhance-tier-13:not(.slot-visual) .item-visual-light-sweep::before,
+.item-visual.enhance-tier-13:not(.slot-visual) .item-visual-light-sweep::after {
+  opacity: 1;
+  animation-duration: 1.95s;
+}
+
+.item-visual.slot-visual .item-visual-light-sweep {
+  display: none;
+}
+
+.inv-slot.enhance-tier-4,
+.inv-slot.enhance-tier-7,
+.inv-slot.enhance-tier-10,
+.inv-slot.enhance-tier-13 {
+  overflow: visible;
+  isolation: isolate;
+}
+
+.inv-slot.enhance-tier-4::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  border-radius: 12px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rarity-color, #9ca3af) 66%, transparent) 0%, transparent 70%);
+  opacity: 0.6;
+  filter: blur(8px);
+  z-index: -1;
+  pointer-events: none;
+  animation: itemEnhancePulse 2.7s ease-in-out infinite;
+}
+
+.inv-slot.enhance-tier-7::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--ie-angle, 0deg),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 38%, #000 62%),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 74%, #fff 26%),
+    var(--rarity-color, #9ca3af),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 86%, #fff 14%),
+    var(--rarity-color, #9ca3af),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 74%, #fff 26%),
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 38%, #000 62%)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.95;
+  z-index: 4;
+  pointer-events: none;
+  animation: ie-spin-slow 1.9s linear infinite;
+}
+
+.inv-slot-light-sweep {
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.inv-slot-light-sweep::before,
+.inv-slot-light-sweep::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -40%;
+  width: 32%;
+  height: 220%;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--rarity-color, #9ca3af) 60%, #ffffff 40%) 45%,
+    color-mix(in srgb, #ffffff 75%, var(--rarity-color, #9ca3af) 25%) 55%,
+    transparent 100%
+  );
+  opacity: 0;
+  transform: rotate(20deg) translateX(-130%);
+}
+
+.inv-slot-light-sweep::before {
+  animation: itemEnhanceSweep 2.4s ease-in-out infinite;
+}
+
+.inv-slot-light-sweep::after {
+  animation: itemEnhanceSweep 2.4s ease-in-out 1.05s infinite;
+}
+
+.inv-slot.enhance-tier-13::before {
+  opacity: 0.86;
+  filter: blur(9px);
+  animation-duration: 1.95s;
+}
+
+.inv-slot.enhance-tier-13::after {
+  opacity: 1;
+  animation-duration: 1.25s;
+}
+
+.inv-slot.enhance-tier-13 .inv-slot-light-sweep::before,
+.inv-slot.enhance-tier-13 .inv-slot-light-sweep::after {
+  opacity: 1;
+  animation-duration: 1.65s;
+}
+
+@property --ie-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes itemEnhancePulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.22;
+  }
+  50% {
+    transform: scale(1.16);
+    opacity: 0.88;
+  }
+}
+
+@keyframes ie-spin-slow {
+  from {
+    --ie-angle: 0deg;
+  }
+  to {
+    --ie-angle: 360deg;
+  }
+}
+
+@keyframes itemEnhanceSweep {
+  0% {
+    opacity: 0;
+    transform: rotate(20deg) translateX(-130%);
+  }
+  30% {
+    opacity: 0.86;
+  }
+  58% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(20deg) translateX(340%);
+  }
+}
+
+@keyframes enhancementCardSuccess {
+  0% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+  45% {
+    transform: scale(1.03);
+    box-shadow: 0 0 24px rgba(46, 204, 113, 0.38);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+
+@keyframes enhancementCardFailure {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes enhancementFxRing {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+@keyframes enhancementFxWave {
+  0% {
+    transform: scale(0.45);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes enhancementFxFade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .entity-card,
