@@ -14,6 +14,12 @@ export const MONARCH_BATTLE_ATTACK_LIMIT = 50;
 
 export type Currency = "gold" | "diamonds";
 
+export type DungeonBuffType = "heal_full" | "damage_50" | "defense_10" | "agility_20" | "strength_20";
+
+export type DungeonTrapType = "hp_20" | "agility_20" | "defense_20";
+
+export type DungeonRoomType = "horde" | "chest" | "trap" | "buff" | "boss";
+
 export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
 
 export type QuestType = "daily" | "fixed";
@@ -107,6 +113,41 @@ export interface Character {
   workBonusClaims?: Record<string, number>;
   lastDailyBlueCoinGrantKey?: string;
   clanJoinCooldownUntil?: number;
+  dungeonProgress?: {
+    unlockedFloorByCountry?: Record<string, number>;
+    clearedFloorsByCountry?: Record<string, number[]>;
+    dailyKeyDayKey?: string;
+    activeRun?: DungeonRunState | null;
+  };
+}
+
+export interface DungeonPendingRewardItem {
+  itemId: string;
+  quantity: number;
+  rarity?: Rarity;
+}
+
+export interface DungeonRoomState {
+  index: number;
+  type: DungeonRoomType;
+  monsterIds?: string[];
+  trap?: DungeonTrapType;
+  buff?: DungeonBuffType;
+  rewards?: DungeonPendingRewardItem[];
+}
+
+export interface DungeonRunState {
+  countryId: string;
+  floor: number;
+  roomIndex: number;
+  roomDeadlineAt?: number;
+  rooms: DungeonRoomState[];
+  activeBuffs: DungeonBuffType[];
+  activeTraps: DungeonTrapType[];
+  pendingExperience: number;
+  pendingGold: number;
+  pendingItems: DungeonPendingRewardItem[];
+  currentEncounterMonsterIds?: string[];
 }
 
 export interface QuestProgress {
@@ -437,6 +478,16 @@ export interface BattleState {
   monarch?: MonarchBattleProgress;
   arena?: ArenaBattleState;
   deathPenaltyAppliedPlayerIds?: string[];
+  dungeon?: {
+    countryId: string;
+    floor: number;
+    roomIndex: number;
+    roomType: "horde" | "boss";
+    roomLabel: string;
+    remainingMonsters: number;
+    activeBuffs: DungeonBuffType[];
+    activeTraps: DungeonTrapType[];
+  };
 }
 
 export interface ChatMessage {
@@ -815,7 +866,8 @@ export interface HuntStartPayload {
 }
 
 export interface DungeonStartPayload {
-  monsterId: string;
+  floor?: number;
+  monsterId?: string;
 }
 
 export interface ArenaDuelPayload {

@@ -1,4 +1,4 @@
-import { createContext, FormEvent, useContext, useEffect, useRef, useState } from "react";
+import { createContext, FormEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeftRight,
@@ -445,6 +445,15 @@ export function App() {
   const [loadingPlayerProfileId, setLoadingPlayerProfileId] = useState<string | null>(null);
   const [regenMs, setRegenMs] = useState(0);
 
+  const setViewSafely = useCallback((nextView: View) => {
+    if (game?.character.dungeonProgress?.activeRun && nextView !== "dungeon") {
+      setError("Finalize o andar da masmorra antes de navegar para outra área.");
+      window.setTimeout(() => setError(null), 3200);
+      return;
+    }
+    setView(nextView);
+  }, [game]);
+
   useEffect(() => {
     const resume = () => {
       setConnected(true);
@@ -746,7 +755,7 @@ export function App() {
           onDetails={() => setShowDetails(true)}
           onGameShop={() => {
             clearFirstClickNotice("diamonds");
-            setView("gameShop");
+            setViewSafely("gameShop");
           }}
           onExchange={() => {
             clearFirstClickNotice("exchange");
@@ -754,7 +763,7 @@ export function App() {
           }}
           onRanking={() => {
             clearFirstClickNotice("ranking");
-            setView("rankings");
+            setViewSafely("rankings");
           }}
           onSettings={() => setUtilityModal("settings")}
           onGuide={() => {
@@ -771,11 +780,11 @@ export function App() {
         />
         <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
           <section className="city-stage">
-            {!game.activeBattle && view === "city" && <CityHero game={game} view={view} setView={setView} />}
-            <GamePane game={game} view={view} setView={setView} />
+            {!game.activeBattle && view === "city" && <CityHero game={game} view={view} setView={setViewSafely} />}
+            <GamePane game={game} view={view} setView={setViewSafely} />
           </section>
         </div>
-        <BottomNav game={game} view={view} setView={setView} />
+        <BottomNav game={game} view={view} setView={setViewSafely} />
         <FloatingChat
           game={game}
           open={showChat}
@@ -783,7 +792,7 @@ export function App() {
           privateTarget={privateChatTarget}
           setPrivateTarget={setPrivateChatTarget}
         />
-        <FloatingAgencyNotice game={game} onOpenAgency={() => setView("agency")} />
+        <FloatingAgencyNotice game={game} onOpenAgency={() => setViewSafely("agency")} />
         <FloatingEvents game={game} open={showEvents} setOpen={setShowEvents} />
         {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
         {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
@@ -1275,7 +1284,7 @@ function ResourceBar({
 }
 
 function BottomNav({ game, view, setView }: { game: GameState; view: View; setView: (view: View) => void }) {
-  const locked = Boolean(game.activeBattle);
+  const locked = Boolean(game.activeBattle) || Boolean(game.character.dungeonProgress?.activeRun);
   const working = isWorkInProgress(game.character.activeWork);
   const completedMissions = countClaimable(game.quests.daily) + countClaimable(game.quests.fixed);
   const myListings = game.marketplaceListings.filter((l) => l.sellerPlayerId === game.player.id).length;
@@ -1289,7 +1298,7 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
       view: "inventory" as View,
       label: "Inventário",
       icon: <GameIcon name="inventory" size={40} />,
-      disabled: false,
+      disabled: locked,
       badge: `${game.inventoryUsed}/${game.inventoryCapacity}`,
       badgeClass: inventoryFull ? "inventory-full" : "",
       buttonClass: inventoryFull ? "inventory-full" : ""
@@ -3892,39 +3901,317 @@ function EquipmentEnhancementPanel({ game }: { game: GameState }) {
 }
 
 function DungeonPanel({ game }: { game: GameState }) {
-  const dungeonMonsters = (game.currentCity.dungeonMonsterIds ?? [])
-    .map((id) => game.cityMonsters.find((monster) => monster.id === id))
-    .filter(Boolean) as GameState["cityMonsters"];
+  const activeRun = game.character.dungeonProgress?.activeRun ?? null;
+  const currentCountryId = game.currentCountry.id;
+  const unlockedByCountry = game.character.dungeonProgress?.unlockedFloorByCountry ?? {};
+  const unlockedFloor = Math.max(1, Math.min(20, unlockedByCountry[currentCountryId] ?? 1));
+  const [selectedFloor, setSelectedFloor] = useState(unlockedFloor);
+  const [now, setNow] = useState(Date.now());
+  const dungeonKeys = countInventoryItem(game, "misc_dungeon_key");
+  const currentRoom = activeRun && activeRun.roomIndex < activeRun.rooms.length ? activeRun.rooms[activeRun.roomIndex] : null;
+  const dungeonBattleActive = game.activeBattle?.mode === "dungeon";
+
+  useEffect(() => {
+    if (selectedFloor > unlockedFloor) {
+      setSelectedFloor(unlockedFloor);
+    }
+  }, [selectedFloor, unlockedFloor]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const lastAutoHordeKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!activeRun || !currentRoom || currentRoom.type !== "horde" || game.activeBattle) return;
+    const key = `${activeRun.floor}:${activeRun.roomIndex}`;
+    if (lastAutoHordeKeyRef.current === key) return;
+    lastAutoHordeKeyRef.current = key;
+    const timer = window.setTimeout(() => socket.emit("dungeon:advance"), 500);
+    return () => window.clearTimeout(timer);
+  }, [activeRun?.floor, activeRun?.roomIndex, currentRoom?.type, game.activeBattle]);
+
+  const floorButtons = Array.from({ length: 20 }, (_, index) => index + 1);
+  const canEnter = !activeRun && game.character.currentHp > 0 && dungeonKeys > 0 && selectedFloor <= unlockedFloor;
+  const dungeonKeyDefinition = game.itemCatalog["misc_dungeon_key"];
+  const floorDoorOpenIconUrl = "/assets/dungeon/open_floor.png";
+  const floorDoorClosedIconUrl = "/assets/dungeon/closed-floor.png";
+  const floorBossIconUrl = "/assets/dungeon/boss.png";
+
+  const buffChips: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
+    heal_full: { label: "Vida total", icon: <Heart size={13} />, cls: "buff-heal" },
+    damage_50: { label: "+50% dano", icon: <Flame size={13} />, cls: "buff-damage" },
+    defense_10: { label: "+10% defesa", icon: <Shield size={13} />, cls: "buff-defense" },
+    agility_20: { label: "+20% agilidade", icon: <Zap size={13} />, cls: "buff-agility" },
+    strength_20: { label: "+20% força", icon: <Swords size={13} />, cls: "buff-strength" },
+  };
+  const trapChips: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
+    hp_20: { label: "-20% vida", icon: <Skull size={13} />, cls: "trap-hp" },
+    agility_20: { label: "-20% agilidade", icon: <Zap size={13} />, cls: "trap-agility" },
+    defense_20: { label: "-20% defesa", icon: <Shield size={13} />, cls: "trap-defense" },
+  };
+  const buffLabels: Record<string, string> = {
+    heal_full: "Regenerar toda a vida",
+    damage_50: "+50% dano",
+    defense_10: "+10% defesa",
+    agility_20: "+20% agilidade",
+    strength_20: "+20% força"
+  };
+  const trapLabels: Record<string, string> = {
+    hp_20: "Armadilha: -20% vida",
+    agility_20: "Armadilha: -20% agilidade",
+    defense_20: "Armadilha: -20% defesa"
+  };
+
+  const roomTypeLabel: Record<string, string> = {
+    horde: "Horda",
+    boss: "Chefe",
+    chest: "Baú",
+    buff: "Buff",
+    trap: "Armadilha"
+  };
+
+  const roomPresentation = currentRoom
+    ? {
+        horde: {
+          art: "/assets/dungeon/boss.png",
+          accentClass: "dungeon-room-horde",
+          title: "Emboscada",
+          subtitle: `${currentRoom.monsterIds?.length ?? 0} inimigo(s) avançam de surpresa.`
+        },
+        boss: {
+          art: "/assets/dungeon/boss.png",
+          accentClass: "dungeon-room-boss",
+          title: "Sala final",
+          subtitle: "O chefe aguarda no centro da arena."
+        },
+        chest: {
+          art: "/assets/dungeon/chest.png",
+          accentClass: "dungeon-room-chest",
+          title: "Sala do baú",
+          subtitle: "As recompensas já estão visíveis antes da abertura."
+        },
+        buff: {
+          art: "/assets/dungeon/buff.png",
+          accentClass: "dungeon-room-buff",
+          title: "Sala de buff",
+          subtitle: buffLabels[currentRoom.buff ?? ""] ?? "Uma bênção o aguarda."
+        },
+        trap: {
+          art: "/assets/dungeon/trap.png",
+          accentClass: "dungeon-room-trap",
+          title: "Sala de armadilha",
+          subtitle: trapLabels[currentRoom.trap ?? ""] ?? "Algo ruim está no caminho."
+        }
+      }[currentRoom.type]
+    : null;
+
+  const roomDescription = currentRoom
+    ? currentRoom.type === "horde"
+      ? `${currentRoom.monsterIds?.length ?? 0} inimigo(s) aguardam nesta sala.`
+      : currentRoom.type === "boss"
+        ? "O chefe do andar está nesta sala."
+        : currentRoom.type === "chest"
+          ? `Baú com ${currentRoom.rewards?.length ?? 0} recompensa(s) possível(is).`
+          : currentRoom.type === "buff"
+            ? buffLabels[currentRoom.buff ?? ""] ?? "Uma benção espera por você."
+            : trapLabels[currentRoom.trap ?? ""] ?? "Uma armadilha bloqueia o caminho."
+    : "";
+
+  const roomActionLabel = currentRoom
+    ? currentRoom.type === "boss"
+      ? "Enfrentar o Chefe"
+      : "Próxima Sala"
+    : "Próxima Sala";
+
+  const roomTimeLeftMs = activeRun?.roomDeadlineAt ? Math.max(0, activeRun.roomDeadlineAt - now) : 0;
+  const roomTimeLeftLabel = activeRun ? `${Math.max(0, Math.ceil(roomTimeLeftMs / 1000))}s` : "";
+
+  const chestRewardItems =
+    currentRoom?.type === "chest" && currentRoom.rewards
+      ? currentRoom.rewards
+          .map((r) => {
+            const def = game.itemCatalog[r.itemId];
+            if (!def) return null;
+            return { def, rarity: (r.rarity ?? "common") as Rarity, quantity: r.quantity };
+          })
+          .filter(Boolean) as Array<{ def: ItemDefinition; rarity: Rarity; quantity: number }>
+      : [];
+
+  const pendingRewardItems = activeRun
+    ? activeRun.pendingItems
+        .map((reward) => {
+          const definition = game.itemCatalog[reward.itemId];
+          if (!definition) {
+            return null;
+          }
+          return {
+            id: `${reward.itemId}:${reward.rarity ?? "stack"}`,
+            label: `${definition.name}${reward.quantity > 1 ? ` x${reward.quantity}` : ""}`,
+            rarity: reward.rarity
+          };
+        })
+        .filter(Boolean) as Array<{ id: string; label: string; rarity?: Rarity }>
+    : [];
 
   return (
-    <section className="content-panel">
+    <section className="content-panel dungeon-run-panel">
       <PanelTitle icon={<GameIcon name="dungeon" size={26} />} title="Masmorra" />
-      <div className="list-grid monster-battle-list">
-        {dungeonMonsters.length === 0 && <p className="empty-state">Não há masmorra nesta cidade.</p>}
-        {dungeonMonsters.map((monster) => {
-          const energyCost = monster.level + 1;
-          const blocked = game.character.currentHp <= 0 || game.character.currentEnergy < energyCost;
-          return (
-            <article className="entity-card monster-card" key={monster.id}>
-              <div>
-                <strong>{monster.name}</strong>
-                <span>Nível {monster.level}</span>
-              </div>
-              <MonsterVisual monster={monster} className="entity-art" />
-              <div className="monster-stats">
-                <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>
-                <small title="Força"><Swords size={13} style={{ color: "var(--purple)" }} /> {monster.strength}</small>
-                <small title="Defesa"><Shield size={13} style={{ color: "var(--cyan)" }} /> {monster.defense}</small>
-                <small title="Agilidade"><Crosshair size={13} style={{ color: "var(--gold)" }} /> {monster.agility}</small>
-                <small title="Energia"><Zap size={13} style={{ color: "var(--yellow)" }} /> {energyCost}</small>
-              </div>
-              <button className="primary-button" disabled={blocked} onClick={() => socket.emit("dungeon:start", { monsterId: monster.id })}>
-                <GameIcon name="dungeon" size={16} className="button-game-icon" /> Entrar
-              </button>
-            </article>
-          );
-        })}
+      <div className="dungeon-summary-card">
+        <span>País: <strong>{game.currentCountry.name}</strong></span>
+        <span>Andar liberado: <strong>{unlockedFloor}/20</strong></span>
+        <span className="dungeon-keys-summary">
+          <span className="dungeon-key-item-icon" aria-hidden="true">
+            <AssetImage
+              src={dungeonKeyDefinition?.imageUrl}
+              alt="Chave da masmorra"
+              fallback={<KeyRound size={13} />}
+            />
+          </span>
+          <strong>x{dungeonKeys}</strong>
+        </span>
       </div>
+
+      {!activeRun && (
+        <>
+          <div className="dungeon-floor-grid">
+            {floorButtons.map((floor) => {
+              const floorCompleted = floor < unlockedFloor;
+              const floorIconUrl = floor === 20
+                ? floorBossIconUrl
+                : floorCompleted ? floorDoorOpenIconUrl : floorDoorClosedIconUrl;
+              return (
+                <button
+                  type="button"
+                  key={floor}
+                  className={`mini-tab dungeon-floor-btn${selectedFloor === floor ? " active" : ""}${floor > unlockedFloor ? " locked" : ""}`}
+                  disabled={floor > unlockedFloor || Boolean(activeRun)}
+                  onClick={() => setSelectedFloor(floor)}
+                >
+                  <span className="dungeon-floor-btn-icon" aria-hidden="true">
+                    <AssetImage src={floorIconUrl} alt="Escada" fallback={"#"} style={{ width: "100%", height: "100%" }} />
+                  </span>
+                  <span className="dungeon-floor-btn-label">Andar</span>
+                  <strong>{floor}</strong>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="dungeon-entry-actions">
+            <button
+              className="primary-button"
+              disabled={!canEnter}
+              onClick={() => socket.emit("dungeon:start", { floor: selectedFloor })}
+            >
+              <span className="dungeon-entry-floor-icon" aria-hidden="true">
+                <AssetImage src={dungeonKeyDefinition?.imageUrl} alt="Chave da masmorra" fallback={<KeyRound size={13} />} style={{ width: "100%", height: "100%" }} />
+              </span>
+              Entrar no andar {selectedFloor}
+            </button>
+            {!canEnter && !activeRun && <small className="muted">Requer vida acima de zero e pelo menos 1 Chave de Masmorra.</small>}
+          </div>
+        </>
+      )}
+
+      {activeRun && activeRun.countryId === currentCountryId && (
+        <section className="dungeon-active-run">
+          <h3>Andar em andamento</h3>
+          <p>Andar {activeRun.floor} • Sala {Math.min(activeRun.roomIndex + 1, activeRun.rooms.length)}/{activeRun.rooms.length}</p>
+          <p className={roomTimeLeftMs <= 10_000 ? "dungeon-room-timer danger" : "dungeon-room-timer"}>
+            Tempo restante para avançar: <strong>{roomTimeLeftLabel}</strong>
+          </p>
+          <div className="dungeon-pending-rewards">
+            <strong>Recompensas acumuladas</strong>
+            <div className="dungeon-pending-stats">
+              <span><strong>{activeRun.pendingExperience}</strong> XP</span>
+              <span><strong>{activeRun.pendingGold}</strong> ouro</span>
+              <span><strong>{activeRun.pendingItems.length}</strong> item(ns)</span>
+            </div>
+            <div className="dungeon-pending-items">
+              {pendingRewardItems.length > 0 ? (
+                pendingRewardItems.map((item) => (
+                  <span key={item.id} className={`item-rarity ${item.rarity ?? "common"}`}>
+                    {item.label}
+                  </span>
+                ))
+              ) : (
+                <span className="muted">Nenhum item acumulado ainda.</span>
+              )}
+            </div>
+          </div>
+          {currentRoom && (
+            <div key={activeRun.roomIndex} className={`dungeon-room-preview dungeon-room-enter ${roomPresentation?.accentClass ?? ""}`}>
+              <div className="dungeon-room-hero">
+                <div className="dungeon-room-art-shell">
+                  <img className="dungeon-room-art" src={roomPresentation?.art ?? "/assets/dungeon/boss.png"} alt="" loading="lazy" decoding="async" />
+                  <span className="dungeon-room-art-sheen" aria-hidden="true" />
+                </div>
+                <div className="dungeon-room-copy">
+                  <span className="item-rarity legendary">{roomTypeLabel[currentRoom.type] ?? currentRoom.type}</span>
+                  <strong>{roomPresentation?.title ?? (currentRoom.type === "boss" ? "Sala final" : `Sala ${currentRoom.index + 1}`)}</strong>
+                  <p>{roomPresentation?.subtitle ?? roomDescription}</p>
+                </div>
+              </div>
+
+              <div className="dungeon-room-body">
+                {currentRoom.type === "chest" && chestRewardItems.length > 0 && (
+                  <div className="dungeon-chest-item-grid">
+                    {chestRewardItems.map((item) => (
+                      <div key={item.def.id} className={`dungeon-chest-item-card rarity-${item.rarity}`}>
+                        <ItemVisual item={item.def} className="chest-item-visual" rarity={item.rarity} quantity={item.quantity > 1 ? item.quantity : undefined} />
+                        <span className="chest-item-name">{item.def.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {(currentRoom.type === "buff") && currentRoom.buff && buffChips[currentRoom.buff] && (
+                  <span className={`dungeon-effect-chip ${buffChips[currentRoom.buff]!.cls}`}>
+                    {buffChips[currentRoom.buff]!.icon}{buffChips[currentRoom.buff]!.label}
+                  </span>
+                )}
+                {(currentRoom.type === "trap") && currentRoom.trap && trapChips[currentRoom.trap] && (
+                  <span className={`dungeon-effect-chip ${trapChips[currentRoom.trap]!.cls}`}>
+                    {trapChips[currentRoom.trap]!.icon}{trapChips[currentRoom.trap]!.label}
+                  </span>
+                )}
+                {!dungeonBattleActive && currentRoom.type !== "horde" && (
+                  <button className="primary-button" onClick={() => socket.emit("dungeon:advance")}>
+                    {roomActionLabel}
+                  </button>
+                )}
+                {!dungeonBattleActive && currentRoom.type === "horde" && (
+                  <small className="muted">Iniciando combate...</small>
+                )}
+                {dungeonBattleActive && <small className="muted">Resolva a batalha atual para revelar a próxima sala.</small>}
+              </div>
+            </div>
+          )}
+          <div className="dungeon-active-modifiers">
+            <strong>Buffs ativos:</strong>
+            {activeRun.activeBuffs.length > 0
+              ? activeRun.activeBuffs.map((buff) => {
+                  const chip = buffChips[buff];
+                  return chip
+                    ? <span key={buff} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
+                    : <span key={buff} className="item-rarity epic">{buffLabels[buff] ?? buff}</span>;
+                })
+              : <span className="muted">Nenhum</span>}
+          </div>
+          <div className="dungeon-active-modifiers">
+            <strong>Debuffs ativos:</strong>
+            {activeRun.activeTraps.length > 0
+              ? activeRun.activeTraps.map((trap) => {
+                  const chip = trapChips[trap];
+                  return chip
+                    ? <span key={trap} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
+                    : <span key={trap} className="item-rarity rare">{trapLabels[trap] ?? trap}</span>;
+                })
+              : <span className="muted">Nenhum</span>}
+          </div>
+        </section>
+      )}
     </section>
   );
 }
@@ -6248,6 +6535,7 @@ function BattlePanel({ game }: { game: GameState }) {
   const lastAutoPveStepKeyRef = useRef<string | null>(null);
   const lastBattleIdRef = useRef<string | null>(null);
   const lastLogIdRef = useRef<string | null>(null);
+  const lastHordeAdvanceKeyRef = useRef<string | null>(null);
   const displayedParticipants = battle.participants.map((participant) => ({
     ...participant,
     hp: Math.max(0, Math.min(participant.maxHp, displayHpByParticipantId[participant.id] ?? participant.hp))
@@ -6273,7 +6561,34 @@ function BattlePanel({ game }: { game: GameState }) {
     Boolean(rematchMonster) &&
     game.character.currentHp > 0 &&
     game.character.currentEnergy >= rematchEnergyCost &&
-    (battle.mode === "pve" || battle.mode === "dungeon");
+    battle.mode === "pve";
+  const activeDungeonRun = game.character.dungeonProgress?.activeRun;
+  const hasMoreHordeMonsters =
+    battle.mode === "dungeon" && (activeDungeonRun?.currentEncounterMonsterIds?.length ?? 0) > 0;
+  const dungeonBuffChips: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
+    heal_full: { label: "Vida total", icon: <Heart size={12} />, cls: "buff-heal" },
+    damage_50: { label: "+50% dano", icon: <Flame size={12} />, cls: "buff-damage" },
+    defense_10: { label: "+10% defesa", icon: <Shield size={12} />, cls: "buff-defense" },
+    agility_20: { label: "+20% agi", icon: <Zap size={12} />, cls: "buff-agility" },
+    strength_20: { label: "+20% força", icon: <Swords size={12} />, cls: "buff-strength" },
+  };
+  const dungeonTrapChips: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
+    hp_20: { label: "-20% vida", icon: <Skull size={12} />, cls: "trap-hp" },
+    agility_20: { label: "-20% agi", icon: <Zap size={12} />, cls: "trap-agility" },
+    defense_20: { label: "-20% def", icon: <Shield size={12} />, cls: "trap-defense" },
+  };
+  const dungeonBuffLabels: Record<string, string> = {
+    heal_full: "Regenerar vida",
+    damage_50: "+50% dano",
+    defense_10: "+10% defesa",
+    agility_20: "+20% agilidade",
+    strength_20: "+20% força"
+  };
+  const dungeonTrapLabels: Record<string, string> = {
+    hp_20: "-20% vida",
+    agility_20: "-20% agilidade",
+    defense_20: "-20% defesa"
+  };
   const monarchAttackLimit = battle.monarch?.attackLimit ?? MONARCH_BATTLE_ATTACK_LIMIT;
   const monarchAttacksUsed = battle.monarch?.attacksUsed ?? 0;
   const monarchHitsLeft = Math.max(0, monarchAttackLimit - monarchAttacksUsed);
@@ -6426,6 +6741,19 @@ function BattlePanel({ game }: { game: GameState }) {
     };
   }, []);
 
+  // Auto-advance to next horde monster after death animation completes
+  useEffect(() => {
+    if (battle.status !== "ended" || !hasMoreHordeMonsters) return;
+    const winner = battle.participants.find((p) => p.id === battle.winnerParticipantId);
+    if (winner?.ownerPlayerId !== game.player.id) return;
+    if (battleAnimationGateRef.current || pendingBattleEventsRef.current.length > 0 || battleCue) return;
+    const key = `${battle.id}:horde:next`;
+    if (lastHordeAdvanceKeyRef.current === key) return;
+    lastHordeAdvanceKeyRef.current = key;
+    const timer = window.setTimeout(() => socket.emit("dungeon:advance"), 700);
+    return () => window.clearTimeout(timer);
+  }, [hasMoreHordeMonsters, battleAnimationTick, battleCue, battle.status, battle.id, battle.winnerParticipantId, game.player.id]);
+
   const animationsPending = battleAnimationGateRef.current || Boolean(battleCue) || pendingBattleEventsRef.current.length > 0;
 
   const emitAutoPveTurn = () => {
@@ -6482,7 +6810,7 @@ function BattlePanel({ game }: { game: GameState }) {
         return;
       }
       lastAutoPveStepKeyRef.current = key;
-      socket.emit(battle.mode === "dungeon" ? "dungeon:start" : "hunt:start", { monsterId: rematchMonsterId });
+      socket.emit("hunt:start", { monsterId: rematchMonsterId });
       return;
     }
 
@@ -6572,6 +6900,32 @@ function BattlePanel({ game }: { game: GameState }) {
           <span>{monarchHitsLeft === 1 ? "hit" : "hits"}</span>
         </div>
       )}
+      {battle.mode === "dungeon" && activeDungeonRun && (
+        <div className="dungeon-active-modifiers battle-dungeon-modifiers">
+          <strong>Buffs:</strong>
+          {activeDungeonRun.activeBuffs.length > 0 ? (
+            activeDungeonRun.activeBuffs.map((buff) => {
+              const chip = dungeonBuffChips[buff];
+              return chip
+                ? <span key={buff} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
+                : <span key={buff} className="item-rarity epic">{dungeonBuffLabels[buff] ?? buff}</span>;
+            })
+          ) : (
+            <span className="muted">Nenhum</span>
+          )}
+          <strong>Debuffs:</strong>
+          {activeDungeonRun.activeTraps.length > 0 ? (
+            activeDungeonRun.activeTraps.map((trap) => {
+              const chip = dungeonTrapChips[trap];
+              return chip
+                ? <span key={trap} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
+                : <span key={trap} className="item-rarity rare">{dungeonTrapLabels[trap] ?? trap}</span>;
+            })
+          ) : (
+            <span className="muted">Nenhum</span>
+          )}
+        </div>
+      )}
       <BattlePotionDock
         battleId={battle.id}
         battleActive={battle.status === "active"}
@@ -6606,7 +6960,7 @@ function BattlePanel({ game }: { game: GameState }) {
               <AssetImage style={{ width: 27 }} src={"assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} />
               <span style={{verticalAlign: "super"}}>Usar poção de vida</span>
             </button>
-            <button className="danger-button battle-flee-button" disabled={animationsPending} onClick={() => socket.emit("battle:flee")}>
+            <button className="danger-button battle-flee-button" disabled={animationsPending || battle.mode === "dungeon"} onClick={() => socket.emit("battle:flee")}>
               Fugir
             </button>
             {canUseAutoPve && (
@@ -6641,15 +6995,19 @@ function BattlePanel({ game }: { game: GameState }) {
           <>
             {animationsPending ? (
               <button className="ghost-button" disabled>
-                Coletando espólios...
+                {hasMoreHordeMonsters ? "Inimigo derrotado..." : "Coletando espólios..."}
+              </button>
+            ) : hasMoreHordeMonsters ? (
+              <button className="ghost-button" disabled>
+                Próximo combate...
               </button>
             ) : (
               <>
-                {rematchMonsterId && (battle.mode === "pve" || battle.mode === "dungeon") && (
+                {rematchMonsterId && battle.mode === "pve" && (
                   <button
                     className="primary-button"
                     disabled={!canRematch || autoPveRunning}
-                    onClick={() => socket.emit(battle.mode === "dungeon" ? "dungeon:start" : "hunt:start", { monsterId: rematchMonsterId })}
+                    onClick={() => socket.emit("hunt:start", { monsterId: rematchMonsterId })}
                   >
                     <Swords size={18} style={{marginRight: "4px"}} /> Enfrentar novamente
                   </button>

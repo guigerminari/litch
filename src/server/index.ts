@@ -20,7 +20,10 @@ import type {
   Currency,
   CurrencyExchangePayload,
   DeveloperMessagePayload,
+  DungeonBuffType,
+  DungeonRoomState,
   DungeonStartPayload,
+  DungeonTrapType,
   EnhancePayload,
   ForgotPasswordPayload,
   EquipPayload,
@@ -42,6 +45,7 @@ import type {
   QuestCategory,
   QuestClaimPayload,
   QuestView,
+  Rarity,
   ReferralClaimPayload,
   RegisterPayload,
   ResetPayload,
@@ -57,7 +61,7 @@ import type {
   WorkServiceDefinition,
   WorkStartPayload
 } from "../shared/types";
-import { RARITY_PRICE_MULTIPLIER } from "../shared/rarity";
+import { RARITY_PRICE_MULTIPLIER, getRarityFromRoll } from "../shared/rarity";
 import {
   ENHANCEMENT_CREATION_STONE_BONUS,
   ENHANCEMENT_GOLD_STEP,
@@ -133,6 +137,10 @@ const CLAN_BENEFIT_RESET_DIAMOND_COST = 1000;
 const CLAN_BENEFIT_RESET_REFUND_RATE = 0.8;
 const CLAN_JOIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const DEATH_XP_PENALTY_PERCENT = 0.2;
+const DUNGEON_KEY_ITEM_ID = "misc_dungeon_key";
+const DUNGEON_TOTAL_FLOORS = 20;
+const DUNGEON_DAILY_KEYS = 5;
+const DUNGEON_ROOM_TIME_LIMIT_MS = 60 * 1000;
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 const DEFAULT_AVATAR_ID = "recruta";
@@ -274,6 +282,8 @@ const DAILY_EXTRA_MISSIONS = [
   { id: "daily-arena-win-1", category: "arena" as const, title: "Glória da Arena", description: "Vença 1 batalha de Arena hoje.", progressKey: "dailyArenaWins" as const, target: 1, reward: { experience: 320, diamonds: 1 } }
 ];
 
+const dungeonRoomTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+
 await loadPersistentStore();
 
 function getCurrentSeasonKey() {
@@ -391,7 +401,12 @@ function createCharacter(player: Player): Character {
     activeWork: null,
     workAptitudes: {},
     workBonusClaims: {},
-    clanJoinCooldownUntil: 0
+    clanJoinCooldownUntil: 0,
+    dungeonProgress: {
+      unlockedFloorByCountry: {},
+      dailyKeyDayKey: "",
+      activeRun: null
+    }
   };
 
   addItem(character, "training_sword", ITEM_CATALOG, 1);
@@ -442,7 +457,13 @@ function currentCharacter(playerId: string) {
   character.workAptitudes ??= {};
   character.workBonusClaims ??= {};
   character.clanJoinCooldownUntil ??= 0;
+  character.dungeonProgress ??= {};
+  character.dungeonProgress.unlockedFloorByCountry ??= {};
+  character.dungeonProgress.clearedFloorsByCountry ??= {};
+  character.dungeonProgress.dailyKeyDayKey ??= "";
+  character.dungeonProgress.activeRun ??= null;
   ensureQuestProgress(character);
+  ensureDungeonRoomTimeout(character, playerId);
   return character;
 }
 
@@ -1201,6 +1222,12 @@ function normalizeVitals(character: Character) {
   character.workAptitudes ??= {};
   character.workBonusClaims ??= {};
   character.lastDailyBlueCoinGrantKey ??= "";
+  character.dungeonProgress ??= {};
+  character.dungeonProgress.unlockedFloorByCountry ??= {};
+  character.dungeonProgress.clearedFloorsByCountry ??= {};
+  character.dungeonProgress.dailyKeyDayKey ??= "";
+  character.dungeonProgress.activeRun ??= null;
+  normalizeDungeonDailyKeys(character);
   ensureQuestProgress(character);
   const stats = deriveStats(character, ITEM_CATALOG);
   character.currentHp = Math.min(Math.max(0, character.currentHp ?? stats.maxHp), stats.maxHp);
@@ -1750,9 +1777,6 @@ function applyBattleProgress(character: Character, playerId: string, battle: Gam
     const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
     if (winner?.ownerPlayerId === playerId) {
       character.questProgress.dailyEnemyDefeats += 1;
-      if (battle.mode === "dungeon") {
-        character.dungeonClears += 1;
-      }
     }
   }
 
@@ -2234,6 +2258,577 @@ function getCityHuntMonsterIds(cityId: string) {
     .filter(Boolean)
     .flatMap((location) => location.monsterIds);
   return Array.from(new Set([...fromLocations, ...(city.huntMonsterIds ?? [])]));
+}
+
+function normalizeDungeonDailyKeys(character: Character) {
+  const today = currentDayKey();
+  character.dungeonProgress ??= {};
+  character.dungeonProgress.unlockedFloorByCountry ??= {};
+  character.dungeonProgress.activeRun ??= null;
+  if (character.dungeonProgress.dailyKeyDayKey === today) {
+    return;
+  }
+  const ownedKeys = countItem(character, DUNGEON_KEY_ITEM_ID);
+  if (ownedKeys > 0) {
+    removeItemByItemId(character, DUNGEON_KEY_ITEM_ID, ownedKeys);
+  }
+  try {
+    addItem(character, DUNGEON_KEY_ITEM_ID, ITEM_CATALOG, DUNGEON_DAILY_KEYS);
+  } catch {
+    // Skip key refresh when inventory has no free slot to avoid crashing the realtime loop.
+  }
+  character.dungeonProgress.dailyKeyDayKey = today;
+}
+
+function countryMonsterPool(countryId: string) {
+  const cityIds = new Set(CITIES.filter((city) => city.countryId === countryId).map((city) => city.id));
+  return Object.values(MONSTERS)
+    .filter((monster) => cityIds.has(monster.cityId))
+    .sort((a, b) => a.level - b.level);
+}
+
+function dungeonFloorMonsterBand(countryId: string, floor: number) {
+  const monsterPool = countryMonsterPool(countryId);
+  if (monsterPool.length <= 1) {
+    return monsterPool;
+  }
+
+  const normalizedFloor = Math.max(1, Math.min(DUNGEON_TOTAL_FLOORS, floor));
+  const bandSize = normalizedFloor >= DUNGEON_TOTAL_FLOORS ? 4 : 3;
+  const maxStartIndex = Math.max(0, monsterPool.length - bandSize);
+  const floorProgress = (normalizedFloor - 1) / Math.max(1, DUNGEON_TOTAL_FLOORS - 1);
+  const startIndex = Math.min(maxStartIndex, Math.round(floorProgress * maxStartIndex));
+  const endIndex = Math.min(monsterPool.length, startIndex + bandSize);
+  const band = monsterPool.slice(startIndex, endIndex);
+
+  return band.length > 0 ? band : [monsterPool[Math.min(monsterPool.length - 1, startIndex)]];
+}
+
+function floorUnlockByCountry(character: Character, countryId: string) {
+  character.dungeonProgress ??= {};
+  character.dungeonProgress.unlockedFloorByCountry ??= {};
+  return Math.max(1, Math.min(DUNGEON_TOTAL_FLOORS, character.dungeonProgress.unlockedFloorByCountry[countryId] ?? 1));
+}
+
+function hashSeed(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return Math.abs(hash >>> 0);
+}
+
+function createSeededRng(seedValue: string) {
+  let seed = hashSeed(seedValue) || 123456789;
+  return () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+}
+
+function pickDeterministic<T>(values: T[], rng: () => number) {
+  return values[Math.min(values.length - 1, Math.floor(rng() * values.length))];
+}
+
+function buildDungeonChestRewards(countryId: string, floor: number, roomIndex: number): Array<{ itemId: string; quantity: number; rarity?: Rarity }> {
+  const rng = createSeededRng(`chest:${countryId}:${floor}:${roomIndex}`);
+  const equipmentPool = Object.values(ITEM_CATALOG)
+    .filter((item) => Boolean(item.slot))
+    .filter((item) => item.minLevel <= Math.min(100, floor * 6 + 8));
+  const materialPool = [
+    "misc_stone_craft",
+    "material_old_stone",
+    "misc_eran",
+    "material_celena",
+    "material_midran",
+    "material_dark_magic_rune",
+    "material_dark_residue",
+    "material_magic_essence",
+    "material_eran_fragment",
+    "material_mysterious_jewell"
+  ].filter((itemId) => Boolean(ITEM_CATALOG[itemId]));
+
+  const equipmentCount = 1 + Math.floor(rng() * 3);
+  const materialCount = 5 + Math.floor(rng() * 11);
+  const rewards: Array<{ itemId: string; quantity: number; rarity?: Rarity }> = [];
+
+  for (let index = 0; index < equipmentCount; index += 1) {
+    const item = pickDeterministic(equipmentPool, rng);
+    if (!item) {
+      continue;
+    }
+    rewards.push({
+      itemId: item.id,
+      quantity: 1,
+      rarity: rng() < 0.22 ? "legendary" : "epic"
+    });
+  }
+
+  for (let index = 0; index < materialCount; index += 1) {
+    const itemId = pickDeterministic(materialPool, rng);
+    if (!itemId) {
+      continue;
+    }
+    const existing = rewards.find((entry) => entry.itemId === itemId && !entry.rarity);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      rewards.push({ itemId, quantity: 1 });
+    }
+  }
+
+  return rewards;
+}
+
+function buildDungeonRooms(countryId: string, floor: number): DungeonRoomState[] {
+  const rng = createSeededRng(`rooms:${countryId}:${floor}`);
+  const monsterPool = countryMonsterPool(countryId);
+  const floorMonsters = dungeonFloorMonsterBand(countryId, floor);
+  const trapOptions: DungeonTrapType[] = ["hp_20", "agility_20", "defense_20"];
+  const buffOptions: DungeonBuffType[] = ["heal_full", "damage_50", "defense_10", "agility_20", "strength_20"];
+
+  const totalRooms = floor === DUNGEON_TOTAL_FLOORS ? 10 : 3 + Math.floor(rng() * 5);
+  const chestCount = floor === DUNGEON_TOTAL_FLOORS ? 2 : 1 + Math.floor(rng() * 2);
+  const buffCount = floor === DUNGEON_TOTAL_FLOORS ? 2 : Math.floor(rng() * 3);
+  const trapCount = floor === DUNGEON_TOTAL_FLOORS ? 0 : Math.floor(rng() * 2);
+  const bossCount = 1;
+  const hordeCount = floor === DUNGEON_TOTAL_FLOORS ? 5 : Math.max(1, totalRooms - chestCount - buffCount - trapCount - bossCount);
+
+  const nonBoss: DungeonRoomState[] = [];
+
+  for (let index = 0; index < hordeCount; index += 1) {
+    const hordeSize = 3 + Math.floor(rng() * 8);
+    const monsterIds: string[] = [];
+    for (let hordeIndex = 0; hordeIndex < hordeSize; hordeIndex += 1) {
+      const monster = pickDeterministic(floorMonsters.length > 0 ? floorMonsters : monsterPool, rng);
+      if (monster) {
+        monsterIds.push(monster.id);
+      }
+    }
+    nonBoss.push({ index: nonBoss.length, type: "horde", monsterIds });
+  }
+
+  for (let index = 0; index < chestCount; index += 1) {
+    nonBoss.push({ index: nonBoss.length, type: "chest", rewards: buildDungeonChestRewards(countryId, floor, index) });
+  }
+
+  for (let index = 0; index < buffCount; index += 1) {
+    nonBoss.push({ index: nonBoss.length, type: "buff", buff: pickDeterministic(buffOptions, rng) });
+  }
+
+  for (let index = 0; index < trapCount; index += 1) {
+    nonBoss.push({ index: nonBoss.length, type: "trap", trap: pickDeterministic(trapOptions, rng) });
+  }
+
+  for (let index = nonBoss.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(rng() * (index + 1));
+    const current = nonBoss[index];
+    nonBoss[index] = nonBoss[swapIndex];
+    nonBoss[swapIndex] = current;
+  }
+
+  const bossSource = [...(floorMonsters.length > 0 ? floorMonsters : monsterPool)].sort((a, b) => b.level - a.level)[0];
+  const bossRoom: DungeonRoomState = {
+    index: nonBoss.length,
+    type: "boss",
+    monsterIds: bossSource ? [bossSource.id] : []
+  };
+
+  return [...nonBoss.map((room, index) => ({ ...room, index })), bossRoom];
+}
+
+function dungeonBuffLabel(buff: DungeonBuffType) {
+  switch (buff) {
+    case "heal_full":
+      return "Regenerar toda a vida";
+    case "damage_50":
+      return "+50% de dano";
+    case "defense_10":
+      return "+10% defesa";
+    case "agility_20":
+      return "+20% agilidade";
+    case "strength_20":
+      return "+20% força";
+  }
+}
+
+function dungeonTrapLabel(trap: DungeonTrapType) {
+  switch (trap) {
+    case "hp_20":
+      return "Armadilha: dano de 20% da vida";
+    case "agility_20":
+      return "Armadilha: -20% de agilidade";
+    case "defense_20":
+      return "Armadilha: -20% de defesa";
+  }
+}
+
+function createDungeonRun(character: Character, countryId: string, floor: number) {
+  character.dungeonProgress ??= {};
+  character.dungeonProgress.activeRun = {
+    countryId,
+    floor,
+    roomIndex: 0,
+    roomDeadlineAt: Date.now() + DUNGEON_ROOM_TIME_LIMIT_MS,
+    rooms: buildDungeonRooms(countryId, floor),
+    activeBuffs: [],
+    activeTraps: [],
+    pendingExperience: 0,
+    pendingGold: 0,
+    pendingItems: [],
+    currentEncounterMonsterIds: []
+  };
+  ensureDungeonRoomTimeout(character, character.playerId);
+}
+
+function clearDungeonRoomTimeout(playerId: string) {
+  const timeout = dungeonRoomTimeouts.get(playerId);
+  if (timeout) {
+    clearTimeout(timeout);
+    dungeonRoomTimeouts.delete(playerId);
+  }
+}
+
+function expireDungeonRun(character: Character, playerId: string, message: string) {
+  clearDungeonRoomTimeout(playerId);
+  failDungeonRun(character);
+  socketByPlayer(playerId)?.emit("game:error", { message });
+}
+
+function ensureDungeonRoomTimeout(character: Character, playerId: string) {
+  const run = character.dungeonProgress?.activeRun;
+  clearDungeonRoomTimeout(playerId);
+  if (!run) {
+    return;
+  }
+
+  const now = Date.now();
+  if (!run.roomDeadlineAt) {
+    run.roomDeadlineAt = now + DUNGEON_ROOM_TIME_LIMIT_MS;
+  }
+
+  if (now >= run.roomDeadlineAt) {
+    expireDungeonRun(character, playerId, "Você demorou demais para avançar de sala e morreu na masmorra.");
+    return;
+  }
+
+  dungeonRoomTimeouts.set(playerId, setTimeout(() => {
+    const currentCharacterState = store.characters.get(playerId);
+    if (!currentCharacterState) {
+      clearDungeonRoomTimeout(playerId);
+      return;
+    }
+    const currentRun = currentCharacterState.dungeonProgress?.activeRun;
+    if (!currentRun || currentRun.roomDeadlineAt !== run.roomDeadlineAt) {
+      clearDungeonRoomTimeout(playerId);
+      return;
+    }
+    expireDungeonRun(currentCharacterState, playerId, "Você demorou demais para avançar de sala e morreu na masmorra.");
+    emitState(playerId);
+  }, run.roomDeadlineAt - now));
+}
+
+function clearDungeonRun(character: Character) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  const playerId = character.playerId;
+  clearDungeonRoomTimeout(playerId);
+  run.activeBuffs = [];
+  run.activeTraps = [];
+  run.pendingItems = [];
+  run.pendingExperience = 0;
+  run.pendingGold = 0;
+  run.currentEncounterMonsterIds = [];
+  character.activeBattleId = null;
+  character.dungeonProgress!.activeRun = null;
+}
+
+function queueDungeonReward(character: Character, reward: { itemId: string; quantity: number; rarity?: Rarity }) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run || reward.quantity <= 0) {
+    return;
+  }
+  const stackable = !ITEM_CATALOG[reward.itemId]?.slot;
+  const existing = stackable
+    ? run.pendingItems.find((item) => item.itemId === reward.itemId && !item.rarity)
+    : null;
+  if (existing) {
+    existing.quantity += reward.quantity;
+  } else {
+    run.pendingItems.push({ ...reward });
+  }
+}
+
+function createScaledDungeonMonster(monsterId: string, floor: number, isBoss: boolean) {
+  const base = MONSTERS[monsterId];
+  if (!base) {
+    return null;
+  }
+  const scalar = 1 + Math.max(0, floor - 1) * 0.055;
+  const bossScalar = isBoss ? 2 : 1;
+  const total = scalar * bossScalar;
+  return {
+    ...base,
+    maxHp: Math.max(1, Math.floor(base.maxHp * total)),
+    strength: Math.max(1, Math.floor(base.strength * total)),
+    defense: Math.max(0, Math.floor(base.defense * total)),
+    agility: Math.max(1, Math.floor(base.agility * total)),
+    experience: Math.max(1, Math.floor(base.experience * scalar)),
+    gold: Math.max(1, Math.floor(base.gold * scalar))
+  };
+}
+
+function applyDungeonStatModifiers(character: Character, battle: NonNullable<GameState["activeBattle"]>) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  const me = battle.participants.find((participant) => participant.ownerPlayerId === character.playerId);
+  if (!me) {
+    return;
+  }
+
+  const damageBuff = run.activeBuffs.includes("damage_50") ? 0.5 : 0;
+  const defenseBuff = run.activeBuffs.includes("defense_10") ? 0.1 : 0;
+  const agilityBuff = run.activeBuffs.includes("agility_20") ? 0.2 : 0;
+  const strengthBuff = run.activeBuffs.includes("strength_20") ? 0.2 : 0;
+  const defenseDebuff = run.activeTraps.includes("defense_20") ? 0.2 : 0;
+  const agilityDebuff = run.activeTraps.includes("agility_20") ? 0.2 : 0;
+
+  me.strength = Math.max(1, Math.floor(me.strength * (1 + strengthBuff)));
+  me.defense = Math.max(0, Math.floor(me.defense * (1 + defenseBuff - defenseDebuff)));
+  me.agility = Math.max(1, Math.floor(me.agility * (1 + agilityBuff - agilityDebuff)));
+  me.damageBonusPercent = (me.damageBonusPercent ?? 0) + damageBuff;
+}
+
+function startNextDungeonCombat(character: Character) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  const room = run.rooms[run.roomIndex];
+  if (!room || (room.type !== "horde" && room.type !== "boss")) {
+    return;
+  }
+  if (!run.currentEncounterMonsterIds || run.currentEncounterMonsterIds.length === 0) {
+    run.currentEncounterMonsterIds = [...(room.monsterIds ?? [])];
+  }
+  const monsterId = run.currentEncounterMonsterIds[0];
+  const monster = createScaledDungeonMonster(monsterId, run.floor, room.type === "boss");
+  if (!monster) {
+    throw new Error("Monstro da masmorra inválido.");
+  }
+  const battle = createDungeonBattle(character, monster);
+  battle.dungeon = {
+    countryId: run.countryId,
+    floor: run.floor,
+    roomIndex: run.roomIndex,
+    roomType: room.type,
+    roomLabel: room.type === "boss" ? "Chefe" : `Horda ${run.roomIndex + 1}`,
+    remainingMonsters: run.currentEncounterMonsterIds.length,
+    activeBuffs: [...run.activeBuffs],
+    activeTraps: [...run.activeTraps]
+  };
+  applyDungeonStatModifiers(character, battle);
+  store.battles.set(battle.id, battle);
+}
+
+function progressToNextDungeonRoom(character: Character) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  run.roomIndex += 1;
+  run.currentEncounterMonsterIds = [];
+  run.roomDeadlineAt = Date.now() + DUNGEON_ROOM_TIME_LIMIT_MS;
+  ensureDungeonRoomTimeout(character, character.playerId);
+}
+
+function socketByPlayer(playerId: string) {
+  const socketIds = store.socketsByPlayer.get(playerId);
+  if (!socketIds || socketIds.size === 0) {
+    return null;
+  }
+  const firstSocketId = Array.from(socketIds)[0];
+  return io.sockets.sockets.get(firstSocketId) ?? null;
+}
+
+function appendDungeonMonsterRewards(character: Character, battle: NonNullable<GameState["activeBattle"]>) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  const monsterParticipant = battle.participants.find((participant) => participant.kind === "monster");
+  if (!monsterParticipant) {
+    return;
+  }
+  const monster = MONSTERS[monsterParticipant.id.replace("monster:", "")];
+  if (!monster) {
+    return;
+  }
+  const stats = deriveStats(character, ITEM_CATALOG);
+  const xp = Math.max(1, Math.ceil(monster.experience * (1 + stats.xpBonusPercent) * 2));
+  const gold = Math.max(1, Math.ceil(monster.gold * (1 + stats.goldBonusPercent) * 2));
+  run.pendingExperience += xp;
+  run.pendingGold += gold;
+
+  for (const drop of monster.drops) {
+    const dropChance = Math.min(0.95, drop.chance + stats.dropBonusPercent);
+    if (Math.random() <= dropChance) {
+      const definition = ITEM_CATALOG[drop.itemId];
+      queueDungeonReward(character, {
+        itemId: drop.itemId,
+        quantity: 1,
+        rarity: definition?.slot ? getRarityFromRoll() : undefined
+      });
+    }
+  }
+}
+
+function failDungeonRun(character: Character) {
+  clearDungeonRun(character);
+}
+
+function applyDungeonRoomAction(character: Character, playerId: string) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  if (run.roomIndex >= run.rooms.length) {
+    return;
+  }
+
+  const room = run.rooms[run.roomIndex];
+  if (room.type === "horde" || room.type === "boss") {
+    startNextDungeonCombat(character);
+    return;
+  }
+
+  if (room.type === "buff" && room.buff) {
+    if (room.buff === "heal_full") {
+      const stats = deriveStats(character, ITEM_CATALOG);
+      character.currentHp = stats.maxHp;
+    }
+    if (!run.activeBuffs.includes(room.buff)) {
+      run.activeBuffs.push(room.buff);
+    }
+    progressToNextDungeonRoom(character);
+    return;
+  }
+
+  if (room.type === "trap" && room.trap) {
+    if (room.trap === "hp_20") {
+      const stats = deriveStats(character, ITEM_CATALOG);
+      const damage = Math.max(1, Math.floor(stats.maxHp * 0.2));
+      character.currentHp = Math.max(0, character.currentHp - damage);
+    } else if (!run.activeTraps.includes(room.trap)) {
+      run.activeTraps.push(room.trap);
+    }
+    if (character.currentHp <= 0) {
+      clearDungeonRun(character);
+      socketByPlayer(playerId)?.emit("game:error", { message: "Você morreu na armadilha da masmorra e perdeu os espólios pendentes." });
+      return;
+    }
+    progressToNextDungeonRoom(character);
+    return;
+  }
+
+  if (room.type === "chest") {
+    for (const reward of room.rewards ?? []) {
+      queueDungeonReward(character, reward);
+    }
+    progressToNextDungeonRoom(character);
+  }
+}
+
+function completeDungeonRun(character: Character, playerId: string) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  character.dungeonProgress ??= {};
+  character.dungeonProgress.unlockedFloorByCountry ??= {};
+  character.dungeonProgress.clearedFloorsByCountry ??= {};
+
+  const clearedFloors = character.dungeonProgress.clearedFloorsByCountry[run.countryId] ?? [];
+  const firstClear = !clearedFloors.includes(run.floor);
+  if (firstClear) {
+    character.dungeonProgress.clearedFloorsByCountry[run.countryId] = [...clearedFloors, run.floor].sort((a, b) => a - b);
+  }
+
+  const discardedItems: string[] = [];
+  character.gold += run.pendingGold;
+  grantExperience(character, run.pendingExperience);
+  for (const reward of run.pendingItems) {
+    try {
+      addItem(character, reward.itemId, ITEM_CATALOG, reward.quantity, { rarity: reward.rarity });
+    } catch {
+      const itemName = ITEM_CATALOG[reward.itemId]?.name ?? reward.itemId;
+      discardedItems.push(`${itemName}${reward.quantity > 1 ? ` x${reward.quantity}` : ""}`);
+    }
+  }
+  if (firstClear) {
+    try {
+      addItem(character, DUNGEON_KEY_ITEM_ID, ITEM_CATALOG, 1);
+    } catch {
+      discardedItems.push(ITEM_CATALOG[DUNGEON_KEY_ITEM_ID]?.name ?? DUNGEON_KEY_ITEM_ID);
+    }
+  }
+  character.dungeonClears += 1;
+  const nextUnlocked = Math.min(DUNGEON_TOTAL_FLOORS, run.floor + 1);
+  character.dungeonProgress.unlockedFloorByCountry[run.countryId] = Math.max(
+    character.dungeonProgress.unlockedFloorByCountry[run.countryId] ?? 1,
+    nextUnlocked
+  );
+  clearDungeonRun(character);
+  socketByPlayer(playerId)?.emit("game:error", {
+    message: `Andar ${run.floor} concluído. Recompensas recebidas: ${run.pendingExperience} XP, ${run.pendingGold} ouro${firstClear ? " e +1 Chave de Masmorra" : ""}.${discardedItems.length > 0 ? ` Itens descartados por falta de espaço: ${discardedItems.join(", ")}.` : ""}`
+  });
+}
+
+function resolveDungeonProgress(character: Character, playerId: string, battle: NonNullable<GameState["activeBattle"]>) {
+  const run = character.dungeonProgress?.activeRun;
+  if (!run || battle.mode !== "dungeon" || battle.status !== "ended") {
+    return;
+  }
+  syncCharacterVitalsFromBattle(battle, character);
+  const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
+  if (winner?.ownerPlayerId !== playerId) {
+    failDungeonRun(character);
+    return;
+  }
+
+  appendDungeonMonsterRewards(character, battle);
+  if (run.currentEncounterMonsterIds && run.currentEncounterMonsterIds.length > 0) {
+    run.currentEncounterMonsterIds.shift();
+  }
+
+  if (run.currentEncounterMonsterIds && run.currentEncounterMonsterIds.length > 0) {
+    // More horde monsters remain. Keep the ended battle in activeBattleId so the
+    // client can finish playing the death animation; the client will then call
+    // dungeon:advance automatically to start the next combat.
+    return;
+  }
+
+  character.activeBattleId = null;
+  progressToNextDungeonRoom(character);
+
+  if (!character.dungeonProgress?.activeRun) {
+    return;
+  }
+  const updatedRun = character.dungeonProgress.activeRun;
+  if (updatedRun.roomIndex >= updatedRun.rooms.length) {
+    completeDungeonRun(character, playerId);
+    return;
+  }
+
+  const nextRoom = updatedRun.rooms[updatedRun.roomIndex];
+  if (nextRoom?.type === "horde") {
+    startNextDungeonCombat(character);
+  }
 }
 
 type EnhancementRequirement = {
@@ -2867,6 +3462,9 @@ io.on("connection", (socket: AuthedSocket) => {
       }
 
       const definition = ITEM_CATALOG[item.itemId];
+      if (item.itemId === DUNGEON_KEY_ITEM_ID) {
+        throw new Error("Chave de Masmorra não pode ser vendida.");
+      }
       const quantity = Math.max(1, Math.floor(payload.quantity ?? 1));
       if (quantity > item.quantity) {
         throw new Error("Quantidade indisponível.");
@@ -3154,6 +3752,9 @@ io.on("connection", (socket: AuthedSocket) => {
       ensureNotInBattle(character);
       ensureNotWorking(character);
       normalizeVitals(character);
+      if (character.dungeonProgress?.activeRun) {
+        throw new Error("Você já está em uma masmorra ativa.");
+      }
 
       const cityMonsterIds = getCityHuntMonsterIds(character.cityId);
       if (!cityMonsterIds.includes(payload.monsterId)) {
@@ -3186,23 +3787,55 @@ io.on("connection", (socket: AuthedSocket) => {
       ensureNotWorking(character);
       normalizeVitals(character);
 
-      const city = CITIES.find((entry) => entry.id === character.cityId) ?? CITIES[0];
-      if (!city.dungeonMonsterIds?.includes(payload.monsterId)) {
-        throw new Error("Esta masmorra não está disponível nesta cidade.");
+      normalizeDungeonDailyKeys(character);
+      const countryId = getCharacterCountryId(character);
+      const floor = Math.max(1, Math.min(DUNGEON_TOTAL_FLOORS, Math.floor(payload.floor ?? 1)));
+      const unlocked = floorUnlockByCountry(character, countryId);
+      if (floor > unlocked) {
+        throw new Error(`Andar bloqueado. Complete o andar ${unlocked} primeiro.`);
       }
-
-      const monster = MONSTERS[payload.monsterId];
-      const energyCost = monster.level + 1;
+      if (countItem(character, DUNGEON_KEY_ITEM_ID) < 1) {
+        throw new Error("Você precisa de 1 Chave de Masmorra para entrar.");
+      }
       if (character.currentHp <= 0) {
         throw new Error("Você precisa recuperar vida antes de entrar na masmorra.");
       }
-      if (character.currentEnergy < energyCost) {
-        throw new Error(`Energia insuficiente. Esta masmorra exige ${energyCost} energia.`);
-      }
-      character.currentEnergy -= energyCost;
-      const battle = createDungeonBattle(character, monster);
-      store.battles.set(battle.id, battle);
+      removeItemByItemId(character, DUNGEON_KEY_ITEM_ID, 1);
+      createDungeonRun(character, countryId, floor);
       leaveArenaQueue(playerId);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("dungeon:advance", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      clearEndedBattle(character);
+      if (character.activeBattleId) {
+        throw new Error("Conclua a batalha atual antes de seguir na masmorra.");
+      }
+      const run = character.dungeonProgress?.activeRun;
+      if (!run) {
+        throw new Error("Nenhuma masmorra ativa.");
+      }
+      if (run.roomIndex >= run.rooms.length) {
+        completeDungeonRun(character, playerId);
+        emitState(playerId);
+        return;
+      }
+      applyDungeonRoomAction(character, playerId);
+      const updatedRun = character.dungeonProgress?.activeRun;
+      if (updatedRun && updatedRun.roomIndex >= updatedRun.rooms.length && !character.activeBattleId) {
+        completeDungeonRun(character, playerId);
+      } else if (updatedRun && !character.activeBattleId) {
+        const pendingRoom = updatedRun.rooms[updatedRun.roomIndex];
+        if (pendingRoom?.type === "horde") {
+          startNextDungeonCombat(character);
+        }
+      }
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -3444,6 +4077,9 @@ io.on("connection", (socket: AuthedSocket) => {
         recordPotionProgress(character, potionDefinition);
       }
       applyBattleProgress(character, playerId, battle, wasActive);
+      if (battle.mode === "dungeon" && wasActive && battle.status === "ended") {
+        resolveDungeonProgress(character, playerId, battle);
+      }
       const playerIds = syncBattleVitals(battle.id);
       if (playerIds.length > 0) {
         emitMany(playerIds);
@@ -3464,6 +4100,10 @@ io.on("connection", (socket: AuthedSocket) => {
         throw new Error("Batalha não encontrada.");
       }
 
+      if (battle.mode === "dungeon" && character.dungeonProgress?.activeRun) {
+        throw new Error("Você não pode fugir da masmorra antes de concluir o andar ou morrer.");
+      }
+
       fleeBattle(battle, character);
       if (battle.mode === "pvp") {
         recordArenaResult(battle.id);
@@ -3478,6 +4118,9 @@ io.on("connection", (socket: AuthedSocket) => {
     try {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
+      if (character.dungeonProgress?.activeRun) {
+        throw new Error("Finalize o andar da masmorra ou morra para sair.");
+      }
       clearEndedBattle(character);
       emitState(playerId);
     } catch (error) {
@@ -3502,6 +4145,9 @@ io.on("connection", (socket: AuthedSocket) => {
       const price = Math.max(1, Math.floor(payload.price));
       const currency: "gold" | "diamonds" = payload.currency === "diamonds" ? "diamonds" : "gold";
       const itemDef = ITEM_CATALOG[inventoryItem.itemId];
+      if (inventoryItem.itemId === DUNGEON_KEY_ITEM_ID) {
+        throw new Error("Chave de Masmorra não pode ser comercializada no mercado.");
+      }
       const maxQuantity = itemDef?.slot ? 1 : inventoryItem.quantity;
       const quantity = Math.max(1, Math.min(maxQuantity, Math.floor(payload.quantity ?? 1)));
       const listingItem: InventoryItem = {

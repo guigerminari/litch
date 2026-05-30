@@ -456,7 +456,7 @@ function resolveBattleFlow(battle: BattleState, actingCharacter: Character) {
   const living = livingParticipants(battle);
   if (living.length === 1) {
     finishBattle(battle, living[0]);
-    if (battle.mode === "pve" || battle.mode === "dungeon") {
+    if (battle.mode === "pve") {
       grantPveRewards(battle, actingCharacter);
     }
     return;
@@ -551,8 +551,8 @@ function grantPveRewards(battle: BattleState, character: Character) {
   const discardedDropNames: string[] = [];
 
   for (const drop of monster.drops) {
-    const baseDropChance = Math.min(0.95, drop.chance + stats.dropBonusPercent);
-    const eventDropChance = Math.min(0.95, baseDropChance * (1 + eventBonus.dropChanceBonusPercent));
+    const dropBonusPercent = stats.dropBonusPercent + eventBonus.dropChanceBonusPercent;
+    const eventDropChance = Math.min(0.95, drop.chance * (1 + dropBonusPercent));
     if (Math.random() <= eventDropChance) {
       const definition = ITEM_CATALOG[drop.itemId];
       const isStackable = definition && !definition.slot;

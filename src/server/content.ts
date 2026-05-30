@@ -3141,7 +3141,8 @@ export const CITIES: CityDefinition[] = [
       "health_potion_medium",
       "energy_potion_medium",
       "health_potion_high",
-      "energy_potion_high"
+      "energy_potion_high",
+      "misc_dungeon_key"
     ],
     "moneyChangerItemIds": [
       "ticket_train",
