@@ -1492,7 +1492,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
   );
 }
 
-type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "creation" | "items" | "monsters" | "monarchs" | "developer" | "stats";
+type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "dungeon" | "creation" | "items" | "monsters" | "monarchs" | "developer" | "stats";
 type CraftingStationTab = "blacksmith" | "alchemist";
 
 function HistoryGuide() {
@@ -1653,6 +1653,11 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   const arenaRankIndex = game.rankings.arena.findIndex((entry) => entry.playerId === game.player.id);
   const arenaRankLabel = arenaRankIndex >= 0 ? `#${arenaRankIndex + 1}` : "Top 20+";
   const arenaBlueCoins = countInventoryItem(game, "material_gold_coin");
+  const dungeonKeys = countInventoryItem(game, "misc_dungeon_key");
+  const dungeonUnlockedFloor = Math.max(
+    1,
+    Math.min(20, game.character.dungeonProgress?.unlockedFloorByCountry?.[game.currentCountry.id] ?? 1)
+  );
   const formatArenaSeasonLabel = (key: string) => {
     if (!key) return "Sem temporada ativa";
     const [year, month] = key.split("-");
@@ -1674,6 +1679,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     { id: "world", label: "Mundo", icon: <GameIcon name="travel" size={18} /> },
     { id: "work", label: "Trabalhos", icon: <GameIcon name="agency" size={18} /> },
     { id: "arena", label: "Arena", icon: <GameIcon name="arena" size={18} /> },
+    { id: "dungeon", label: "Masmorra", icon: <GameIcon name="dungeon" size={18} /> },
     { id: "creation", label: "Criação", icon: <GameIcon name="craft" size={18} /> },
     { id: "items", label: "Itens", icon: <GameIcon name="inventory" size={18} /> },
     { id: "monsters", label: "Monstros", icon: <GameIcon name="hunt" size={18} /> },
@@ -1937,6 +1943,51 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
                 ))}
                 {game.rankings.arena.length === 0 && <p className="empty-state">Nenhum recruta ranqueado ainda.</p>}
               </div>
+            </section>
+          </div>
+        )}
+
+        {tab === "dungeon" && (
+          <div className="faq-list">
+            <section className="faq-section highlighted">
+              <h3>Resumo atual</h3>
+              <article>
+                <strong>Andar liberado em {game.currentCountry.name}</strong>
+                <span>{dungeonUnlockedFloor}/20</span>
+              </article>
+              <article>
+                <strong>Chaves de masmorra</strong>
+                <span>{dungeonKeys}</span>
+              </article>
+              <article>
+                <strong>Conclusões totais</strong>
+                <span>{game.character.dungeonClears}</span>
+              </article>
+            </section>
+
+            <section className="faq-section">
+              <h3>Como funciona</h3>
+              <article><strong>Entrada</strong><span>Você precisa de 1 Chave de Masmorra para entrar em um andar.</span></article>
+              <article><strong>Objetivo</strong><span>Limpe todas as salas do andar para concluir e receber os espólios acumulados.</span></article>
+              <article><strong>Navegação</strong><span>Durante uma run ativa, a navegação para outras áreas fica bloqueada até encerrar o andar.</span></article>
+              <article><strong>Tempo por sala</strong><span>Você tem 1 minuto para avançar para a próxima sala. Se o tempo acabar, o personagem é derrotado e perde os espólios pendentes.</span></article>
+            </section>
+
+            <section className="faq-section">
+              <h3>Tipos de sala</h3>
+              <article><strong>Horda</strong><span>Sala de combate com sequência de inimigos. Ao vencer todos, você avança.</span></article>
+              <article><strong>Baú</strong><span>Mostra recompensas antecipadas. Ao confirmar, os itens entram na pilha de espólios pendentes.</span></article>
+              <article><strong>Buff</strong><span>Aplica bônus imediatos para a run, como dano, defesa, agilidade, força ou cura total.</span></article>
+              <article><strong>Armadilha</strong><span>Aplica penalidades na run, podendo reduzir atributos ou vida.</span></article>
+              <article><strong>Chefe</strong><span>Sala final do andar. A batalha só começa quando você clicar em Enfrentar o Chefe.</span></article>
+            </section>
+
+            <section className="faq-section">
+              <h3>Recompensas e progressão</h3>
+              <article><strong>Acúmulo</strong><span>XP, ouro e itens ficam acumulados durante o andar e são entregues no fim da conclusão.</span></article>
+              <article><strong>Queda por inventário cheio</strong><span>Se faltar espaço, parte dos itens pode ser descartada ao finalizar a run.</span></article>
+              <article><strong>Desbloqueio de andares</strong><span>Concluir um andar libera o próximo no mesmo país até o limite do andar 20.</span></article>
+              <article><strong>Chave bônus</strong><span>A chave extra de conclusão só é concedida na primeira vez que você conclui aquele andar no país.</span></article>
             </section>
           </div>
         )}
@@ -4316,7 +4367,9 @@ function MonarchPanel({ game }: { game: GameState }) {
 }
 
 function RankingsPanel({ game }: { game: GameState }) {
-  const [activeTab, setActiveTab] = useState<"level" | "arena" | "clans">("level");
+  const [activeTab, setActiveTab] = useState<"level" | "arena" | "dungeon" | "clans">("level");
+  const dungeonCountries = game.countries.slice(0, 3);
+  const [dungeonTab, setDungeonTab] = useState<"total" | string>("total");
 
   return (
     <section className="content-panel rankings-panel">
@@ -4324,10 +4377,42 @@ function RankingsPanel({ game }: { game: GameState }) {
       <div className="rankings-tabs">
         <button type="button" className={activeTab === "level" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("level")}>Nível</button>
         <button type="button" className={activeTab === "arena" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("arena")}>Ranqueada</button>
+        <button type="button" className={activeTab === "dungeon" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("dungeon")}>Masmorra</button>
         <button type="button" className={activeTab === "clans" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("clans")}>Clãs</button>
       </div>
       {activeTab === "level" && <RankingList title="Nível" entries={game.rankings.level} mode="level" />}
       {activeTab === "arena" && <RankingList title="Arena Ranqueada" entries={game.rankings.arena} mode="arena" />}
+      {activeTab === "dungeon" && (
+        <section className="ranking-section">
+          <h3>Masmorra</h3>
+          <div className="rankings-tabs">
+            <button type="button" className={dungeonTab === "total" ? "mini-tab active" : "mini-tab"} onClick={() => setDungeonTab("total")}>Total</button>
+            {dungeonCountries.map((country) => (
+              <button
+                type="button"
+                key={country.id}
+                className={dungeonTab === country.id ? "mini-tab active" : "mini-tab"}
+                onClick={() => setDungeonTab(country.id)}
+              >
+                {country.name}
+              </button>
+            ))}
+          </div>
+          {dungeonTab === "total" ? (
+            <DungeonRankingList
+              title="Total de andares completados"
+              entries={game.rankings.dungeonTotal}
+              valueForEntry={(entry) => entry.dungeonFloorsTotal ?? 0}
+            />
+          ) : (
+            <DungeonRankingList
+              title={`Andares completados em ${dungeonCountries.find((country) => country.id === dungeonTab)?.name ?? "País"}`}
+              entries={game.rankings.dungeonByCountry[dungeonTab] ?? []}
+              valueForEntry={(entry) => entry.dungeonFloorsByCountry?.[dungeonTab] ?? 0}
+            />
+          )}
+        </section>
+      )}
       {activeTab === "clans" && <ClanRankingList entries={game.rankings.clans} />}
     </section>
   );
@@ -4345,6 +4430,34 @@ function RankingList({ title, entries, mode }: { title: string; entries: GameSta
             <b>{mode === "level" ? `Nível ${entry.level}` : `${entry.arenaRankedPoints} pts`}</b>
           </article>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function DungeonRankingList({
+  title,
+  entries,
+  valueForEntry
+}: {
+  title: string;
+  entries: GameState["rankings"]["dungeonTotal"];
+  valueForEntry: (entry: GameState["rankings"]["dungeonTotal"][number]) => number;
+}) {
+  const rankedEntries = entries.filter((entry) => valueForEntry(entry) > 0);
+
+  return (
+    <section className="ranking-section">
+      <h3>{title}</h3>
+      <div className="ranking-list">
+        {rankedEntries.map((entry, index) => (
+          <article className="ranking-row" key={`dungeon-${entry.playerId}`}>
+            <strong>#{index + 1}</strong>
+            <PlayerName playerId={entry.playerId} name={entry.name} />
+            <b>{valueForEntry(entry)} andares</b>
+          </article>
+        ))}
+        {rankedEntries.length === 0 && <p className="empty-state">Nenhum recruta completou andares ainda.</p>}
       </div>
     </section>
   );

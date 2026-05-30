@@ -655,6 +655,8 @@ export interface RankingEntry {
   arenaWins: number;
   arenaLosses: number;
   arenaRankedPoints: number;
+  dungeonFloorsTotal?: number;
+  dungeonFloorsByCountry?: Record<string, number>;
 }
 
 export interface PlayerPublicProfile {
@@ -767,6 +769,8 @@ export interface GameState {
   rankings: {
     level: RankingEntry[];
     arena: RankingEntry[];
+    dungeonTotal: RankingEntry[];
+    dungeonByCountry: Record<string, RankingEntry[]>;
     clans: ClanRankingEntry[];
   };
   onlineCount: number;

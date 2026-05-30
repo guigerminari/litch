@@ -1602,17 +1602,41 @@ function getAvailableCraftingRecipes(cityId: string) {
 
 function buildRankings() {
   const entries = Array.from(store.characters.values()).map((character) => ({
+    dungeonFloorsByCountry: Object.fromEntries(
+      Object.entries(character.dungeonProgress?.clearedFloorsByCountry ?? {}).map(([countryId, floors]) => [countryId, floors.length])
+    ),
     playerId: character.playerId,
     name: character.name,
     level: character.level,
     arenaWins: character.arenaWins ?? 0,
     arenaLosses: character.arenaLosses ?? 0,
-    arenaRankedPoints: character.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS
+    arenaRankedPoints: character.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS,
+    dungeonFloorsTotal: Object.values(character.dungeonProgress?.clearedFloorsByCountry ?? {}).reduce((total, floors) => total + floors.length, 0)
   }));
+
+  const dungeonTotal = [...entries]
+    .sort((a, b) => b.dungeonFloorsTotal - a.dungeonFloorsTotal || b.level - a.level || a.name.localeCompare(b.name))
+    .slice(0, 20);
+
+  const dungeonByCountry = Object.fromEntries(
+    COUNTRIES.map((country) => {
+      const top = [...entries]
+        .sort(
+          (a, b) =>
+            (b.dungeonFloorsByCountry[country.id] ?? 0) - (a.dungeonFloorsByCountry[country.id] ?? 0) ||
+            b.level - a.level ||
+            a.name.localeCompare(b.name)
+        )
+        .slice(0, 20);
+      return [country.id, top];
+    })
+  );
 
   return {
     level: [...entries].sort((a, b) => b.level - a.level || b.arenaWins - a.arenaWins).slice(0, 20),
     arena: [...entries].sort((a, b) => b.arenaRankedPoints - a.arenaRankedPoints || b.arenaWins - a.arenaWins || a.name.localeCompare(b.name)).slice(0, 20),
+    dungeonTotal,
+    dungeonByCountry,
     clans: buildClanDirectory().slice(0, 20)
   };
 }
