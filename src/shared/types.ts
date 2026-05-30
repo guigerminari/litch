@@ -865,6 +865,11 @@ export interface UseItemPayload {
   instanceId: string;
 }
 
+export interface DestroyItemPayload {
+  instanceId: string;
+  quantity?: number;
+}
+
 export interface HuntStartPayload {
   monsterId: string;
 }

@@ -3958,9 +3958,13 @@ function DungeonPanel({ game }: { game: GameState }) {
   const unlockedFloor = Math.max(1, Math.min(20, unlockedByCountry[currentCountryId] ?? 1));
   const [selectedFloor, setSelectedFloor] = useState(unlockedFloor);
   const [now, setNow] = useState(Date.now());
+  const [dungeonSuccessFx, setDungeonSuccessFx] = useState<{ token: number; floor: number } | null>(null);
   const dungeonKeys = countInventoryItem(game, "misc_dungeon_key");
   const currentRoom = activeRun && activeRun.roomIndex < activeRun.rooms.length ? activeRun.rooms[activeRun.roomIndex] : null;
   const dungeonBattleActive = game.activeBattle?.mode === "dungeon";
+  const previousRunRef = useRef<typeof activeRun>(activeRun);
+  const previousClearsRef = useRef(game.character.dungeonClears);
+  const previousUnlockedRef = useRef(unlockedFloor);
 
   useEffect(() => {
     if (selectedFloor > unlockedFloor) {
@@ -3973,6 +3977,27 @@ function DungeonPanel({ game }: { game: GameState }) {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const completedRun =
+      Boolean(previousRunRef.current) &&
+      !activeRun &&
+      (game.character.dungeonClears > previousClearsRef.current || unlockedFloor > previousUnlockedRef.current);
+
+    if (completedRun && previousRunRef.current) {
+      setDungeonSuccessFx({ token: Date.now(), floor: previousRunRef.current.floor });
+    }
+
+    previousRunRef.current = activeRun;
+    previousClearsRef.current = game.character.dungeonClears;
+    previousUnlockedRef.current = unlockedFloor;
+  }, [activeRun, game.character.dungeonClears, unlockedFloor]);
+
+  useEffect(() => {
+    if (!dungeonSuccessFx) return;
+    const timer = window.setTimeout(() => setDungeonSuccessFx(null), 2200);
+    return () => window.clearTimeout(timer);
+  }, [dungeonSuccessFx]);
+
   const lastAutoHordeKeyRef = useRef<string | null>(null);
   useEffect(() => {
     if (!activeRun || !currentRoom || currentRoom.type !== "horde" || game.activeBattle) return;
@@ -3984,7 +4009,6 @@ function DungeonPanel({ game }: { game: GameState }) {
   }, [activeRun?.floor, activeRun?.roomIndex, currentRoom?.type, game.activeBattle]);
 
   const floorButtons = Array.from({ length: 20 }, (_, index) => index + 1);
-  const canEnter = !activeRun && game.character.currentHp > 0 && dungeonKeys > 0 && selectedFloor <= unlockedFloor;
   const dungeonKeyDefinition = game.itemCatalog["misc_dungeon_key"];
   const floorDoorOpenIconUrl = "/assets/dungeon/open_floor.png";
   const floorDoorClosedIconUrl = "/assets/dungeon/closed-floor.png";
@@ -4124,6 +4148,14 @@ function DungeonPanel({ game }: { game: GameState }) {
         </span>
       </div>
 
+      {dungeonSuccessFx && (
+        <div key={dungeonSuccessFx.token} className="dungeon-success-fx" role="status" aria-live="polite">
+          <span className="dungeon-success-burst" aria-hidden="true" />
+          <strong>Andar {dungeonSuccessFx.floor} concluído!</strong>
+          <small>Espólios entregues com sucesso.</small>
+        </div>
+      )}
+
       {!activeRun && (
         <>
           <div className="dungeon-floor-grid">
@@ -4132,36 +4164,40 @@ function DungeonPanel({ game }: { game: GameState }) {
               const floorIconUrl = floor === 20
                 ? floorBossIconUrl
                 : floorCompleted ? floorDoorOpenIconUrl : floorDoorClosedIconUrl;
+              const floorCanEnter = !activeRun && game.character.currentHp > 0 && dungeonKeys > 0 && floor <= unlockedFloor;
               return (
-                <button
-                  type="button"
-                  key={floor}
-                  className={`mini-tab dungeon-floor-btn${selectedFloor === floor ? " active" : ""}${floor > unlockedFloor ? " locked" : ""}`}
-                  disabled={floor > unlockedFloor || Boolean(activeRun)}
-                  onClick={() => setSelectedFloor(floor)}
-                >
-                  <span className="dungeon-floor-btn-icon" aria-hidden="true">
-                    <AssetImage src={floorIconUrl} alt="Escada" fallback={"#"} style={{ width: "100%", height: "100%" }} />
-                  </span>
-                  <span className="dungeon-floor-btn-label">Andar</span>
-                  <strong>{floor}</strong>
-                </button>
+                <div key={floor} className={`dungeon-floor-slot${selectedFloor === floor ? " selected" : ""}`}>
+                  <button
+                    type="button"
+                    className={`mini-tab dungeon-floor-btn${selectedFloor === floor ? " active" : ""}${floor > unlockedFloor ? " locked" : ""}`}
+                    disabled={floor > unlockedFloor || Boolean(activeRun)}
+                    onClick={() => setSelectedFloor(floor)}
+                  >
+                    <span className="dungeon-floor-btn-icon" aria-hidden="true">
+                      <AssetImage src={floorIconUrl} alt="Escada" fallback={"#"} style={{ width: "100%", height: "100%" }} />
+                    </span>
+                    <span className="dungeon-floor-btn-label">Andar</span>
+                    <strong>{floor}</strong>
+                  </button>
+
+                  {selectedFloor === floor && (
+                    <div className="dungeon-floor-entry">
+                      <button
+                        className="primary-button"
+                        disabled={!floorCanEnter}
+                        onClick={() => socket.emit("dungeon:start", { floor })}
+                      >
+                        <span className="dungeon-entry-floor-icon" aria-hidden="true">
+                          <AssetImage src={dungeonKeyDefinition?.imageUrl} alt="Chave da masmorra" fallback={<KeyRound size={13} />} style={{ width: "100%", height: "100%" }} />
+                        </span>
+                        Entrar no andar {floor}
+                      </button>
+                      {!floorCanEnter && <small className="muted">Requer vida acima de zero e pelo menos 1 Chave de Masmorra.</small>}
+                    </div>
+                  )}
+                </div>
               );
             })}
-          </div>
-
-          <div className="dungeon-entry-actions">
-            <button
-              className="primary-button"
-              disabled={!canEnter}
-              onClick={() => socket.emit("dungeon:start", { floor: selectedFloor })}
-            >
-              <span className="dungeon-entry-floor-icon" aria-hidden="true">
-                <AssetImage src={dungeonKeyDefinition?.imageUrl} alt="Chave da masmorra" fallback={<KeyRound size={13} />} style={{ width: "100%", height: "100%" }} />
-              </span>
-              Entrar no andar {selectedFloor}
-            </button>
-            {!canEnter && !activeRun && <small className="muted">Requer vida acima de zero e pelo menos 1 Chave de Masmorra.</small>}
           </div>
         </>
       )}
@@ -4173,24 +4209,27 @@ function DungeonPanel({ game }: { game: GameState }) {
           <p className={roomTimeLeftMs <= 10_000 ? "dungeon-room-timer danger" : "dungeon-room-timer"}>
             Tempo restante para avançar: <strong>{roomTimeLeftLabel}</strong>
           </p>
-          <div className="dungeon-pending-rewards">
-            <strong>Recompensas acumuladas</strong>
-            <div className="dungeon-pending-stats">
-              <span><strong>{activeRun.pendingExperience}</strong> XP</span>
-              <span><strong>{activeRun.pendingGold}</strong> ouro</span>
-              <span><strong>{activeRun.pendingItems.length}</strong> item(ns)</span>
-            </div>
-            <div className="dungeon-pending-items">
-              {pendingRewardItems.length > 0 ? (
-                pendingRewardItems.map((item) => (
-                  <span key={item.id} className={`item-rarity ${item.rarity ?? "common"}`}>
-                    {item.label}
-                  </span>
-                ))
-              ) : (
-                <span className="muted">Nenhum item acumulado ainda.</span>
-              )}
-            </div>
+          <div className="dungeon-active-modifiers">
+            <strong>Buffs ativos:</strong>
+            {activeRun.activeBuffs.length > 0
+              ? activeRun.activeBuffs.map((buff) => {
+                  const chip = buffChips[buff];
+                  return chip
+                    ? <span key={buff} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
+                    : <span key={buff} className="item-rarity epic">{buffLabels[buff] ?? buff}</span>;
+                })
+              : <span className="muted">Nenhum</span>}
+          </div>
+          <div className="dungeon-active-modifiers">
+            <strong>Debuffs ativos:</strong>
+            {activeRun.activeTraps.length > 0
+              ? activeRun.activeTraps.map((trap) => {
+                  const chip = trapChips[trap];
+                  return chip
+                    ? <span key={trap} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
+                    : <span key={trap} className="item-rarity rare">{trapLabels[trap] ?? trap}</span>;
+                })
+              : <span className="muted">Nenhum</span>}
           </div>
           {currentRoom && (
             <div key={activeRun.roomIndex} className={`dungeon-room-preview dungeon-room-enter ${roomPresentation?.accentClass ?? ""}`}>
@@ -4239,27 +4278,24 @@ function DungeonPanel({ game }: { game: GameState }) {
               </div>
             </div>
           )}
-          <div className="dungeon-active-modifiers">
-            <strong>Buffs ativos:</strong>
-            {activeRun.activeBuffs.length > 0
-              ? activeRun.activeBuffs.map((buff) => {
-                  const chip = buffChips[buff];
-                  return chip
-                    ? <span key={buff} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
-                    : <span key={buff} className="item-rarity epic">{buffLabels[buff] ?? buff}</span>;
-                })
-              : <span className="muted">Nenhum</span>}
-          </div>
-          <div className="dungeon-active-modifiers">
-            <strong>Debuffs ativos:</strong>
-            {activeRun.activeTraps.length > 0
-              ? activeRun.activeTraps.map((trap) => {
-                  const chip = trapChips[trap];
-                  return chip
-                    ? <span key={trap} className={`dungeon-effect-chip ${chip.cls}`}>{chip.icon}{chip.label}</span>
-                    : <span key={trap} className="item-rarity rare">{trapLabels[trap] ?? trap}</span>;
-                })
-              : <span className="muted">Nenhum</span>}
+          <div className="dungeon-pending-rewards">
+            <strong>Recompensas acumuladas</strong>
+            <div className="dungeon-pending-stats">
+              <span><strong>{activeRun.pendingExperience}</strong> XP</span>
+              <span><strong>{activeRun.pendingGold}</strong> ouro</span>
+              <span><strong>{activeRun.pendingItems.length}</strong> item(ns)</span>
+            </div>
+            <div className="dungeon-pending-items">
+              {pendingRewardItems.length > 0 ? (
+                pendingRewardItems.map((item) => (
+                  <span key={item.id} className={`item-rarity ${item.rarity ?? "common"}`}>
+                    {item.label}
+                  </span>
+                ))
+              ) : (
+                <span className="muted">Nenhum item acumulado ainda.</span>
+              )}
+            </div>
           </div>
         </section>
       )}
@@ -5917,6 +5953,30 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
             )}
             {selectedEquipped && (
               <span className="equipped-label">Equipado</span>
+            )}
+            {!selectedEquipped && (
+              <button
+                className="danger-button"
+                disabled={battleLocked}
+                onClick={() => {
+                  const isEquipment = Boolean(selectedItem.slot);
+                  const destroyLabel = isEquipment
+                    ? formatInventoryItemName(selectedItem, selectedEntry)
+                    : `${formatInventoryItemName(selectedItem, selectedEntry)} x${selectedEntry.quantity}`;
+                  const confirmed = window.confirm(
+                    isEquipment
+                      ? `Deseja destruir ${destroyLabel}? Esta ação não pode ser desfeita.`
+                      : `Deseja destruir TODOS: ${destroyLabel}? Esta ação não pode ser desfeita.`
+                  );
+                  if (!confirmed) {
+                    return;
+                  }
+                  socket.emit("inventory:destroy", { instanceId: selectedEntry.instanceId });
+                  setSelectedInstanceId(null);
+                }}
+              >
+                {selectedItem.slot ? "Destruir item" : "Destruir todos"}
+              </button>
             )}
             <button className="ghost-button" onClick={() => setSelectedInstanceId(null)}>
               Fechar

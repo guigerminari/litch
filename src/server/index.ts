@@ -19,6 +19,7 @@ import type {
   CraftPayload,
   Currency,
   CurrencyExchangePayload,
+  DestroyItemPayload,
   DeveloperMessagePayload,
   DungeonBuffType,
   DungeonRoomState,
@@ -3583,6 +3584,44 @@ io.on("connection", (socket: AuthedSocket) => {
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
       craftItem(character, payload.recipeId);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("inventory:destroy", (payload: DestroyItemPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      const item = findInventoryItem(character, payload.instanceId);
+      if (!item) {
+        throw new Error("Item não encontrado.");
+      }
+
+      const definition = ITEM_CATALOG[item.itemId];
+      if (definition?.slot) {
+        if (isEquipped(character, item.instanceId)) {
+          throw new Error("Desequipe o item antes de destruir.");
+        }
+        removeItem(character, item.instanceId, item.quantity);
+        emitState(playerId);
+        return;
+      }
+
+      const itemInstances = character.inventory.filter((entry) => entry.itemId === item.itemId);
+      const hasEquippedInstance = itemInstances.some((entry) => isEquipped(character, entry.instanceId));
+      if (hasEquippedInstance) {
+        throw new Error("Desequipe todos os itens desse tipo antes de destruir.");
+      }
+
+      const totalQuantity = itemInstances.reduce((sum, entry) => sum + entry.quantity, 0);
+      if (totalQuantity <= 0) {
+        throw new Error("Quantidade indisponível.");
+      }
+
+      removeItemByItemId(character, item.itemId, totalQuantity);
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
