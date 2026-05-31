@@ -3239,12 +3239,22 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
       : "Serviço em andamento"
     : `${countryServices.length} serviços`;
   const working = isWorkInProgress(game.character.activeWork);
+  const dungeonUnlockedFloor = Math.max(
+    1,
+    Math.min(20, game.character.dungeonProgress?.unlockedFloorByCountry?.[game.currentCountry.id] ?? 1)
+  );
   const combatOptions: CityOption[] = [
     { view: "hunt", icon: <GameIcon name="hunt" size={50} />, title: "Caçar", value: `${game.cityHuntLocations.length} locais` },
     { view: "arena", icon: <GameIcon name="arena" size={50} />, title: "Arena", value: working ? "Trabalhando" : `${game.arenaQueueSize} na fila`, disabled: working },
   ];
   if (game.currentCity.dungeonMonsterIds?.length) {
-    combatOptions.push({ view: "dungeon", icon: <GameIcon name="dungeon" size={50} />, title: "Masmorra", value: working ? "Trabalhando" : `${game.currentCity.dungeonMonsterIds.length} desafios`, disabled: working });
+    combatOptions.push({
+      view: "dungeon",
+      icon: <GameIcon name="dungeon" size={50} />,
+      title: "Masmorra",
+      value: working ? "Trabalhando" : `Andar ${dungeonUnlockedFloor}/20`,
+      disabled: working
+    });
   }
 
   const actionOptions: CityOption[] = [
