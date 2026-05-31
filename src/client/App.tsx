@@ -7140,7 +7140,7 @@ function BattlePanel({ game }: { game: GameState }) {
               }
               style={{padding: "3px 12px"}}
             >
-              <AssetImage style={{ width: 27 }} src={"assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} />
+              <AssetImage style={{ width: 27 }} src={"/assets/items/potions/health.png"} alt={"Poção de vida"} fallback={"?"} />
               <span style={{verticalAlign: "super"}}>Usar poção de vida</span>
             </button>
             <button className="danger-button battle-flee-button" disabled={animationsPending || battle.mode === "dungeon"} onClick={() => socket.emit("battle:flee")}>
@@ -7820,22 +7820,51 @@ const ASSET_URL_ALIASES: Record<string, string> = {
 };
 
 function getAssetUrlAlias(src: string) {
-  const normalized = src.startsWith("/") ? src : `/${src}`;
-  const alias = ASSET_URL_ALIASES[normalized];
+  const normalized = normalizeAssetUrl(src);
+  const normalizedPath = normalized.startsWith("http://") || normalized.startsWith("https://")
+    ? new URL(normalized).pathname
+    : normalized.startsWith("/")
+      ? normalized
+      : `/${normalized}`;
+  const alias = ASSET_URL_ALIASES[normalizedPath];
   if (!alias) return null;
-  return src.startsWith("/") ? alias : alias.slice(1);
+  return alias;
+}
+
+function normalizeAssetUrl(src: string) {
+  const trimmed = src.trim();
+  if (!trimmed) return "";
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const url = new URL(trimmed);
+      if ((url.hostname === "127.0.0.1" || url.hostname === "localhost") && typeof window !== "undefined") {
+        return `${window.location.origin}${url.pathname}${url.search}${url.hash}`;
+      }
+      return trimmed;
+    } catch {
+      return trimmed;
+    }
+  }
+
+  if (trimmed.startsWith("//")) {
+    return typeof window !== "undefined" ? `${window.location.protocol}${trimmed}` : `https:${trimmed}`;
+  }
+
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
 }
 
 function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; fallback: React.ReactNode; style?: React.CSSProperties }) {
-  const [activeSrc, setActiveSrc] = useState(src ?? "");
+  const normalizedSrc = src ? normalizeAssetUrl(src) : "";
+  const [activeSrc, setActiveSrc] = useState(normalizedSrc);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    setActiveSrc(src ?? "");
+    setActiveSrc(normalizedSrc);
     setFailed(false);
-  }, [src]);
+  }, [normalizedSrc]);
 
-  if (!src || !activeSrc || failed) {
+  if (!normalizedSrc || !activeSrc || failed) {
     return <span className="asset-fallback" aria-hidden="true" style={style}>{fallback}</span>;
   }
 
@@ -7849,7 +7878,7 @@ function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; 
       decoding="async"
       onError={() => {
         const alias = getAssetUrlAlias(activeSrc);
-        if (alias && alias !== activeSrc && alias !== src) {
+        if (alias && alias !== activeSrc && alias !== normalizedSrc) {
           setActiveSrc(alias);
           return;
         }
