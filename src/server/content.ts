@@ -37,7 +37,7 @@ export const TEMPORARY_EVENTS: TemporaryEventDefinition[] = [
         scope: "hunt",
         xpBonusPercent: 0.5,
         goldBonusPercent: 0.5,
-        dropChanceBonusPercent: 0.5
+        dropChanceBonusPercent: 0.1
       }
     ]
   }

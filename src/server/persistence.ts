@@ -41,7 +41,9 @@ type JsonValue = string | number | boolean | null | Record<string, unknown> | un
 const DEFAULT_DATA_FILE = join(process.cwd(), "data", "game-state.json");
 const DATA_FILE = process.env.LITCH_DATA_FILE ?? DEFAULT_DATA_FILE;
 const MYSQL_URL = process.env.MYSQL_DATABASE_URL ?? (process.env.DATABASE_URL?.startsWith("mysql") ? process.env.DATABASE_URL : undefined);
-const PERSISTENCE_DRIVER = (process.env.LITCH_PERSISTENCE ?? (MYSQL_URL ? "mysql" : "json")).toLowerCase();
+const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
+const MYSQL_DRIVER_DEFAULT = MYSQL_URL || MYSQL_DATABASE ? "mysql" : "json";
+const PERSISTENCE_DRIVER = (process.env.LITCH_PERSISTENCE ?? MYSQL_DRIVER_DEFAULT).toLowerCase();
 const MYSQL_TABLE_PREFIX = sanitizeIdentifier(process.env.LITCH_MYSQL_TABLE_PREFIX ?? "litch");
 const LEGACY_MYSQL_STATE_TABLE = sanitizeIdentifier(process.env.LITCH_MYSQL_STATE_TABLE ?? "litch_game_state");
 const LEGACY_MYSQL_STATE_ID = process.env.LITCH_MYSQL_STATE_ID ?? "default";
@@ -263,6 +265,7 @@ async function ensureMysqlSchema() {
       active_work JSON NULL,
       work_aptitudes JSON NOT NULL,
       work_bonus_claims JSON NOT NULL,
+      dungeon_progress JSON NULL,
       last_daily_blue_coin_grant_key VARCHAR(32) NULL,
       clan_join_cooldown_until BIGINT NULL,
       UNIQUE KEY uq_characters_id (id),
@@ -272,6 +275,7 @@ async function ensureMysqlSchema() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
   await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_characters`, "clan_join_cooldown_until", "BIGINT NULL");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_characters`, "dungeon_progress", "JSON NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("character_inventory")} (
@@ -320,10 +324,14 @@ async function ensureMysqlSchema() {
       updated_at BIGINT NOT NULL,
       monarch JSON NULL,
       arena JSON NULL,
+      death_penalty_applied_player_ids JSON NULL,
+      dungeon JSON NULL,
       KEY idx_battles_status (status),
       KEY idx_battles_city (city_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_battles`, "death_penalty_applied_player_ids", "JSON NULL");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_battles`, "dungeon", "JSON NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("market_listings")} (
@@ -629,6 +637,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     active_work: unknown;
     work_aptitudes: unknown;
     work_bonus_claims: unknown;
+    dungeon_progress: unknown;
     last_daily_blue_coin_grant_key: string | null;
     clan_join_cooldown_until: number | null;
   }>>(`SELECT * FROM ${table("characters")}`);
@@ -693,6 +702,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
       activeWork: parseJson(row.active_work, null),
       workAptitudes: parseJson(row.work_aptitudes, {}),
       workBonusClaims: parseJson(row.work_bonus_claims, {}),
+      dungeonProgress: parseJson(row.dungeon_progress, undefined),
       lastDailyBlueCoinGrantKey: row.last_daily_blue_coin_grant_key ?? undefined,
       clanJoinCooldownUntil: maybeNumber(row.clan_join_cooldown_until) ?? 0
     });
@@ -734,6 +744,8 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     updated_at: number;
     monarch: unknown;
     arena: unknown;
+    death_penalty_applied_player_ids: unknown;
+    dungeon: unknown;
   }>>(`SELECT * FROM ${table("battles")}`);
   const battles: BattleState[] = battleRows.map((row) => ({
     id: row.id,
@@ -747,7 +759,9 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     createdAt: Number(row.created_at),
     updatedAt: Number(row.updated_at),
     monarch: parseJson(row.monarch, undefined),
-    arena: parseJson(row.arena, undefined)
+    arena: parseJson(row.arena, undefined),
+    deathPenaltyAppliedPlayerIds: parseJson(row.death_penalty_applied_player_ids, undefined),
+    dungeon: parseJson(row.dungeon, undefined)
   }));
 
   const [marketRows] = await connection.execute<Array<RowDataPacket & {
@@ -987,8 +1001,8 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           talent_allocations, clan_id, last_regen_at, clan_benefit_allocations, arena_wins, arena_losses,
           arena_ranked_points, dungeon_clears, market_history, pve_auto_until, royal_seal_until, avatar_id,
           unlocked_avatar_ids, referral_rewards_claimed_for, monarch_attempts, active_work, work_aptitudes,
-          work_bonus_claims, last_daily_blue_coin_grant_key, clan_join_cooldown_until
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          work_bonus_claims, dungeon_progress, last_daily_blue_coin_grant_key, clan_join_cooldown_until
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           character.playerId,
           character.id,
@@ -1025,6 +1039,7 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           json(character.activeWork ?? null),
           json(character.workAptitudes ?? {}),
           json(character.workBonusClaims ?? {}),
+          json(character.dungeonProgress ?? null),
           character.lastDailyBlueCoinGrantKey ?? null,
           character.clanJoinCooldownUntil ?? null
         ]
@@ -1046,8 +1061,9 @@ async function saveMysqlStoreNow(source: GameStore = store) {
     for (const battle of source.battles.values()) {
       await connection.execute(
         `INSERT INTO ${table("battles")} (
-          id, mode, status, city_id, participants, turn_participant_id, log, winner_participant_id, created_at, updated_at, monarch, arena
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          id, mode, status, city_id, participants, turn_participant_id, log, winner_participant_id, created_at, updated_at,
+          monarch, arena, death_penalty_applied_player_ids, dungeon
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           battle.id,
           battle.mode,
@@ -1060,7 +1076,9 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           battle.createdAt ?? Date.now(),
           battle.updatedAt ?? Date.now(),
           json(battle.monarch ?? null),
-          json(battle.arena ?? null)
+          json(battle.arena ?? null),
+          json(battle.deathPenaltyAppliedPlayerIds ?? null),
+          json(battle.dungeon ?? null)
         ]
       );
     }
