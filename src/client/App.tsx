@@ -272,8 +272,12 @@ const CITY_HUNT_MAP_POINT_BY_LOCATION: Record<string, { x: number; y: number }> 
   rosindale_infected_coast: { x: 22, y: 33 },
   rosindale_zombie_quarter: { x: 87, y: 72 },
   morthaly_black_docks: { x: 62, y: 80 },
+  morthaly_tide_catacombs: { x: 16, y: 58 },
+  morthaly_wailing_breakwater: { x: 85, y: 50 },
   morthaly_runic_wastes: { x: 26, y: 56 },
-  morthaly_lich_spire: { x: 58, y: 22 }
+  morthaly_lich_spire: { x: 58, y: 22 },
+  morthaly_ossuary_labs: { x: 28, y: 80 },
+  morthaly_violet_apex: { x: 78, y: 46 }
 };
 
 const viewLabels: Record<View, string> = {

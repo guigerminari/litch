@@ -3270,7 +3270,9 @@ export const CITIES: CityDefinition[] = [
       "forge_celtic_cyan_amulet"
     ],
     "huntLocationIds": [
-      "morthaly_black_docks"
+      "morthaly_black_docks",
+      "morthaly_tide_catacombs",
+      "morthaly_wailing_breakwater"
     ],
     "huntMonsterIds": [
       "zombie_crab",
@@ -3332,7 +3334,9 @@ export const CITIES: CityDefinition[] = [
     ],
     "huntLocationIds": [
       "morthaly_runic_wastes",
-      "morthaly_lich_spire"
+      "morthaly_lich_spire",
+      "morthaly_ossuary_labs",
+      "morthaly_violet_apex"
     ],
     "huntMonsterIds": [
       "damnation_mummy",
@@ -3557,11 +3561,31 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "description": "Porto sombrio de Morthaly, onde correntes negras arrastam caranguejos mortos, krakens partidos e horrores vindos da maré.",
     "monsterIds": [
       "zombie_crab",
+      "zombie_turtle",
+      "zombie_turtle_infected",
+      "zombie_rat"
+    ]
+  },
+  "morthaly_tide_catacombs": {
+    "id": "morthaly_tide_catacombs",
+    "cityId": "porto_sombrio",
+    "name": "Catacumbas da Maré Negra",
+    "description": "Corredores afogados sob o porto, onde poças de água pútrida escondem lagartos e cefalópodes reanimados.",
+    "monsterIds": [
+      "zombie_octopode",
+      "zombie_octopode_infected",
+      "zombie_lizard",
+      "zombie_lizard_infected"
+    ]
+  },
+  "morthaly_wailing_breakwater": {
+    "id": "morthaly_wailing_breakwater",
+    "cityId": "porto_sombrio",
+    "name": "Quebra-Mar dos Lamentos",
+    "description": "Paredões de pedra castigados por ondas frias, onde cabeças de kraken emergem entre névoas e cardumes espectrais.",
+    "monsterIds": [
       "zombie_kraken_head",
       "zombie_kraken_infected",
-      "zombie_octopode_infected",
-      "zombie_octopode",
-      "zombie_turtle_infected",
       "spectral_fish_old"
     ]
   },
@@ -3573,10 +3597,8 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "monsterIds": [
       "damnation_mummy",
       "skeleton_dragon",
-      "spectral_dragon_old",
-      "spectral_hydra_3_old",
-      "zombie_hound_infected",
-      "zombie_hound"
+      "zombie_hound",
+      "zombie_hound_infected"
     ]
   },
   "morthaly_lich_spire": {
@@ -3585,13 +3607,33 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "name": "Pináculo do Trono Morto",
     "description": "Torres mais altas da Necrópole de Morthaly, onde dracos, ogros e deformidades zumbis servem ao poder do castelo.",
     "monsterIds": [
-      "zombie_drake_infected",
       "zombie_drake",
-      "zombie_ogre_infected",
+      "zombie_drake_infected",
+      "demon_bareon",
+      "zombie_toad"
+    ]
+  },
+  "morthaly_ossuary_labs": {
+    "id": "morthaly_ossuary_labs",
+    "cityId": "necropole_de_morthaly",
+    "name": "Laboratórios Ossuários",
+    "description": "Criptas de experimentos arcanos onde ogros, deformidades e corpos menores são reanimados em série.",
+    "monsterIds": [
       "zombie_ogre",
+      "zombie_ogre_infected",
       "zombie_small",
-      "zombie_ugly_thing_infected",
       "zombie_ugly_thing"
+    ]
+  },
+  "morthaly_violet_apex": {
+    "id": "morthaly_violet_apex",
+    "cityId": "necropole_de_morthaly",
+    "name": "Ápice Violeta",
+    "description": "Terraços iluminados por chamas roxas, patrulhados por dragões espectrais e horrores instáveis da coroa litch.",
+    "monsterIds": [
+      "spectral_dragon_old",
+      "spectral_hydra_3_old",
+      "zombie_ugly_thing_infected"
     ]
   }
 };
