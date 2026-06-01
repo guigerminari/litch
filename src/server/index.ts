@@ -1718,6 +1718,10 @@ function normalizeClanName(name: string) {
   return name.trim().replace(/\s+/g, " ").slice(0, 28);
 }
 
+function normalizeClanDescription(description: string) {
+  return description.trim().replace(/\s+/g, " ").slice(0, 220);
+}
+
 function formatServerDuration(ms: number) {
   const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
   const hours = Math.floor(totalMinutes / 60);
@@ -1865,6 +1869,7 @@ function buildClanDirectory() {
       return {
         id: clan.id,
         name: clan.name,
+        description: clan.description ?? "",
         icon: clanView.icon,
         leaderPlayerId: clan.leaderPlayerId,
         leaderName: leaderCharacter?.name ?? leaderPlayer?.username ?? clan.leaderPlayerId,
@@ -1922,6 +1927,7 @@ function createClan(character: Character, name: string, icon?: string) {
   const clan = {
     id: randomUUID(),
     name: normalized,
+    description: "",
     icon: normalizeClanIcon(icon),
     leaderPlayerId: character.playerId,
     memberPlayerIds: [character.playerId],
@@ -1939,7 +1945,7 @@ function createClan(character: Character, name: string, icon?: string) {
   syncClanBenefits(character);
 }
 
-function updateClan(character: Character, name: string, icon?: string) {
+function updateClan(character: Character, name: string, icon?: string, description?: string) {
   const clan = character.clanId ? store.clans.get(character.clanId) : null;
   if (!clan) {
     throw new Error("Você não participa de um clã.");
@@ -1961,6 +1967,9 @@ function updateClan(character: Character, name: string, icon?: string) {
 
   clan.name = normalized;
   clan.icon = normalizeClanIcon(icon);
+  if (description !== undefined) {
+    clan.description = normalizeClanDescription(description);
+  }
 }
 
 function kickClanMember(character: Character, memberPlayerId: string) {
@@ -3716,7 +3725,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
-      updateClan(character, payload.name, payload.icon);
+      updateClan(character, payload.name, payload.icon, payload.description);
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);

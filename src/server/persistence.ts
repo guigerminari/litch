@@ -156,7 +156,7 @@ function applyPersistedStore(target: GameStore, persisted: Partial<PersistedGame
   target.characters = new Map((persisted.characters ?? []).map((character) => [character.playerId, character]));
   target.sessions = new Map(persisted.sessions ?? []);
   target.battles = new Map((persisted.battles ?? []).map((battle) => [battle.id, battle]));
-  target.clans = new Map((persisted.clans ?? []).map((clan) => [clan.id, clan]));
+  target.clans = new Map((persisted.clans ?? []).map((clan) => [clan.id, { ...clan, description: clan.description ?? "" }]));
   target.marketplace = new Map((persisted.marketplace ?? []).map((listing) => [listing.id, listing]));
   target.chatMessages = persisted.chatMessages ?? [];
   target.clanChatMessages = new Map(persisted.clanChatMessages ?? []);
@@ -211,6 +211,7 @@ async function ensureMysqlSchema() {
     CREATE TABLE IF NOT EXISTS ${table("clans")} (
       id VARCHAR(64) NOT NULL PRIMARY KEY,
       name VARCHAR(80) NOT NULL,
+      description TEXT NOT NULL,
       icon VARCHAR(80) NOT NULL,
       leader_player_id VARCHAR(64) NOT NULL,
       level INT NOT NULL,
@@ -223,6 +224,7 @@ async function ensureMysqlSchema() {
       CONSTRAINT fk_clans_leader FOREIGN KEY (leader_player_id) REFERENCES ${table("players")}(id) ON DELETE RESTRICT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_clans`, "description", "TEXT NOT NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("characters")} (
@@ -554,6 +556,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
   const [clanRows] = await connection.execute<Array<RowDataPacket & {
     id: string;
     name: string;
+    description: string | null;
     icon: string;
     leader_player_id: string;
     level: number;
@@ -569,6 +572,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
       {
         id: row.id,
         name: row.name,
+        description: row.description ?? "",
         icon: row.icon,
         leaderPlayerId: row.leader_player_id,
         memberPlayerIds: [],
@@ -949,11 +953,12 @@ async function saveMysqlStoreNow(source: GameStore = store) {
     for (const clan of source.clans.values()) {
       await connection.execute(
         `INSERT INTO ${table("clans")} (
-          id, name, icon, leader_player_id, level, member_capacity, gold, diamonds, benefit_allocations, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          id, name, description, icon, leader_player_id, level, member_capacity, gold, diamonds, benefit_allocations, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           clan.id,
           clan.name,
+          clan.description ?? "",
           clan.icon ?? "",
           clan.leaderPlayerId,
           clan.level ?? 1,

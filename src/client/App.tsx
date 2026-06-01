@@ -4748,6 +4748,7 @@ function ClanPanel({ game }: { game: GameState }) {
   const [crestIcon, setCrestIcon] = useState<ClanCrestId>(normalizeClanCrestId());
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
   const [editCrestIcon, setEditCrestIcon] = useState<ClanCrestId>(normalizeClanCrestId());
   const [gold, setGold] = useState(0);
   const [diamonds, setDiamonds] = useState(0);
@@ -4781,8 +4782,9 @@ function ClanPanel({ game }: { game: GameState }) {
     if (!clan) return;
     setActiveTab("benefits");
     setEditName(clan.name);
+    setEditDescription(clan.description ?? "");
     setEditCrestIcon(normalizeClanCrestId(clan.icon));
-  }, [clan?.id, clan?.name, clan?.icon]);
+  }, [clan?.id, clan?.name, clan?.description, clan?.icon]);
 
   useEffect(() => {
     if (activeTab === "admin" && !leader) {
@@ -4856,6 +4858,7 @@ function ClanPanel({ game }: { game: GameState }) {
                 <span className="clan-directory-crest">{getClanCrestIcon(entry.icon)}</span>
                 <div className="clan-leader-main">
                   <strong>{entry.name}</strong>
+                  {entry.description && <small className="clan-directory-description">{entry.description}</small>}
                   <span className="clan-leader-clickable">Líder: <PlayerName playerId={entry.leaderPlayerId} name={entry.leaderName} /> - Nv {entry.level}</span>
                   <span>Líder: {entry.leaderName} - Nv {entry.level}</span>
                 </div>
@@ -4877,7 +4880,7 @@ function ClanPanel({ game }: { game: GameState }) {
 
   const updateClanProfile = (event: FormEvent) => {
     event.preventDefault();
-    socket.emit("clan:update", { name: editName, icon: editCrestIcon });
+    socket.emit("clan:update", { name: editName, icon: editCrestIcon, description: editDescription });
   };
 
   return (
@@ -4888,6 +4891,7 @@ function ClanPanel({ game }: { game: GameState }) {
           <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
           <Metric icon={<Users size={18} />} label="Membros" value={`${clanMembers.length}/${clan.memberCapacity}`} />
           <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : "Clã"} />
+          <p className="clan-description-text">{clan.description || "Sem descrição do clã."}</p>
         </div>
         <section className="clan-treasury-card">
           <div className="clan-treasury-head">
@@ -4994,9 +4998,16 @@ function ClanPanel({ game }: { game: GameState }) {
           <form className="clan-manage-form" onSubmit={updateClanProfile}>
             <div>
               <strong>Editar clã</strong>
-              <span>Altere o nome e o brasão do clã.</span>
+              <span>Altere nome, descrição e brasão do clã.</span>
             </div>
             <input value={editName} onChange={(event) => setEditName(event.target.value)} maxLength={28} placeholder="Nome do clã" />
+            <textarea
+              value={editDescription}
+              onChange={(event) => setEditDescription(event.target.value)}
+              maxLength={220}
+              rows={4}
+              placeholder="Descrição do clã (visível para todos)"
+            />
             <div className="crest-picker" aria-label="Brasão do clã">
               {CLAN_CRESTS.map((crest) => (
                 <button
@@ -5054,6 +5065,7 @@ function ClanInfoModal({ clan, onClose }: { clan: ClanSummary; onClose: () => vo
             <h2>{clan.name}</h2>
             <small>Nível {clan.level} • {clan.memberCount}/{clan.memberCapacity} membros</small>
             <small>Líder: <PlayerName playerId={clan.leaderPlayerId} name={clan.leaderName} /></small>
+            <p className="clan-info-description">{clan.description || "Sem descrição do clã."}</p>
           </div>
         </header>
         <div className="clan-info-category-grid">

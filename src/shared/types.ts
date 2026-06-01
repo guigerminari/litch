@@ -611,6 +611,7 @@ export interface ClanMemberView {
 export interface Clan {
   id: string;
   name: string;
+  description: string;
   icon: string;
   leaderPlayerId: string;
   memberPlayerIds: string[];
@@ -626,6 +627,7 @@ export interface Clan {
 export interface ClanSummary {
   id: string;
   name: string;
+  description: string;
   icon: string;
   leaderPlayerId: string;
   leaderName: string;
@@ -971,6 +973,7 @@ export interface ClanCreatePayload {
 export interface ClanUpdatePayload {
   name: string;
   icon?: string;
+  description?: string;
 }
 
 export interface ClanJoinPayload {
