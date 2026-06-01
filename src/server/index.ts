@@ -356,9 +356,11 @@ const httpServer = createServer((request, response) => {
   response.end(JSON.stringify({ error: "not_found" }));
 });
 
+const isDevelopment = process.env.NODE_ENV !== "production";
+
 const io = new Server(httpServer, {
   cors: {
-    origin: [CLIENT_ORIGIN, "http://localhost:5173"],
+    origin: isDevelopment ? true : [CLIENT_ORIGIN, "http://localhost:5173"],
     credentials: true
   }
 });
