@@ -2483,6 +2483,120 @@ button:disabled {
   margin-bottom: 12px;
 }
 
+.hunt-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.hunt-map-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 74% 20%, rgba(82, 224, 196, 0.11), transparent 18rem),
+    rgba(16, 13, 26, 0.72);
+  box-shadow: 0 0 24px rgba(82, 224, 196, 0.07);
+}
+
+.hunt-map-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1280 / 844;
+  border: 1px solid rgba(220, 203, 255, 0.14);
+  border-radius: 14px;
+  background: #0b0912;
+}
+
+.hunt-map-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 80% 18%, rgba(82, 224, 196, 0.08), transparent 18rem),
+    linear-gradient(180deg, rgba(11, 9, 18, 0.08), rgba(11, 9, 18, 0.24));
+}
+
+.hunt-map-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hunt-map-point {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.hunt-map-point:not(:disabled):hover {
+  color: var(--text);
+  transform: translate(-50%, calc(-50% - 2px));
+}
+
+.hunt-map-point.selected {
+  color: var(--text);
+}
+
+.hunt-map-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(82, 224, 196, 0.56);
+  border-radius: 50%;
+  background: rgba(11, 9, 18, 0.9);
+  color: var(--cyan);
+  box-shadow: 0 0 14px rgba(82, 224, 196, 0.28);
+}
+
+.hunt-map-point.selected .hunt-map-icon {
+  outline: 3px solid var(--red);
+  color: var(--red);
+  border: none;
+  box-shadow: 0 0 38px rgba(255, 33, 33, 0.38);
+}
+
+.hunt-map-name {
+  max-width: min(180px, 30vw);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(8, 6, 15, 0.72);
+}
+
+.hunt-map-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.hunt-map-caption span {
+  padding: 6px 9px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(11, 9, 18, 0.42);
+}
+
 .hunt-location-banner {
   display: grid;
   gap: 4px;
@@ -2672,8 +2786,9 @@ button:disabled {
 }
 
 .travel-map-point.current .travel-map-icon {
-  border-color: rgba(82, 216, 155, 0.56);
+  border: none;
   box-shadow: 0 0 18px rgba(82, 216, 155, 0.26);
+  outline: 3px solid var(--red);  /* Borda do lado de fora */
 }
 
 .travel-map-point.locked .travel-map-icon {
@@ -3518,6 +3633,7 @@ button:disabled .game-icon {
   grid-template-columns: 1fr;
   margin: 0 auto;
   max-width: 520px;
+  width: 100%;
 }
 
 .inventory-return {
@@ -9983,6 +10099,10 @@ button:disabled {
     padding: 8px;
   }
 
+  .hunt-map-card {
+    padding: 8px;
+  }
+
   .travel-map-point {
     gap: 5px;
     min-height: 34px;
@@ -10007,6 +10127,19 @@ button:disabled {
   }
 
   .travel-map-caption {
+    font-size: 0.72rem;
+  }
+
+  .hunt-map-point {
+    max-width: 46vw;
+  }
+
+  .hunt-map-name {
+    max-width: min(160px, 40vw);
+    font-size: 0.62rem;
+  }
+
+  .hunt-map-caption {
     font-size: 0.72rem;
   }
 
@@ -10322,6 +10455,10 @@ button:disabled {
     padding: 5px 6px;
   }
 
+  .hunt-map-point {
+    max-width: 46vw;
+  }
+
   .travel-map-name small,
   .travel-map-name b {
     display: none;
@@ -10332,7 +10469,17 @@ button:disabled {
     font-size: 0.64rem;
   }
 
+  .hunt-map-name {
+    max-width: 96px;
+    font-size: 0.58rem;
+  }
+
   .travel-map-caption span {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .hunt-map-caption span {
     width: 100%;
     border-radius: 10px;
   }

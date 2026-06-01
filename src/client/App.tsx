@@ -246,6 +246,36 @@ const TRAVEL_COUNTRY_LABELS: Record<string, { x: number; y: number }> = {
   morthaly: { x: 77, y: 18 }
 };
 
+const CITY_HUNT_MAP_IMAGE_BY_CITY: Record<string, string> = {
+  eldoria: "/assets/locals/city/aurevia_euroria.png",
+  ravenspire: "/assets/locals/city/aurevia_ravenspire.png",
+  ironhold: "/assets/locals/city/aurevia_ironhold.png",
+  vila_de_valfria: "/assets/locals/city/valfria_vila_de_valfria.png",
+  rosindale: "/assets/locals/city/valfria_rosindale.png",
+  porto_sombrio: "/assets/locals/city/morthaly_porto_sombrio.png",
+  necropole_de_morthaly: "/assets/locals/city/morthay_necropole.png"
+};
+
+const CITY_HUNT_MAP_POINT_BY_LOCATION: Record<string, { x: number; y: number }> = {
+  eldoria_training_fields: { x: 19, y: 75 },
+  eldoria_old_woods: { x: 80, y: 30 },
+  eldoria_sunken_ruins: { x: 86, y: 78 },
+  ravenspire_bandit_road: { x: 22, y: 69 },
+  ravenspire_damned_lands: { x: 82, y: 73 },
+  ravenspire_desert_pass: { x: 88, y: 23 },
+  ironhold_ember_mines: { x: 12, y: 56 },
+  ironhold_beast_caves: { x: 57, y: 79 },
+  ironhold_giant_valley: { x: 85, y: 67 },
+  valfria_orc_marsh: { x: 32, y: 80 },
+  valfria_bone_fields: { x: 21, y: 33 },
+  valfria_spectral_mire: { x: 86, y: 28 },
+  rosindale_infected_coast: { x: 22, y: 33 },
+  rosindale_zombie_quarter: { x: 87, y: 72 },
+  morthaly_black_docks: { x: 62, y: 80 },
+  morthaly_runic_wastes: { x: 26, y: 56 },
+  morthaly_lich_spire: { x: 58, y: 22 }
+};
+
 const viewLabels: Record<View, string> = {
   city: "Cidade",
   hunt: "Caçar",
@@ -3135,7 +3165,6 @@ function CityHero({ game, view, setView }: { game: GameState; view: View; setVie
         <h1>{game.currentCity.name}</h1>
         <strong className="city-country">{game.currentCountry.name}</strong>
         <p>{game.currentCity.description}</p>
-        <small className="city-inhabitants">{game.currentCity.inhabitants.slice(0, 4).join(" • ")}</small>
       </div>
     </header>
   );
@@ -5394,9 +5423,10 @@ function getClanBenefitIcon(benefit: { id: string; icon?: string }) {
 }
 
 function HuntPanel({ game }: { game: GameState }) {
-  const [selectedLocationId, setSelectedLocationId] = useState(game.cityHuntLocations[0]?.id ?? "");
+  const [selectedLocationId, setSelectedLocationId] = useState("");
+  const cityMapImage = CITY_HUNT_MAP_IMAGE_BY_CITY[game.currentCity.id] ?? "/assets/locals/mapa-pais.png";
   const selectedLocation =
-    game.cityHuntLocations.find((location) => location.id === selectedLocationId) ?? game.cityHuntLocations[0] ?? null;
+    game.cityHuntLocations.find((location) => location.id === selectedLocationId) ?? null;
   const monsters = selectedLocation
     ? (selectedLocation.monsterIds
         .map((id) => game.cityMonsters.find((monster) => monster.id === id))
@@ -5405,23 +5435,55 @@ function HuntPanel({ game }: { game: GameState }) {
 
   useEffect(() => {
     if (!game.cityHuntLocations.some((location) => location.id === selectedLocationId)) {
-      setSelectedLocationId(game.cityHuntLocations[0]?.id ?? "");
+      setSelectedLocationId("");
     }
   }, [game.cityHuntLocations, selectedLocationId]);
 
+  function getMapPoint(locationId: string, index: number, total: number) {
+    const point = CITY_HUNT_MAP_POINT_BY_LOCATION[locationId];
+    if (point) {
+      return point;
+    }
+    const safeTotal = Math.max(1, total);
+    const ratio = (index + 1) / (safeTotal + 1);
+    return {
+      x: 16 + ratio * 68,
+      y: 72 - Math.sin(ratio * Math.PI) * 30
+    };
+  }
+
   return (
-    <section className="content-panel">
+    <section className="content-panel hunt-panel">
       <PanelTitle icon={<GameIcon name="hunt" size={26} />} title="Caçar" />
-      <div className="hunt-location-tabs">
-        {game.cityHuntLocations.map((location) => (
-          <button
-            key={location.id}
-            className={selectedLocation?.id === location.id ? "mini-tab active" : "mini-tab"}
-            onClick={() => setSelectedLocationId(location.id)}
-          >
-            {location.name}
-          </button>
-        ))}
+      <div className="hunt-map-card">
+        <div className="hunt-map-frame">
+          <img src={cityMapImage} alt={`Mapa de caça de ${game.currentCity.name}`} />
+          {game.cityHuntLocations.map((location, index) => {
+            const point = getMapPoint(location.id, index, game.cityHuntLocations.length);
+            const classes = [
+              "hunt-map-point",
+              selectedLocation?.id === location.id ? "selected" : ""
+            ].filter(Boolean).join(" ");
+            return (
+              <button
+                key={location.id}
+                className={classes}
+                onClick={() => setSelectedLocationId(location.id)}
+                style={{ left: `${point.x}%`, top: `${point.y}%` }}
+                title={location.name}
+                type="button"
+              >
+                <span className="hunt-map-icon">
+                  <Swords size={17} />
+                </span>
+                <span className="hunt-map-name">{location.name}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="hunt-map-caption">
+          <span>Clique no ícone de batalha para ver quais monstros aparecem no local.</span>
+        </div>
       </div>
       {selectedLocation && (
         <div className="hunt-location-banner">
@@ -5438,7 +5500,13 @@ function HuntPanel({ game }: { game: GameState }) {
               <MonsterVisual monster={monster} className="entity-art" />
               <div>
                 <strong>{monster.name}</strong>
-                <span>Nv. {monster.level}</span>
+                {monsters.length === 0 && (
+                  <p className="empty-state">
+                    {game.cityHuntLocations.length === 0
+                      ? "Nenhum local de caça disponível nesta cidade."
+                      : "Selecione um local de caça no mapa para ver os monstros."}
+                  </p>
+                )}
               </div>
               <div className="monster-stats">
                 <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>
