@@ -235,6 +235,7 @@ const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
   ravenspire: { x: 36.5, y: 41.5 },
   ironhold: { x: 29.5, y: 13.5 },
   vila_de_valfria: { x: 31.5, y: 75.5 },
+  kheredu: { x: 50, y: 65.5 },
   rosindale: { x: 63.5, y: 75.5 },
   porto_sombrio: { x: 55.5, y: 28 },
   necropole_de_morthaly: { x: 74.5, y: 33 }
@@ -242,7 +243,7 @@ const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
 
 const TRAVEL_COUNTRY_LABELS: Record<string, { x: number; y: number }> = {
   aurevia: { x: 23, y: 25 },
-  valfria: { x: 49, y: 66 },
+  valfria: { x: 49, y: 73 },
   morthaly: { x: 77, y: 18 }
 };
 
@@ -251,6 +252,7 @@ const CITY_HUNT_MAP_IMAGE_BY_CITY: Record<string, string> = {
   ravenspire: "/assets/locals/city/aurevia_ravenspire.png",
   ironhold: "/assets/locals/city/aurevia_ironhold.png",
   vila_de_valfria: "/assets/locals/city/valfria_vila_de_valfria.png",
+  kheredu: "/assets/locals/city/valfria_kheredu.png",
   rosindale: "/assets/locals/city/valfria_rosindale.png",
   porto_sombrio: "/assets/locals/city/morthaly_porto_sombrio.png",
   necropole_de_morthaly: "/assets/locals/city/morthay_necropole.png"
@@ -269,6 +271,9 @@ const CITY_HUNT_MAP_POINT_BY_LOCATION: Record<string, { x: number; y: number }> 
   valfria_orc_marsh: { x: 32, y: 80 },
   valfria_bone_fields: { x: 21, y: 33 },
   valfria_spectral_mire: { x: 86, y: 28 },
+  kheredu_scarab_labyrinth: { x: 35, y: 75 },
+  kheredu_bronze_kings_forge: { x: 70, y: 60 },
+  kheredu_tears_of_isis_aqueduct: { x: 27, y: 35 },
   rosindale_infected_coast: { x: 22, y: 33 },
   rosindale_zombie_quarter: { x: 87, y: 72 },
   morthaly_black_docks: { x: 62, y: 80 },
@@ -5428,6 +5433,7 @@ function getClanBenefitIcon(benefit: { id: string; icon?: string }) {
 
 function HuntPanel({ game }: { game: GameState }) {
   const [selectedLocationId, setSelectedLocationId] = useState("");
+  const monsterListRef = useRef<HTMLDivElement | null>(null);
   const cityMapImage = CITY_HUNT_MAP_IMAGE_BY_CITY[game.currentCity.id] ?? "/assets/locals/mapa-pais.png";
   const selectedLocation =
     game.cityHuntLocations.find((location) => location.id === selectedLocationId) ?? null;
@@ -5442,6 +5448,52 @@ function HuntPanel({ game }: { game: GameState }) {
       setSelectedLocationId("");
     }
   }, [game.cityHuntLocations, selectedLocationId]);
+
+  function animateMonsterList() {
+    const list = monsterListRef.current;
+    if (!list) {
+      return;
+    }
+    list.animate(
+      [
+        { opacity: 0.75, transform: "translateY(10px)" },
+        { opacity: 1, transform: "translateY(0)" }
+      ],
+      {
+        duration: 640,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+      }
+    );
+
+    const cards = Array.from(list.querySelectorAll<HTMLElement>(".monster-card"));
+    cards.forEach((card, index) => {
+      card.animate(
+        [
+          { opacity: 0.6, transform: "translateY(8px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ],
+        {
+          duration: 580,
+          delay: Math.min(index * 55, 510),
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          fill: "both"
+        }
+      );
+    });
+  }
+
+  function scrollToMonsterList() {
+    const frameId = window.requestAnimationFrame(() => {
+      monsterListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      animateMonsterList();
+    });
+    return () => window.cancelAnimationFrame(frameId);
+  }
+
+  function handleLocationSelect(locationId: string) {
+    setSelectedLocationId(locationId);
+    scrollToMonsterList();
+  }
 
   function getMapPoint(locationId: string, index: number, total: number) {
     const point = CITY_HUNT_MAP_POINT_BY_LOCATION[locationId];
@@ -5472,7 +5524,7 @@ function HuntPanel({ game }: { game: GameState }) {
               <button
                 key={location.id}
                 className={classes}
-                onClick={() => setSelectedLocationId(location.id)}
+                onClick={() => handleLocationSelect(location.id)}
                 style={{ left: `${point.x}%`, top: `${point.y}%` }}
                 title={location.name}
                 type="button"
@@ -5495,8 +5547,14 @@ function HuntPanel({ game }: { game: GameState }) {
           <span>{selectedLocation.description}</span>
         </div>
       )}
-      <div className="list-grid monster-battle-list">
-        {monsters.length === 0 && <p className="empty-state">Nenhum local de caça disponível nesta cidade.</p>}
+      <div ref={monsterListRef} className="list-grid monster-battle-list">
+        {monsters.length === 0 && (
+          <p className="empty-state">
+            {game.cityHuntLocations.length === 0
+              ? "Nenhum local de caça disponível nesta cidade."
+              : "Selecione um local de caça no mapa para ver os monstros."}
+          </p>
+        )}
         {monsters.map((monster) => {
           const blocked = game.character.currentHp <= 0 || game.character.currentEnergy < monster.level;
           return (
@@ -5504,13 +5562,7 @@ function HuntPanel({ game }: { game: GameState }) {
               <MonsterVisual monster={monster} className="entity-art" />
               <div>
                 <strong>{monster.name}</strong>
-                {monsters.length === 0 && (
-                  <p className="empty-state">
-                    {game.cityHuntLocations.length === 0
-                      ? "Nenhum local de caça disponível nesta cidade."
-                      : "Selecione um local de caça no mapa para ver os monstros."}
-                  </p>
-                )}
+                <span>Nv. {monster.level}</span>
               </div>
               <div className="monster-stats">
                 <small title="Vida"><Heart size={13} style={{ color: "var(--red)" }} /> {monster.maxHp}</small>

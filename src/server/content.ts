@@ -3117,25 +3117,17 @@ export const CITIES: CityDefinition[] = [
       "demoniac_elephant",
       "desert_giant",
       "desert_walker",
-      "desert_worm",
       "orc_warrior",
       "orc",
-      "pulsating_lump",
       "redback_new",
       "salamander_firebrand",
       "salamander",
       "sand_elemental",
-      "sand_spider",
       "skeleton_bat",
       "skeleton_centaur",
       "skeleton_naga",
-      "skeleton_quadruped_large_new",
       "skeleton_quadruped_small",
-      "skeleton_snake",
-      "skeleton_ugly_thing",
-      "mummy",
-      "damnation_scorpion",
-      "damnation_snake"
+      "skeleton_snake"
     ],
     "apothecaryItemIds": [
       "health_potion_medium",
@@ -3203,13 +3195,13 @@ export const CITIES: CityDefinition[] = [
       "spectral_naga_old",
       "spectral_quadruped_small_old",
       "spectral_spider_old",
+      "spectral_snake_old",
       "spectral_thing",
       "spectral_worm",
       "two_headed_ogre",
       "viper",
       "wolf_spider_new",
-      "wolf_spider_old",
-      "spectral_snake_old"
+      "wolf_spider_old"
     ],
     "armorerItemIds": [
       "weapon_long_sword",
@@ -3234,6 +3226,43 @@ export const CITIES: CityDefinition[] = [
       "major_energy_potion",
       "oblivion_scroll",
       "memory_scroll"
+    ]
+  },
+  {
+    "id": "kheredu",
+    "countryId": "valfria",
+    "name": "Kheredu",
+    "minLevel": 28,
+    "travelCost": 160,
+    "description": "Erguida sobre os alicerces colossais de uma civilização esquecida, é uma cidade que funde a magia arcana com a antiguidade mística.",
+    "inhabitants": [
+      "Néfera das Cinzas",
+      "Rakhim de Ísis"
+    ],
+    "npcs": {
+      "apothecary": "Néfera das Cinzas"
+    },
+    "huntLocationIds": [
+      "kheredu_scarab_labyrinth",
+      "kheredu_bronze_kings_forge",
+      "kheredu_tears_of_isis_aqueduct"
+    ],
+    "huntMonsterIds": [
+      "desert_worm",
+      "pulsating_lump",
+      "sand_spider",
+      "skeleton_quadruped_large_new",
+      "skeleton_ugly_thing",
+      "mummy",
+      "damnation_scorpion",
+      "damnation_snake"
+    ],
+    "apothecaryItemIds": [
+      "health_potion_high",
+      "energy_potion_high",
+      "major_health_potion",
+      "major_energy_potion",
+      "misc_dungeon_key"
     ]
   },
   {
@@ -3494,7 +3523,6 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
       "orc",
       "redback_new",
       "salamander",
-      "sand_spider",
       "desert_walker"
     ]
   },
@@ -3505,11 +3533,10 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
     "description": "Mar de dunas pálidas onde esqueletos emergem da areia e criaturas colossais seguem rastros deixados pelo vento quente.",
     "monsterIds": [
       "desert_giant",
-      "desert_worm",
-      "sand_elemental",
       "skeleton_bat",
       "skeleton_snake",
-      "skeleton_quadruped_small"
+      "skeleton_quadruped_small",
+      "skeleton_centaur"
     ]
   },
   "valfria_spectral_mire": {
@@ -3521,9 +3548,8 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
       "demon_desert_giant",
       "demoniac_elephant",
       "salamander_firebrand",
-      "skeleton_centaur",
       "skeleton_naga",
-      "skeleton_ugly_thing"
+      "sand_elemental"
     ]
   },
   "rosindale_infected_coast": {
@@ -3537,6 +3563,7 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
       "spectral_bee_old",
       "spectral_centaur_old",
       "spectral_naga_old",
+      "spectral_snake_old",
       "viper"
     ]
   },
@@ -3551,7 +3578,40 @@ export const HUNTING_LOCATIONS: Record<string, HuntingLocationDefinition> = {
       "spectral_thing",
       "spectral_worm",
       "two_headed_ogre",
-      "wolf_spider_new"
+      "wolf_spider_new",
+      "wolf_spider_old"
+    ]
+  },
+  "kheredu_scarab_labyrinth": {
+    "id": "kheredu_scarab_labyrinth",
+    "cityId": "kheredu",
+    "name": "Labirinto dos Escaravelhos",
+    "description": "Corredores de pedra dourada e passagens estreitas onde escaravelhos monstruosos e massas pulsantes se escondem entre runas antigas.",
+    "monsterIds": [
+      "sand_spider",
+      "damnation_scorpion",
+      "pulsating_lump"
+    ]
+  },
+  "kheredu_bronze_kings_forge": {
+    "id": "kheredu_bronze_kings_forge",
+    "cityId": "kheredu",
+    "name": "Forja dos Reis de Bronze",
+    "description": "Salões metálicos soterrados onde velhos autômatos e aberrações ossificadas guardam brasas eternas dos reis esquecidos.",
+    "monsterIds": [
+      "skeleton_quadruped_large_new",
+      "skeleton_ugly_thing",
+      "mummy"
+    ]
+  },
+  "kheredu_tears_of_isis_aqueduct": {
+    "id": "kheredu_tears_of_isis_aqueduct",
+    "cityId": "kheredu",
+    "name": "Aqueduto das Lágrimas de Ísis",
+    "description": "Aquedutos monumentais cobertos por inscrições arcanas, onde serpentes profanadas e ventos carregados de poeira cortam o caminho.",
+    "monsterIds": [
+      "desert_worm",
+      "damnation_snake"
     ]
   },
   "morthaly_black_docks": {
