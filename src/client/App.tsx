@@ -7349,7 +7349,7 @@ function BattlePanel({ game }: { game: GameState }) {
       <div className="battle-log">
         {visibleBattleLogs.map((entry) => (
           <p className={`battle-log-entry ${getBattleLogKind(entry.text)}`} key={entry.id}>
-            <span className="battle-log-icon">{getBattleLogIcon(entry.text)}</span>
+            <span className="battle-log-icon">{getBattleLogIcon(entry.text, game.itemCatalog)}</span>
             <span>{renderTextWithPlayerLinks(entry.text, battle.participants)}</span>
           </p>
         ))}
@@ -7558,7 +7558,40 @@ function getBattleLogKind(text: string) {
   return "event";
 }
 
-function getBattleLogIcon(text: string) {
+function normalizeBattleLogName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function getBattleLogDropItem(text: string, itemCatalog: Record<string, ItemDefinition>) {
+  const findByName = (name: string) => {
+    const normalizedName = normalizeBattleLogName(name);
+    return Object.values(itemCatalog).find((item) => normalizeBattleLogName(item.name) === normalizedName) ?? null;
+  };
+
+  const foundMatch = text.match(/encontrou (.+)\.$/i);
+  if (foundMatch?.[1]) {
+    const foundItem = findByName(foundMatch[1]);
+    if (foundItem) {
+      return foundItem;
+    }
+  }
+
+  const droppedMatch = text.match(/^(.+?) caiu no ch[aã]o\./i);
+  if (droppedMatch?.[1]) {
+    const droppedItem = findByName(droppedMatch[1]);
+    if (droppedItem) {
+      return droppedItem;
+    }
+  }
+
+  return null;
+}
+
+function getBattleLogIcon(text: string, itemCatalog: Record<string, ItemDefinition>) {
   const kind = getBattleLogKind(text);
   if (kind === "discard") return <X size={15} />;
   if (kind === "critical") return <Flame size={15} />;
@@ -7569,7 +7602,13 @@ function getBattleLogIcon(text: string) {
   if (kind === "victory") return <Trophy size={15} />;
   if (kind === "flee") return <ArrowLeftRight size={15} />;
   if (kind === "reward") return <Coins size={15} />;
-  if (kind === "loot") return <Sparkles size={15} />;
+  if (kind === "loot") {
+    const dropItem = getBattleLogDropItem(text, itemCatalog);
+    if (dropItem) {
+      return <ItemVisual item={dropItem} className="battle-log-item-icon" />;
+    }
+    return <Sparkles size={15} />;
+  }
   return <Shield size={15} />;
 }
 

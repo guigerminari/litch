@@ -36,8 +36,7 @@ export const TEMPORARY_EVENTS: TemporaryEventDefinition[] = [
       {
         scope: "hunt",
         xpBonusPercent: 0.5,
-        goldBonusPercent: 0.5,
-        dropChanceBonusPercent: 0.1
+        goldBonusPercent: 0.5
       }
     ]
   }
@@ -811,7 +810,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-30.png",
     "minLevel": 1,
-    "price": 3000,
+    "price": 30000,
     "stats": {
       "energyPercent": 0.3
     },
@@ -823,7 +822,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-light.png",
     "minLevel": 1,
-    "price": 35,
+    "price": 350,
     "stats": {
       "energy": 8
     },
@@ -835,7 +834,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-medium.png",
     "minLevel": 1,
-    "price": 450,
+    "price": 4500,
     "stats": {
       "energy": 60
     },
@@ -847,7 +846,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy-high.png",
     "minLevel": 1,
-    "price": 5200,
+    "price": 52000,
     "goldCoinPrice": 8,
     "stats": {
       "energy": 420
@@ -860,7 +859,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-30.png",
     "minLevel": 1,
-    "price": 3000,
+    "price": 30000,
     "stats": {
       "healPercent": 0.3
     },
@@ -872,7 +871,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-light.png",
     "minLevel": 1,
-    "price": 35,
+    "price": 350,
     "stats": {
       "heal": 35
     },
@@ -884,7 +883,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-medium.png",
     "minLevel": 1,
-    "price": 450,
+    "price": 4500,
     "stats": {
       "heal": 360
     },
@@ -896,7 +895,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health-high.png",
     "minLevel": 1,
-    "price": 5200,
+    "price": 52000,
     "goldCoinPrice": 8,
     "stats": {
       "heal": 3200
@@ -1385,7 +1384,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/health.png",
     "minLevel": 1,
-    "price": 7600,
+    "price": 76000,
     "goldCoinPrice": 5,
     "stats": {
       "healPercent": 0.55
@@ -1398,7 +1397,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "potion",
     "imageUrl": "/assets/items/potions/energy.png",
     "minLevel": 1,
-    "price": 7600,
+    "price": 76000,
     "goldCoinPrice": 5,
     "stats": {
       "energyPercent": 0.55
@@ -4489,14 +4488,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.05
       },
       {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
-      },
-      {
         "itemId": "material_energy_jewell",
         "chance": 0.0243
       },
@@ -4550,14 +4541,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "energy_potion_high",
         "chance": 0.05
-      },
-      {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
       },
       {
         "itemId": "material_eran_fragment",
@@ -6428,14 +6411,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.05
       },
       {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
-      },
-      {
         "itemId": "material_dragons_tooth",
         "chance": 0.0243
       },
@@ -7481,10 +7456,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.026
       },
       {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
-      },
-      {
         "itemId": "material_dragon_jewell",
         "chance": 0.0243
       },
@@ -7540,14 +7511,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.05
       },
       {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
-      },
-      {
         "itemId": "material_dragon_nail",
         "chance": 0.0243
       },
@@ -7601,14 +7564,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "energy_potion_high",
         "chance": 0.05
-      },
-      {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
       },
       {
         "itemId": "material_dragon_essence",
@@ -8139,14 +8094,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.05
       },
       {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
-      },
-      {
         "itemId": "material_eran_fragment",
         "chance": 0.0245
       },
@@ -8340,14 +8287,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.05
       },
       {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
-      },
-      {
         "itemId": "material_herb",
         "chance": 0.0246
       },
@@ -8472,14 +8411,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "energy_potion_high",
         "chance": 0.05
-      },
-      {
-        "itemId": "major_health_potion",
-        "chance": 0.026
-      },
-      {
-        "itemId": "major_energy_potion",
-        "chance": 0.01
       },
       {
         "itemId": "material_magic_essence",
