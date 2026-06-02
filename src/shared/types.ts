@@ -787,6 +787,7 @@ export interface GameState {
   clanChatMessages: ChatMessage[];
   privateMessages: PrivateMessage[];
   onlinePlayers: Array<{ playerId: string; name: string }>;
+  playerDirectory: Array<{ playerId: string; name: string }>;
   referrals: ReferralView;
   workServices: WorkServiceDefinition[];
   arenaSeasonKey: string;

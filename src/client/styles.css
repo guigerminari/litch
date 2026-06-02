@@ -2381,7 +2381,7 @@ button:disabled {
 
 .city-hero {
   position: relative;
-  min-height: 280px;
+  min-height: 150px;
   overflow: hidden;
 }
 
@@ -2399,6 +2399,15 @@ button:disabled {
   width: min(600px, calc(100% - 32px));
   padding: 28px 24px;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+}
+
+.city-hero-desc {
+  margin-top: -12px;
+  margin-bottom: 3px;
+  font-size: 0.7rem;
+  padding: 0px 10px;
+  color: var(--muted);
+  text-align: justify;
 }
 
 .city-country,
@@ -6972,8 +6981,8 @@ button:disabled .game-icon {
   height: 24px;
   display: inline-grid;
   place-items: center;
-  border-radius: 6px;
-  background: rgba(25, 26, 33, 0.62);
+  border: none !important;
+  background: transparent !important;
   color: var(--muted);
 }
 
@@ -7050,6 +7059,7 @@ button:disabled .game-icon {
   margin: 0;
   font-family: var(--font-title);
   color: var(--text);
+  font-size: 1rem;
 }
 
 .agency-service-card p,
@@ -7057,6 +7067,7 @@ button:disabled .game-icon {
   margin: 0;
   color: var(--muted);
   line-height: 1.45;
+  font-size: 0.7rem;
 }
 
 .agency-service-head > strong,
@@ -7076,7 +7087,7 @@ button:disabled .game-icon {
 .work-hours-field span,
 .work-bonus span {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.62rem;
 }
 
 .work-hour-options {
@@ -8852,6 +8863,11 @@ button:disabled .game-icon {
   overflow: auto;
   flex: 1;
 }
+.private-chat-help {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
 .online-player-list {
   display: flex;
   flex-wrap: wrap;
@@ -8877,6 +8893,39 @@ button:disabled .game-icon {
 }
 .private-chat-header strong {
   color: var(--gold);
+}
+.private-chat-form {
+  margin-top: 10px;
+}
+.private-mention-list {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px;
+  max-height: 140px;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(15, 17, 26, 0.95);
+}
+.mention-suggestion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: rgba(34, 37, 50, 0.9);
+  color: var(--text);
+  font-size: 0.84rem;
+  cursor: pointer;
+  text-align: left;
+}
+.mention-suggestion.active,
+.mention-suggestion:hover {
+  border-color: rgba(189, 147, 249, 0.55);
+  background: rgba(189, 147, 249, 0.18);
 }
 .private-message.sent .chat-message strong {
   color: var(--cyan);
@@ -9307,7 +9356,6 @@ button:disabled {
 }
 
 .city-hero {
-  min-height: 320px;
   overflow: hidden;
   border-radius: 18px;
   background:
@@ -10094,10 +10142,6 @@ button:disabled {
     justify-content: flex-start;
   }
 
-  .city-hero {
-    min-height: 220px;
-  }
-
   .content-panel {
     min-height: auto;
     padding: 12px;
@@ -10346,6 +10390,10 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .battle-log {
+    font-size: 0.6rem;
+  }
+
   .game-shell {
     padding: calc(116px + env(safe-area-inset-top)) 6px calc(54px + env(safe-area-inset-bottom));
   }
@@ -10446,10 +10494,6 @@ button:disabled {
   .bottom-button .clan-crest-image {
     width: 40px;
     height: 40px;
-  }
-
-  .city-hero {
-    min-height: 190px;
   }
 
   .travel-country-label {

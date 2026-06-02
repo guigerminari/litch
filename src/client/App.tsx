@@ -1,4 +1,4 @@
-import { createContext, FormEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, FormEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeftRight,
@@ -3167,15 +3167,17 @@ function ResetChoiceModal({
 function CityHero({ game, view, setView }: { game: GameState; view: View; setView: (view: View) => void }) {
   const countryCover = game.currentCountry.imageUrl ?? `/assets/locals/${game.currentCountry.id}.png`;
   return (
-    <header className="city-hero">
-      <img src={countryCover} alt="" className="city-map" />
-      <div className="city-copy">
-        <span className="eyebrow">Cidade</span>
-        <h1>{game.currentCity.name}</h1>
-        <strong className="city-country">{game.currentCountry.name}</strong>
-        <p>{game.currentCity.description}</p>
-      </div>
-    </header>
+    <>
+      <header className="city-hero">
+        <img src={countryCover} alt="" className="city-map" />
+        <div className="city-copy">
+          <span className="eyebrow">Cidade</span>
+          <h1>{game.currentCity.name}</h1>
+          <strong className="city-country">{game.currentCountry.name}</strong>
+        </div>
+      </header>
+      <p className="city-hero-desc">{game.currentCity.description}</p>
+    </>
   );
 }
 
@@ -3375,7 +3377,7 @@ function AgencyPanel({ game }: { game: GameState }) {
   return (
     <section className="content-panel agency-panel">
       <PanelTitle icon={<GameIcon name="agency" size={26} />} title={`Agência de ${game.currentCountry.name}`} />
-      <p className="agency-intro">{game.currentCountry.description}</p>
+      <p className="agency-intro">Escolha aqui o serviço que deseja realizar.</p>
 
       {activeWork && activeService && (
         <article className={activeReady ? "work-active-card ready" : "work-active-card"}>
@@ -7681,6 +7683,7 @@ function FloatingChat({
 }) {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<"global" | "clan" | "private">("global");
+  const [mentionIndex, setMentionIndex] = useState(0);
   const feedRef = useRef<HTMLDivElement>(null);
   const playerActions = usePlayerActions();
 
@@ -7700,11 +7703,88 @@ function FloatingChat({
     setMessage("");
   };
 
+  const privateContacts = useMemo(() => {
+    const byId = new Map<string, PlayerReference>();
+    for (const player of game.playerDirectory) {
+      if (!player.playerId || player.playerId === game.player.id) {
+        continue;
+      }
+      byId.set(player.playerId, player);
+    }
+    for (const msg of game.privateMessages) {
+      if (msg.fromPlayerId !== game.player.id) {
+        byId.set(msg.fromPlayerId, { playerId: msg.fromPlayerId, name: msg.fromName });
+      }
+      if (msg.toPlayerId !== game.player.id) {
+        byId.set(msg.toPlayerId, { playerId: msg.toPlayerId, name: msg.toName });
+      }
+    }
+    return Array.from(byId.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [game.playerDirectory, game.privateMessages, game.player.id]);
+
+  const mentionMatch = tab === "private" ? message.match(/(?:^|\s)@([^\s@]*)$/) : null;
+  const mentionQuery = mentionMatch?.[1] ?? "";
+  const mentionSuggestions = mentionMatch
+    ? privateContacts
+        .filter((player) => player.name.toLowerCase().includes(mentionQuery.toLowerCase()))
+        .slice(0, 8)
+    : [];
+
+  useEffect(() => {
+    setMentionIndex(0);
+  }, [mentionQuery, tab]);
+
+  const applyMentionSuggestion = (player: PlayerReference) => {
+    setMessage((current) => current.replace(/(?:^|\s)@([^\s@]*)$/, (full) => `${full.startsWith(" ") ? " " : ""}@${player.name} `));
+    setPrivateTarget(player);
+  };
+
+  const extractMentionTarget = (text: string): PlayerReference | null => {
+    const matches = Array.from(text.matchAll(/(?:^|\s)@([^\s@]+)/g));
+    for (let index = matches.length - 1; index >= 0; index -= 1) {
+      const mentionName = matches[index]?.[1]?.toLowerCase();
+      if (!mentionName) {
+        continue;
+      }
+      const player = privateContacts.find((entry) => entry.name.toLowerCase() === mentionName);
+      if (player) {
+        return player;
+      }
+    }
+    return null;
+  };
+
   const sendPrivate = (event: FormEvent) => {
     event.preventDefault();
-    if (!message.trim() || !privateTarget) return;
-    socket.emit("private:send", { targetPlayerId: privateTarget.playerId, targetPlayerName: privateTarget.name, text: message });
+    if (!message.trim()) return;
+    const mentionTarget = extractMentionTarget(message);
+    const target = mentionTarget ?? privateTarget;
+    if (!target) return;
+    socket.emit("private:send", { targetPlayerId: target.playerId, targetPlayerName: target.name, text: message });
+    if (!privateTarget || privateTarget.playerId !== target.playerId) {
+      setPrivateTarget(target);
+    }
     setMessage("");
+  };
+
+  const handlePrivateInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (mentionSuggestions.length === 0) {
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setMentionIndex((current) => (current + 1) % mentionSuggestions.length);
+      return;
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setMentionIndex((current) => (current - 1 + mentionSuggestions.length) % mentionSuggestions.length);
+      return;
+    }
+    if (event.key === "Tab" || event.key === "Enter") {
+      event.preventDefault();
+      applyMentionSuggestion(mentionSuggestions[mentionIndex] ?? mentionSuggestions[0]);
+    }
   };
 
   const privateConversation: PrivateMessage[] = privateTarget
@@ -7784,19 +7864,7 @@ function FloatingChat({
             <>
               {!privateTarget ? (
                 <div className="private-chat-home">
-                  <p className="muted" style={{ margin: "0 0 8px", fontSize: "0.85rem" }}>Selecione um recruta online:</p>
-                  <div className="online-player-list">
-                    {game.onlinePlayers
-                      .filter((p) => p.playerId !== game.player.id)
-                      .map((p) => (
-                        <button key={p.playerId} className="ghost-button" onClick={() => setPrivateTarget(p)}>
-                          <User size={14} /> {p.name}
-                        </button>
-                      ))}
-                    {game.onlinePlayers.filter((p) => p.playerId !== game.player.id).length === 0 && (
-                      <p className="empty-state">Nenhum recruta online.</p>
-                    )}
-                  </div>
+                  <p className="private-chat-help">Digite <strong>@nome</strong> para escolher o destinatário. O chat sugere nomes conforme você escreve.</p>
                   {game.privateMessages.length > 0 && (
                     <>
                       <p className="muted" style={{ margin: "8px 0", fontSize: "0.85rem" }}>Mensagens recentes:</p>
@@ -7829,6 +7897,30 @@ function FloatingChat({
                       </div>
                     </>
                   )}
+                  <form className="chat-form private-chat-form" onSubmit={sendPrivate}>
+                    {mentionSuggestions.length > 0 && (
+                      <div className="private-mention-list" role="listbox" aria-label="Sugestões de jogador">
+                        {mentionSuggestions.map((player, index) => (
+                          <button
+                            key={player.playerId}
+                            type="button"
+                            className={index === mentionIndex ? "mention-suggestion active" : "mention-suggestion"}
+                            onClick={() => applyMentionSuggestion(player)}
+                          >
+                            <User size={13} /> {player.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <input
+                      value={message}
+                      onChange={(event) => setMessage(event.target.value)}
+                      onKeyDown={handlePrivateInputKeyDown}
+                      maxLength={240}
+                      placeholder="Mensagem privada (ex.: @Arthen vamos duelar?)"
+                    />
+                    <button className="icon-submit" title="Enviar"><Send size={16} /></button>
+                  </form>
                 </div>
               ) : (
                 <>
@@ -7860,8 +7952,28 @@ function FloatingChat({
                       );
                     })}
                   </div>
-                  <form className="chat-form" onSubmit={sendPrivate}>
-                    <input value={message} onChange={(e) => setMessage(e.target.value)} maxLength={240} placeholder={`Mensagem para ${privateTarget.name}`} />
+                  <form className="chat-form private-chat-form" onSubmit={sendPrivate}>
+                    {mentionSuggestions.length > 0 && (
+                      <div className="private-mention-list" role="listbox" aria-label="Sugestões de jogador">
+                        {mentionSuggestions.map((player, index) => (
+                          <button
+                            key={player.playerId}
+                            type="button"
+                            className={index === mentionIndex ? "mention-suggestion active" : "mention-suggestion"}
+                            onClick={() => applyMentionSuggestion(player)}
+                          >
+                            <User size={13} /> {player.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <input
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyDown={handlePrivateInputKeyDown}
+                      maxLength={240}
+                      placeholder={`Mensagem para ${privateTarget.name} (use @ para trocar destinatário)`}
+                    />
                     <button className="icon-submit" title="Enviar"><Send size={16} /></button>
                   </form>
                 </>

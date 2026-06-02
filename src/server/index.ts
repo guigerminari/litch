@@ -559,6 +559,10 @@ function serializeGameState(playerId: string): GameState {
       return ch ? { playerId: pid, name: ch.name } : null;
     })
     .filter((entry): entry is { playerId: string; name: string } => entry !== null);
+  const playerDirectory = Array.from(store.characters.values())
+    .map((character) => ({ playerId: character.playerId, name: character.name }))
+    .filter((entry) => entry.playerId !== playerId)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return {
     player,
@@ -610,6 +614,7 @@ function serializeGameState(playerId: string): GameState {
     clanChatMessages,
     privateMessages,
     onlinePlayers,
+    playerDirectory,
     referrals: buildReferralView(playerId),
     workServices: WORK_SERVICES,
     arenaSeasonKey: store.arenaSeasonKey,
