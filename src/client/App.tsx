@@ -242,8 +242,8 @@ const TRAVEL_MAP_POINTS: Record<string, { x: number; y: number }> = {
 };
 
 const TRAVEL_COUNTRY_LABELS: Record<string, { x: number; y: number }> = {
-  aurevia: { x: 23, y: 25 },
-  valfria: { x: 49, y: 73 },
+  aurevia: { x: 23, y: 40 },
+  valfria: { x: 49, y: 87 },
   morthaly: { x: 77, y: 18 }
 };
 

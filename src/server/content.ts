@@ -3222,8 +3222,6 @@ export const CITIES: CityDefinition[] = [
       "material_blue_coin",
       "energy_potion_high",
       "health_potion_high",
-      "major_health_potion",
-      "major_energy_potion",
       "oblivion_scroll",
       "memory_scroll"
     ]
@@ -3260,8 +3258,6 @@ export const CITIES: CityDefinition[] = [
     "apothecaryItemIds": [
       "health_potion_high",
       "energy_potion_high",
-      "major_health_potion",
-      "major_energy_potion",
       "misc_dungeon_key"
     ]
   },
@@ -4388,7 +4384,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_herb_moss",
@@ -4498,7 +4494,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_energy_jewell",
@@ -4561,7 +4557,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_eran_fragment",
@@ -4827,7 +4823,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_herb_rustic",
@@ -6437,7 +6433,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragons_tooth",
@@ -7254,7 +7250,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_seed_bitter",
@@ -7486,7 +7482,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_jewell",
@@ -7549,7 +7545,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_nail",
@@ -7612,7 +7608,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_essence",
@@ -7679,7 +7675,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_jewell",
@@ -7746,7 +7742,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_nail",
@@ -7813,7 +7809,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragons_tooth",
@@ -7880,7 +7876,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_seed_moss",
@@ -7947,7 +7943,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_seed_mycelium_fungus",
@@ -8014,7 +8010,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_doemia",
@@ -8081,7 +8077,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_energy_jewell",
@@ -8148,7 +8144,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_eran_fragment",
@@ -8215,7 +8211,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_spectre_jewell",
@@ -8282,7 +8278,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_gromin_mycelium",
@@ -8349,7 +8345,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_herb",
@@ -8416,7 +8412,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_laede_fragment",
@@ -8483,7 +8479,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_magic_essence",
@@ -8550,7 +8546,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_mycelium_fungus",
@@ -8617,7 +8613,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_mysterious_jewell",
@@ -8688,7 +8684,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_spectre_fragment",
@@ -8759,7 +8755,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_stone_fragment",
@@ -8830,7 +8826,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_bone",
@@ -8901,7 +8897,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_chimera_jewell",
@@ -8968,7 +8964,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_seed_rustic",
@@ -9039,7 +9035,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_stone_craft",
@@ -9110,7 +9106,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_strenght_jewell",
@@ -9177,7 +9173,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_dragon_stone",
@@ -9240,7 +9236,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_udania",
@@ -9307,7 +9303,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_misc_phial",
@@ -9374,7 +9370,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "wolf_pelt",
@@ -9441,7 +9437,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "ember_core",
@@ -9512,7 +9508,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dark_magic_rune",
@@ -9583,7 +9579,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dark_residue",
@@ -9650,7 +9646,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "misc_herb_bitter",
@@ -9717,7 +9713,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dexerity_jewell",
@@ -9784,7 +9780,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_essence",
@@ -9851,7 +9847,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "crystal_dust",
@@ -9918,7 +9914,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "wyvern_scale",
@@ -9985,7 +9981,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_jewell",
@@ -10052,7 +10048,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "major_energy_potion",
-        "chance": 0.018
+        "chance": 0.01
       },
       {
         "itemId": "material_dragon_nail",
