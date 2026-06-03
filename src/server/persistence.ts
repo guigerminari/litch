@@ -133,10 +133,18 @@ function parseJson<T>(value: unknown, fallback: T): T {
     return fallback;
   }
   if (typeof value === "string") {
-    return JSON.parse(value) as T;
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return fallback;
+    }
   }
   if (Buffer.isBuffer(value)) {
-    return JSON.parse(value.toString("utf8")) as T;
+    try {
+      return JSON.parse(value.toString("utf8")) as T;
+    } catch {
+      return fallback;
+    }
   }
   return value as T;
 }
@@ -859,7 +867,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
   const [metaRows] = await connection.execute<Array<RowDataPacket & { meta_key: string; json_value: unknown }>>(
     `SELECT meta_key, json_value FROM ${table("game_meta")}`
   );
-  const meta = new Map(metaRows.map((row) => [row.meta_key, parseJson<JsonValue>(row.json_value, null)]));
+  const meta = new Map(metaRows.map((row) => [row.meta_key, row.json_value]));
 
   target.players = new Map(players.map((player) => [player.id, player]));
   target.accountsByEmail = new Map(accounts.map((account) => [account.email, account]));
@@ -874,8 +882,8 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
   target.arenaQueue = arenaQueueRows.map((row) => row.player_id);
   target.arenaRecordedBattleIds = new Set(arenaRecordedRows.map((row) => row.battle_id));
   target.socketsByPlayer = new Map();
-  target.nextRegenAt = Number(meta.get("nextRegenAt") ?? Date.now() + 2 * 60 * 1000);
-  target.arenaSeasonKey = String(meta.get("arenaSeasonKey") ?? "");
+  target.nextRegenAt = Number(parseJson<number>(meta.get("nextRegenAt"), Date.now() + 2 * 60 * 1000));
+  target.arenaSeasonKey = parseJson<string>(meta.get("arenaSeasonKey"), String(meta.get("arenaSeasonKey") ?? ""));
   target.lastArenaSeason = parseJson<ArenaSeasonData | null>(meta.get("lastArenaSeason"), null);
   target.monarchEvent = monarchRows[0]
     ? {
