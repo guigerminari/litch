@@ -4132,6 +4132,123 @@ button:disabled .game-icon {
   color: var(--gold);
 }
 
+.game-shop-grid {
+  gap: 12px;
+}
+
+.game-shop-grid .diamond-pack {
+  position: relative;
+  grid-template-rows: auto 1fr auto;
+  gap: 14px;
+  padding: 14px;
+  border-color: rgba(82, 224, 196, 0.18);
+  background:
+    radial-gradient(140% 120% at 100% 0%, rgba(82, 224, 196, 0.11) 0%, rgba(82, 224, 196, 0) 55%),
+    radial-gradient(120% 140% at 0% 100%, rgba(157, 107, 255, 0.14) 0%, rgba(157, 107, 255, 0) 60%),
+    linear-gradient(180deg, rgba(220, 203, 255, 0.04), rgba(82, 224, 196, 0.03)),
+    var(--surface-card-elevated);
+}
+
+.game-shop-grid .diamond-pack::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -54% auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(82, 224, 196, 0.2), rgba(82, 224, 196, 0));
+  pointer-events: none;
+}
+
+.diamond-pack-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.diamond-pack-kicker {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(220, 203, 255, 0.22);
+  background: rgba(220, 203, 255, 0.08);
+  color: var(--lavender);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.diamond-pack-bonus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 184, 108, 0.32);
+  background: rgba(255, 184, 108, 0.13);
+  color: #ffd9a8;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.diamond-pack-main {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 10px !important;
+  align-items: start;
+}
+
+.diamond-pack-gem {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(82, 224, 196, 0.35);
+  background: linear-gradient(140deg, rgba(82, 224, 196, 0.2), rgba(157, 107, 255, 0.15));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.diamond-pack-amount {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 2px;
+  color: #b8f8eb;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.diamond-pack-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.diamond-pack-price {
+  color: var(--gold);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.diamond-pack .primary-button {
+  min-width: 120px;
+}
+
+.game-shop-grid .diamond-pack.featured-pack {
+  border-color: rgba(241, 250, 140, 0.52);
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(241, 250, 140, 0.17) 0%, rgba(241, 250, 140, 0) 58%),
+    radial-gradient(120% 140% at 0% 100%, rgba(255, 184, 108, 0.14) 0%, rgba(255, 184, 108, 0) 58%),
+    linear-gradient(180deg, rgba(241, 250, 140, 0.07), rgba(255, 184, 108, 0.05)),
+    var(--surface-card-elevated);
+}
+
 @media (max-width: 760px) {
   .royal-offer-main {
     grid-template-columns: 1fr;
@@ -4144,6 +4261,16 @@ button:disabled .game-icon {
   .royal-offer-cta .primary-button {
     min-width: 0;
     width: 100%;
+  }
+
+  .diamond-pack-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .diamond-pack .primary-button {
+    width: 100%;
+    min-width: 0;
   }
 }
 
@@ -10709,6 +10836,10 @@ button:disabled {
   .player-action-buttons,
   .player-profile-grid,
   .quick-potion-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .item-card div {
     grid-template-columns: 1fr;
   }
 

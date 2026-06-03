@@ -4824,17 +4824,28 @@ function GameShopPanel({ game }: { game: GameState }) {
       <div className="shop-grid game-shop-grid">
         {regularPackages.map((pack) => (
           <article className={pack.featured ? "item-card diamond-pack featured-pack" : "item-card diamond-pack"} key={pack.id}>
-            <div>
-              <strong>{pack.name}</strong>
-              <span>
-                {pack.diamonds} <Gem size={13} style={{ color: "var(--cyan)" }} /> {pack.bonusLabel ? `- ${pack.bonusLabel}` : ""}
-              </span>
-              {pack.description && <small>{pack.description}</small>}
+            <div className="diamond-pack-top">
+              <span className="diamond-pack-kicker">Pacote de Diamantes</span>
+              {pack.bonusLabel && <span className="diamond-pack-bonus">{pack.bonusLabel}</span>}
             </div>
-            <small>{pack.priceLabel}</small>
-            <button className="primary-button" onClick={() => setSelectedPackage(pack)}>
-              Comprar
-            </button>
+
+            <div className="diamond-pack-main">
+              <span className="diamond-pack-gem" aria-hidden="true">
+                <Gem size={18} style={{ color: "var(--cyan)" }} />
+              </span>
+              <div>
+                <strong>{pack.name}</strong>
+                <span className="diamond-pack-amount">{formatCurrency(pack.diamonds)} diamantes</span>
+                {pack.description && <small>{pack.description}</small>}
+              </div>
+            </div>
+
+            <div className="diamond-pack-footer">
+              <small className="diamond-pack-price">{pack.priceLabel}</small>
+              <button className="primary-button" onClick={() => setSelectedPackage(pack)}>
+                Comprar
+              </button>
+            </div>
           </article>
         ))}
       </div>
