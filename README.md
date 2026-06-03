@@ -63,13 +63,24 @@ LITCH_MYSQL_STATE_ID=default
 
 ## E-mail
 
-Cadastro e recuperação de senha usam links enviados por e-mail. Em desenvolvimento, se SMTP não estiver configurado, os e-mails são gravados em `data/email-outbox.log`.
+Cadastro e recuperação de senha usam links enviados por e-mail. Em desenvolvimento, sem provedor configurado, os e-mails são gravados em `data/email-outbox.log`.
 
-Variáveis para envio real:
+No Render, prefira envio por API HTTPS com Resend:
+
+```bash
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=re_sua_chave
+EMAIL_FROM="Litch <no-reply@seudominio.com>"
+PUBLIC_APP_URL=https://seu-site.com
+CLIENT_ORIGIN=https://seu-site.com
+```
+
+Para envio por SMTP:
 
 ```bash
 PUBLIC_APP_URL=https://seu-site.com
 CLIENT_ORIGIN=https://seu-site.com
+EMAIL_PROVIDER=smtp
 SMTP_HOST=smtp.seudominio.com
 SMTP_PORT=587
 SMTP_SECURE=false
@@ -77,6 +88,8 @@ SMTP_USER=usuario
 SMTP_PASS=senha
 SMTP_FROM="Litch <no-reply@seudominio.com>"
 ```
+
+Em produção, se nenhum provedor estiver configurado, o servidor retorna erro claro em vez de fingir que enviou o e-mail.
 
 ## Analytics
 
@@ -132,6 +145,9 @@ Variáveis opcionais:
 ```bash
 POSTHOG_API_KEY=<project token>
 POSTHOG_HOST=https://us.i.posthog.com
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=<api key>
+EMAIL_FROM="Litch <no-reply@seudominio.com>"
 ```
 
 O arquivo `render.yaml` inclui um Blueprint sem segredos; campos com `sync: false` devem ser preenchidos no painel do Render.
