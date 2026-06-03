@@ -649,6 +649,7 @@ export interface GameShopPackage {
   bonusLabel?: string;
   description?: string;
   featured?: boolean;
+  bestValue?: boolean;
 }
 
 export interface GameShopPurchaseHistoryEntry {

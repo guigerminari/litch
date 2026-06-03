@@ -4825,8 +4825,7 @@ function GameShopPanel({ game }: { game: GameState }) {
         {regularPackages.map((pack) => (
           <article className={pack.featured ? "item-card diamond-pack featured-pack" : "item-card diamond-pack"} key={pack.id}>
             <div className="diamond-pack-top">
-              <span className="diamond-pack-kicker">Pacote de Diamantes</span>
-              {pack.bonusLabel && <span className="diamond-pack-bonus">{pack.bonusLabel}</span>}
+              {pack.bestValue && <span className="diamond-pack-best-value"></span>}
             </div>
 
             <div className="diamond-pack-main">
@@ -4839,7 +4838,7 @@ function GameShopPanel({ game }: { game: GameState }) {
                 {pack.description && <small>{pack.description}</small>}
               </div>
             </div>
-
+            {pack.bonusLabel && <span className="diamond-pack-bonus">{pack.bonusLabel}</span>}
             <div className="diamond-pack-footer">
               <small className="diamond-pack-price">{pack.priceLabel}</small>
               <button className="primary-button" onClick={() => setSelectedPackage(pack)}>

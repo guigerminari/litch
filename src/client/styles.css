@@ -4141,6 +4141,7 @@ button:disabled .game-icon {
   grid-template-rows: auto 1fr auto;
   gap: 14px;
   padding: 14px;
+  overflow: visible;
   border-color: rgba(82, 224, 196, 0.18);
   background:
     radial-gradient(140% 120% at 100% 0%, rgba(82, 224, 196, 0.11) 0%, rgba(82, 224, 196, 0) 55%),
@@ -4149,22 +4150,14 @@ button:disabled .game-icon {
     var(--surface-card-elevated);
 }
 
-.game-shop-grid .diamond-pack::after {
-  content: "";
-  position: absolute;
-  inset: auto -20% -54% auto;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(82, 224, 196, 0.2), rgba(82, 224, 196, 0));
-  pointer-events: none;
-}
-
 .diamond-pack-top {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
+  padding-right: 10px;
 }
 
 .diamond-pack-kicker {
@@ -4196,6 +4189,27 @@ button:disabled .game-icon {
   font-weight: 700;
 }
 
+.diamond-pack .diamond-pack-best-value {
+  position: absolute;
+  top: -26px;
+  right: -25px;
+  z-index: 7;
+  width: 60px;
+  aspect-ratio: 159 / 125;
+  padding: 24px 18px 15px 12px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  line-height: 1.1;
+  border: 0;
+  background: url("/assets/icons/bookmark.png") center / contain no-repeat;
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .diamond-pack-main {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr);
@@ -4224,16 +4238,17 @@ button:disabled .game-icon {
 }
 
 .diamond-pack-footer {
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 10px !important;
 }
 
 .diamond-pack-price {
   color: var(--gold);
   font-size: 0.95rem;
   font-weight: 800;
+  min-width: 90px;
 }
 
 .diamond-pack .primary-button {
@@ -4261,11 +4276,6 @@ button:disabled .game-icon {
   .royal-offer-cta .primary-button {
     min-width: 0;
     width: 100%;
-  }
-
-  .diamond-pack-footer {
-    flex-direction: column;
-    align-items: stretch;
   }
 
   .diamond-pack .primary-button {
@@ -10836,10 +10846,6 @@ button:disabled {
   .player-action-buttons,
   .player-profile-grid,
   .quick-potion-fields {
-    grid-template-columns: 1fr;
-  }
-
-  .item-card div {
     grid-template-columns: 1fr;
   }
 
