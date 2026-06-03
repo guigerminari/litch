@@ -75,6 +75,8 @@ PUBLIC_APP_URL=https://seu-site.com
 CLIENT_ORIGIN=https://seu-site.com
 ```
 
+A `RESEND_API_KEY` deve ser uma chave criada no painel da Resend e comecar com `re_`. Nao use o token do PostHog, que comeca com `phc_`. O remetente em `EMAIL_FROM` precisa usar um dominio verificado na Resend para envio real.
+
 Para envio por SMTP:
 
 ```bash
@@ -146,7 +148,7 @@ Variáveis opcionais:
 POSTHOG_API_KEY=<project token>
 POSTHOG_HOST=https://us.i.posthog.com
 EMAIL_PROVIDER=resend
-RESEND_API_KEY=<api key>
+RESEND_API_KEY=<api key da Resend iniciando com re_>
 EMAIL_FROM="Litch <no-reply@seudominio.com>"
 ```
 
