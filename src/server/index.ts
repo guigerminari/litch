@@ -2372,50 +2372,106 @@ function pickDeterministic<T>(values: T[], rng: () => number) {
   return values[Math.min(values.length - 1, Math.floor(rng() * values.length))];
 }
 
+function pickWeightedDeterministic<T>(values: T[], rng: () => number, weightFor: (value: T) => number) {
+  const weighted = values
+    .map((value) => ({ value, weight: Math.max(0, weightFor(value)) }))
+    .filter((entry) => entry.weight > 0);
+  if (weighted.length === 0) {
+    return pickDeterministic(values, rng);
+  }
+
+  const totalWeight = weighted.reduce((total, entry) => total + entry.weight, 0);
+  let cursor = rng() * totalWeight;
+  for (const entry of weighted) {
+    cursor -= entry.weight;
+    if (cursor <= 0) {
+      return entry.value;
+    }
+  }
+  return weighted[weighted.length - 1].value;
+}
+
+function equipmentPowerScore(item: ItemDefinition) {
+  const statsPower = Object.values(item.stats ?? {}).reduce((total, value) => total + (typeof value === "number" ? Math.max(0, value) : 0), 0);
+  return item.minLevel * 2 + statsPower + item.price / 500;
+}
+
 function buildDungeonChestRewards(countryId: string, floor: number, roomIndex: number): Array<{ itemId: string; quantity: number; rarity?: Rarity }> {
   const rng = createSeededRng(`chest:${countryId}:${floor}:${roomIndex}`);
+  const maxLevelForFloor = Math.min(100, floor * 6 + 8);
+  const minLevelForFloor = Math.max(1, maxLevelForFloor - 35);
+
   const equipmentPool = Object.values(ITEM_CATALOG)
     .filter((item) => Boolean(item.slot))
-    .filter((item) => item.minLevel <= Math.min(100, floor * 6 + 8));
-  const materialPool = [
-    "misc_stone_craft",
-    "material_old_stone",
-    "misc_eran",
-    "material_celena",
-    "material_midran",
-    "material_dark_magic_rune",
-    "material_dark_residue",
-    "material_magic_essence",
-    "material_eran_fragment",
-    "material_mysterious_jewell"
-  ].filter((itemId) => Boolean(ITEM_CATALOG[itemId]));
+    .filter((item) => item.minLevel >= minLevelForFloor && item.minLevel <= maxLevelForFloor);
 
-  const equipmentCount = 1 + Math.floor(rng() * 3);
-  const materialCount = 5 + Math.floor(rng() * 11);
+  const fallbackEquipmentPool = Object.values(ITEM_CATALOG)
+    .filter((item) => Boolean(item.slot))
+    .filter((item) => item.minLevel <= maxLevelForFloor);
+
+  const craftMaterialIds = new Set(
+    Object.values(CRAFTING_RECIPES)
+      .flatMap((recipe) => recipe.ingredients.map((ingredient) => ingredient.itemId))
+      .filter((itemId) => {
+        const item = ITEM_CATALOG[itemId];
+        return Boolean(item) && !item.slot;
+      })
+  );
+
+  const materialPool = Array.from(craftMaterialIds)
+    .map((itemId) => ITEM_CATALOG[itemId])
+    .filter((item): item is ItemDefinition => Boolean(item))
+    .filter((item) => item.minLevel <= maxLevelForFloor)
+    .filter((item) => item.kind !== "ticket");
+
+  const chestEquipmentPool = equipmentPool.length > 0 ? equipmentPool : fallbackEquipmentPool;
+
+  if (chestEquipmentPool.length === 0) {
+    return [];
+  }
+
+  const equipmentCount = 2 + Math.floor(rng() * 2);
+  const materialCount = 3 + Math.floor(rng() * 5);
   const rewards: Array<{ itemId: string; quantity: number; rarity?: Rarity }> = [];
 
   for (let index = 0; index < equipmentCount; index += 1) {
-    const item = pickDeterministic(equipmentPool, rng);
+    // Itens mais fortes aparecem com chance menor no baú.
+    const item = pickWeightedDeterministic(chestEquipmentPool, rng, (candidate) => {
+      const power = equipmentPowerScore(candidate);
+      return 1 / Math.max(1, power);
+    });
     if (!item) {
       continue;
     }
+
+    const power = equipmentPowerScore(item);
+    const legendaryChance = Math.max(0.05, 0.2 - power * 0.0022);
+    const epicChance = Math.max(0.2, 0.42 - power * 0.0012);
+    const rarityRoll = rng();
+    const rarity: Rarity =
+      rarityRoll < legendaryChance
+        ? "legendary"
+        : rarityRoll < legendaryChance + epicChance
+          ? "epic"
+          : "rare";
     rewards.push({
       itemId: item.id,
       quantity: 1,
-      rarity: rng() < 0.22 ? "legendary" : "epic"
+      rarity
     });
   }
 
   for (let index = 0; index < materialCount; index += 1) {
-    const itemId = pickDeterministic(materialPool, rng);
-    if (!itemId) {
+    const material = pickDeterministic(materialPool, rng);
+    if (!material) {
       continue;
     }
-    const existing = rewards.find((entry) => entry.itemId === itemId && !entry.rarity);
+
+    const existing = rewards.find((entry) => entry.itemId === material.id && !entry.rarity);
     if (existing) {
       existing.quantity += 1;
     } else {
-      rewards.push({ itemId, quantity: 1 });
+      rewards.push({ itemId: material.id, quantity: 1 });
     }
   }
 

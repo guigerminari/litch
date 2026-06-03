@@ -10394,6 +10394,24 @@ button:disabled {
     font-size: 0.6rem;
   }
 
+  .option-card small,
+  .entity-card p,
+  .market-card-subtle,
+  .market-card-meta,
+  .combatant span,
+  .combatant small,
+  .empty-state {
+    font-size: 0.6rem;
+  }
+
+  .option-card strong, 
+  .entity-card strong, 
+  .item-card strong, 
+  .market-card-body strong, 
+  .combatant strong {
+    font-size: 0.9rem;
+  }
+
   .game-shell {
     padding: calc(116px + env(safe-area-inset-top)) 6px calc(54px + env(safe-area-inset-bottom));
   }

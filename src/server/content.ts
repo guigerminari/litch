@@ -3256,8 +3256,7 @@ export const CITIES: CityDefinition[] = [
     ],
     "apothecaryItemIds": [
       "health_potion_high",
-      "energy_potion_high",
-      "misc_dungeon_key"
+      "energy_potion_high"
     ]
   },
   {

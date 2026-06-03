@@ -5769,6 +5769,13 @@ function ArenaPanel({ game }: { game: GameState }) {
 
 function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothecary" | "moneyChanger" | "goldCoinMerchant" }) {
   const isGoldCoinShop = shop === "goldCoinMerchant";
+
+  const shopTitle = {
+    "armorer" : "Armeiro",
+    "apothecary" : "Boticário",
+    "moneyChanger" : "Cambista",
+    "goldCoinMerchant" : "Mercador de Arena"
+  };
   const itemIds =
     shop === "armorer"
       ? game.currentCity.armorerItemIds
@@ -5788,23 +5795,9 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
     }
     return (left?.price ?? 0) - (right?.price ?? 0) || (left?.name ?? "").localeCompare(right?.name ?? "");
   });
-  const title = shop === "armorer" ? "Armeiro" : shop === "apothecary" ? "Boticário" : isGoldCoinShop ? "Mercador de Arena" : "Cambista";
-  const icon =
-    shop === "armorer"
-      ? <GameIcon name="armorer" size={26} />
-      : shop === "apothecary"
-        ? <GameIcon name="apothecary" size={26} />
-        : isGoldCoinShop
-          ? <GameIcon name="goldCoinMerchant" size={26} />
-          : <GameIcon name="moneyChanger" size={26} />;
-  const npcName =
-    shop === "armorer"
-      ? game.currentCity.npcs.armorer
-      : shop === "apothecary"
-        ? game.currentCity.npcs.apothecary
-        : isGoldCoinShop
-          ? game.currentCity.npcs.goldCoinMerchant
-          : game.currentCity.npcs.moneyChanger;
+  const title = shopTitle[shop];
+  const icon = <GameIcon name={shop} size={26} />;
+  const npcName = game.currentCity.npcs[shop];
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] : null;
   const goldCoins = countInventoryItem(game, "material_gold_coin");
