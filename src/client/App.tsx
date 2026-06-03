@@ -5558,7 +5558,12 @@ function HuntPanel({ game }: { game: GameState }) {
           </p>
         )}
         {monsters.map((monster) => {
-          const blocked = game.character.currentHp <= 0 || game.character.currentEnergy < monster.level;
+          const attackBlockReason =
+            game.character.currentHp <= 0
+              ? "Sem vida"
+              : game.character.currentEnergy < monster.level
+                ? `${monster.level} Energia`
+                : "";
           return (
             <article className="entity-card monster-card" key={monster.id}>
               <MonsterVisual monster={monster} className="entity-art" />
@@ -5575,10 +5580,12 @@ function HuntPanel({ game }: { game: GameState }) {
               <small className="monster-xp" title="XP do monstro"><Star size={13} style={{ color: "var(--gold)" }} /> {monster.experience}</small>
               <button
                 className="atack-button primary-button"
-                disabled={blocked}
+                disabled={Boolean(attackBlockReason)}
+                title={attackBlockReason || `Atacar ${monster.name}`}
+                aria-label={attackBlockReason ? `${attackBlockReason} para atacar ${monster.name}` : `Atacar ${monster.name}`}
                 onClick={() => socket.emit("hunt:start", { monsterId: monster.id })}
               >
-                <Swords size={16} style={{ marginRight: "4px" }} /> Atacar
+                <Swords size={16} style={{ marginRight: "4px" }} /> {attackBlockReason || "Atacar"}
               </button>
             </article>
           );
