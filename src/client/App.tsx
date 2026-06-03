@@ -4898,27 +4898,67 @@ function GameShopPanel({ game }: { game: GameState }) {
             <button className="close-button" title="Fechar" onClick={() => setSelectedPackage(null)}>
               <X size={18} />
             </button>
-            <h3>{selectedPackage.name}</h3>
-            <p>
-              Valor: <strong>{selectedPackage.priceLabel}</strong> • Credito: <strong>{selectedPackage.diamonds} diamantes</strong>
-            </p>
-            <p>
-              1) Copie a hash Pix abaixo e pague no seu banco.
-              <br />
-              2) Envie o comprovante com seu nome de jogador e o pacote comprado.
-              <br />
-              3) O desenvolvedor inclui manualmente a compra no jogo.
-            </p>
+            <header className="pix-modal-header">
+              <span className="pix-modal-kicker">Pagamento manual via Pix</span>
+              <h3>{selectedPackage.name}</h3>
+              <p>
+                Finalize o pagamento, envie o comprovante e o pacote sera liberado manualmente para seu personagem.
+              </p>
+            </header>
+
+            <section className="pix-modal-summary">
+              <article>
+                <small>Valor</small>
+                <strong>{selectedPackage.priceLabel}</strong>
+              </article>
+              <article>
+                <small>Credito</small>
+                <strong>{selectedPackage.diamonds} diamantes</strong>
+              </article>
+              <article>
+                <small>Jogador</small>
+                <strong>{game.character.name}</strong>
+              </article>
+            </section>
+
+            <section className="pix-modal-steps">
+              <article>
+                <b>1</b>
+                <div>
+                  <strong>Copie a chave Pix</strong>
+                  <small>Use a hash ou escaneie o QR Code no app do seu banco.</small>
+                </div>
+              </article>
+              <article>
+                <b>2</b>
+                <div>
+                  <strong>Realize o pagamento</strong>
+                  <small>Confirme o valor do pacote antes de concluir a transferencia.</small>
+                </div>
+              </article>
+              <article>
+                <b>3</b>
+                <div>
+                  <strong>Envie o comprovante</strong>
+                  <small>Informe o nome do jogador e o pacote comprado ao desenvolvedor.</small>
+                </div>
+              </article>
+            </section>
+
             {pixHash ? (
               <div className="pix-modal-qr-wrap">
-                <img
-                  className="pix-modal-qr"
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(pixHash)}`}
-                  alt="QR Code Pix"
-                />
+                <div className="pix-modal-qr-card">
+                  <img
+                    className="pix-modal-qr"
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(pixHash)}`}
+                    alt="QR Code Pix"
+                  />
+                  <small>Escaneie para pagar mais rapido</small>
+                </div>
                 <div className="pix-modal-hash-box">
+                  <small>Hash Pix copiavel</small>
                   <span>{pixHash}</span>
-                  <button className="secondary-button" onClick={handleCopyPixHash} type="button">
+                  <button className="pix-secondary-button" onClick={handleCopyPixHash} type="button">
                     <Copy size={14} /> Copiar hash
                   </button>
                 </div>
@@ -4928,15 +4968,15 @@ function GameShopPanel({ game }: { game: GameState }) {
                 Configure GAME_SHOP_PIX_HASH no servidor para exibir a hash e o QR Code.
               </div>
             )}
-            {copyFeedback && <small>{copyFeedback}</small>}
+            {copyFeedback && <small className="pix-copy-feedback">{copyFeedback}</small>}
             <div className="pix-contact-links">
               {whatsappUrl && (
-                <a href={buildWhatsappLink(selectedPackage)} target="_blank" rel="noreferrer" className="secondary-button">
+                <a href={buildWhatsappLink(selectedPackage)} target="_blank" rel="noreferrer" className="pix-secondary-button whatsapp">
                   <MessageCircle size={15} /> WhatsApp
                 </a>
               )}
               {contactEmail && (
-                <a href={buildMailtoLink(selectedPackage)} className="secondary-button">
+                <a href={buildMailtoLink(selectedPackage)} className="pix-secondary-button email">
                   <Mail size={15} /> E-mail
                 </a>
               )}

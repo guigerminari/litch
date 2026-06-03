@@ -122,10 +122,13 @@ import { normalizeClanCrestId } from "../shared/clan";
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
 const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL ?? CLIENT_ORIGIN;
-const GAME_SHOP_ADMIN_EMAIL = (process.env.GAME_SHOP_ADMIN_EMAIL ?? "").trim().toLowerCase();
-const GAME_SHOP_PIX_HASH = (process.env.GAME_SHOP_PIX_HASH ?? "").trim();
-const GAME_SHOP_WHATSAPP_URL = (process.env.GAME_SHOP_WHATSAPP_URL ?? "").trim();
-const GAME_SHOP_CONTACT_EMAIL = (process.env.GAME_SHOP_CONTACT_EMAIL ?? "").trim();
+const GAME_SHOP_ADMIN_EMAIL = (process.env.GAME_SHOP_ADMIN_EMAIL ?? "gags.guilherme@gmail.com").trim().toLowerCase();
+const GAME_SHOP_PIX_HASH = (
+  process.env.GAME_SHOP_PIX_HASH ??
+  "00020101021126580014br.gov.bcb.pix01364f57dcbb-2df9-4171-8d60-ed74b1e525d55204000053039865802BR592352 3 6 G A G DOS SANTOS6013SAO JOAO DA B62070503***630400BC"
+).trim();
+const GAME_SHOP_WHATSAPP_URL = (process.env.GAME_SHOP_WHATSAPP_URL ?? "https://wa.me/5535984652456").trim();
+const GAME_SHOP_CONTACT_EMAIL = (process.env.GAME_SHOP_CONTACT_EMAIL ?? "gags.guilherme@gmail.com").trim();
 const PASSWORD_MIN_LENGTH = 6;
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
