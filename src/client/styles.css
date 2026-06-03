@@ -9550,6 +9550,12 @@ button:disabled {
   gap: 16px;
 }
 
+.content-panel.battle-panel,
+.battle-panel .combatants,
+.battle-panel .combatant {
+  overflow: visible;
+}
+
 .combatant {
   border-radius: 16px;
   background:
