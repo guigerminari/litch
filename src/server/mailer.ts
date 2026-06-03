@@ -1,7 +1,7 @@
 import { appendFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import nodemailer from "nodemailer";
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 interface MailPayload {
   to: string;
@@ -11,7 +11,6 @@ interface MailPayload {
 }
 
 const DEFAULT_OUTBOX_FILE = join(process.cwd(), "data", "email-outbox.log");
-const RESEND_EMAIL_ENDPOINT = "https://api.resend.com/emails";
 
 function cleanEnv(value: string | undefined) {
   const trimmed = value?.trim();
