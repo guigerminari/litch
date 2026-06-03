@@ -102,7 +102,7 @@ O projeto está preparado para rodar como um único Web Service no Render: o bac
 Configuração recomendada:
 
 ```bash
-Build Command: npm install && npm run build
+Build Command: npm ci --include=dev && npm run build
 Start Command: npm start
 Health Check Path: /health
 Instance Type: Free
