@@ -7087,6 +7087,15 @@ function BattlePanel({ game }: { game: GameState }) {
     emitAutoPveTurn();
   };
 
+  const handleAttackClick = () => {
+    if (canUseAutoPve && autoUntilStopped) {
+      triggerAutoPve();
+      return;
+    }
+
+    socket.emit("battle:action", { battleId: battle.id, action: "attack" });
+  };
+
   const stopAutoPve = () => {
     autoPveRunningRef.current = false;
     setAutoPveRunning(false);
@@ -7255,7 +7264,7 @@ function BattlePanel({ game }: { game: GameState }) {
             <button
               className="primary-button atack-button"
               disabled={!myTurn || animationsPending}
-              onClick={() => socket.emit("battle:action", { battleId: battle.id, action: "attack" })}
+              onClick={handleAttackClick}
             >
               <Swords size={16} className="button-game-icon" /> Atacar
             </button>
@@ -7291,17 +7300,8 @@ function BattlePanel({ game }: { game: GameState }) {
                       }
                     }}
                   />
-                  Continuar até acabar energia ou morrer
+                  Auto PvE
                 </label>
-                {!autoPveRunning && (
-                  <button
-                    className="ghost-button royal-auto-button"
-                    disabled={!myTurn || animationsPending}
-                    onClick={triggerAutoPve}
-                  >
-                    <Crown name="hunt" style={{ marginRight: "4px", color: "var(--gold)" }} size={16} /> Auto PvE
-                  </button>
-                )}
               </>
             )}
           </>
