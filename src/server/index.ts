@@ -1,5 +1,7 @@
-import { createServer } from "node:http";
+import { createServer, type ServerResponse } from "node:http";
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
+import { createReadStream, existsSync, statSync } from "node:fs";
+import { extname, join, normalize, resolve } from "node:path";
 import { Server } from "socket.io";
 import type {
   AllocatePayload,
@@ -108,6 +110,7 @@ import { deriveStats, experienceForNextLevel, grantExperience } from "./domain/s
 import { store, type AuthAccount } from "./store";
 import { closePersistentStore, flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
 import { sendGameEmail } from "./mailer";
+import { analyticsEnabled, shutdownAnalytics, trackEvent } from "./analytics";
 import {
   calculateWorkReward,
   getDefaultWorkAptitude,
@@ -120,8 +123,9 @@ import { getActiveTemporaryEventViews } from "../shared/temporaryEvents";
 import { normalizeClanCrestId } from "../shared/clan";
 
 const PORT = Number(process.env.PORT ?? 3001);
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
-const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL ?? CLIENT_ORIGIN;
+const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL?.trim() || undefined;
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? RENDER_EXTERNAL_URL ?? "http://127.0.0.1:5173";
+const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL ?? RENDER_EXTERNAL_URL ?? CLIENT_ORIGIN;
 const GAME_SHOP_ADMIN_EMAIL = (process.env.GAME_SHOP_ADMIN_EMAIL ?? "gags.guilherme@gmail.com").trim().toLowerCase();
 const GAME_SHOP_PIX_HASH = (
   process.env.GAME_SHOP_PIX_HASH ??
@@ -152,6 +156,61 @@ const DUNGEON_DAILY_KEYS = 5;
 const DUNGEON_ROOM_TIME_LIMIT_MS = 60 * 1000;
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
+const CLIENT_DIST_DIR = resolve(process.cwd(), "dist");
+const STATIC_MIME_TYPES: Record<string, string> = {
+  ".css": "text/css; charset=utf-8",
+  ".gif": "image/gif",
+  ".html": "text/html; charset=utf-8",
+  ".ico": "image/x-icon",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".txt": "text/plain; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
+  ".webp": "image/webp"
+};
+
+function getStaticMimeType(filePath: string) {
+  return STATIC_MIME_TYPES[extname(filePath).toLowerCase()] ?? "application/octet-stream";
+}
+
+function resolveStaticPath(pathname: string) {
+  let decoded = "/";
+  try {
+    decoded = decodeURIComponent(pathname.split("?")[0] || "/");
+  } catch {
+    return null;
+  }
+  const safePath = normalize(decoded).replace(/^(\.\.[/\\])+/, "");
+  const requestedPath = join(CLIENT_DIST_DIR, safePath === "/" ? "index.html" : safePath);
+  const resolvedPath = resolve(requestedPath);
+  if (!resolvedPath.startsWith(CLIENT_DIST_DIR)) {
+    return null;
+  }
+  if (existsSync(resolvedPath) && statSync(resolvedPath).isFile()) {
+    return resolvedPath;
+  }
+  const indexPath = join(CLIENT_DIST_DIR, "index.html");
+  return existsSync(indexPath) ? indexPath : null;
+}
+
+function serveStaticFile(pathname: string, response: ServerResponse) {
+  const filePath = resolveStaticPath(pathname);
+  if (!filePath) {
+    response.writeHead(404, { "content-type": "application/json" });
+    response.end(JSON.stringify({ error: "not_found" }));
+    return;
+  }
+
+  response.writeHead(200, {
+    "content-type": getStaticMimeType(filePath),
+    "cache-control": filePath.endsWith("index.html") ? "no-cache" : "public, max-age=31536000, immutable"
+  });
+  createReadStream(filePath).pipe(response);
+}
 
 function gameShopContactInfo() {
   return {
@@ -368,8 +427,7 @@ const httpServer = createServer((request, response) => {
     return;
   }
 
-  response.writeHead(404, { "content-type": "application/json" });
-  response.end(JSON.stringify({ error: "not_found" }));
+  serveStaticFile(request.url ?? "/", response);
 });
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -380,6 +438,8 @@ const io = new Server(httpServer, {
     credentials: true
   }
 });
+
+console.log(`[analytics] PostHog ${analyticsEnabled() ? "enabled" : "disabled"}`);
 
 type AuthedSocket = Parameters<Parameters<typeof io.on>[1]>[0] & {
   data: { playerId?: string; sessionToken?: string };
@@ -678,7 +738,32 @@ function requirePlayer(socket: AuthedSocket) {
 
 function handleError(socket: AuthedSocket, error: unknown) {
   const message = error instanceof Error ? error.message : "Erro inesperado.";
+  trackEvent(socket.data.playerId, "game_error", {
+    message
+  });
   socket.emit("game:error", { message });
+}
+
+function trackCharacterEvent(playerId: string, event: string, character: Character, properties: Record<string, string | number | boolean | null | undefined> = {}) {
+  trackEvent(playerId, event, {
+    characterLevel: character.level,
+    cityId: character.cityId,
+    countryId: getCharacterCountryId(character),
+    ...properties
+  });
+}
+
+function trackLevelUps(playerId: string, beforeLevel: number, character: Character, source: string) {
+  if (character.level <= beforeLevel) {
+    return;
+  }
+
+  for (let level = beforeLevel + 1; level <= character.level; level += 1) {
+    trackCharacterEvent(playerId, "level_up", character, {
+      level,
+      source
+    });
+  }
 }
 
 function sanitizeName(value: string) {
@@ -1203,6 +1288,7 @@ function claimQuest(character: Character, questId: string) {
     character.questProgress.claimedFixedQuestIds.push(quest.id);
   }
   normalizeVitals(character);
+  return quest;
 }
 
 function clearEndedBattle(character: Character) {
@@ -1839,6 +1925,16 @@ function applyBattleProgress(character: Character, playerId: string, battle: Gam
 
   if (battle.mode === "pvp" && wasActive && battle.status === "ended") {
     recordArenaResult(battle.id);
+  }
+
+  if (wasActive && battle.status === "ended") {
+    const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
+    trackCharacterEvent(playerId, "battle_finished", character, {
+      battleMode: battle.mode,
+      won: winner?.ownerPlayerId === playerId,
+      monsterId: getBattleMonsterId(battle),
+      participantCount: battle.participants.length
+    });
   }
 }
 
@@ -3215,6 +3311,9 @@ io.on("connection", (socket: AuthedSocket) => {
       }
       attachSocketSession(socket, playerId, token);
       socket.emit("auth:ok", { sessionToken: token, playerId });
+      trackEvent(playerId, "session_started", {
+        method: "resume"
+      });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
@@ -3242,6 +3341,9 @@ io.on("connection", (socket: AuthedSocket) => {
 
       const sessionToken = createSession(socket, account.playerId);
       socket.emit("auth:ok", { sessionToken, playerId: account.playerId });
+      trackEvent(account.playerId, "session_started", {
+        method: "password"
+      });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
@@ -3299,6 +3401,9 @@ io.on("connection", (socket: AuthedSocket) => {
       await sendVerificationEmail(account, username);
 
       persistStoreSoon();
+      trackEvent(player.id, "user_registered", {
+        referralUsed: Boolean(inviter)
+      });
       socket.emit("auth:notice", {
         message: "Conta criada. Enviamos um link para confirmar seu e-mail antes do primeiro login.",
         mode: "login"
@@ -3320,6 +3425,7 @@ io.on("connection", (socket: AuthedSocket) => {
       account.emailVerificationTokenHash = undefined;
       account.emailVerificationTokenExpiresAt = undefined;
       persistStoreSoon();
+      trackEvent(account.playerId, "email_verified");
       socket.emit("auth:notice", {
         message: "E-mail confirmado. Você já pode entrar em Litch.",
         mode: "login"
@@ -3499,6 +3605,12 @@ io.on("connection", (socket: AuthedSocket) => {
       clearEndedBattle(character);
       ensureNotInBattle(character);
       startWork(character, payload);
+      if (character.activeWork) {
+        trackCharacterEvent(playerId, "work_started", character, {
+          serviceId: character.activeWork.serviceId,
+          minutes: character.activeWork.minutes
+        });
+      }
       leaveArenaQueue(playerId);
       emitState(playerId);
     } catch (error) {
@@ -3510,7 +3622,19 @@ io.on("connection", (socket: AuthedSocket) => {
     try {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
-      claimWork(character);
+      const beforeLevel = character.level;
+      const workMinutes = character.activeWork ? getWorkMinutesFromAssignment(character.activeWork) : 0;
+      const result = claimWork(character);
+      trackCharacterEvent(playerId, "work_claimed", character, {
+        serviceId: result.service.id,
+        minutes: workMinutes,
+        xpGained: result.reward.experience ?? 0,
+        goldGained: result.reward.gold ?? 0,
+        diamondsGained: result.reward.diamonds ?? 0,
+        workAptitudeBefore: result.beforeLevel,
+        workAptitudeAfter: result.afterLevel
+      });
+      trackLevelUps(playerId, beforeLevel, character, "work");
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -3572,6 +3696,14 @@ io.on("connection", (socket: AuthedSocket) => {
         addItem(character, item.id, ITEM_CATALOG, quantity);
         removeItemByItemId(character, ARENA_GOLD_COIN_ID, goldCoinCost);
         character.questProgress.shopItemsBought += 1;
+        trackCharacterEvent(playerId, "shop_item_bought", character, {
+          shop: requestedShop,
+          itemId: item.id,
+          itemKind: item.kind,
+          quantity,
+          currency: "arena_gold_coin",
+          totalPrice: goldCoinCost
+        });
         emitState(playerId);
         return;
       }
@@ -3583,6 +3715,14 @@ io.on("connection", (socket: AuthedSocket) => {
       addItem(character, item.id, ITEM_CATALOG, quantity);
       character.gold -= totalPrice;
       character.questProgress.shopItemsBought += 1;
+      trackCharacterEvent(playerId, "shop_item_bought", character, {
+        shop: requestedShop,
+        itemId: item.id,
+        itemKind: item.kind,
+        quantity,
+        currency: "gold",
+        totalPrice
+      });
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -3808,9 +3948,16 @@ io.on("connection", (socket: AuthedSocket) => {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
-      if (!DIAMOND_PACKAGES.some((entry) => entry.id === payload.packageId)) {
+      const requestedPack = DIAMOND_PACKAGES.find((entry) => entry.id === payload.packageId);
+      if (!requestedPack) {
         throw new Error("Pacote não encontrado.");
       }
+      trackCharacterEvent(playerId, "diamond_purchase_requested", character, {
+        packageId: requestedPack.id,
+        packageName: requestedPack.name,
+        diamonds: requestedPack.diamonds,
+        priceLabel: requestedPack.priceLabel
+      });
       throw new Error("Compra de diamantes via Pix manual. Abra o pacote, realize o pagamento e envie o comprovante ao desenvolvedor.");
     } catch (error) {
       handleError(socket, error);
@@ -3852,6 +3999,12 @@ io.on("connection", (socket: AuthedSocket) => {
       if (targetPlayerId !== adminPlayerId) {
         emitState(adminPlayerId);
       }
+      trackCharacterEvent(targetPlayerId, "diamond_purchase_granted", targetCharacter, {
+        packageId: grantedPack.id,
+        packageName: grantedPack.name,
+        diamonds: grantedPack.diamonds,
+        priceLabel: grantedPack.priceLabel
+      });
     } catch (error) {
       handleError(socket, error);
     }
@@ -3863,6 +4016,10 @@ io.on("connection", (socket: AuthedSocket) => {
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
       createClan(character, payload.name, payload.icon);
+      trackCharacterEvent(playerId, "clan_created", character, {
+        clanId: character.clanId ?? null,
+        diamondCost: CLAN_CREATE_DIAMOND_COST
+      });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
@@ -3993,6 +4150,12 @@ io.on("connection", (socket: AuthedSocket) => {
       const battle = createPveBattle(character, monster);
       store.battles.set(battle.id, battle);
       leaveArenaQueue(playerId);
+      trackCharacterEvent(playerId, "hunt_started", character, {
+        monsterId: monster.id,
+        monsterLevel: monster.level,
+        energyCost: monster.level,
+        battleId: battle.id
+      });
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -4250,6 +4413,7 @@ io.on("connection", (socket: AuthedSocket) => {
     try {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
+      const beforeLevel = character.level;
       const battle = store.battles.get(payload.battleId);
       if (!battle || character.activeBattleId !== battle.id) {
         throw new Error("Batalha não encontrada.");
@@ -4284,6 +4448,14 @@ io.on("connection", (socket: AuthedSocket) => {
         }
         if (wasActive && battle.status === "ended") {
           applyDeathPenaltyForBattle(battle);
+          const winner = battle.participants.find((participant) => participant.id === battle.winnerParticipantId);
+          trackCharacterEvent(playerId, "battle_finished", character, {
+            battleMode: battle.mode,
+            won: winner?.ownerPlayerId === playerId,
+            monsterId: getBattleMonsterId(battle),
+            participantCount: battle.participants.length
+          });
+          trackLevelUps(playerId, beforeLevel, character, "battle");
         }
         syncBattleVitals(battle.id);
         broadcastWorldState();
@@ -4298,6 +4470,9 @@ io.on("connection", (socket: AuthedSocket) => {
         recordPotionProgress(character, potionDefinition);
       }
       applyBattleProgress(character, playerId, battle, wasActive);
+      if (wasActive && battle.status === "ended") {
+        trackLevelUps(playerId, beforeLevel, character, "battle");
+      }
       if (battle.mode === "dungeon" && wasActive && battle.status === "ended") {
         resolveDungeonProgress(character, playerId, battle);
       }
@@ -4389,6 +4564,14 @@ io.on("connection", (socket: AuthedSocket) => {
         createdAt: Date.now()
       };
       store.marketplace.set(listing.id, listing);
+      trackCharacterEvent(playerId, "market_listing_created", character, {
+        itemId: listing.item.itemId,
+        quantity,
+        currency,
+        price,
+        itemRarity: listing.item.rarity ?? null,
+        enhancementLevel: listing.item.enhancementLevel ?? 0
+      });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
@@ -4452,6 +4635,22 @@ io.on("connection", (socket: AuthedSocket) => {
         counterpartyName: currentCharacter(playerId).name
       });
       store.marketplace.delete(listing.id);
+      trackCharacterEvent(playerId, "market_item_bought", buyer, {
+        itemId: listing.item.itemId,
+        quantity: listing.item.quantity,
+        currency: listing.currency,
+        price: listing.price,
+        itemRarity: listing.item.rarity ?? null,
+        enhancementLevel: listing.item.enhancementLevel ?? 0
+      });
+      trackCharacterEvent(listing.sellerPlayerId, "market_item_sold", seller, {
+        itemId: listing.item.itemId,
+        quantity: listing.item.quantity,
+        currency: listing.currency,
+        price: listing.price,
+        itemRarity: listing.item.rarity ?? null,
+        enhancementLevel: listing.item.enhancementLevel ?? 0
+      });
       emitMany([playerId, listing.sellerPlayerId]);
       broadcastWorldState();
     } catch (error) {
@@ -4656,7 +4855,17 @@ io.on("connection", (socket: AuthedSocket) => {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
-      claimQuest(character, payload.questId);
+      const beforeLevel = character.level;
+      const quest = claimQuest(character, payload.questId);
+      trackCharacterEvent(playerId, "quest_claimed", character, {
+        questId: quest.id,
+        questType: quest.type,
+        questCategory: quest.category,
+        xpGained: quest.reward.experience ?? 0,
+        goldGained: quest.reward.gold ?? 0,
+        diamondsGained: quest.reward.diamonds ?? 0
+      });
+      trackLevelUps(playerId, beforeLevel, character, "quest");
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -4671,7 +4880,7 @@ io.on("connection", (socket: AuthedSocket) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`Litch realtime server running on http://127.0.0.1:${PORT}`);
+  console.log(`Litch realtime server running on port ${PORT}`);
 });
 
 let shuttingDown = false;
@@ -4685,6 +4894,7 @@ async function flushAndExit(code = 0) {
   try {
     await flushPersistentStore();
     await closePersistentStore();
+    await shutdownAnalytics();
   } catch (error) {
     console.error("Failed to flush persistent store:", error);
   } finally {
@@ -4701,6 +4911,7 @@ process.on("beforeExit", () => {
   beforeExitFlushed = true;
   void flushPersistentStore()
     .then(() => closePersistentStore())
+    .then(() => shutdownAnalytics())
     .catch((error) => console.error("Failed to flush persistent store:", error));
 });
 

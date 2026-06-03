@@ -78,6 +78,64 @@ SMTP_PASS=senha
 SMTP_FROM="Litch <no-reply@seudominio.com>"
 ```
 
+## Analytics
+
+O servidor envia eventos de gameplay para PostHog quando `POSTHOG_API_KEY` estiver configurada. Sem a chave, o analytics fica desativado e o jogo roda normalmente.
+
+```bash
+POSTHOG_API_KEY=phc_sua_chave_do_projeto
+POSTHOG_HOST=https://us.i.posthog.com
+```
+
+Para desligar explicitamente:
+
+```bash
+POSTHOG_DISABLED=true
+```
+
+Os eventos são capturados no servidor, a partir das ações Socket.IO, sem enviar senha, e-mail, conteúdo de chat ou dados de Pix.
+
+## Deploy no Render Free
+
+O projeto está preparado para rodar como um único Web Service no Render: o backend Node serve a API realtime, o Socket.IO e o frontend gerado em `dist/`.
+
+Configuração recomendada:
+
+```bash
+Build Command: npm install && npm run build
+Start Command: npm start
+Health Check Path: /health
+Instance Type: Free
+```
+
+Variáveis obrigatórias no Render:
+
+```bash
+NODE_ENV=production
+LITCH_PERSISTENCE=mysql
+MYSQL_HOST=litch-gags-e6e0.k.aivencloud.com
+MYSQL_PORT=14514
+MYSQL_USER=avnadmin
+MYSQL_PASSWORD=<senha do banco>
+MYSQL_DATABASE=defaultdb
+```
+
+O Render fornece `RENDER_EXTERNAL_URL` automaticamente. Para domínio customizado, configure também:
+
+```bash
+CLIENT_ORIGIN=https://seu-app.onrender.com
+PUBLIC_APP_URL=https://seu-app.onrender.com
+```
+
+Variáveis opcionais:
+
+```bash
+POSTHOG_API_KEY=<project token>
+POSTHOG_HOST=https://us.i.posthog.com
+```
+
+O arquivo `render.yaml` inclui um Blueprint sem segredos; campos com `sync: false` devem ser preenchidos no painel do Render.
+
 ## Regras implementadas
 
 - Cadastro cria jogador e personagem automaticamente.

@@ -1,3 +1,4 @@
+import "./env";
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createPool, type Pool, type PoolConnection, type RowDataPacket } from "mysql2/promise";
