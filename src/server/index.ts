@@ -4801,6 +4801,26 @@ io.on("connection", (socket: AuthedSocket) => {
       if (!message) {
         throw new Error("Escreva uma mensagem para enviar ao desenvolvedor.");
       }
+
+      const kalibahn = Array.from(store.players.values()).find(
+        (entry) => entry.username.toLowerCase() === "kalibahn"
+      );
+      if (kalibahn && kalibahn.id !== playerId) {
+        const targetCharacter = store.characters.get(kalibahn.id);
+        const privateText = subject ? `[Dev] ${subject}: ${message}` : `[Dev] ${message}`;
+        const privateMessage = {
+          id: randomUUID(),
+          fromPlayerId: playerId,
+          fromName: player.username,
+          toPlayerId: kalibahn.id,
+          toName: targetCharacter?.name ?? kalibahn.username,
+          text: privateText,
+          createdAt: Date.now()
+        };
+        store.allPrivateMessages = [privateMessage, ...store.allPrivateMessages].slice(0, 500);
+        emitMany([playerId, kalibahn.id]);
+      }
+
       console.log(`[developer-message] ${player.username} <${player.email}> ${subject || "Sem assunto"}: ${message}`);
       socket.emit("developer:message:ok");
     } catch (error) {
