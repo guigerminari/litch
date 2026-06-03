@@ -4665,9 +4665,94 @@ function TalentTreeView({
 }
 
 function GameShopPanel({ game }: { game: GameState }) {
+  const [selectedPackage, setSelectedPackage] = useState<GameState["diamondPackages"][number] | null>(null);
+  const [copyFeedback, setCopyFeedback] = useState("");
+  const [adminTargetPlayerId, setAdminTargetPlayerId] = useState("");
+  const [adminPackageId, setAdminPackageId] = useState("");
+  const [adminReceiptNote, setAdminReceiptNote] = useState("");
   const packages = [...game.diamondPackages].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
   const royalPackage = packages.find((pack) => pack.id === "friend_of_king") ?? packages.find((pack) => pack.featured) ?? null;
   const regularPackages = packages.filter((pack) => pack.id !== royalPackage?.id);
+  const pixHash = game.gameShopContact.pixHash?.trim() ?? "";
+  const purchaseHistory = game.diamondPurchaseHistory ?? [];
+  const contactEmail = game.gameShopContact.contactEmail?.trim() ?? "";
+  const whatsappUrl = game.gameShopContact.whatsappUrl?.trim() ?? "";
+  const isShopAdmin = game.gameShopCanManualGrant;
+  const availableTargets = [{ playerId: game.player.id, name: game.character.name }, ...game.playerDirectory];
+
+  useEffect(() => {
+    if (!adminTargetPlayerId) {
+      setAdminTargetPlayerId(game.player.id);
+    }
+  }, [adminTargetPlayerId, game.player.id]);
+
+  useEffect(() => {
+    if (!adminPackageId) {
+      setAdminPackageId(royalPackage?.id ?? packages[0]?.id ?? "");
+    }
+  }, [adminPackageId, packages, royalPackage]);
+
+  const buildWhatsappLink = (pack: GameState["diamondPackages"][number]) => {
+    if (!whatsappUrl) {
+      return "";
+    }
+    const text = `Ola! Comprei o pacote ${pack.name} (${pack.priceLabel}) e vou enviar o comprovante agora.`;
+    try {
+      const url = new URL(whatsappUrl);
+      url.searchParams.set("text", text);
+      return url.toString();
+    } catch {
+      return `${whatsappUrl}${whatsappUrl.includes("?") ? "&" : "?"}text=${encodeURIComponent(text)}`;
+    }
+  };
+
+  const buildMailtoLink = (pack: GameState["diamondPackages"][number]) => {
+    if (!contactEmail) {
+      return "";
+    }
+    const subject = encodeURIComponent(`Comprovante de compra - ${pack.name}`);
+    const body = encodeURIComponent(
+      [
+        "Ola,",
+        "",
+        `Realizei a compra do pacote ${pack.name} (${pack.priceLabel}).`,
+        "Segue o comprovante em anexo.",
+        "",
+        `Hash PIX usada: ${pixHash || "(preencha aqui)"}`,
+        "",
+        `Jogador: ${game.character.name}`,
+        `ID do jogador: ${game.player.id}`
+      ].join("\n")
+    );
+    return `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+  };
+
+  const handleCopyPixHash = async () => {
+    if (!pixHash) {
+      setCopyFeedback("Configure a hash Pix no servidor.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(pixHash);
+      setCopyFeedback("Hash Pix copiada.");
+    } catch {
+      setCopyFeedback("Nao foi possivel copiar automaticamente.");
+    }
+  };
+
+  const submitManualGrant = (event: FormEvent) => {
+    event.preventDefault();
+    if (!adminTargetPlayerId || !adminPackageId) {
+      return;
+    }
+    socket.emit("game:adminGrantDiamonds", {
+      targetPlayerId: adminTargetPlayerId,
+      packageId: adminPackageId,
+      receiptNote: adminReceiptNote.trim() || undefined
+    });
+    setAdminReceiptNote("");
+  };
+
   const royalBenefits: Array<{ id: string; amount?: number; label?: string }> = [
     { id: "diamonds", amount: 200, label: "" },
     { id: TRAIN_TICKET_ID, amount: 100 },
@@ -4728,7 +4813,7 @@ function GameShopPanel({ game }: { game: GameState }) {
               </div>
             </div>
             <div className="royal-offer-cta">
-              <button className="primary-button" onClick={() => socket.emit("game:buyDiamonds", { packageId: royalPackage.id })}>
+              <button className="primary-button" onClick={() => setSelectedPackage(royalPackage)}>
                 Comprar Amigo do Rei
               </button>
             </div>
@@ -4747,12 +4832,119 @@ function GameShopPanel({ game }: { game: GameState }) {
               {pack.description && <small>{pack.description}</small>}
             </div>
             <small>{pack.priceLabel}</small>
-            <button className="primary-button" onClick={() => socket.emit("game:buyDiamonds", { packageId: pack.id })}>
+            <button className="primary-button" onClick={() => setSelectedPackage(pack)}>
               Comprar
             </button>
           </article>
         ))}
       </div>
+
+      <section className="shop-history-card">
+        <h3>Historico de compras aprovadas</h3>
+        {purchaseHistory.length === 0 ? (
+          <small>Nenhuma compra aprovada ainda.</small>
+        ) : (
+          <div className="shop-history-list">
+            {purchaseHistory.map((entry) => (
+              <article className="shop-history-item" key={entry.id}>
+                <strong>{entry.packageName}</strong>
+                <span>+{entry.diamonds} diamantes</span>
+                <small>{entry.priceLabel} • {new Date(entry.grantedAt).toLocaleString("pt-BR")}</small>
+                {entry.receiptNote && <small>Obs: {entry.receiptNote}</small>}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {isShopAdmin && (
+        <section className="shop-admin-card">
+          <h3>Inclusao manual de compras</h3>
+          <form className="shop-admin-form" onSubmit={submitManualGrant}>
+            <label>
+              Jogador
+              <select value={adminTargetPlayerId} onChange={(event) => setAdminTargetPlayerId(event.target.value)}>
+                {availableTargets.map((entry) => (
+                  <option key={entry.playerId} value={entry.playerId}>{entry.name} ({entry.playerId})</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Pacote
+              <select value={adminPackageId} onChange={(event) => setAdminPackageId(event.target.value)}>
+                {packages.map((pack) => (
+                  <option key={pack.id} value={pack.id}>{pack.name} ({pack.priceLabel})</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Observacao (comprovante / referencia)
+              <input
+                type="text"
+                value={adminReceiptNote}
+                onChange={(event) => setAdminReceiptNote(event.target.value)}
+                placeholder="Ex.: Pix 09/04 - fim 2341"
+                maxLength={120}
+              />
+            </label>
+            <button className="primary-button" type="submit">Creditar compra</button>
+          </form>
+        </section>
+      )}
+
+      {selectedPackage && createPortal(
+        <div className="drawer-backdrop" role="presentation" onClick={() => setSelectedPackage(null)}>
+          <section className="player-action-modal pix-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+            <button className="close-button" title="Fechar" onClick={() => setSelectedPackage(null)}>
+              <X size={18} />
+            </button>
+            <h3>{selectedPackage.name}</h3>
+            <p>
+              Valor: <strong>{selectedPackage.priceLabel}</strong> • Credito: <strong>{selectedPackage.diamonds} diamantes</strong>
+            </p>
+            <p>
+              1) Copie a hash Pix abaixo e pague no seu banco.
+              <br />
+              2) Envie o comprovante com seu nome de jogador e o pacote comprado.
+              <br />
+              3) O desenvolvedor inclui manualmente a compra no jogo.
+            </p>
+            {pixHash ? (
+              <div className="pix-modal-qr-wrap">
+                <img
+                  className="pix-modal-qr"
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(pixHash)}`}
+                  alt="QR Code Pix"
+                />
+                <div className="pix-modal-hash-box">
+                  <span>{pixHash}</span>
+                  <button className="secondary-button" onClick={handleCopyPixHash} type="button">
+                    <Copy size={14} /> Copiar hash
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="pix-modal-warning">
+                Configure GAME_SHOP_PIX_HASH no servidor para exibir a hash e o QR Code.
+              </div>
+            )}
+            {copyFeedback && <small>{copyFeedback}</small>}
+            <div className="pix-contact-links">
+              {whatsappUrl && (
+                <a href={buildWhatsappLink(selectedPackage)} target="_blank" rel="noreferrer" className="secondary-button">
+                  <MessageCircle size={15} /> WhatsApp
+                </a>
+              )}
+              {contactEmail && (
+                <a href={buildMailtoLink(selectedPackage)} className="secondary-button">
+                  <Mail size={15} /> E-mail
+                </a>
+              )}
+            </div>
+          </section>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }

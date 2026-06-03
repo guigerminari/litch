@@ -29,6 +29,7 @@ import type {
   ForgotPasswordPayload,
   EquipPayload,
   GameState,
+  GameShopAdminGrantPayload,
   GameShopPurchasePayload,
   HuntStartPayload,
   InventoryItem,
@@ -121,6 +122,10 @@ import { normalizeClanCrestId } from "../shared/clan";
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
 const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL ?? CLIENT_ORIGIN;
+const GAME_SHOP_ADMIN_EMAIL = (process.env.GAME_SHOP_ADMIN_EMAIL ?? "").trim().toLowerCase();
+const GAME_SHOP_PIX_HASH = (process.env.GAME_SHOP_PIX_HASH ?? "").trim();
+const GAME_SHOP_WHATSAPP_URL = (process.env.GAME_SHOP_WHATSAPP_URL ?? "").trim();
+const GAME_SHOP_CONTACT_EMAIL = (process.env.GAME_SHOP_CONTACT_EMAIL ?? "").trim();
 const PASSWORD_MIN_LENGTH = 6;
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
@@ -144,6 +149,14 @@ const DUNGEON_DAILY_KEYS = 5;
 const DUNGEON_ROOM_TIME_LIMIT_MS = 60 * 1000;
 const ROYAL_FRIEND_PACKAGE_ID = "friend_of_king";
 const ROYAL_FRIEND_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
+
+function gameShopContactInfo() {
+  return {
+    pixHash: GAME_SHOP_PIX_HASH,
+    whatsappUrl: GAME_SHOP_WHATSAPP_URL || undefined,
+    contactEmail: GAME_SHOP_CONTACT_EMAIL || undefined
+  };
+}
 const DEFAULT_AVATAR_ID = "recruta";
 const LEGACY_AVATAR_ID_MAP: Record<string, string> = {
   wanderer: "andarilho",
@@ -395,6 +408,7 @@ function createCharacter(player: Player): Character {
     arenaRankedPoints: ARENA_RANKED_STARTING_POINTS,
     dungeonClears: 0,
     marketHistory: [],
+    diamondPurchaseHistory: [],
     pveAutoUntil: 0,
     royalSealUntil: 0,
     avatarId: DEFAULT_AVATAR_ID,
@@ -437,6 +451,7 @@ function currentCharacter(playerId: string) {
   character.arenaRankedPoints ??= ARENA_RANKED_STARTING_POINTS;
   character.dungeonClears ??= 0;
   character.marketHistory ??= [];
+  character.diamondPurchaseHistory ??= [];
   character.pveAutoUntil ??= 0;
   character.royalSealUntil ??= 0;
   character.unlockedAvatarIds ??= AVATARS.filter((avatar) => avatar.priceDiamonds === 0 && !avatar.exclusive).map((avatar) => avatar.id);
@@ -597,6 +612,9 @@ function serializeGameState(playerId: string): GameState {
     clan: clan ? decorateClan(clan) : null,
     clanDirectory: buildClanDirectory(),
     diamondPackages: DIAMOND_PACKAGES,
+    diamondPurchaseHistory: [...(character.diamondPurchaseHistory ?? [])].sort((a, b) => b.grantedAt - a.grantedAt).slice(0, 50),
+    gameShopContact: gameShopContactInfo(),
+    gameShopCanManualGrant: Boolean(GAME_SHOP_ADMIN_EMAIL) && (player.email ?? "").toLowerCase() === GAME_SHOP_ADMIN_EMAIL,
     availableCraftingRecipes: availableRecipes,
     rankings: buildRankings(),
     onlineCount: store.socketsByPlayer.size,
@@ -2162,6 +2180,29 @@ function buyDiamondPackage(character: Character, packageId: string) {
     character.pveAutoUntil = baseUntil + ROYAL_FRIEND_DURATION_MS;
     character.royalSealUntil = baseUntil + ROYAL_FRIEND_DURATION_MS;
   }
+
+  return pack;
+}
+
+function pushDiamondPurchaseHistory(character: Character, entry: {
+  packageId: string;
+  packageName: string;
+  diamonds: number;
+  priceLabel: string;
+  pixHash: string;
+  receiptNote?: string;
+  grantedByPlayerId?: string;
+}) {
+  character.diamondPurchaseHistory ??= [];
+  character.diamondPurchaseHistory = [
+    {
+      id: randomUUID(),
+      createdAt: Date.now(),
+      grantedAt: Date.now(),
+      ...entry
+    },
+    ...character.diamondPurchaseHistory
+  ].slice(0, 80);
 }
 
 function selectAvatar(character: Character, avatarId: string) {
@@ -3764,8 +3805,50 @@ io.on("connection", (socket: AuthedSocket) => {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
-      buyDiamondPackage(character, payload.packageId);
-      emitState(playerId);
+      if (!DIAMOND_PACKAGES.some((entry) => entry.id === payload.packageId)) {
+        throw new Error("Pacote não encontrado.");
+      }
+      throw new Error("Compra de diamantes via Pix manual. Abra o pacote, realize o pagamento e envie o comprovante ao desenvolvedor.");
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("game:adminGrantDiamonds", (payload: GameShopAdminGrantPayload) => {
+    try {
+      const adminPlayerId = requirePlayer(socket);
+      const adminPlayer = currentPlayer(adminPlayerId);
+      if (!GAME_SHOP_ADMIN_EMAIL) {
+        throw new Error("Configure GAME_SHOP_ADMIN_EMAIL no servidor para liberar a inclusão manual de compras.");
+      }
+      if ((adminPlayer.email ?? "").toLowerCase() !== GAME_SHOP_ADMIN_EMAIL) {
+        throw new Error("Apenas o desenvolvedor pode incluir compras manualmente.");
+      }
+
+      const targetPlayerId = String(payload.targetPlayerId ?? "").trim();
+      const packageId = String(payload.packageId ?? "").trim();
+      if (!targetPlayerId || !packageId) {
+        throw new Error("Informe o jogador e o pacote para incluir a compra.");
+      }
+
+      const targetCharacter = currentCharacter(targetPlayerId);
+      const grantedPack = buyDiamondPackage(targetCharacter, packageId);
+      const pixHash = String(payload.pixHash ?? "").trim() || GAME_SHOP_PIX_HASH;
+      const receiptNote = String(payload.receiptNote ?? "").trim() || undefined;
+      pushDiamondPurchaseHistory(targetCharacter, {
+        packageId: grantedPack.id,
+        packageName: grantedPack.name,
+        diamonds: grantedPack.diamonds,
+        priceLabel: grantedPack.priceLabel,
+        pixHash,
+        receiptNote,
+        grantedByPlayerId: adminPlayerId
+      });
+
+      emitState(targetPlayerId);
+      if (targetPlayerId !== adminPlayerId) {
+        emitState(adminPlayerId);
+      }
     } catch (error) {
       handleError(socket, error);
     }

@@ -256,6 +256,7 @@ async function ensureMysqlSchema() {
       arena_ranked_points INT NOT NULL,
       dungeon_clears INT NOT NULL,
       market_history JSON NOT NULL,
+      diamond_purchase_history JSON NULL,
       pve_auto_until BIGINT NULL,
       royal_seal_until BIGINT NULL,
       avatar_id VARCHAR(80) NULL,
@@ -276,6 +277,7 @@ async function ensureMysqlSchema() {
   `);
   await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_characters`, "clan_join_cooldown_until", "BIGINT NULL");
   await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_characters`, "dungeon_progress", "JSON NULL");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_characters`, "diamond_purchase_history", "JSON NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("character_inventory")} (
@@ -628,6 +630,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     arena_ranked_points: number;
     dungeon_clears: number;
     market_history: unknown;
+    diamond_purchase_history: unknown;
     pve_auto_until: number | null;
     royal_seal_until: number | null;
     avatar_id: string | null;
@@ -693,6 +696,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
       arenaRankedPoints: Number(row.arena_ranked_points),
       dungeonClears: Number(row.dungeon_clears),
       marketHistory: parseJson(row.market_history, []),
+      diamondPurchaseHistory: parseJson(row.diamond_purchase_history, []),
       pveAutoUntil: maybeNumber(row.pve_auto_until),
       royalSealUntil: maybeNumber(row.royal_seal_until),
       avatarId: row.avatar_id ?? undefined,
@@ -999,10 +1003,10 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           player_id, id, name, level, experience, gold, diamonds, current_hp, current_energy, city_id,
           strength, constitution, agility, unspent_attribute_points, equipment, active_battle_id, quest_progress,
           talent_allocations, clan_id, last_regen_at, clan_benefit_allocations, arena_wins, arena_losses,
-          arena_ranked_points, dungeon_clears, market_history, pve_auto_until, royal_seal_until, avatar_id,
+          arena_ranked_points, dungeon_clears, market_history, diamond_purchase_history, pve_auto_until, royal_seal_until, avatar_id,
           unlocked_avatar_ids, referral_rewards_claimed_for, monarch_attempts, active_work, work_aptitudes,
           work_bonus_claims, dungeon_progress, last_daily_blue_coin_grant_key, clan_join_cooldown_until
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           character.playerId,
           character.id,
@@ -1030,6 +1034,7 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           character.arenaRankedPoints ?? 100,
           character.dungeonClears ?? 0,
           json(character.marketHistory ?? []),
+          json(character.diamondPurchaseHistory ?? []),
           character.pveAutoUntil ?? null,
           character.royalSealUntil ?? null,
           character.avatarId ?? null,

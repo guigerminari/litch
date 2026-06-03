@@ -99,6 +99,7 @@ export interface Character {
   arenaRankedPoints: number;
   dungeonClears: number;
   marketHistory: MarketTransactionHistory[];
+  diamondPurchaseHistory?: GameShopPurchaseHistoryEntry[];
   pveAutoUntil?: number;
   royalSealUntil?: number;
   avatarId?: string;
@@ -650,6 +651,25 @@ export interface GameShopPackage {
   featured?: boolean;
 }
 
+export interface GameShopPurchaseHistoryEntry {
+  id: string;
+  packageId: string;
+  packageName: string;
+  diamonds: number;
+  priceLabel: string;
+  pixHash: string;
+  receiptNote?: string;
+  createdAt: number;
+  grantedAt: number;
+  grantedByPlayerId?: string;
+}
+
+export interface GameShopContactInfo {
+  pixHash: string;
+  whatsappUrl?: string;
+  contactEmail?: string;
+}
+
 export interface RankingEntry {
   playerId: string;
   name: string;
@@ -764,6 +784,9 @@ export interface GameState {
   clan: Clan | null;
   clanDirectory: ClanSummary[];
   diamondPackages: GameShopPackage[];
+  diamondPurchaseHistory: GameShopPurchaseHistoryEntry[];
+  gameShopContact: GameShopContactInfo;
+  gameShopCanManualGrant: boolean;
   availableCraftingRecipes: {
     blacksmith: CraftingRecipe[];
     alchemist: CraftingRecipe[];
@@ -960,6 +983,13 @@ export interface ResetPayload {
 
 export interface GameShopPurchasePayload {
   packageId: string;
+}
+
+export interface GameShopAdminGrantPayload {
+  packageId: string;
+  targetPlayerId: string;
+  pixHash?: string;
+  receiptNote?: string;
 }
 
 export interface AvatarSelectPayload {
