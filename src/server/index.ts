@@ -3328,16 +3328,6 @@ io.on("connection", (socket: AuthedSocket) => {
       if (!account || !verifySecret(password, account.passwordHash)) {
         throw new Error("E-mail ou senha invalidos.");
       }
-      if (!account.emailVerifiedAt) {
-        const player = store.players.get(account.playerId);
-        await sendVerificationEmail(account, player?.username ?? "recruta");
-        persistStoreSoon();
-        socket.emit("auth:notice", {
-          message: "Confirme seu e-mail para entrar. Enviamos um novo link de confirmação.",
-          mode: "login"
-        });
-        return;
-      }
 
       const sessionToken = createSession(socket, account.playerId);
       socket.emit("auth:ok", { sessionToken, playerId: account.playerId });
@@ -3395,19 +3385,17 @@ io.on("connection", (socket: AuthedSocket) => {
         email,
         passwordHash: hashSecret(password),
         recoveryCodeHash: hashSecret(normalizeRecoveryCode(recoveryCode)),
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        emailVerifiedAt: Date.now()
       };
       store.accountsByEmail.set(email, account);
-      await sendVerificationEmail(account, username);
 
       persistStoreSoon();
       trackEvent(player.id, "user_registered", {
         referralUsed: Boolean(inviter)
       });
-      socket.emit("auth:notice", {
-        message: "Conta criada. Enviamos um link para confirmar seu e-mail antes do primeiro login.",
-        mode: "login"
-      });
+      const sessionToken = createSession(socket, player.id);
+      socket.emit("auth:ok", { sessionToken, playerId: player.id });
       broadcastWorldState();
     } catch (error) {
       handleError(socket, error);
@@ -3437,15 +3425,9 @@ io.on("connection", (socket: AuthedSocket) => {
 
   socket.on("auth:forgotPassword", async (payload: ForgotPasswordPayload) => {
     try {
-      const email = normalizeEmail(String(payload.email ?? ""));
-      const account = store.accountsByEmail.get(email);
-      if (account) {
-        const player = store.players.get(account.playerId);
-        await sendPasswordResetEmail(account, player?.username ?? "recruta");
-        persistStoreSoon();
-      }
+      void payload;
       socket.emit("auth:notice", {
-        message: "Se o e-mail estiver cadastrado, enviaremos um link seguro para redefinir a senha.",
+        message: "Recuperação por e-mail está temporariamente desabilitada.",
         mode: "login"
       });
     } catch (error) {
