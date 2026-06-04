@@ -490,8 +490,8 @@ function createCharacter(player: Player): Character {
   };
 
   addItem(character, "training_sword", ITEM_CATALOG, 1);
-  addItem(character, "health_potion_light", ITEM_CATALOG, 5);
-  addItem(character, "energy_potion_light", ITEM_CATALOG, 3);
+  addItem(character, "health_potion_light", ITEM_CATALOG, 15);
+  addItem(character, "energy_potion_light", ITEM_CATALOG, 10);
   character.equipment.weapon = character.inventory.find((item) => item.itemId === "training_sword")?.instanceId ?? null;
   const stats = deriveStats(character, ITEM_CATALOG);
   character.currentHp = stats.maxHp;

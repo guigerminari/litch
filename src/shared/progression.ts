@@ -8,7 +8,7 @@ export function getBaseXpByLevel(level: number): number {
 }
 
 export function getRequiredVictoriesToLevel(level: number): number {
-  return Math.ceil(5 + Math.pow(level, 1.25) / 4);
+  return Math.ceil(3 + Math.pow(level, 1.25) / 4);
 }
 
 export function experienceForNextLevel(level: number): number {

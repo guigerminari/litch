@@ -2990,6 +2990,251 @@ button:disabled {
   padding: 16px;
 }
 
+.travel-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 78;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(8, 6, 15, 0.58);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  animation: travelOverlayFadeIn 180ms ease;
+}
+
+.travel-transition-card {
+  width: min(460px, calc(100vw - 28px));
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(220, 203, 255, 0.22);
+  border-radius: 14px;
+  background: rgba(13, 12, 23, 0.92);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+}
+
+.travel-transition-kicker {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid rgba(220, 203, 255, 0.24);
+  border-radius: 999px;
+  color: var(--lavender);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.travel-transition-card strong {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.travel-transition-scene {
+  position: relative;
+  min-height: 100px;
+  overflow: hidden;
+  border: 1px solid rgba(220, 203, 255, 0.14);
+  border-radius: 12px;
+}
+
+.travel-transition-overlay.train .travel-transition-scene {
+  background:
+    linear-gradient(180deg, rgba(193, 162, 255, 0.267), rgba(41, 33, 63, 0.86)),
+    radial-gradient(circle at 12% 28%, rgba(220, 203, 255, 0.14), transparent 22rem);
+}
+
+.travel-transition-overlay.ship .travel-transition-scene {
+  background:
+    linear-gradient(180deg, rgba(82, 224, 196, 0.18), rgba(9, 16, 28, 0.9)),
+    radial-gradient(circle at 88% 18%, rgba(82, 224, 196, 0.16), transparent 20rem);
+}
+
+.travel-train-track,
+.travel-ship-wave {
+  position: absolute;
+  left: -15%;
+  width: 130%;
+}
+
+.travel-train-track {
+  bottom: 14px;
+  height: 8px;
+  border-radius: 999px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(220, 203, 255, 0.62) 0 14px,
+    rgba(220, 203, 255, 0.12) 14px 24px
+  );
+  animation: travelTrackMove 640ms linear infinite;
+}
+
+.travel-train-track.second {
+  bottom: 28px;
+  opacity: 0.68;
+  animation-duration: 880ms;
+}
+
+.travel-ship-wave {
+  bottom: 12px;
+  height: 20px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 10px 10px, rgba(82, 224, 196, 0.7) 0 6px, transparent 7px),
+    radial-gradient(circle at 36px 10px, rgba(82, 224, 196, 0.4) 0 6px, transparent 7px);
+  background-size: 52px 20px;
+  animation: travelWaveMove 880ms linear infinite;
+}
+
+.travel-ship-wave.second {
+  bottom: 30px;
+  opacity: 0.62;
+  animation-duration: 880ms;
+}
+
+.travel-train-vehicle,
+.travel-ship-vehicle {
+  position: absolute;
+  left: 10px;
+  bottom: 20px;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 74px;
+  overflow: hidden;
+}
+
+.travel-train-vehicle .game-icon,
+.travel-ship-vehicle .game-icon {
+  position: relative;
+  z-index: 1;
+  width: 70px;
+  height: 70px;
+}
+
+
+@keyframes travelOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes travelTrackMove {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-24px);
+  }
+}
+
+@keyframes travelWaveMove {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-52px);
+  }
+}
+
+@keyframes travelTrainRide {
+  0% {
+    transform: translateX(-180px) translateY(2px) scale(0.98);
+  }
+  50% {
+    transform: translateX(280px) translateY(0) scale(1.02);
+  }
+  100% {
+    transform: translateX(740px) translateY(1px) scale(1.04);
+  }
+}
+
+@keyframes travelShipRide {
+  0% {
+    transform: translateX(-180px) translateY(2px) rotate(0deg) scale(1);
+  }
+  20% {
+    transform: translateX(4px) translateY(-3px) rotate(-4deg) scale(1.01);
+  }
+  40% {
+    transform: translateX(188px) translateY(2px) rotate(4deg) scale(1.02);
+  }
+  60% {
+    transform: translateX(372px) translateY(-3px) rotate(-4deg) scale(1.03);
+  }
+  80% {
+    transform: translateX(556px) translateY(2px) rotate(4deg) scale(1.04);
+  }
+  100% {
+    transform: translateX(740px) translateY(-2px) rotate(-4deg) scale(1.05);
+  }
+}
+
+@media (max-width: 640px) {
+  .travel-transition-card {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .travel-transition-scene {
+    min-height: 112px;
+  }
+
+  .travel-train-vehicle,
+  .travel-ship-vehicle {
+    top: 18px;
+    width: 92px;
+    height: 64px;
+  }
+
+  .travel-ship-vehicle {
+    top: 14px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .travel-transition-overlay,
+  .travel-train-track,
+  .travel-ship-wave {
+    animation-duration: 1ms !important;
+  }
+}
+
+/* Force travel motion even when other global rules conflict. */
+.travel-train-vehicle {
+  animation: travelTrainRide 4200ms linear 1 both !important;
+  will-change: transform !important;
+}
+
+.travel-ship-vehicle {
+  animation: travelShipRide 4200ms linear 1 both !important;
+  will-change: transform !important;
+}
+
+.travel-train-track {
+  animation: travelTrackMove 640ms linear infinite !important;
+}
+
+.travel-train-track.second {
+  animation-duration: 880ms !important;
+}
+
+.travel-ship-wave {
+  animation: travelWaveMove 860ms linear infinite !important;
+}
+
+.travel-ship-wave.second {
+  animation-duration: 1100ms !important;
+}
+
 .monarch-panel {
   display: grid;
   gap: 16px;

@@ -6380,12 +6380,18 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
 }
 
 function TravelPanel({ game }: { game: GameState }) {
+  const travelTransitionTimeoutRef = useRef<number | null>(null);
   const trainTicket = game.itemCatalog[TRAIN_TICKET_ID];
   const shipTicket = game.itemCatalog[SHIP_TICKET_ID];
   const trainTickets = countInventoryItem(game, TRAIN_TICKET_ID);
   const shipTickets = countInventoryItem(game, SHIP_TICKET_ID);
   const mapCities = game.cities.filter((city) => TRAVEL_MAP_POINTS[city.id]);
   const [travelModalCityId, setTravelModalCityId] = useState<string | null>(null);
+  const [travelTransition, setTravelTransition] = useState<{
+    kind: "train" | "ship";
+    destinationCityId: string;
+    destinationCityName: string;
+  } | null>(null);
   const getTravelRoute = (cityId: string) => {
     const city = game.cities.find((entry) => entry.id === cityId);
     if (!city) {
@@ -6438,6 +6444,14 @@ function TravelPanel({ game }: { game: GameState }) {
       setTravelModalCityId(null);
     }
   }, [game.cities, travelModalCityId]);
+
+  useEffect(() => {
+    return () => {
+      if (travelTransitionTimeoutRef.current) {
+        window.clearTimeout(travelTransitionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <section className="content-panel travel-panel">
@@ -6545,6 +6559,19 @@ function TravelPanel({ game }: { game: GameState }) {
               className="primary-button travel-action-button"
               disabled={selectedRoute.current || selectedRoute.locked}
               onClick={() => {
+                const transitionKind = selectedRoute.sameCountry ? "train" : "ship";
+                setTravelTransition({
+                  kind: transitionKind,
+                  destinationCityId: selectedRoute.destinationCity.id,
+                  destinationCityName: selectedRoute.destinationCity.name
+                });
+                if (travelTransitionTimeoutRef.current) {
+                  window.clearTimeout(travelTransitionTimeoutRef.current);
+                }
+                travelTransitionTimeoutRef.current = window.setTimeout(() => {
+                  setTravelTransition(null);
+                  travelTransitionTimeoutRef.current = null;
+                }, 2800);
                 socket.emit("city:travel", { cityId: selectedRoute.destinationCity.id });
                 setTravelModalCityId(null);
               }}
@@ -6558,6 +6585,34 @@ function TravelPanel({ game }: { game: GameState }) {
               )}
             </button>
           </article>
+        </div>
+      )}
+
+      {travelTransition && (
+        <div className={`travel-transition-overlay ${travelTransition.kind}`} role="status" aria-live="polite">
+          <div className="travel-transition-card">
+            <span className="travel-transition-kicker">
+              {travelTransition.kind === "train" ? "Viagem de Trem" : "Viagem de Navio"}
+            </span>
+            <strong>
+              Rumo a {travelTransition.destinationCityName}
+            </strong>
+            <div className="travel-transition-scene" aria-hidden="true">
+              {travelTransition.kind === "train" ? (
+                <>
+                  <span className="travel-train-track" />
+                  <span className="travel-train-track second" />
+                  <span className="travel-train-vehicle"><GameIcon name="train" size={58} /></span>
+                </>
+              ) : (
+                <>
+                  <span className="travel-ship-wave" />
+                  <span className="travel-ship-wave second" />
+                  <span className="travel-ship-vehicle"><GameIcon name="ship" size={58} /></span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </section>
