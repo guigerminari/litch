@@ -9752,7 +9752,7 @@ button:disabled .game-icon {
   z-index: 4;
   width: min(380px, calc(100vw - 36px));
   min-height: 0;
-  height: min(440px, calc(100vh - var(--chat-button-bottom) - var(--chat-button-size) - 32px));
+  height: min(600px, calc(100vh - var(--chat-button-bottom) - var(--chat-button-size) - 32px));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -9783,6 +9783,21 @@ button:disabled .game-icon {
 .chat-message strong {
   color: var(--gold);
   font-size: 0.68rem;
+}
+
+.chat-message-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.chat-message-time {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .chat-message span {
@@ -10070,6 +10085,83 @@ button:disabled .game-icon {
   margin: 0 0 8px;
   font-size: 0.85rem;
   color: var(--muted);
+}
+.private-chat-home-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.private-chat-home-head strong {
+  color: var(--gold);
+  font-size: 0.9rem;
+}
+.private-chat-home-head small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+.private-conversation-list {
+  display: grid;
+  gap: 7px;
+  max-height: 230px;
+  overflow: auto;
+  padding-right: 3px;
+}
+.private-conversation-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 9px;
+  border: 1px solid rgba(248, 248, 242, 0.1);
+  border-radius: 8px;
+  background: rgba(33, 34, 44, 0.86);
+  color: var(--text);
+  text-align: left;
+}
+.private-conversation-card:hover {
+  border-color: rgba(139, 233, 253, 0.3);
+  background: rgba(139, 233, 253, 0.08);
+}
+.private-conversation-avatar {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(139, 233, 253, 0.2);
+  border-radius: 8px;
+  color: var(--cyan);
+  background: rgba(139, 233, 253, 0.08);
+}
+.private-conversation-main,
+.private-conversation-meta {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.private-conversation-main strong {
+  overflow: hidden;
+  color: var(--gold);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.private-conversation-main small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.74rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.private-conversation-meta {
+  justify-items: end;
+  color: var(--muted);
+  font-size: 0.66rem;
+  white-space: nowrap;
+}
+.private-conversation-meta small {
+  color: var(--cyan);
 }
 .online-player-list {
   display: flex;
@@ -11561,7 +11653,7 @@ button:disabled {
     right: 8px;
     bottom: calc(var(--chat-button-bottom) + var(--chat-button-size) + var(--chat-gap));
     width: calc(100vw - 16px);
-    height: min(420px, calc(100vh - var(--chat-button-bottom) - var(--chat-button-size) - 24px));
+    height: min(550px, calc(100vh - var(--chat-button-bottom) - var(--chat-button-size) - 24px));
   }
 
   .battle-potion-dock {

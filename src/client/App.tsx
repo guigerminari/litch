@@ -8211,11 +8211,32 @@ function getSystemChatTone(chat: ChatMessage) {
   return { kind: "system", label: "Sistema", icon: <ScrollText size={15} /> };
 }
 
+function formatChatTimestamp(value: number) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(value);
+}
+
+function ChatTimestamp({ value }: { value: number }) {
+  return (
+    <time className="chat-message-time" dateTime={new Date(value).toISOString()}>
+      {formatChatTimestamp(value)}
+    </time>
+  );
+}
+
 function GlobalChatMessage({ chat }: { chat: ChatMessage }) {
   if (chat.playerId !== "system") {
     return (
       <article className="chat-message" key={chat.id}>
-        <strong><PlayerName playerId={chat.playerId} name={chat.author} /></strong>
+        <strong className="chat-message-head">
+          <PlayerName playerId={chat.playerId} name={chat.author} />
+          <ChatTimestamp value={chat.createdAt} />
+        </strong>
         <span>{chat.text}</span>
       </article>
     );
@@ -8228,6 +8249,7 @@ function GlobalChatMessage({ chat }: { chat: ChatMessage }) {
       <strong className="system-chat-heading">
         <span>{chat.author}</span>
         <small>{tone.label}</small>
+        <ChatTimestamp value={chat.createdAt} />
       </strong>
       <span className="system-chat-text">{chat.text}</span>
     </article>
@@ -8287,6 +8309,23 @@ function FloatingChat({
     }
     return Array.from(byId.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [game.playerDirectory, game.privateMessages, game.player.id]);
+
+  const privateConversations = useMemo(() => {
+    const byId = new Map<string, { playerId: string; name: string; latestMessage: PrivateMessage; count: number }>();
+    for (const msg of game.privateMessages) {
+      const isFromCurrentPlayer = msg.fromPlayerId === game.player.id;
+      const playerId = isFromCurrentPlayer ? msg.toPlayerId : msg.fromPlayerId;
+      const name = isFromCurrentPlayer ? msg.toName : msg.fromName;
+      const existing = byId.get(playerId);
+      byId.set(playerId, {
+        playerId,
+        name,
+        latestMessage: !existing || msg.createdAt > existing.latestMessage.createdAt ? msg : existing.latestMessage,
+        count: (existing?.count ?? 0) + 1
+      });
+    }
+    return Array.from(byId.values()).sort((a, b) => b.latestMessage.createdAt - a.latestMessage.createdAt || a.name.localeCompare(b.name));
+  }, [game.privateMessages, game.player.id]);
 
   const mentionMatch = tab === "private" ? message.match(/(?:^|\s)@([^\s@]*)$/) : null;
   const mentionQuery = mentionMatch?.[1] ?? "";
@@ -8414,7 +8453,10 @@ function FloatingChat({
                 {game.clanChatMessages.length === 0 && <p className="empty-state">Chat do clã vazio.</p>}
                 {game.clanChatMessages.map((chat) => (
                   <article className="chat-message" key={chat.id}>
-                    <strong><PlayerName playerId={chat.playerId} name={chat.author} /></strong>
+                    <strong className="chat-message-head">
+                      <PlayerName playerId={chat.playerId} name={chat.author} />
+                      <ChatTimestamp value={chat.createdAt} />
+                    </strong>
                     <span>{chat.text}</span>
                   </article>
                 ))}
@@ -8430,39 +8472,39 @@ function FloatingChat({
             <>
               {!privateTarget ? (
                 <div className="private-chat-home">
-                  <p className="private-chat-help">Digite <strong>@nome</strong> para escolher o destinatário. O chat sugere nomes conforme você escreve.</p>
-                  {game.privateMessages.length > 0 && (
-                    <>
-                      <p className="muted" style={{ margin: "8px 0", fontSize: "0.85rem" }}>Mensagens recentes:</p>
-                      <div className="chat-feed" style={{ maxHeight: 180 }}>
-                        {game.privateMessages.slice(0, 10).map((msg) => {
-                          const isFrom = msg.fromPlayerId === game.player.id;
-                          return (
-                            <article className="chat-message private-message" key={msg.id}>
-                              <strong
-                                className="player-name-inline"
-                                style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  const target = isFrom
-                                    ? { playerId: msg.toPlayerId, name: msg.toName }
-                                    : { playerId: msg.fromPlayerId, name: msg.fromName };
-                                  playerActions?.openPlayerActions(target);
-                                }}
-                              >
-                                {isFrom ? (
-                                  <>Você → <PlayerName playerId={msg.toPlayerId} name={msg.toName} /></>
-                                ) : (
-                                  <><PlayerName playerId={msg.fromPlayerId} name={msg.fromName} /> → Você</>
-                                )}
-                              </strong>
-                              <span>{msg.text}</span>
-                            </article>
-                          );
-                        })}
-                      </div>
-                    </>
+                  <div className="private-chat-home-head">
+                    <strong>Conversas privadas</strong>
+                    <small>{privateConversations.length} conversa(s)</small>
+                  </div>
+                  {privateConversations.length === 0 ? (
+                    <p className="private-chat-help">Nenhuma conversa iniciada. Digite <strong>@nome</strong> para escolher um destinatário e enviar a primeira mensagem.</p>
+                  ) : (
+                    <div className="private-conversation-list">
+                      {privateConversations.map((conversation) => {
+                        const latest = conversation.latestMessage;
+                        const sentByCurrentPlayer = latest.fromPlayerId === game.player.id;
+                        return (
+                          <button
+                            type="button"
+                            className="private-conversation-card"
+                            key={conversation.playerId}
+                            onClick={() => setPrivateTarget({ playerId: conversation.playerId, name: conversation.name })}
+                          >
+                            <span className="private-conversation-avatar"><User size={15} /></span>
+                            <span className="private-conversation-main">
+                              <strong>{conversation.name}</strong>
+                              <small>{sentByCurrentPlayer ? "Você: " : ""}{latest.text}</small>
+                            </span>
+                            <span className="private-conversation-meta">
+                              <time dateTime={new Date(latest.createdAt).toISOString()}>{formatChatTimestamp(latest.createdAt)}</time>
+                              <small>{conversation.count} msg</small>
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
+                  <p className="private-chat-help">Para iniciar outra conversa, use <strong>@nome</strong> no campo abaixo.</p>
                   <form className="chat-form private-chat-form" onSubmit={sendPrivate}>
                     {mentionSuggestions.length > 0 && (
                       <div className="private-mention-list" role="listbox" aria-label="Sugestões de jogador">
@@ -8503,7 +8545,7 @@ function FloatingChat({
                       return (
                         <article className={`chat-message private-message ${isFrom ? "sent" : "received"}`} key={msg.id}>
                           <strong
-                            className={!isFrom ? "player-name-inline" : undefined}
+                            className={!isFrom ? "chat-message-head player-name-inline" : "chat-message-head"}
                             style={{ color: isFrom ? "var(--cyan)" : "var(--pink)" }}
                             onClick={(event) => {
                               if (isFrom) return;
@@ -8512,6 +8554,7 @@ function FloatingChat({
                             }}
                           >
                             {isFrom ? "Você" : <PlayerName playerId={msg.fromPlayerId} name={msg.fromName} />}
+                            <ChatTimestamp value={msg.createdAt} />
                           </strong>
                           <span>{msg.text}</span>
                         </article>
