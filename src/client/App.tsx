@@ -363,6 +363,8 @@ const EQUIPMENT_STAT_KEYS: Array<keyof typeof EQUIPMENT_STAT_LABELS> = ["strengt
 type PlayerReference = {
   playerId: string;
   name: string;
+  avatarId?: string;
+  royalSealUntil?: number;
 };
 
 type PlayerActionContextValue = {
@@ -8311,21 +8313,25 @@ function FloatingChat({
   }, [game.playerDirectory, game.privateMessages, game.player.id]);
 
   const privateConversations = useMemo(() => {
-    const byId = new Map<string, { playerId: string; name: string; latestMessage: PrivateMessage; count: number }>();
+    const directoryById = new Map(game.playerDirectory.map((player) => [player.playerId, player]));
+    const byId = new Map<string, { playerId: string; name: string; avatarId?: string; royalSealUntil?: number; latestMessage: PrivateMessage; count: number }>();
     for (const msg of game.privateMessages) {
       const isFromCurrentPlayer = msg.fromPlayerId === game.player.id;
       const playerId = isFromCurrentPlayer ? msg.toPlayerId : msg.fromPlayerId;
-      const name = isFromCurrentPlayer ? msg.toName : msg.fromName;
+      const directoryPlayer = directoryById.get(playerId);
+      const name = directoryPlayer?.name ?? (isFromCurrentPlayer ? msg.toName : msg.fromName);
       const existing = byId.get(playerId);
       byId.set(playerId, {
         playerId,
         name,
+        avatarId: directoryPlayer?.avatarId ?? existing?.avatarId,
+        royalSealUntil: directoryPlayer?.royalSealUntil ?? existing?.royalSealUntil,
         latestMessage: !existing || msg.createdAt > existing.latestMessage.createdAt ? msg : existing.latestMessage,
         count: (existing?.count ?? 0) + 1
       });
     }
     return Array.from(byId.values()).sort((a, b) => b.latestMessage.createdAt - a.latestMessage.createdAt || a.name.localeCompare(b.name));
-  }, [game.privateMessages, game.player.id]);
+  }, [game.playerDirectory, game.privateMessages, game.player.id]);
 
   const mentionMatch = tab === "private" ? message.match(/(?:^|\s)@([^\s@]*)$/) : null;
   const mentionQuery = mentionMatch?.[1] ?? "";
@@ -8490,10 +8496,15 @@ function FloatingChat({
                               className="private-conversation-card"
                               key={conversation.playerId}
                               onClick={() => setPrivateTarget({ playerId: conversation.playerId, name: conversation.name })}
-                            >
-                              <span className="private-conversation-avatar"><User size={15} /></span>
-                              <span className="private-conversation-main">
-                                <strong>{conversation.name}</strong>
+                          >
+                            <CharacterAvatar
+                              avatar={game.avatarCatalog.find((avatar) => avatar.id === conversation.avatarId) ?? game.avatarCatalog[0]}
+                              size={32}
+                              royal={(conversation.royalSealUntil ?? 0) > Date.now()}
+                              className="private-conversation-avatar"
+                            />
+                            <span className="private-conversation-main">
+                              <strong>{conversation.name}</strong>
                                 <small>{sentByCurrentPlayer ? "Você: " : ""}{latest.text}</small>
                               </span>
                               <span className="private-conversation-meta">

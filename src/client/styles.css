@@ -9843,7 +9843,7 @@ button:disabled .game-icon {
   border: 1px solid color-mix(in srgb, var(--system-chat-accent) 32%, transparent);
   border-radius: 999px;
   color: color-mix(in srgb, var(--system-chat-accent) 82%, var(--text));
-  font-size: 0.62rem;
+  font-size: 0.5rem;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -10125,14 +10125,14 @@ button:disabled .game-icon {
   background: rgba(139, 233, 253, 0.08);
 }
 .private-conversation-avatar {
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(139, 233, 253, 0.2);
-  border-radius: 8px;
-  color: var(--cyan);
-  background: rgba(139, 233, 253, 0.08);
+  border: 1px solid rgba(139, 233, 253, 0.22);
+  background: rgba(139, 233, 253, 0.08) !important;
+}
+.private-conversation-avatar .royal-seal-mini {
+  right: -4px;
+  bottom: -3px;
+  width: 14px;
+  height: 14px;
 }
 .private-conversation-main,
 .private-conversation-meta {

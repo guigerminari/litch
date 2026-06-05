@@ -838,8 +838,8 @@ export interface GameState {
   regenEnergyAmount: number;
   clanChatMessages: ChatMessage[];
   privateMessages: PrivateMessage[];
-  onlinePlayers: Array<{ playerId: string; name: string }>;
-  playerDirectory: Array<{ playerId: string; name: string }>;
+  onlinePlayers: Array<{ playerId: string; name: string; avatarId?: string; royalSealUntil?: number }>;
+  playerDirectory: Array<{ playerId: string; name: string; avatarId?: string; royalSealUntil?: number }>;
   referrals: ReferralView;
   workServices: WorkServiceDefinition[];
   arenaSeasonKey: string;

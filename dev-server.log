@@ -888,3 +888,89 @@
 [dev:web]       at TypeScriptParserMixin.parseUpdate (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11083:21)
 [dev:web]       at TypeScriptParserMixin.parseMaybeUnary (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\@babel\parser\lib\index.js:11063:23)
 [dev:web] [2m16:59:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:server] 17:08:59 [tsx] change in ./src\shared\types.ts Restarting...
+[dev:web] [2m17:09:00[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:09:00[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:09:00[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:server] c
+[dev:web] [2m17:09:01[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:web] [2m17:09:05[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:web] [2m17:09:05[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:web] [2m17:09:07[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:web] [2m17:09:07[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:server] [persistence] MySQL relacional ativo com prefixo litch_
+[dev:server] [analytics] PostHog enabled
+[dev:server] Litch realtime server running on port 3001
+[dev:server] 17:09:13 [tsx] change in ./src\server\index.ts Restarting...
+[dev:web] [2m17:09:13[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:09:13[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:09:13[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:server] c
+[dev:web] [2m17:09:13[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:web] [2m17:09:14[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:server] [persistence] MySQL relacional ativo com prefixo litch_
+[dev:server] [analytics] PostHog enabled
+[dev:server] Litch realtime server running on port 3001
+[dev:web] [2m17:09:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:09:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m17:09:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m17:09:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:09:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m17:10:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:server] 17:10:30 [tsx] change in ./src\server\index.ts Restarting...
+[dev:web] [2m17:10:30[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:10:30[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:10:30[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:server] c17:10:30 [tsx] change in ./src\server\index.ts Restarting...
+[dev:server] c
+[dev:web] [2m17:10:30[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: connect ECONNREFUSED 127.0.0.1:3001
+[dev:web]     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[dev:server] [persistence] MySQL relacional ativo com prefixo litch_
+[dev:server] [analytics] PostHog enabled
+[dev:server] Litch realtime server running on port 3001
+[dev:server] 17:13:27 [tsx] change in ./src\server\index.ts Restarting...
+[dev:web] [2m17:13:27[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:13:27[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m17:13:27[22m [31m[1m[vite][22m[39m [31mws proxy error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:server] c[persistence] MySQL relacional ativo com prefixo litch_
+[dev:server] [analytics] PostHog enabled
+[dev:server] Litch realtime server running on port 3001

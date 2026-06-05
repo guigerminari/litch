@@ -660,11 +660,23 @@ function serializeGameState(playerId: string): GameState {
   const onlinePlayers = Array.from(store.socketsByPlayer.keys())
     .map((pid) => {
       const ch = store.characters.get(pid);
-      return ch ? { playerId: pid, name: ch.name } : null;
+      return ch
+        ? {
+            playerId: pid,
+            name: ch.name,
+            ...(ch.avatarId ? { avatarId: ch.avatarId } : {}),
+            ...(ch.royalSealUntil ? { royalSealUntil: ch.royalSealUntil } : {})
+          }
+        : null;
     })
-    .filter((entry): entry is { playerId: string; name: string } => entry !== null);
+    .filter((entry): entry is { playerId: string; name: string; avatarId?: string; royalSealUntil?: number } => entry !== null);
   const playerDirectory = Array.from(store.characters.values())
-    .map((character) => ({ playerId: character.playerId, name: character.name }))
+    .map((character) => ({
+      playerId: character.playerId,
+      name: character.name,
+      ...(character.avatarId ? { avatarId: character.avatarId } : {}),
+      ...(character.royalSealUntil ? { royalSealUntil: character.royalSealUntil } : {})
+    }))
     .filter((entry) => entry.playerId !== playerId)
     .sort((a, b) => a.name.localeCompare(b.name));
   const notifications = store.notifications
@@ -1747,7 +1759,7 @@ function finalizeMonarchEvent(event: MonarchEventState, status: "defeated" | "ex
     {
       id: randomUUID(),
       playerId: "system",
-      author: "Arauto de Morthaly",
+      author: "Morthaly",
       text: `${event.name} ${outcome}. Recompensas distribuidas para ${rewards.length} participante(s).`,
       createdAt: Date.now()
     },
