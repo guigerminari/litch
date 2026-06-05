@@ -286,28 +286,6 @@ const CITY_HUNT_MAP_POINT_BY_LOCATION: Record<string, { x: number; y: number }> 
   morthaly_violet_apex: { x: 78, y: 46 }
 };
 
-const viewLabels: Record<View, string> = {
-  city: "Cidade",
-  hunt: "Caçar",
-  arena: "Arena",
-  armorer: "Armeiro",
-  apothecary: "Boticário",
-  moneyChanger: "Cambista",
-  goldCoinMerchant: "Mercador",
-  agency: "Agência",
-  travel: "Viajar",
-  inventory: "Inventário",
-  market: "Mercado",
-  missions: "Missões",
-  blacksmith: "Ferreiro",
-  alchemist: "Alquimista",
-  dungeon: "Masmorra",
-  monarch: "Monarca",
-  rankings: "Ranking",
-  gameShop: "Loja do Jogo",
-  clan: "Clã"
-};
-
 const attributes: AttributeKey[] = ["strength", "constitution", "agility"];
 const ATTRIBUTE_RELEVANCE: Record<AttributeKey, string> = {
   strength: "Aumenta o impacto dos ataques e ajuda a encerrar combates mais rápido.",
@@ -3354,7 +3332,6 @@ function CityOverview({ game, setView }: { game: GameState; setView: (view: View
   );
   const combatOptions: CityOption[] = [
     { view: "hunt", icon: <GameIcon name="hunt" size={50} />, title: "Caçar", value: `${game.cityHuntLocations.length} locais` },
-    { view: "arena", icon: <GameIcon name="arena" size={50} />, title: "Arena", value: working ? "Trabalhando" : `${game.arenaQueueSize} na fila`, disabled: working },
   ];
   if (game.currentCity.dungeonMonsterIds?.length) {
     combatOptions.push({

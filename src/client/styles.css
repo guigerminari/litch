@@ -3724,7 +3724,7 @@ button:disabled .game-icon {
 }
 
 .option-card {
-  min-height: 142px;
+  min-height: 130px;
   width: 100%;
   display: grid;
   justify-items: start;
@@ -9836,6 +9836,7 @@ button:disabled .game-icon {
 .system-chat-text {
   color: var(--text);
   line-height: 1.35;
+  font-size: 0.6rem;
 }
 
 .system-chat-message.monarch-king {
