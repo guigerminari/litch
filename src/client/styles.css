@@ -1454,19 +1454,22 @@ button:disabled {
 }
 
 .notification-top-button {
-  min-width: 42px;
+  min-width: 30px;
 }
 
 .notification-count {
-  min-width: 18px;
-  height: 18px;
-  display: inline-grid;
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  min-width: 13px;
+  height: 13px;
+  display: grid;
   place-items: center;
-  padding: 0 5px;
+  padding: 0 3px;
   border-radius: 999px;
   background: var(--red);
-  color: white;
-  font-size: 0.68rem;
+  color: var(--white);
+  font-size: 0.5rem;
   font-weight: 800;
   line-height: 1;
 }
@@ -11270,8 +11273,8 @@ button:disabled {
   .bottom-button svg,
   .bottom-button .game-icon,
   .bottom-button .clan-crest-image {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
   }
 
   .bottom-badge {
@@ -11498,8 +11501,8 @@ button:disabled {
   .bottom-button svg,
   .bottom-button .game-icon,
   .bottom-button .clan-crest-image {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
   }
 
   .travel-country-label {
