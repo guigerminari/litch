@@ -3468,7 +3468,7 @@ function AgencyPanel({ game }: { game: GameState }) {
               disabled={!activeReady || !activeInCountry}
               onClick={() => socket.emit("work:claim")}
             >
-              <GameIcon name="agency" size={16} className="button-game-icon" /> Receber recompensa
+              Receber recompensa
             </button>
             <button
               className="danger-button"
@@ -4664,13 +4664,13 @@ function TalentTreeView({
     { id: "defensive", title: "Defensivo" },
     { id: "utility", title: "Útil" }
   ];
-  const [selectedTalentId, setSelectedTalentId] = useState(game.talents[0]?.id ?? "");
-  const selectedTalent = game.talents.find((t) => t.id === selectedTalentId) ?? game.talents[0] ?? null;
+  const [selectedTalentId, setSelectedTalentId] = useState<string | null>(null);
+  const selectedTalent = selectedTalentId ? game.talents.find((t) => t.id === selectedTalentId) ?? null : null;
   const selectedRank = selectedTalent ? game.character.talentAllocations[selectedTalent.id] ?? 0 : 0;
   const selectedRequiredRank = selectedTalent?.requires ? game.character.talentAllocations[selectedTalent.requires] ?? 0 : 1;
   const selectedLocked = Boolean(selectedTalent?.requires && selectedRequiredRank <= 0);
   const selectedMaxed = Boolean(selectedTalent && selectedRank >= selectedTalent.maxRank);
-  const canAfford = Boolean(selectedTalent) && game.derived.availableTalentPoints >= selectedTalent!.costPerRank;
+  const canAfford = selectedTalent ? game.derived.availableTalentPoints >= selectedTalent.costPerRank : false;
   const oblivionScroll = game.itemCatalog[OBLIVION_SCROLL_ID];
 
   return (
@@ -4711,30 +4711,64 @@ function TalentTreeView({
         ))}
       </div>
       {selectedTalent && (
-        <section className="clan-benefit-detail">
-          <div className="clan-benefit-detail-icon">
-            {getTalentIcon(selectedTalent)}
-          </div>
+        <TalentDetailModal
+          talent={selectedTalent}
+          rank={selectedRank}
+          locked={selectedLocked}
+          maxed={selectedMaxed}
+          canAfford={canAfford}
+          onClose={() => setSelectedTalentId(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function TalentDetailModal({
+  talent,
+  rank,
+  locked,
+  maxed,
+  canAfford,
+  onClose
+}: {
+  talent: TalentDefinition;
+  rank: number;
+  locked: boolean;
+  maxed: boolean;
+  canAfford: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <div className="drawer-backdrop benefit-detail-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal benefit-detail-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <header className="benefit-modal-head">
+          <span className="clan-benefit-detail-icon benefit-modal-icon">{getTalentIcon(talent)}</span>
           <div>
-            <h3>{selectedTalent.name}</h3>
-            <p>{selectedTalent.description}</p>
-            <div className="clan-benefit-meta">
-              <span>Rank {selectedRank}/{selectedTalent.maxRank}</span>
-              <span>{selectedTalent.costPerRank} pts</span>
-              {selectedTalent.requires && (
-                <span>{selectedLocked ? "Requer talento anterior" : "Ramo liberado"}</span>
-              )}
-            </div>
+            <small>Talento do jogador</small>
+            <h2>{talent.name}</h2>
+            <p>{talent.description}</p>
           </div>
+        </header>
+        <div className="clan-benefit-meta benefit-modal-meta">
+          <span>Rank {rank}/{talent.maxRank}</span>
+          <span>{talent.costPerRank} pts</span>
+          {talent.requires && <span>{locked ? "Requer talento anterior" : "Ramo liberado"}</span>}
+          {!canAfford && !maxed && <span>Pontos insuficientes</span>}
+        </div>
+        <div className="benefit-modal-actions">
           <button
             className="primary-button"
-            disabled={selectedLocked || selectedMaxed || !canAfford}
-            onClick={() => socket.emit("talent:buy", { talentId: selectedTalent.id })}
+            disabled={locked || maxed || !canAfford}
+            onClick={() => socket.emit("talent:buy", { talentId: talent.id })}
           >
-            {selectedMaxed ? "Máximo" : `${selectedTalent.costPerRank} pts`}
+            {maxed ? "Máximo" : `Comprar por ${talent.costPerRank} pts`}
           </button>
-        </section>
-      )}
+        </div>
+      </section>
     </div>
   );
 }
@@ -5318,7 +5352,7 @@ function ClanPanel({ game }: { game: GameState }) {
         </button>
         <button type="button" className={activeTab === "donations" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("donations")}>
           <Coins size={16} />
-          <span>Histórico de Doação</span>
+          <span>Doações</span>
           <small>{clan.donationHistory?.length ?? 0} registro(s)</small>
         </button>
         <button type="button" className={activeTab === "benefits" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("benefits")}>Benefícios</button>
@@ -5373,7 +5407,7 @@ function ClanPanel({ game }: { game: GameState }) {
               <article className="market-row clan-donation-row" key={entry.id}>
                 <div>
                   <strong><PlayerName playerId={entry.playerId} name={entry.playerName} /></strong>
-                  <span>{formatListingDate(entry.createdAt)}</span>
+                  <span className="clan-donation-date">{formatListingDate(entry.createdAt)}</span>
                 </div>
                 <div className="clan-donation-values">
                   {entry.gold > 0 && <span><Coins size={14} style={{ color: "var(--gold)" }} /> {formatCurrency(entry.gold)}</span>}
@@ -5503,8 +5537,8 @@ function ClanBenefitTree({ game, leader }: { game: GameState; leader: boolean })
     { id: "prosperity", title: "Prosperidade" }
   ];
   const clan = game.clan;
-  const [selectedBenefitId, setSelectedBenefitId] = useState(game.clanBenefits[0]?.id ?? "");
-  const selectedBenefit = game.clanBenefits.find((benefit) => benefit.id === selectedBenefitId) ?? game.clanBenefits[0] ?? null;
+  const [selectedBenefitId, setSelectedBenefitId] = useState<string | null>(null);
+  const selectedBenefit = selectedBenefitId ? game.clanBenefits.find((benefit) => benefit.id === selectedBenefitId) ?? null : null;
   const selectedRank = selectedBenefit && clan ? clan.benefitAllocations[selectedBenefit.id] ?? 0 : 0;
   const selectedRequiredRank = selectedBenefit?.requires && clan ? clan.benefitAllocations[selectedBenefit.requires] ?? 0 : 1;
   const selectedLocked = Boolean(selectedBenefit?.requires && selectedRequiredRank <= 0);
@@ -5515,71 +5549,127 @@ function ClanBenefitTree({ game, leader }: { game: GameState; leader: boolean })
     clan!.diamonds >= selectedBenefit!.costPerRank.diamonds;
 
   useEffect(() => {
-    if (!game.clanBenefits.some((benefit) => benefit.id === selectedBenefitId)) {
-      setSelectedBenefitId(game.clanBenefits[0]?.id ?? "");
+    if (selectedBenefitId && !game.clanBenefits.some((benefit) => benefit.id === selectedBenefitId)) {
+      setSelectedBenefitId(null);
     }
   }, [game.clanBenefits, selectedBenefitId]);
 
   return (
     <div className="clan-benefits">
-      {categories.map((category) => (
-        <section className="talent-tree clan-benefit-section" key={category.id}>
-          <h3>{category.title}</h3>
-          <div className="clan-benefit-tree">
-            {game.clanBenefits
-              .filter((benefit) => benefit.category === category.id)
-              .map((benefit) => {
-                const rank = clan?.benefitAllocations[benefit.id] ?? 0;
-                const requiredRank = benefit.requires ? clan?.benefitAllocations[benefit.requires] ?? 0 : 1;
-                const locked = Boolean(benefit.requires && requiredRank <= 0);
-                const maxed = rank >= benefit.maxRank;
-                return (
-                  <button
-                    className={`clan-benefit-node${locked ? " locked" : ""}${maxed ? " maxed" : ""}${selectedBenefit?.id === benefit.id ? " selected" : ""}`}
-                    key={benefit.id}
-                    title={benefit.name}
-                    onClick={() => setSelectedBenefitId(benefit.id)}
-                  >
-                    {getClanBenefitIcon(benefit)}
-                    <b>{rank}/{benefit.maxRank}</b>
-                  </button>
-                );
-              })}
-          </div>
-        </section>
-      ))}
-      <ClanSuperBenefits game={game} />
-      {selectedBenefit && (
-        <section className="clan-benefit-detail">
-          <div className="clan-benefit-detail-icon">
-            {getClanBenefitIcon(selectedBenefit)}
-          </div>
-          <div>
-            <h3>{selectedBenefit.name}</h3>
-            <p>{selectedBenefit.description}</p>
-            <div className="clan-benefit-meta">
-              <span>Rank {selectedRank}/{selectedBenefit.maxRank}</span>
-              <span>
-                {selectedBenefit.costPerRank.gold} <Coins size={12} style={{ color: "var(--gold)" }} />
-                {selectedBenefit.costPerRank.diamonds ? ` + ${selectedBenefit.costPerRank.diamonds} ` : null}
-                {selectedBenefit.costPerRank.diamonds ? <Gem size={12} style={{ color: "var(--cyan)" }} /> : null}
-              </span>
-              {selectedBenefit.requires && <span>{selectedLocked ? "Requer benefício anterior" : "Ramo liberado"}</span>}
+      {categories.map((category) => {
+        const superBenefit = game.clanSuperBenefits.find((benefit) => benefit.category === category.id);
+        return (
+          <section className="talent-tree clan-benefit-section" key={category.id}>
+            <h3>{category.title}</h3>
+            <div className="clan-benefit-tree">
+              {game.clanBenefits
+                .filter((benefit) => benefit.category === category.id)
+                .map((benefit) => {
+                  const rank = clan?.benefitAllocations[benefit.id] ?? 0;
+                  const requiredRank = benefit.requires ? clan?.benefitAllocations[benefit.requires] ?? 0 : 1;
+                  const locked = Boolean(benefit.requires && requiredRank <= 0);
+                  const maxed = rank >= benefit.maxRank;
+                  return (
+                    <button
+                      className={`clan-benefit-node${locked ? " locked" : ""}${maxed ? " maxed" : ""}${selectedBenefit?.id === benefit.id ? " selected" : ""}`}
+                      key={benefit.id}
+                      title={benefit.name}
+                      onClick={() => setSelectedBenefitId(benefit.id)}
+                    >
+                      {getClanBenefitIcon(benefit)}
+                      <b>{rank}/{benefit.maxRank}</b>
+                    </button>
+                  );
+                })}
+              {superBenefit && <ClanSuperBenefitCard game={game} benefit={superBenefit} />}
             </div>
-          </div>
-          {leader && (
-            <button
-              className="primary-button"
-              disabled={selectedLocked || selectedMaxed || !selectedAffordable}
-              onClick={() => socket.emit("clan:benefit:buy", { benefitId: selectedBenefit.id })}
-            >
-              {selectedMaxed ? "Máximo" : "Comprar"}
-            </button>
-          )}
-        </section>
+          </section>
+        );
+      })}
+      {selectedBenefit && (
+        <ClanBenefitDetailModal
+          benefit={selectedBenefit}
+          rank={selectedRank}
+          locked={selectedLocked}
+          maxed={selectedMaxed}
+          affordable={selectedAffordable}
+          leader={leader}
+          onClose={() => setSelectedBenefitId(null)}
+        />
       )}
       <ClanBonusSummary game={game} />
     </div>
+  );
+}
+
+function ClanBenefitDetailModal({
+  benefit,
+  rank,
+  locked,
+  maxed,
+  affordable,
+  leader,
+  onClose
+}: {
+  benefit: GameState["clanBenefits"][number];
+  rank: number;
+  locked: boolean;
+  maxed: boolean;
+  affordable: boolean;
+  leader: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <div className="drawer-backdrop benefit-detail-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal benefit-detail-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <header className="benefit-modal-head">
+          <span className="clan-benefit-detail-icon benefit-modal-icon">{getClanBenefitIcon(benefit)}</span>
+          <div>
+            <small>Benefício do clã</small>
+            <h2>{benefit.name}</h2>
+            <p>{benefit.description}</p>
+          </div>
+        </header>
+        <div className="clan-benefit-meta benefit-modal-meta">
+          <span>Rank {rank}/{benefit.maxRank}</span>
+          <span>
+            {benefit.costPerRank.gold} <Coins size={12} style={{ color: "var(--gold)" }} />
+            {benefit.costPerRank.diamonds ? ` + ${benefit.costPerRank.diamonds} ` : null}
+            {benefit.costPerRank.diamonds ? <Gem size={12} style={{ color: "var(--cyan)" }} /> : null}
+          </span>
+          {benefit.requires && <span>{locked ? "Requer benefício anterior" : "Ramo liberado"}</span>}
+          {!affordable && !maxed && <span>Tesouro insuficiente</span>}
+        </div>
+        <div className="benefit-modal-actions">
+          <button
+            className="primary-button"
+            disabled={!leader || locked || maxed || !affordable}
+            onClick={() => socket.emit("clan:benefit:buy", { benefitId: benefit.id })}
+          >
+            {!leader ? "Apenas líder" : maxed ? "Máximo" : "Comprar"}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ClanSuperBenefitCard({ game, benefit }: { game: GameState; benefit: GameState["clanSuperBenefits"][number] }) {
+  const active = isClanCategoryComplete(game, benefit.category);
+
+  return (
+    <article className={active ? "clan-super-node-card active" : "clan-super-node-card"} title={benefit.name}>
+      <span className="clan-super-node-icon">{getClanBenefitIcon(benefit)}</span>
+      <div>
+        <strong>Super-benefício</strong>
+        <b>{benefit.name}</b>
+        <small>{benefit.description}</small>
+      </div>
+      <em>{active ? "Ativo" : "Complete a trilha"}</em>
+    </article>
   );
 }
 
@@ -5587,34 +5677,6 @@ function isClanCategoryComplete(game: GameState, category: ClanBenefitCategory) 
   const ranks = game.clan?.benefitAllocations ?? {};
   const benefits = game.clanBenefits.filter((benefit) => benefit.category === category);
   return benefits.length > 0 && benefits.every((benefit) => (ranks[benefit.id] ?? 0) >= benefit.maxRank);
-}
-
-function ClanSuperBenefits({ game }: { game: GameState }) {
-  return (
-    <section className="clan-super-benefits">
-      <div className="clan-super-title">
-        <Crown size={18} />
-        <div>
-          <h3>Super-benefícios</h3>
-          <small>Ative ao completar uma trilha inteira de benefícios do clã.</small>
-        </div>
-      </div>
-      <div className="clan-super-grid">
-        {game.clanSuperBenefits.map((benefit) => {
-          const active = isClanCategoryComplete(game, benefit.category);
-          return (
-            <article className={active ? "clan-super-card active" : "clan-super-card"} key={benefit.id}>
-              <span>{getClanBenefitIcon(benefit)}</span>
-              <div>
-                <strong>{benefit.name}</strong>
-                <small>{benefit.description}</small>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
 }
 
 function getClanBonusSummary(game: GameState) {

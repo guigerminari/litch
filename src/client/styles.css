@@ -2458,11 +2458,11 @@ button:disabled {
   margin-top: -12px;
   margin-bottom: -8px;
   font-size: 0.7rem;
-  padding: 4px 10px;
+  padding: 6px 10px;
   color: var(--muted);
   text-align: justify;
   border: 1px solid rgba(220, 203, 255, 0.1);
-  border-radius: 999px;
+  border-radius: 9px;
   background: rgba(11, 9, 18, 0.42);
 }
 
@@ -2642,7 +2642,6 @@ button:disabled {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.68rem;
-  font-weight: 700;
   letter-spacing: 0.02em;
   text-shadow: 0 1px 2px rgba(8, 6, 15, 0.72);
 }
@@ -2677,7 +2676,7 @@ button:disabled {
 
 .hunt-location-banner span {
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: 0.7rem;
 }
 
 .travel-ticket-chip {
@@ -2916,6 +2915,11 @@ button:disabled {
 .travel-selection-card h3,
 .travel-selection-card p {
   margin: 0;
+}
+
+.travel-selection-card p {
+  font-size: 0.7rem;
+  line-height: 1.3;
 }
 
 .travel-selection-card h3 {
@@ -7947,6 +7951,7 @@ button:disabled .game-icon {
 .agency-intro {
   margin: 0;
   color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .agency-service-grid {
@@ -7978,6 +7983,7 @@ button:disabled .game-icon {
   align-items: start;
   justify-content: space-between;
   gap: 10px;
+  font-size: 0.75rem;
 }
 
 .agency-service-head h3,
@@ -7985,7 +7991,7 @@ button:disabled .game-icon {
   margin: 0;
   font-family: var(--font-title);
   color: var(--text);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .agency-service-card p,
@@ -8495,7 +8501,7 @@ button:disabled .game-icon {
 }
 
 .clan-tab-card {
-  min-height: 74px;
+  min-height: 60px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto auto;
@@ -8521,6 +8527,7 @@ button:disabled .game-icon {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 800;
+  font-size: 0.8rem;
 }
 
 .clan-tab-card small {
@@ -8549,6 +8556,15 @@ button:disabled .game-icon {
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.clan-donation-row div {
+  display: flex;
+}
+
+.clan-donation-row .clan-donation-date {
+  font-size: 0.78rem;
+  margin-left: 10px;
+}
+
 .clan-donation-values {
   display: inline-flex !important;
   flex-wrap: wrap;
@@ -8571,10 +8587,6 @@ button:disabled .game-icon {
 @media (max-width: 720px) {
   .clan-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .clan-donation-row {
-    grid-template-columns: 1fr;
   }
 
   .clan-donation-values {
@@ -9013,6 +9025,87 @@ button:disabled .game-icon {
   color: var(--text);
 }
 
+.clan-super-node-card {
+  position: relative;
+  flex: 1 1 260px;
+  max-width: 430px;
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(216, 178, 74, 0.38);
+  border-radius: 10px;
+  background:
+    radial-gradient(120% 150% at 100% 0%, rgba(255, 210, 92, 0.18) 0%, rgba(255, 210, 92, 0) 56%),
+    linear-gradient(180deg, rgba(216, 178, 74, 0.18), rgba(33, 34, 44, 0.92));
+  box-shadow: 0 12px 28px rgba(216, 178, 74, 0.12);
+  opacity: 0.78;
+}
+
+.clan-super-node-card::before {
+  content: "";
+  position: absolute;
+  left: -13px;
+  top: 50%;
+  width: 13px;
+  height: 2px;
+  background: rgba(216, 178, 74, 0.72);
+}
+
+.clan-super-node-card.active {
+  opacity: 1;
+  border-color: rgba(255, 210, 92, 0.72);
+  box-shadow: 0 16px 36px rgba(216, 178, 74, 0.22), 0 0 0 1px rgba(255, 210, 92, 0.08) inset;
+}
+
+.clan-super-node-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(216, 178, 74, 0.34);
+  border-radius: 10px;
+  color: var(--gold);
+  background: rgba(216, 178, 74, 0.12);
+}
+
+.clan-super-node-card div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.clan-super-node-card strong {
+  color: var(--gold);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.clan-super-node-card b {
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.clan-super-node-card small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.25;
+}
+
+.clan-super-node-card em {
+  align-self: start;
+  padding: 4px 7px;
+  border: 1px solid rgba(216, 178, 74, 0.28);
+  border-radius: 999px;
+  color: var(--gold);
+  background: rgba(216, 178, 74, 0.1);
+  font-size: 0.68rem;
+  font-style: normal;
+  white-space: nowrap;
+}
+
 .clan-benefit-section {
   overflow: hidden;
 }
@@ -9126,6 +9219,92 @@ button:disabled .game-icon {
   border-radius: 999px;
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.benefit-detail-backdrop {
+  z-index: 68;
+}
+
+.benefit-detail-modal {
+  width: min(520px, calc(100vw - 32px));
+  gap: 14px;
+}
+
+.benefit-modal-head {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding-right: 30px;
+}
+
+.benefit-modal-head div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.benefit-modal-head small {
+  color: var(--cyan);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.benefit-modal-head h2,
+.benefit-modal-head p {
+  margin: 0;
+}
+
+.benefit-modal-head h2 {
+  font-family: var(--font-title);
+  font-size: 1.18rem;
+}
+
+.benefit-modal-head p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.benefit-modal-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.benefit-modal-meta {
+  margin-top: 0;
+}
+
+.benefit-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.benefit-modal-actions .primary-button {
+  min-width: 150px;
+}
+
+@media (max-width: 640px) {
+  .clan-super-node-card {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .clan-super-node-card em {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .benefit-modal-head {
+    grid-template-columns: 1fr;
+  }
+
+  .benefit-modal-actions {
+    justify-content: stretch;
+  }
+
+  .benefit-modal-actions .primary-button {
+    width: 100%;
+  }
 }
 
 .quest-main,
@@ -11564,7 +11743,7 @@ button:disabled {
 
   .hunt-map-name {
     max-width: 96px;
-    font-size: 0.58rem;
+    font-size: 0.45rem;
   }
 
   .travel-map-caption span {
