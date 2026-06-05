@@ -190,3 +190,172 @@
 [dev:web] [2m09:34:07[22m [31m[1m[vite][22m[39m [31mws proxy socket error:[39m
 [dev:web] Error: read ECONNRESET
 [dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m10:12:00[22m [31m[1m[vite][22m[39m [31mws proxy socket error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m10:18:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:19:19[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:19:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:19:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:20:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:20:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:23:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:31:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:31:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:31:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:31:50[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:32:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:32:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:32:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:33:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:34:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:34:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:34:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:35:15[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:35:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:35:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:36:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:36:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:36:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:37:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:37:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:37:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:37:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:37:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:38:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:38:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:38:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:38:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:38:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:38:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:39:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:39:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:40:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:40:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:40:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:40:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:40:58[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:41:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:41:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:41:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:41:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:41:58[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:42:36[22m [31m[1m[vite][22m[39m [31mws proxy socket error:[39m
+[dev:web] Error: write ECONNRESET
+[dev:web]     at WriteWrap.onWriteComplete [as oncomplete] (node:internal/stream_base_commons:87:19)
+[dev:web] [2m10:46:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:46:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:47:05[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:47:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:47:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:49:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:50:06[22m [31m[1m[vite][22m[39m [31mws proxy socket error:[39m
+[dev:web] Error: read ECONNRESET
+[dev:web]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[dev:web] [2m10:50:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:50:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:51:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:51:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:53:15[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m10:53:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m10:54:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m10:54:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:54:46[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:9159:15: Missed semicolon[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:9159:14
+[dev:web] [33m  9157|    border: 1px solid rgba(241, 250, 140, 0.24);
+[dev:web]   9158|    border-radius: 999px;
+[dev:web]   9159|    color: black
+[dev:web]      |                ^
+[dev:web]   9160|    font-size: 0.5rem;
+[dev:web]   9161|  }[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.checkMissedSemicolon (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:138:22)
+[dev:web]       at Parser.decl (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:296:12)
+[dev:web]       at Parser.other (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:401:18)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:472:16)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web] [2m10:54:46[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:9159:15: Missed semicolon[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:9159:14
+[dev:web] [33m  9157|    border: 1px solid rgba(241, 250, 140, 0.24);
+[dev:web]   9158|    border-radius: 999px;
+[dev:web]   9159|    color: black
+[dev:web]      |                ^
+[dev:web]   9160|    font-size: 0.5rem;
+[dev:web]   9161|  }[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.checkMissedSemicolon (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:138:22)
+[dev:web]       at Parser.decl (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:296:12)
+[dev:web]       at Parser.other (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:401:18)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:472:16)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web] [2m10:54:46[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:9159:15: Missed semicolon[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:9159:14
+[dev:web] [33m  9157|    border: 1px solid rgba(241, 250, 140, 0.24);
+[dev:web]   9158|    border-radius: 999px;
+[dev:web]   9159|    color: black
+[dev:web]      |                ^
+[dev:web]   9160|    font-size: 0.5rem;
+[dev:web]   9161|  }[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.checkMissedSemicolon (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:138:22)
+[dev:web]       at Parser.decl (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:296:12)
+[dev:web]       at Parser.other (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:401:18)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:472:16)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web]       at async viteTransformMiddleware (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:37264:24)
+[dev:web] [2m10:54:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m10:54:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:02:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:02:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:02:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:02:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:02:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:03:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:03:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:03:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:04:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:04:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:04:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:04:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:04:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:05:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:06:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:06:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:07:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:07:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:08:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:08:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:09:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:10:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:10:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:11:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:11:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:12:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:13:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m

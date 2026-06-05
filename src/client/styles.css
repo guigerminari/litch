@@ -1277,7 +1277,7 @@ button:disabled {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  padding: 158px 16px 88px;
+  padding: 0;
   --city-bg-a: rgba(189, 147, 249, 0.2);
   --city-bg-b: rgba(139, 233, 253, 0.14);
   --city-bg-c: rgba(80, 250, 123, 0.08);
@@ -1368,11 +1368,6 @@ button:disabled {
 }
 
 .topbar {
-  position: fixed;
-  top: 0;
-  left: 12px;
-  right: 12px;
-  z-index: 30;
   display: grid;
   grid-template-columns: minmax(130px, 140px) minmax(0, 1fr);
   gap: 14px;
@@ -1941,6 +1936,8 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   align-items: start;
+  margin: 5px;
+  margin-bottom: 90px;
 }
 
 .game-grid.in-battle {
@@ -2146,7 +2143,7 @@ button:disabled {
 
 .quick-potion-choice-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   gap: 6px;
 }
 
@@ -6554,6 +6551,7 @@ button:disabled .game-icon {
 .arena-plate p {
   margin: 0;
   color: var(--muted);
+  font-size: 0.8rem
 }
 
 .arena-ranked-rules {
@@ -6640,6 +6638,8 @@ button:disabled .game-icon {
 .arena-claim-btn {
   font-size: 0.82rem;
   padding: 4px 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  background-color: #7637f1 !important;
 }
 
 .arena-ranked-rewards {
@@ -8211,6 +8211,7 @@ button:disabled .game-icon {
 .quest-row {
   grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
+  gap: 0px;
 }
 
 .quest-title {
@@ -8218,7 +8219,7 @@ button:disabled .game-icon {
   width: 100%;
   min-width: 0;
   color: var(--text);
-  font-size: 1.02rem;
+  font-size: 0.88rem;
   line-height: 1.25;
 }
 
@@ -9105,6 +9106,10 @@ button:disabled .game-icon {
   color: var(--muted);
 }
 
+.quest-main span {
+  font-size: 0.82rem;
+}
+
 .quest-category-tag {
   width: fit-content;
   padding: 3px 7px;
@@ -9126,7 +9131,7 @@ button:disabled .game-icon {
 
 .quest-progress i {
   display: block;
-  height: 9px;
+  height: 5px;
   border: 1px solid var(--line);
   border-radius: 999px;
   overflow: hidden;
@@ -9137,6 +9142,10 @@ button:disabled .game-icon {
   display: block;
   height: 100%;
   background: linear-gradient(90deg, var(--purple), var(--cyan));
+}
+
+.quest-progress small {
+  font-size: 0.6rem;
 }
 
 .quest-reward {
@@ -9150,8 +9159,8 @@ button:disabled .game-icon {
   padding: 4px 7px;
   border: 1px solid rgba(241, 250, 140, 0.24);
   border-radius: 999px;
-  color: var(--gold);
-  font-size: 0.82rem;
+  color: white;
+  font-size: 0.5rem;
 }
 
 .ranking-section h3,
@@ -9249,26 +9258,21 @@ button:disabled .game-icon {
 
 .floating-event-button {
   position: fixed;
-  right: 18px;
+  right: 18px !important;
   bottom: 158px;
   z-index: 2;
   width: 52px;
   height: 52px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(220, 203, 255, 0.22);
+  border: none;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 25%, rgba(220, 203, 255, 0.24), transparent 1.4rem),
-    linear-gradient(145deg, #7c4dff, #9d6bff);
-  color: var(--text);
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), 0 0 24px rgba(124, 77, 255, 0.18);
-}
+  background: transparent;}
 
 .floating-event-button:hover,
 .floating-event-button:focus-visible {
   border-color: rgba(220, 203, 255, 0.42);
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), 0 0 30px rgba(157, 107, 255, 0.24);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.6), 0 0 30px rgba(157, 107, 255, 0.24);
 }
 
 .floating-event-button:active {
@@ -9276,8 +9280,8 @@ button:disabled .game-icon {
 }
 
 .floating-event-button img {
-  width: 34px;
-  height: 34px;
+  width: 35px;
+  height: 35px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(220, 203, 255, 0.28));
 }
@@ -10899,10 +10903,6 @@ button:disabled {
 }
 
 @media (max-width: 860px) {
-  .game-shell {
-    padding: calc(126px + env(safe-area-inset-top)) 8px calc(58px + env(safe-area-inset-bottom));
-  }
-
   .utility-strip {
     height: 28px;
     padding: 2px;
@@ -10917,7 +10917,7 @@ button:disabled {
     top: 0;
     left: 0;
     right: 0;
-    grid-template-columns: minmax(90px, 95px) minmax(0, 1fr);
+    grid-template-columns: 80px minmax(0, 1fr);
     gap: 6px 8px;
     align-items: center;
     padding: 6px 8px 7px;
@@ -11287,7 +11287,7 @@ button:disabled {
   }
 
   .floating-chat-layer {
-    --chat-button-size: 48px;
+    --chat-button-size: 35px;
     --chat-button-bottom: calc(70px + env(safe-area-inset-bottom));
     --chat-gap: 4px;
   }
@@ -11302,8 +11302,8 @@ button:disabled {
   .floating-event-button {
     right: 12px;
     bottom: calc(126px + env(safe-area-inset-bottom));
-    width: 48px;
-    height: 48px;
+    width: 35px;
+    height: 35px;
   }
 
   .floating-event-panel {
@@ -11401,10 +11401,6 @@ button:disabled {
   .market-card-body strong, 
   .combatant strong {
     font-size: 0.9rem;
-  }
-
-  .game-shell {
-    padding: calc(116px + env(safe-area-inset-top)) 6px calc(54px + env(safe-area-inset-bottom));
   }
 
   .topbar {
@@ -11552,5 +11548,17 @@ button:disabled {
   .item-card.image-card > small,
   .item-card.image-card > button {
     grid-column: 1;
+  }
+
+  .arena-reward-card small {
+    font-size: 0.6rem;
+  }
+
+  .arena-reward-card strong {
+    font-size: 0.65rem;
+  }
+
+  .arena-reward-card span {
+    font-size: 0.6rem;
   }
 }

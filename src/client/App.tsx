@@ -3643,9 +3643,9 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
                   <div className="quest-card-meta">
                     <small className="quest-category-tag">{QUEST_FILTER_LABELS[quest.category]}</small>
                     <div className="quest-reward">
-                      {quest.reward.experience ? <span>{quest.reward.experience} XP</span> : null}
-                      {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={12} style={{ color: "var(--gold)" }} /></span> : null}
-                      {quest.reward.diamonds ? <span>{quest.reward.diamonds} <Gem size={12} style={{ color: "var(--cyan)" }} /></span> : null}
+                      {quest.reward.experience ? <span>{quest.reward.experience} <Star size={9} style={{ color: "var(--cyan)" }} /></span> : null}
+                      {quest.reward.gold ? <span>{quest.reward.gold} <Coins size={9} style={{ color: "var(--gold)" }} /></span> : null}
+                      {quest.reward.diamonds ? <span>{quest.reward.diamonds} <Gem size={9} style={{ color: "var(--cyan)" }} /></span> : null}
                     </div>
                   </div>
                 </div>
@@ -6082,17 +6082,16 @@ function ArenaPanel({ game }: { game: GameState }) {
             <div className="arena-coins-row">
               <Coins size={16} style={{ color: "#8be9fd" }} />
               <span>Moedas Azuis: <strong>{blueCoins}</strong></span>
-              {canClaimDaily && (
+              {canClaimDaily ? (
                 <button
                   className="ghost-button arena-claim-btn"
                   type="button"
                   onClick={() => socket.emit("arena:claimDailyCoins")}
                 >
-                  Receber 10 moedas diárias
+                  Resgatar 10 moedas diárias
                 </button>
-              )}
+              ) : (<small style={{ opacity: 0.7 }}>Resgatar +10 moedas amanhã.</small>)}
             </div>
-            <p>O jogo escolhe o rival mais próximo, online ou offline.</p>
             <div className="arena-ranked-rules">
               <span>Vitória <strong>+5</strong></span>
               <span>Derrota <strong>-2</strong></span>
@@ -6122,7 +6121,6 @@ function ArenaPanel({ game }: { game: GameState }) {
                 </span>
               </div>
             </div>
-            <small style={{ opacity: 0.7 }}>Custo: 1 Moeda Azul por duelo. As moedas diárias são resgatadas pelo botão na Arena.</small>
             <button className="primary-button" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
               <Swords size={16} style={{color: "var(--white)", marginRight: "8px"}} />
               {rankedSearching ? "Buscando..." : "Buscar Oponente"}
