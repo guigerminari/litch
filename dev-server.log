@@ -359,3 +359,195 @@
 [dev:web] [2m11:11:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
 [dev:web] [2m11:12:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
 [dev:web] [2m11:13:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:16:11[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:16:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:17:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:17:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:19:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:20:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:22:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:24:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:25:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:25:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:31:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:31:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:31:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:31:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:32:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:32:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:32:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:33:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:33:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:33:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:34:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:34:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:35:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:35:02[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:2119:19: Missed semicolon[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:2119:18
+[dev:web] [33m  2117|    display: grid;
+[dev:web]   2118|    gap: 10px;
+[dev:web]   2119|    margin: 7px auto
+[dev:web]      |                    ^
+[dev:web]   2120|    max-width: 374px;
+[dev:web]   2121|    padding: 12px;[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.checkMissedSemicolon (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:138:22)
+[dev:web]       at Parser.decl (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:296:12)
+[dev:web]       at Parser.other (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:401:18)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:472:16)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web]       at async viteTransformMiddleware (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:37264:24)
+[dev:web] [2m11:35:02[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:2119:19: Missed semicolon[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:2119:18
+[dev:web] [33m  2117|    display: grid;
+[dev:web]   2118|    gap: 10px;
+[dev:web]   2119|    margin: 7px auto
+[dev:web]      |                    ^
+[dev:web]   2120|    max-width: 374px;
+[dev:web]   2121|    padding: 12px;[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.checkMissedSemicolon (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:138:22)
+[dev:web]       at Parser.decl (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:296:12)
+[dev:web]       at Parser.other (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:401:18)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:472:16)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web]       at async viteTransformMiddleware (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:37264:24)
+[dev:web] [2m11:35:05[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:36:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:38:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:38:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:39:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:41:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:41:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:42:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:43:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:43:00[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:3933:18: Missed semicolon[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:3933:17
+[dev:web] [33m  3931|    gap: 8px;
+[dev:web]   3932|    padding: 10px;
+[dev:web]   3933|    margin-top:auto
+[dev:web]      |                   ^
+[dev:web]   3934|    border: 1px solid rgba(139, 233, 253, 0.2);
+[dev:web]   3935|    border-radius: 8px;[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.checkMissedSemicolon (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:138:22)
+[dev:web]       at Parser.decl (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:296:12)
+[dev:web]       at Parser.other (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:401:18)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:472:16)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web] [2m11:43:00[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:3933:18: Missed semicolon[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:3933:17
+[dev:web] [33m  3931|    gap: 8px;
+[dev:web]   3932|    padding: 10px;
+[dev:web]   3933|    margin-top:auto
+[dev:web]      |                   ^
+[dev:web]   3934|    border: 1px solid rgba(139, 233, 253, 0.2);
+[dev:web]   3935|    border-radius: 8px;[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.checkMissedSemicolon (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:138:22)
+[dev:web]       at Parser.decl (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:296:12)
+[dev:web]       at Parser.other (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:401:18)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:472:16)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web] [2m11:43:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:44:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:47:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:47:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:47:50[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:48:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:48:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:49:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:49:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:49:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:52:11[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:52:11[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:52:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:52:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:52:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:55:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/App.tsx[22m
+[dev:web] [2m11:55:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:55:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:57:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:57:45[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:57:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m
+[dev:web] [2m11:57:54[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:11532:3: Unclosed block[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:11532:2
+[dev:web] [33m  11530|    }
+[dev:web]   11531|  
+[dev:web]   11532|    .bottom-button svg,
+[dev:web]      |    ^
+[dev:web]   11533|    .bottom-button .game-icon,
+[dev:web]   11534|    .bottom-button .clan-crest-image {[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.unclosedBlock (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:575:22)
+[dev:web]       at Parser.endFile (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:335:35)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:476:10)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web] [2m11:57:54[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css:11532:3: Unclosed block[39m
+[dev:web]   Plugin: [35mvite:css[39m
+[dev:web]   File: [36mC:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/src/client/styles.css[39m:11532:2
+[dev:web] [33m  11530|    }
+[dev:web]   11531|  
+[dev:web]   11532|    .bottom-button svg,
+[dev:web]      |    ^
+[dev:web]   11533|    .bottom-button .game-icon,
+[dev:web]   11534|    .bottom-button .clan-crest-image {[39m
+[dev:web]       at Input.error (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\input.js:135:16)
+[dev:web]       at Parser.unclosedBlock (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:575:22)
+[dev:web]       at Parser.endFile (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:335:35)
+[dev:web]       at Parser.parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parser.js:476:10)
+[dev:web]       at parse (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\parse.js:11:12)
+[dev:web]       at new LazyResult (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\lazy-result.js:165:16)
+[dev:web]       at Processor.process (C:\Users\Guilherme\Documents\dev\Explore_Battle_Ascend\litch\node_modules\postcss\lib\processor.js:53:14)
+[dev:web]       at runPostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43878:52)
+[dev:web]       at async compilePostCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43848:18)
+[dev:web]       at async compileCSS (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43703:27)
+[dev:web]       at async TransformPluginContext.handler (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:43019:11)
+[dev:web]       at async EnvironmentPluginContainer.transform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+[dev:web]       at async loadAndTransform (file:///C:/Users/Guilherme/Documents/dev/Explore_Battle_Ascend/litch/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+[dev:web] [2m12:00:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/client/styles.css[22m

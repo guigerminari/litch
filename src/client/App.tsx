@@ -6239,11 +6239,14 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
 }
 
 function QuickPotionSelector({ game }: { game: GameState }) {
+  const [expanded, setExpanded] = useState(false);
   const { preferences, setPreference } = useQuickPotionSettings();
   const healthOptions = getPotionOptions(game, "health");
   const energyOptions = getPotionOptions(game, "energy");
   const selectedHealth = getQuickPotionOption(game, preferences, "health");
   const selectedEnergy = getQuickPotionOption(game, preferences, "energy");
+  const healthSummary = selectedHealth ? `Vida: ${selectedHealth.definition.name} x${selectedHealth.quantity}` : "Vida: nenhuma";
+  const energySummary = selectedEnergy ? `Energia: ${selectedEnergy.definition.name} x${selectedEnergy.quantity}` : "Energia: nenhuma";
 
   if (healthOptions.length === 0 && energyOptions.length === 0) {
     return null;
@@ -6284,15 +6287,26 @@ function QuickPotionSelector({ game }: { game: GameState }) {
   );
 
   return (
-    <section className="quick-potion-settings">
+    <section className={expanded ? "quick-potion-settings expanded" : "quick-potion-settings collapsed"}>
       <div>
-        <strong>Uso rápido</strong>
+        <button
+        type="button"
+        className="quick-potion-toggle"
+        onClick={() => setExpanded((current) => !current)}
+        aria-expanded={expanded}
+      >
+        <span>Use Rápido de Poções</span>
+        {expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+      </button>
         <small>Escolha qual poção os atalhos de batalha e detalhes vão consumir.</small>
       </div>
-      <div className="quick-potion-fields">
-        {renderPotionButtons("health", <Heart size={14} />, "Vida", healthOptions, selectedHealth)}
-        {renderPotionButtons("energy", <Zap size={14} />, "Energia", energyOptions, selectedEnergy)}
-      </div>
+      
+      {expanded && (
+        <div className="quick-potion-fields">
+          {renderPotionButtons("health", <Heart size={14} />, "Vida", healthOptions, selectedHealth)}
+          {renderPotionButtons("energy", <Zap size={14} />, "Energia", energyOptions, selectedEnergy)}
+        </div>
+      )}
     </section>
   );
 }
@@ -6541,15 +6555,13 @@ function EquipmentComparison({
     <div className="equipment-comparison">
       <div className="equipment-comparison-head">
         <h4>Comparação com equipado</h4>
-        <small>{sameItem ? "Este item já está equipado." : equippedName ? `Equipado: ${equippedName}` : "Slot equipado vazio."}</small>
+        <small>{!equippedName && ("Slot equipado vazio.")}</small>
       </div>
       <div className="equipment-comparison-list">
         {rows.length === 0 && <p>Nenhum atributo direto para comparar.</p>}
         {rows.map((row) => (
           <div className={row.diff > 0 ? "positive" : row.diff < 0 ? "negative" : ""} key={row.key}>
             <span>{row.label}</span>
-            <strong>+{row.selectedValue}</strong>
-            <small>equipado +{row.equippedValue}</small>
             <b>{row.diff === 0 ? "0" : `${row.diff > 0 ? "+" : ""}${row.diff}`}</b>
           </div>
         ))}

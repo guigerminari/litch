@@ -2116,11 +2116,13 @@ button:disabled {
 .quick-potion-settings {
   display: grid;
   gap: 10px;
-  margin: 0 0 12px;
+  margin: 7px auto;
+  max-width: 374px;
   padding: 12px;
   border: 1px solid rgba(220, 203, 255, 0.12);
   border-radius: 12px;
   background: rgba(16, 13, 26, 0.48);
+
 }
 
 .quick-potion-settings > div:first-child,
@@ -2132,7 +2134,40 @@ button:disabled {
 .quick-potion-settings small,
 .quick-potion-field > span {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.6rem;
+}
+
+.quick-potion-toggle {
+  min-height: 15px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(220, 203, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  text-align: left;
+  font-size: 0.7rem;
+}
+
+.quick-potion-toggle span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-potion-toggle svg {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.quick-potion-toggle:hover {
+  border-color: rgba(139, 233, 253, 0.28);
+  background: rgba(139, 233, 253, 0.07);
 }
 
 .quick-potion-field > span {
@@ -2188,7 +2223,7 @@ button:disabled {
 
 .quick-potion-fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -3847,6 +3882,7 @@ button:disabled .game-icon {
 .inventory-item-modal .inv-action-info > span {
   color: var(--muted);
   text-align: center;
+  font-size: 0.7rem;
 }
 
 .inv-action-info {
@@ -3895,9 +3931,7 @@ button:disabled .game-icon {
   display: grid;
   gap: 8px;
   padding: 10px;
-  border: 1px solid rgba(139, 233, 253, 0.2);
-  border-radius: 8px;
-  background: rgba(139, 233, 253, 0.06);
+  margin-top: 6px;
 }
 
 .equipment-comparison-head {
@@ -3908,7 +3942,7 @@ button:disabled .game-icon {
 .equipment-comparison-head h4 {
   margin: 0;
   color: var(--cyan);
-  font-size: 0.88rem;
+  font-size: 0.6rem;
 }
 
 .equipment-comparison-head small {
@@ -3925,9 +3959,11 @@ button:disabled .game-icon {
   grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 8px;
+  font-size: 0.7rem;
   padding: 7px 8px;
   border-radius: 7px;
-  background: rgba(16, 13, 26, 0.56);
+  border-bottom: 1px solid rgba(139, 233, 253, 0.12);
+  box-shadow: inset 0px -4px 6px rgb(37 65 70 / 25%);
 }
 
 .equipment-comparison-list span,
@@ -10264,6 +10300,7 @@ button:disabled {
   min-height: 40px;
   border-radius: 10px;
   font-weight: 700;
+  font-size: 0.8rem;
 }
 
 .primary-button,
@@ -11376,8 +11413,7 @@ button:disabled {
 
 @media (max-width: 520px) {
   .player-action-buttons,
-  .player-profile-grid,
-  .quick-potion-fields {
+  .player-profile-grid {
     grid-template-columns: 1fr;
   }
 
