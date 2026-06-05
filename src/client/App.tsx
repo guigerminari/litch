@@ -4,6 +4,7 @@ import {
   ArrowLeftRight,
   Backpack,
   BarChart3,
+  Bell,
   BookOpen,
   CheckCircle2,
   Coins,
@@ -478,6 +479,7 @@ export function App() {
   const [showChat, setShowChat] = useState(false);
   const [showExchange, setShowExchange] = useState(false);
   const [showEvents, setShowEvents] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerReference | null>(null);
   const [privateChatTarget, setPrivateChatTarget] = useState<PlayerReference | null>(null);
   const [playerProfiles, setPlayerProfiles] = useState<Record<string, PlayerPublicProfile>>({});
@@ -804,6 +806,10 @@ export function App() {
             clearFirstClickNotice("ranking");
             setViewSafely("rankings");
           }}
+          onNotifications={() => {
+            setShowNotifications(true);
+            socket.emit("notifications:read");
+          }}
           onSettings={() => setUtilityModal("settings")}
           onGuide={() => {
             clearFirstClickNotice("guide");
@@ -834,6 +840,7 @@ export function App() {
         <FloatingAgencyNotice game={game} onOpenAgency={() => setViewSafely("agency")} />
         <FloatingEvents game={game} open={showEvents} setOpen={setShowEvents} />
         {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
+        {showNotifications && <NotificationsModal game={game} onClose={() => setShowNotifications(false)} />}
         {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
         {utilityModal === "settings" && <SettingsModal game={game} onClose={() => setUtilityModal(null)} />}
         {utilityModal === "guide" && <GuideModal game={game} onClose={() => setUtilityModal(null)} />}
@@ -1185,6 +1192,7 @@ function Header({
   onGameShop,
   onExchange,
   onRanking,
+  onNotifications,
   onSettings,
   onGuide,
   onLogout,
@@ -1196,6 +1204,7 @@ function Header({
   onGameShop: () => void;
   onExchange: () => void;
   onRanking: () => void;
+  onNotifications: () => void;
   onSettings: () => void;
   onGuide: () => void;
   onLogout: () => void;
@@ -1211,6 +1220,7 @@ function Header({
   const timerLabel = `${regenMins}:${String(regenSecsRemainder).padStart(2, "0")}`;
   const royalSealActive = isRoyalSealActive(game);
   const hasGrowthPoints = game.character.unspentAttributePoints > 0 || game.derived.availableTalentPoints > 0;
+  const unreadNotifications = game.notifications.filter((notification) => !notification.readAt).length;
   const growthPointLabels = [
     game.character.unspentAttributePoints > 0 ? `${game.character.unspentAttributePoints} ponto(s) de atributo` : "",
     game.derived.availableTalentPoints > 0 ? `${game.derived.availableTalentPoints} ponto(s) de talento` : ""
@@ -1255,6 +1265,14 @@ function Header({
             <Trophy size={17} style={{ color: "var(--gold)" }} />
             {firstClickNotices.ranking && <span className="attention-dot" aria-hidden="true" />}
           </button>
+          <button
+            className="stat-pill stat-action notification-top-button"
+            title="Notificações"
+            onClick={onNotifications}
+          >
+            <Bell size={17} style={{ color: unreadNotifications > 0 ? "var(--cyan)" : "var(--muted)" }} />
+            {unreadNotifications > 0 && <span className="notification-count">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}
+          </button>
 
           <UtilityStrip onSettings={onSettings} onGuide={onGuide} onLogout={onLogout} guideNotice={firstClickNotices.guide} />
         </div>
@@ -1287,6 +1305,58 @@ function Header({
       </div>
     </header>
   );
+}
+
+function NotificationsModal({ game, onClose }: { game: GameState; onClose: () => void }) {
+  const notifications = [...game.notifications].sort((a, b) => b.createdAt - a.createdAt);
+  const unreadCount = notifications.filter((notification) => !notification.readAt).length;
+
+  return (
+    <div className="drawer-backdrop notification-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal notification-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <header className="notification-modal-head">
+          <span className="notification-modal-icon"><Bell size={20} /></span>
+          <div>
+            <h2>Notificações</h2>
+            <small>{unreadCount > 0 ? `${unreadCount} nova(s)` : "Tudo lido"}</small>
+          </div>
+        </header>
+        <div className="notification-list">
+          {notifications.length === 0 && <p className="empty-state">Nenhuma notificação ainda.</p>}
+          {notifications.map((notification) => (
+            <article className={notification.readAt ? "notification-row" : "notification-row unread"} key={notification.id}>
+              <span className={`notification-row-icon ${notification.kind}`}>{getNotificationIcon(notification.kind)}</span>
+              <div>
+                <strong>{notification.title}</strong>
+                <p>{notification.message}</p>
+                <small>{formatListingDate(notification.createdAt)}</small>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function getNotificationIcon(kind: GameState["notifications"][number]["kind"]) {
+  switch (kind) {
+    case "purchase_approved":
+      return <ShoppingBag size={16} />;
+    case "monarch_reward":
+      return <Crown size={16} />;
+    case "arena_season":
+      return <Trophy size={16} />;
+    case "invite_used":
+      return <UserPlus size={16} />;
+    case "event_started":
+      return <Sparkles size={16} />;
+    default:
+      return <Bell size={16} />;
+  }
 }
 
 function ResourceBar({
@@ -1331,7 +1401,6 @@ function BottomNav({ game, view, setView }: { game: GameState; view: View; setVi
 
   const items = [
     { view: "city" as View, label: "Cidade", icon: <GameIcon name="city" size={40} />, disabled: locked, badge: null },
-    { view: "hunt" as View, label: "Caça", icon: <GameIcon name="hunt" size={40} />, disabled: locked, badge: null },
     { view: "arena" as View, label: "Arena", icon: <GameIcon name="arena" size={40} />, disabled: locked || working, badge: game.arenaQueueSize > 0 ? game.arenaQueueSize : null },
     {
       view: "inventory" as View,
@@ -4152,6 +4221,7 @@ function DungeonPanel({ game }: { game: GameState }) {
 
   const roomTimeLeftMs = activeRun?.roomDeadlineAt ? Math.max(0, activeRun.roomDeadlineAt - now) : 0;
   const roomTimeLeftLabel = activeRun ? `${Math.max(0, Math.ceil(roomTimeLeftMs / 1000))}s` : "";
+  const roomTimerPaused = Boolean(activeRun && !activeRun.roomDeadlineAt);
 
   const chestRewardItems =
     currentRoom?.type === "chest" && currentRoom.rewards
@@ -4256,9 +4326,14 @@ function DungeonPanel({ game }: { game: GameState }) {
         <section className="dungeon-active-run">
           <h3>Andar em andamento</h3>
           <p>Andar {activeRun.floor} • Sala {Math.min(activeRun.roomIndex + 1, activeRun.rooms.length)}/{activeRun.rooms.length}</p>
-          <p className={roomTimeLeftMs <= 10_000 ? "dungeon-room-timer danger" : "dungeon-room-timer"}>
+          <p hidden={!activeRun.roomDeadlineAt} className={roomTimeLeftMs <= 10_000 ? "dungeon-room-timer danger" : "dungeon-room-timer"}>
             Tempo restante para avançar: <strong>{roomTimeLeftLabel}</strong>
           </p>
+          {roomTimerPaused && (
+            <p className="dungeon-room-timer paused">
+              Tempo pausado nesta sala
+            </p>
+          )}
           <div className="dungeon-active-modifiers">
             <strong>Buffs ativos:</strong>
             {activeRun.activeBuffs.length > 0
@@ -5025,7 +5100,7 @@ const CLAN_CATEGORY_LABELS: Record<ClanBenefitCategory, string> = {
 };
 
 function ClanPanel({ game }: { game: GameState }) {
-  const [activeTab, setActiveTab] = useState<"benefits" | "members" | "admin">("benefits");
+  const [activeTab, setActiveTab] = useState<"members" | "benefits" | "admin" | "donations">("members");
   const [name, setName] = useState("");
   const [crestIcon, setCrestIcon] = useState<ClanCrestId>(normalizeClanCrestId());
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -5062,17 +5137,11 @@ function ClanPanel({ game }: { game: GameState }) {
 
   useEffect(() => {
     if (!clan) return;
-    setActiveTab("benefits");
+    setActiveTab("members");
     setEditName(clan.name);
     setEditDescription(clan.description ?? "");
     setEditCrestIcon(normalizeClanCrestId(clan.icon));
   }, [clan?.id, clan?.name, clan?.description, clan?.icon]);
-
-  useEffect(() => {
-    if (activeTab === "admin" && !leader) {
-      setActiveTab("benefits");
-    }
-  }, [activeTab, leader]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -5232,6 +5301,26 @@ function ClanPanel({ game }: { game: GameState }) {
       )}
 
       <div className="clan-tabs">
+        <button type="button" className={activeTab === "members" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("members")}>
+          <Users size={16} />
+          <span>Membros</span>
+          <small>Lista e liderança</small>
+        </button>
+        <button type="button" className={activeTab === "benefits" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("benefits")}>
+          <Sparkles size={16} />
+          <span>Benefícios</span>
+          <small>Árvore do clã</small>
+        </button>
+        <button type="button" className={activeTab === "admin" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("admin")}>
+          <Settings size={16} />
+          <span>Administração</span>
+          <small>{leader ? "Editar e resetar" : "Apenas líder"}</small>
+        </button>
+        <button type="button" className={activeTab === "donations" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("donations")}>
+          <Coins size={16} />
+          <span>Histórico de Doação</span>
+          <small>{clan.donationHistory?.length ?? 0} registro(s)</small>
+        </button>
         <button type="button" className={activeTab === "benefits" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("benefits")}>Benefícios</button>
         <button type="button" className={activeTab === "members" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("members")}>Membros</button>
         {leader && (
@@ -5271,6 +5360,36 @@ function ClanPanel({ game }: { game: GameState }) {
                 )}
               </article>
             ))}
+          </div>
+        </section>
+      )}
+
+      {activeTab === "donations" && (
+        <section className="clan-donation-history">
+          <h3>Histórico de Doação</h3>
+          <div className="market-list">
+            {(clan.donationHistory ?? []).length === 0 && <p className="empty-state">Nenhuma doação registrada ainda.</p>}
+            {(clan.donationHistory ?? []).map((entry) => (
+              <article className="market-row clan-donation-row" key={entry.id}>
+                <div>
+                  <strong><PlayerName playerId={entry.playerId} name={entry.playerName} /></strong>
+                  <span>{formatListingDate(entry.createdAt)}</span>
+                </div>
+                <div className="clan-donation-values">
+                  {entry.gold > 0 && <span><Coins size={14} style={{ color: "var(--gold)" }} /> {formatCurrency(entry.gold)}</span>}
+                  {entry.diamonds > 0 && <span><Gem size={14} style={{ color: "var(--cyan)" }} /> {formatCurrency(entry.diamonds)}</span>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {activeTab === "admin" && !leader && (
+        <section className="clan-reset-panel clan-admin-locked">
+          <div>
+            <strong>Administração restrita</strong>
+            <span>Apenas o líder pode alterar dados do clã ou resetar benefícios.</span>
           </div>
         </section>
       )}
@@ -6212,6 +6331,14 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
   const selectedStats = selectedItem && selectedEntry ? getEnhancedItemStats(selectedItem, selectedEntry) : null;
   const selectedRarity = selectedItem && selectedEntry ? getItemRarity(selectedItem, selectedEntry) : undefined;
   const selectedPrice = selectedItem ? getItemValue(selectedItem, selectedEntry) : 0;
+  const selectedEquippedInstanceId = selectedItem?.slot ? game.character.equipment[selectedItem.slot] : null;
+  const selectedEquippedEntry = selectedEquippedInstanceId
+    ? game.character.inventory.find((item) => item.instanceId === selectedEquippedInstanceId) ?? null
+    : null;
+  const selectedEquippedItem = selectedEquippedEntry ? game.itemCatalog[selectedEquippedEntry.itemId] ?? null : null;
+  const selectedEquippedStats = selectedEquippedItem && selectedEquippedEntry
+    ? getEnhancedItemStats(selectedEquippedItem, selectedEquippedEntry)
+    : null;
 
   return (
     <section className="content-panel">
@@ -6290,6 +6417,14 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
                   {selectedStats.defense !== undefined && <div><span>Defesa</span> <strong>+{selectedStats.defense}</strong></div>}
                 </div>
               </div>
+            )}
+            {selectedItem.slot && selectedStats && (
+              <EquipmentComparison
+                selectedStats={selectedStats}
+                equippedStats={selectedEquippedStats}
+                equippedName={selectedEquippedItem && selectedEquippedEntry ? formatInventoryItemName(selectedEquippedItem, selectedEquippedEntry) : null}
+                sameItem={Boolean(selectedEquippedEntry && selectedEquippedEntry.instanceId === selectedEntry.instanceId)}
+              />
             )}
             {!selectedItem.slot && (
               <div className="market-modal-stats">
@@ -6376,6 +6511,52 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
         </div>
       )}
     </section>
+  );
+}
+
+function EquipmentComparison({
+  selectedStats,
+  equippedStats,
+  equippedName,
+  sameItem
+}: {
+  selectedStats: ItemStats;
+  equippedStats: ItemStats | null;
+  equippedName: string | null;
+  sameItem: boolean;
+}) {
+  const rows = (["strength", "constitution", "agility", "defense"] as const)
+    .map((key) => {
+      const selectedValue = selectedStats[key] ?? 0;
+      const equippedValue = equippedStats?.[key] ?? 0;
+      return {
+        key,
+        label: EQUIPMENT_STAT_LABELS[key],
+        selectedValue,
+        equippedValue,
+        diff: selectedValue - equippedValue
+      };
+    })
+    .filter((row) => row.selectedValue !== 0 || row.equippedValue !== 0 || row.diff !== 0);
+
+  return (
+    <div className="equipment-comparison">
+      <div className="equipment-comparison-head">
+        <h4>Comparação com equipado</h4>
+        <small>{sameItem ? "Este item já está equipado." : equippedName ? `Equipado: ${equippedName}` : "Slot equipado vazio."}</small>
+      </div>
+      <div className="equipment-comparison-list">
+        {rows.length === 0 && <p>Nenhum atributo direto para comparar.</p>}
+        {rows.map((row) => (
+          <div className={row.diff > 0 ? "positive" : row.diff < 0 ? "negative" : ""} key={row.key}>
+            <span>{row.label}</span>
+            <strong>+{row.selectedValue}</strong>
+            <small>equipado +{row.equippedValue}</small>
+            <b>{row.diff === 0 ? "0" : `${row.diff > 0 ? "+" : ""}${row.diff}`}</b>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

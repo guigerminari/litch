@@ -12,6 +12,7 @@ import type {
   MarketListing,
   MonarchEventState,
   Player,
+  PlayerNotification,
   PrivateMessage
 } from "../shared/types";
 import { store, type AuthAccount, type GameStore } from "./store";
@@ -35,6 +36,7 @@ interface PersistedGameStore {
   monarchEvent: MonarchEventState | null;
   arenaSeasonKey?: string;
   lastArenaSeason?: ArenaSeasonData | null;
+  notifications?: PlayerNotification[];
 }
 
 type JsonValue = string | number | boolean | null | Record<string, unknown> | unknown[];
@@ -71,7 +73,8 @@ function toPersistedStore(source: GameStore): PersistedGameStore {
     nextRegenAt: source.nextRegenAt,
     monarchEvent: source.monarchEvent,
     arenaSeasonKey: source.arenaSeasonKey,
-    lastArenaSeason: source.lastArenaSeason
+    lastArenaSeason: source.lastArenaSeason,
+    notifications: source.notifications
   };
 }
 
@@ -167,7 +170,10 @@ function applyPersistedStore(target: GameStore, persisted: Partial<PersistedGame
   target.characters = new Map((persisted.characters ?? []).map((character) => [character.playerId, character]));
   target.sessions = new Map(persisted.sessions ?? []);
   target.battles = new Map((persisted.battles ?? []).map((battle) => [battle.id, battle]));
-  target.clans = new Map((persisted.clans ?? []).map((clan) => [clan.id, { ...clan, description: clan.description ?? "" }]));
+  target.clans = new Map((persisted.clans ?? []).map((clan) => [
+    clan.id,
+    { ...clan, description: clan.description ?? "", donationHistory: clan.donationHistory ?? [] }
+  ]));
   target.marketplace = new Map((persisted.marketplace ?? []).map((listing) => [listing.id, listing]));
   target.chatMessages = persisted.chatMessages ?? [];
   target.clanChatMessages = new Map(persisted.clanChatMessages ?? []);
@@ -179,6 +185,7 @@ function applyPersistedStore(target: GameStore, persisted: Partial<PersistedGame
   target.monarchEvent = persisted.monarchEvent ?? null;
   target.arenaSeasonKey = persisted.arenaSeasonKey ?? "";
   target.lastArenaSeason = persisted.lastArenaSeason ?? null;
+  target.notifications = persisted.notifications ?? [];
 }
 
 async function ensureMysqlSchema() {
@@ -230,12 +237,14 @@ async function ensureMysqlSchema() {
       gold BIGINT NOT NULL,
       diamonds BIGINT NOT NULL,
       benefit_allocations JSON NOT NULL,
+      donation_history JSON NULL,
       created_at BIGINT NOT NULL,
       KEY idx_clans_leader (leader_player_id),
       CONSTRAINT fk_clans_leader FOREIGN KEY (leader_player_id) REFERENCES ${table("players")}(id) ON DELETE RESTRICT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
   await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_clans`, "description", "TEXT NOT NULL");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_clans`, "donation_history", "JSON NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("characters")} (
@@ -396,6 +405,21 @@ async function ensureMysqlSchema() {
       KEY idx_private_from (from_player_id),
       KEY idx_private_to (to_player_id),
       KEY idx_private_created (created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  `);
+
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS ${table("notifications")} (
+      id VARCHAR(64) NOT NULL PRIMARY KEY,
+      player_id VARCHAR(64) NOT NULL,
+      kind VARCHAR(48) NOT NULL,
+      title VARCHAR(160) NOT NULL,
+      message TEXT NOT NULL,
+      created_at BIGINT NOT NULL,
+      read_at BIGINT NULL,
+      data JSON NULL,
+      KEY idx_notifications_player_created (player_id, created_at),
+      CONSTRAINT fk_notifications_player FOREIGN KEY (player_id) REFERENCES ${table("players")}(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
@@ -583,6 +607,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     gold: number;
     diamonds: number;
     benefit_allocations: unknown;
+    donation_history: unknown;
     created_at: number;
   }>>(`SELECT * FROM ${table("clans")} ORDER BY created_at ASC`);
   const clans = new Map<string, Clan>(
@@ -600,6 +625,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
         gold: Number(row.gold),
         diamonds: Number(row.diamonds),
         benefitAllocations: parseJson<Record<string, number>>(row.benefit_allocations, {}),
+        donationHistory: parseJson(row.donation_history, []),
         createdAt: Number(row.created_at)
       }
     ])
@@ -830,6 +856,27 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     createdAt: Number(row.createdAt)
   }));
 
+  const [notificationRows] = await connection.execute<Array<RowDataPacket & {
+    id: string;
+    player_id: string;
+    kind: PlayerNotification["kind"];
+    title: string;
+    message: string;
+    created_at: number;
+    read_at: number | null;
+    data: unknown;
+  }>>(`SELECT * FROM ${table("notifications")} ORDER BY created_at DESC`);
+  const notifications = notificationRows.map((row): PlayerNotification => ({
+    id: row.id,
+    playerId: row.player_id,
+    kind: row.kind,
+    title: row.title,
+    message: row.message,
+    createdAt: Number(row.created_at),
+    readAt: maybeNumber(row.read_at),
+    data: parseJson<PlayerNotification["data"]>(row.data, undefined)
+  }));
+
   const [arenaQueueRows] = await connection.execute<Array<RowDataPacket & { player_id: string }>>(
     `SELECT player_id FROM ${table("arena_queue")} ORDER BY position ASC`
   );
@@ -879,6 +926,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
   target.chatMessages = chatMessages;
   target.clanChatMessages = clanChatMessages;
   target.allPrivateMessages = privateMessages;
+  target.notifications = notifications;
   target.arenaQueue = arenaQueueRows.map((row) => row.player_id);
   target.arenaRecordedBattleIds = new Set(arenaRecordedRows.map((row) => row.battle_id));
   target.socketsByPlayer = new Map();
@@ -920,6 +968,7 @@ async function clearMysqlTables(connection: PoolConnection) {
     "monarch_event",
     "arena_recorded_battles",
     "arena_queue",
+    "notifications",
     "private_messages",
     "clan_chat_messages",
     "chat_messages",
@@ -980,8 +1029,8 @@ async function saveMysqlStoreNow(source: GameStore = store) {
     for (const clan of source.clans.values()) {
       await connection.execute(
         `INSERT INTO ${table("clans")} (
-          id, name, description, icon, leader_player_id, level, member_capacity, gold, diamonds, benefit_allocations, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          id, name, description, icon, leader_player_id, level, member_capacity, gold, diamonds, benefit_allocations, donation_history, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           clan.id,
           clan.name,
@@ -993,6 +1042,7 @@ async function saveMysqlStoreNow(source: GameStore = store) {
           clan.gold ?? 0,
           clan.diamonds ?? 0,
           json(clan.benefitAllocations ?? {}),
+          json(clan.donationHistory ?? []),
           clan.createdAt ?? Date.now()
         ]
       );
@@ -1126,6 +1176,23 @@ async function saveMysqlStoreNow(source: GameStore = store) {
         `INSERT INTO ${table("private_messages")} (id, from_player_id, from_name, to_player_id, to_name, text, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [message.id, message.fromPlayerId, message.fromName, message.toPlayerId, message.toName, message.text, message.createdAt]
+      );
+    }
+
+    for (const notification of source.notifications) {
+      await connection.execute(
+        `INSERT INTO ${table("notifications")} (id, player_id, kind, title, message, created_at, read_at, data)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          notification.id,
+          notification.playerId,
+          notification.kind,
+          notification.title,
+          notification.message,
+          notification.createdAt,
+          notification.readAt ?? null,
+          json(notification.data ?? null)
+        ]
       );
     }
 

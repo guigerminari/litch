@@ -1453,6 +1453,24 @@ button:disabled {
   background: rgba(139, 233, 253, 0.1);
 }
 
+.notification-top-button {
+  min-width: 42px;
+}
+
+.notification-count {
+  min-width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--red);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .character-chip {
   width: 100%;
   min-width: 0;
@@ -2341,7 +2359,7 @@ button:disabled {
   z-index: 28;
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(8, minmax(46px, 1fr));
+  grid-template-columns: repeat(7, minmax(46px, 1fr));
   gap: 6px;
   width: min(700px, calc(100vw - 24px));
   padding: 8px;
@@ -3433,6 +3451,99 @@ button:disabled .game-icon {
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55);
 }
 
+.notification-backdrop {
+  z-index: 74;
+}
+
+.notification-modal {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.notification-modal-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-right: 28px;
+}
+
+.notification-modal-head h2 {
+  margin: 0;
+  font-family: var(--font-title);
+  color: var(--text);
+}
+
+.notification-modal-head small {
+  color: var(--muted);
+}
+
+.notification-modal-icon,
+.notification-row-icon {
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(139, 233, 253, 0.22);
+  background: rgba(139, 233, 253, 0.1);
+  color: var(--cyan);
+}
+
+.notification-modal-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+.notification-list {
+  display: grid;
+  gap: 10px;
+}
+
+.notification-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid rgba(220, 203, 255, 0.11);
+  border-radius: 8px;
+  background: rgba(16, 13, 26, 0.52);
+}
+
+.notification-row.unread {
+  border-color: rgba(139, 233, 253, 0.34);
+  background: rgba(139, 233, 253, 0.08);
+}
+
+.notification-row-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.notification-row-icon.purchase_approved {
+  color: var(--green);
+  border-color: rgba(82, 216, 155, 0.28);
+  background: rgba(82, 216, 155, 0.09);
+}
+
+.notification-row-icon.monarch_reward,
+.notification-row-icon.arena_season {
+  color: var(--gold);
+  border-color: rgba(216, 178, 74, 0.32);
+  background: rgba(216, 178, 74, 0.09);
+}
+
+.notification-row strong {
+  color: var(--text);
+}
+
+.notification-row p {
+  margin: 3px 0 4px;
+  color: var(--text-soft);
+  line-height: 1.35;
+}
+
+.notification-row small {
+  color: var(--muted);
+}
+
 .player-action-header {
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr);
@@ -3778,6 +3889,73 @@ button:disabled .game-icon {
   font-size: 0.82rem;
   color: var(--green);
   font-weight: 600;
+}
+
+.equipment-comparison {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(139, 233, 253, 0.2);
+  border-radius: 8px;
+  background: rgba(139, 233, 253, 0.06);
+}
+
+.equipment-comparison-head {
+  display: grid;
+  gap: 2px;
+}
+
+.equipment-comparison-head h4 {
+  margin: 0;
+  color: var(--cyan);
+  font-size: 0.88rem;
+}
+
+.equipment-comparison-head small {
+  color: var(--muted);
+}
+
+.equipment-comparison-list {
+  display: grid;
+  gap: 6px;
+}
+
+.equipment-comparison-list > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  background: rgba(16, 13, 26, 0.56);
+}
+
+.equipment-comparison-list span,
+.equipment-comparison-list small {
+  color: var(--muted);
+}
+
+.equipment-comparison-list strong {
+  color: var(--text);
+}
+
+.equipment-comparison-list b {
+  min-width: 38px;
+  text-align: right;
+  color: var(--muted);
+}
+
+.equipment-comparison-list .positive b {
+  color: var(--green);
+}
+
+.equipment-comparison-list .negative b {
+  color: var(--red);
+}
+
+.equipment-comparison-list p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .level-warn {
@@ -5125,6 +5303,19 @@ button:disabled .game-icon {
 .dungeon-active-run p {
   margin: 0;
   color: var(--muted);
+}
+
+.dungeon-room-timer.paused {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid rgba(139, 233, 253, 0.22);
+  border-radius: 999px;
+  background: rgba(139, 233, 253, 0.08);
+  color: var(--cyan);
+  font-weight: 700;
 }
 
 .dungeon-pending-rewards {
@@ -8253,9 +8444,102 @@ button:disabled .game-icon {
 }
 
 .clan-tabs {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
+  margin: 14px 0 10px;
+}
+
+.clan-tabs > .mini-tab {
+  display: none;
+}
+
+.clan-tab-card {
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  padding: 10px;
+  border: 1px solid rgba(220, 203, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(16, 13, 26, 0.58);
+  color: var(--text);
+  text-align: left;
+}
+
+.clan-tab-card svg {
+  grid-row: 1 / span 2;
+  color: var(--cyan);
+}
+
+.clan-tab-card span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.clan-tab-card small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.clan-tab-card.active {
+  border-color: rgba(139, 233, 253, 0.42);
+  background: rgba(139, 233, 253, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(139, 233, 253, 0.14);
+}
+
+.clan-donation-history {
+  display: grid;
+  gap: 10px;
+}
+
+.clan-donation-history h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.98rem;
+}
+
+.clan-donation-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.clan-donation-values {
+  display: inline-flex !important;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.clan-donation-values span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.clan-admin-locked {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 720px) {
+  .clan-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .clan-donation-row {
+    grid-template-columns: 1fr;
+  }
+
+  .clan-donation-values {
+    justify-content: flex-start;
+  }
 }
 
 .market-tabs {
@@ -10970,7 +11254,7 @@ button:disabled {
     bottom: 0;
     transform: none;
     width: 100%;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 2px;
     padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
     border-width: 1px 0 0;
@@ -11202,7 +11486,7 @@ button:disabled {
   }
 
   .bottom-nav {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     padding-inline: 4px;
   }
 

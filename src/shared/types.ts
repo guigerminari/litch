@@ -609,6 +609,15 @@ export interface ClanMemberView {
   isLeader: boolean;
 }
 
+export interface ClanDonationEntry {
+  id: string;
+  playerId: string;
+  playerName: string;
+  gold: number;
+  diamonds: number;
+  createdAt: number;
+}
+
 export interface Clan {
   id: string;
   name: string;
@@ -622,6 +631,7 @@ export interface Clan {
   diamonds: number;
   benefitAllocations: Record<string, number>;
   createdAt: number;
+  donationHistory?: ClanDonationEntry[];
   members?: ClanMemberView[];
 }
 
@@ -725,6 +735,24 @@ export interface ArenaSeasonData {
   ranking: ArenaSeasonEntry[];
 }
 
+export type PlayerNotificationKind =
+  | "purchase_approved"
+  | "monarch_reward"
+  | "arena_season"
+  | "invite_used"
+  | "event_started";
+
+export interface PlayerNotification {
+  id: string;
+  playerId: string;
+  kind: PlayerNotificationKind;
+  title: string;
+  message: string;
+  createdAt: number;
+  readAt?: number;
+  data?: Record<string, string | number | boolean | null>;
+}
+
 export interface ClanRankingEntry {
   id: string;
   name: string;
@@ -816,6 +844,7 @@ export interface GameState {
   workServices: WorkServiceDefinition[];
   arenaSeasonKey: string;
   lastArenaSeason: ArenaSeasonData | null;
+  notifications: PlayerNotification[];
 }
 
 export interface ServerError {

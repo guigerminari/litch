@@ -45,6 +45,8 @@ import type {
   Player,
   PlayerInspectPayload,
   PlayerPublicProfile,
+  PlayerNotification,
+  PlayerNotificationKind,
   PrivateSendPayload,
   QuestCategory,
   QuestClaimPayload,
@@ -380,11 +382,10 @@ function maybeEndSeason() {
         name: ch.name,
         arenaRankedPoints: ch.arenaRankedPoints ?? ARENA_RANKED_STARTING_POINTS
       }))
-      .sort((a, b) => b.arenaRankedPoints - a.arenaRankedPoints || a.name.localeCompare(b.name))
-      .slice(0, 20);
+      .sort((a, b) => b.arenaRankedPoints - a.arenaRankedPoints || a.name.localeCompare(b.name));
 
     const seasonRanking = ranked.map((entry, index) => ({ ...entry, rank: index + 1 }));
-    store.lastArenaSeason = { seasonKey: store.arenaSeasonKey, ranking: seasonRanking };
+    store.lastArenaSeason = { seasonKey: store.arenaSeasonKey, ranking: seasonRanking.slice(0, 20) };
 
     for (const entry of seasonRanking) {
       const ch = store.characters.get(entry.playerId);
@@ -402,10 +403,19 @@ function maybeEndSeason() {
         goldCoins = 20;
       } else if (entry.rank <= 10) {
         goldCoins = 10;
-      } else {
+      } else if (entry.rank <= 20) {
         goldCoins = 5;
       }
-      grantPackageStack(ch, ARENA_GOLD_COIN_ID, goldCoins);
+      if (goldCoins > 0) {
+        grantPackageStack(ch, ARENA_GOLD_COIN_ID, goldCoins);
+      }
+      pushPlayerNotification(
+        entry.playerId,
+        "arena_season",
+        "Temporada da Arena encerrada",
+        `Você terminou a temporada ${store.arenaSeasonKey} na posição #${entry.rank}. Recompensa: ${goldCoins > 0 ? `${goldCoins} moeda(s) de ouro da Arena` : "sem premiação"}.`,
+        { seasonKey: store.arenaSeasonKey, rank: entry.rank, goldCoins }
+      );
     }
 
     for (const ch of store.characters.values()) {
@@ -419,6 +429,21 @@ function maybeEndSeason() {
 
 maybeEndSeason();
 setInterval(maybeEndSeason, 60 * 60 * 1000);
+
+let activeTemporaryEventKey = getActiveTemporaryEventViews(TEMPORARY_EVENTS)
+  .map((event) => `${event.id}:${event.startsAtMs}`)
+  .sort()
+  .join("|");
+setInterval(() => {
+  const nextKey = getActiveTemporaryEventViews(TEMPORARY_EVENTS)
+    .map((event) => `${event.id}:${event.startsAtMs}`)
+    .sort()
+    .join("|");
+  if (nextKey !== activeTemporaryEventKey) {
+    activeTemporaryEventKey = nextKey;
+    broadcastWorldState();
+  }
+}, 60 * 1000);
 
 const httpServer = createServer((request, response) => {
   if (request.url === "/health") {
@@ -622,6 +647,7 @@ function serializeGameState(playerId: string): GameState {
     .filter(Boolean);
   const activeBattle = character.activeBattleId ? store.battles.get(character.activeBattleId) ?? null : null;
   const activeEvents = getActiveTemporaryEventViews(TEMPORARY_EVENTS);
+  ensureTemporaryEventNotifications(playerId, activeEvents);
   const availableRecipes = getAvailableCraftingRecipes(character.cityId);
   const clan = character.clanId ? store.clans.get(character.clanId) ?? null : null;
   const derived = deriveStats(character, ITEM_CATALOG);
@@ -641,6 +667,10 @@ function serializeGameState(playerId: string): GameState {
     .map((character) => ({ playerId: character.playerId, name: character.name }))
     .filter((entry) => entry.playerId !== playerId)
     .sort((a, b) => a.name.localeCompare(b.name));
+  const notifications = store.notifications
+    .filter((notification) => notification.playerId === playerId)
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, 80);
 
   return {
     player,
@@ -699,7 +729,8 @@ function serializeGameState(playerId: string): GameState {
     referrals: buildReferralView(playerId),
     workServices: WORK_SERVICES,
     arenaSeasonKey: store.arenaSeasonKey,
-    lastArenaSeason: store.lastArenaSeason
+    lastArenaSeason: store.lastArenaSeason,
+    notifications
   };
 }
 
@@ -726,6 +757,56 @@ function emitMany(playerIds: Iterable<string>) {
 function broadcastWorldState() {
   persistStoreSoon();
   emitMany(store.players.keys());
+}
+
+function pushPlayerNotification(
+  playerId: string,
+  kind: PlayerNotificationKind,
+  title: string,
+  message: string,
+  data?: PlayerNotification["data"]
+) {
+  if (!store.players.has(playerId)) {
+    return null;
+  }
+
+  const notification: PlayerNotification = {
+    id: randomUUID(),
+    playerId,
+    kind,
+    title,
+    message,
+    createdAt: Date.now(),
+    data
+  };
+  const playerNotifications = [notification, ...store.notifications.filter((entry) => entry.playerId === playerId)].slice(0, 80);
+  const otherNotifications = store.notifications.filter((entry) => entry.playerId !== playerId);
+  store.notifications = [...playerNotifications, ...otherNotifications];
+  return notification;
+}
+
+function hasPlayerNotification(playerId: string, kind: PlayerNotificationKind, predicate: (notification: PlayerNotification) => boolean) {
+  return store.notifications.some((notification) => notification.playerId === playerId && notification.kind === kind && predicate(notification));
+}
+
+function ensureTemporaryEventNotifications(playerId: string, activeEvents: ReturnType<typeof getActiveTemporaryEventViews>) {
+  for (const event of activeEvents) {
+    const alreadyNotified = hasPlayerNotification(
+      playerId,
+      "event_started",
+      (notification) => notification.data?.eventId === event.id && notification.data?.startsAtMs === event.startsAtMs
+    );
+    if (alreadyNotified) {
+      continue;
+    }
+    pushPlayerNotification(
+      playerId,
+      "event_started",
+      "Novo evento iniciado",
+      `${event.name} está ativo até ${new Date(event.endsAtMs).toLocaleDateString("pt-BR")}.`,
+      { eventId: event.id, startsAtMs: event.startsAtMs, endsAtMs: event.endsAtMs }
+    );
+  }
 }
 
 function requirePlayer(socket: AuthedSocket) {
@@ -1650,6 +1731,13 @@ function finalizeMonarchEvent(event: MonarchEventState, status: "defeated" | "ex
       ].slice(0, 50);
     }
     rewards.push({ ...entry, experience, gold, diamonds });
+    pushPlayerNotification(
+      entry.playerId,
+      "monarch_reward",
+      "Recompensa do Monarca",
+      `Você ficou em #${entry.rank} contra ${event.name} e recebeu ${experience} XP, ${gold} ouro${diamonds > 0 ? ` e ${diamonds} diamantes` : ""}.`,
+      { monarchId: event.monarchId, rank: entry.rank, experience, gold, diamonds }
+    );
   }
 
   event.rewardLog = rewards;
@@ -1973,13 +2061,14 @@ function takeAutoPveUntilStopped(character: Character, playerId: string, initial
   }
 }
 
-function decorateClan<T extends { benefitAllocations: Record<string, number>; leaderPlayerId: string; memberPlayerIds: string[]; icon?: string }>(clan: T) {
+function decorateClan<T extends { benefitAllocations: Record<string, number>; leaderPlayerId: string; memberPlayerIds: string[]; icon?: string; donationHistory?: unknown }>(clan: T) {
   return {
     ...clan,
     icon: normalizeClanIcon(clan.icon),
     level: getClanLevel(clan),
     memberCapacity: getClanMemberCapacity(clan),
     benefitCategoryLevels: getClanBenefitCategoryLevels(clan),
+    donationHistory: Array.isArray(clan.donationHistory) ? clan.donationHistory : [],
     members: buildClanMembers(clan)
   };
 }
@@ -2060,6 +2149,7 @@ function createClan(character: Character, name: string, icon?: string) {
     gold: 0,
     diamonds: 0,
     benefitAllocations: {},
+    donationHistory: [],
     createdAt: Date.now()
   };
   store.clans.set(clan.id, clan);
@@ -2203,6 +2293,18 @@ function donateToClan(character: Character, goldValue?: number, diamondValue?: n
   character.diamonds -= diamonds;
   clan.gold += gold;
   clan.diamonds += diamonds;
+  clan.donationHistory ??= [];
+  clan.donationHistory = [
+    {
+      id: randomUUID(),
+      playerId: character.playerId,
+      playerName: character.name,
+      gold,
+      diamonds,
+      createdAt: Date.now()
+    },
+    ...clan.donationHistory
+  ].slice(0, 120);
 }
 
 function buyClanBenefit(character: Character, benefitId: string) {
@@ -2702,13 +2804,13 @@ function dungeonTrapLabel(trap: DungeonTrapType) {
 }
 
 function createDungeonRun(character: Character, countryId: string, floor: number) {
+  const rooms = buildDungeonRooms(countryId, floor);
   character.dungeonProgress ??= {};
   character.dungeonProgress.activeRun = {
     countryId,
     floor,
     roomIndex: 0,
-    roomDeadlineAt: Date.now() + DUNGEON_ROOM_TIME_LIMIT_MS,
-    rooms: buildDungeonRooms(countryId, floor),
+    rooms,
     activeBuffs: [],
     activeTraps: [],
     pendingExperience: 0,
@@ -2716,7 +2818,7 @@ function createDungeonRun(character: Character, countryId: string, floor: number
     pendingItems: [],
     currentEncounterMonsterIds: []
   };
-  ensureDungeonRoomTimeout(character, character.playerId);
+  armDungeonRoomTimer(character, character.playerId);
 }
 
 function clearDungeonRoomTimeout(playerId: string) {
@@ -2733,10 +2835,36 @@ function expireDungeonRun(character: Character, playerId: string, message: strin
   socketByPlayer(playerId)?.emit("game:error", { message });
 }
 
+function dungeonCurrentRoomUsesTimer(run: NonNullable<Character["dungeonProgress"]>["activeRun"]) {
+  if (!run) {
+    return false;
+  }
+  const room = run.rooms[run.roomIndex];
+  return Boolean(room && room.type !== "horde" && room.type !== "boss");
+}
+
+function armDungeonRoomTimer(character: Character, playerId: string) {
+  clearDungeonRoomTimeout(playerId);
+  const run = character.dungeonProgress?.activeRun;
+  if (!run) {
+    return;
+  }
+  if (!dungeonCurrentRoomUsesTimer(run)) {
+    delete run.roomDeadlineAt;
+    return;
+  }
+  run.roomDeadlineAt = Date.now() + DUNGEON_ROOM_TIME_LIMIT_MS;
+  ensureDungeonRoomTimeout(character, playerId);
+}
+
 function ensureDungeonRoomTimeout(character: Character, playerId: string) {
   const run = character.dungeonProgress?.activeRun;
   clearDungeonRoomTimeout(playerId);
   if (!run) {
+    return;
+  }
+  if (!dungeonCurrentRoomUsesTimer(run)) {
+    delete run.roomDeadlineAt;
     return;
   }
 
@@ -2846,6 +2974,8 @@ function startNextDungeonCombat(character: Character) {
   if (!run) {
     return;
   }
+  clearDungeonRoomTimeout(character.playerId);
+  delete run.roomDeadlineAt;
   const room = run.rooms[run.roomIndex];
   if (!room || (room.type !== "horde" && room.type !== "boss")) {
     return;
@@ -2880,8 +3010,7 @@ function progressToNextDungeonRoom(character: Character) {
   }
   run.roomIndex += 1;
   run.currentEncounterMonsterIds = [];
-  run.roomDeadlineAt = Date.now() + DUNGEON_ROOM_TIME_LIMIT_MS;
-  ensureDungeonRoomTimeout(character, character.playerId);
+  armDungeonRoomTimer(character, character.playerId);
 }
 
 function socketByPlayer(playerId: string) {
@@ -3389,6 +3518,15 @@ io.on("connection", (socket: AuthedSocket) => {
         emailVerifiedAt: Date.now()
       };
       store.accountsByEmail.set(email, account);
+      if (inviter) {
+        pushPlayerNotification(
+          inviter.id,
+          "invite_used",
+          "Código de convite utilizado",
+          `${character.name} criou uma conta usando seu código de convite.`,
+          { invitedPlayerId: player.id }
+        );
+      }
 
       persistStoreSoon();
       trackEvent(player.id, "user_registered", {
@@ -3495,6 +3633,25 @@ io.on("connection", (socket: AuthedSocket) => {
     socket.emit("auth:logout");
     persistStoreSoon();
     broadcastWorldState();
+  });
+
+  socket.on("notifications:read", (payload?: { ids?: string[] }) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const ids = new Set((payload?.ids ?? []).map(String));
+      const now = Date.now();
+      for (const notification of store.notifications) {
+        if (notification.playerId !== playerId || notification.readAt) {
+          continue;
+        }
+        if (ids.size === 0 || ids.has(notification.id)) {
+          notification.readAt = now;
+        }
+      }
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
   });
 
   socket.on("character:allocate", (payload: AllocatePayload) => {
@@ -3976,6 +4133,13 @@ io.on("connection", (socket: AuthedSocket) => {
         receiptNote,
         grantedByPlayerId: adminPlayerId
       });
+      pushPlayerNotification(
+        targetPlayerId,
+        "purchase_approved",
+        "Compra Aprovada",
+        `${grantedPack.name} foi aprovado. ${grantedPack.diamonds} diamantes foram adicionados à sua conta.`,
+        { packageId: grantedPack.id, diamonds: grantedPack.diamonds }
+      );
 
       emitState(targetPlayerId);
       if (targetPlayerId !== adminPlayerId) {

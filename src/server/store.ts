@@ -1,4 +1,15 @@
-import type { ArenaSeasonData, BattleState, Character, ChatMessage, Clan, MarketListing, MonarchEventState, Player, PrivateMessage } from "../shared/types";
+import type {
+  ArenaSeasonData,
+  BattleState,
+  Character,
+  ChatMessage,
+  Clan,
+  MarketListing,
+  MonarchEventState,
+  Player,
+  PlayerNotification,
+  PrivateMessage
+} from "../shared/types";
 
 export interface AuthAccount {
   playerId: string;
@@ -34,6 +45,7 @@ export interface GameStore {
   monarchEvent: MonarchEventState | null;
   arenaSeasonKey: string;
   lastArenaSeason: ArenaSeasonData | null;
+  notifications: PlayerNotification[];
 }
 
 export const store: GameStore = {
@@ -53,5 +65,6 @@ export const store: GameStore = {
   nextRegenAt: Date.now() + 2 * 60 * 1000,
   monarchEvent: null,
   arenaSeasonKey: "",
-  lastArenaSeason: null
+  lastArenaSeason: null,
+  notifications: []
 };
