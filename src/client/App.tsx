@@ -8471,40 +8471,42 @@ function FloatingChat({
           {tab === "private" && (
             <>
               {!privateTarget ? (
-                <div className="private-chat-home">
-                  <div className="private-chat-home-head">
-                    <strong>Conversas privadas</strong>
-                    <small>{privateConversations.length} conversa(s)</small>
-                  </div>
-                  {privateConversations.length === 0 ? (
-                    <p className="private-chat-help">Nenhuma conversa iniciada. Digite <strong>@nome</strong> para escolher um destinatário e enviar a primeira mensagem.</p>
-                  ) : (
-                    <div className="private-conversation-list">
-                      {privateConversations.map((conversation) => {
-                        const latest = conversation.latestMessage;
-                        const sentByCurrentPlayer = latest.fromPlayerId === game.player.id;
-                        return (
-                          <button
-                            type="button"
-                            className="private-conversation-card"
-                            key={conversation.playerId}
-                            onClick={() => setPrivateTarget({ playerId: conversation.playerId, name: conversation.name })}
-                          >
-                            <span className="private-conversation-avatar"><User size={15} /></span>
-                            <span className="private-conversation-main">
-                              <strong>{conversation.name}</strong>
-                              <small>{sentByCurrentPlayer ? "Você: " : ""}{latest.text}</small>
-                            </span>
-                            <span className="private-conversation-meta">
-                              <time dateTime={new Date(latest.createdAt).toISOString()}>{formatChatTimestamp(latest.createdAt)}</time>
-                              <small>{conversation.count} msg</small>
-                            </span>
-                          </button>
-                        );
-                      })}
+                <>
+                  <div className="private-chat-home">
+                    <div className="private-chat-home-head">
+                      <strong>Conversas privadas</strong>
+                      <small>{privateConversations.length} conversa(s)</small>
                     </div>
-                  )}
-                  <p className="private-chat-help">Para iniciar outra conversa, use <strong>@nome</strong> no campo abaixo.</p>
+                    {privateConversations.length === 0 ? (
+                      <p className="private-chat-help">Nenhuma conversa iniciada. Digite <strong>@nome</strong> para escolher um destinatário e enviar a primeira mensagem.</p>
+                    ) : (
+                      <div className="private-conversation-list">
+                        {privateConversations.map((conversation) => {
+                          const latest = conversation.latestMessage;
+                          const sentByCurrentPlayer = latest.fromPlayerId === game.player.id;
+                          return (
+                            <button
+                              type="button"
+                              className="private-conversation-card"
+                              key={conversation.playerId}
+                              onClick={() => setPrivateTarget({ playerId: conversation.playerId, name: conversation.name })}
+                            >
+                              <span className="private-conversation-avatar"><User size={15} /></span>
+                              <span className="private-conversation-main">
+                                <strong>{conversation.name}</strong>
+                                <small>{sentByCurrentPlayer ? "Você: " : ""}{latest.text}</small>
+                              </span>
+                              <span className="private-conversation-meta">
+                                <time dateTime={new Date(latest.createdAt).toISOString()}>{formatChatTimestamp(latest.createdAt)}</time>
+                                <small>{conversation.count} msg</small>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                    <p className="private-chat-help">Para iniciar outra conversa, use <strong>@nome</strong> no campo abaixo.</p>
+                  </div>
                   <form className="chat-form private-chat-form" onSubmit={sendPrivate}>
                     {mentionSuggestions.length > 0 && (
                       <div className="private-mention-list" role="listbox" aria-label="Sugestões de jogador">
@@ -8529,7 +8531,7 @@ function FloatingChat({
                     />
                     <button className="icon-submit" title="Enviar"><Send size={16} /></button>
                   </form>
-                </div>
+                </>
               ) : (
                 <>
                   <div className="private-chat-header">
