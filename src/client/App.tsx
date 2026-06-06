@@ -6162,8 +6162,8 @@ function ArenaPanel({ game }: { game: GameState }) {
                 </span>
               </div>
             </div>
-            <button className="primary-button" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
-              <Swords size={16} style={{color: "var(--white)", marginRight: "8px"}} />
+            <button className="primary-button arena-fight-btn" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
+              <ItemVisual item={arenaCoinItem} />
               {rankedSearching ? "Buscando..." : "Buscar Oponente"}
             </button>
             {rankedStatus && <small className="arena-ranked-status">{rankedStatus}</small>}
@@ -8314,20 +8314,22 @@ function FloatingChat({
 
   const privateConversations = useMemo(() => {
     const directoryById = new Map(game.playerDirectory.map((player) => [player.playerId, player]));
-    const byId = new Map<string, { playerId: string; name: string; avatarId?: string; royalSealUntil?: number; latestMessage: PrivateMessage; count: number }>();
+    const byId = new Map<string, { playerId: string; name: string; avatarId?: string; royalSealUntil?: number; latestMessage: PrivateMessage; count: number; unreadCount: number }>();
     for (const msg of game.privateMessages) {
       const isFromCurrentPlayer = msg.fromPlayerId === game.player.id;
       const playerId = isFromCurrentPlayer ? msg.toPlayerId : msg.fromPlayerId;
       const directoryPlayer = directoryById.get(playerId);
       const name = directoryPlayer?.name ?? (isFromCurrentPlayer ? msg.toName : msg.fromName);
       const existing = byId.get(playerId);
+      const unreadIncrement = msg.toPlayerId === game.player.id && !msg.readAt ? 1 : 0;
       byId.set(playerId, {
         playerId,
         name,
         avatarId: directoryPlayer?.avatarId ?? existing?.avatarId,
         royalSealUntil: directoryPlayer?.royalSealUntil ?? existing?.royalSealUntil,
         latestMessage: !existing || msg.createdAt > existing.latestMessage.createdAt ? msg : existing.latestMessage,
-        count: (existing?.count ?? 0) + 1
+        count: (existing?.count ?? 0) + 1,
+        unreadCount: (existing?.unreadCount ?? 0) + unreadIncrement
       });
     }
     return Array.from(byId.values()).sort((a, b) => b.latestMessage.createdAt - a.latestMessage.createdAt || a.name.localeCompare(b.name));
@@ -8406,13 +8408,22 @@ function FloatingChat({
       )
     : [];
 
-  const unreadPrivate = game.privateMessages.filter((msg) => msg.toPlayerId === game.player.id).length;
+  const unreadPrivate = game.privateMessages.filter((msg) => msg.toPlayerId === game.player.id && !msg.readAt).length;
+  const unreadPrivateConversation = privateTarget
+    ? privateConversation.filter((msg) => msg.toPlayerId === game.player.id && !msg.readAt).length
+    : 0;
 
   useEffect(() => {
     if (privateTarget) {
       setTab("private");
     }
   }, [privateTarget?.playerId]);
+
+  useEffect(() => {
+    if (privateTarget && unreadPrivateConversation > 0) {
+      socket.emit("private:read", { targetPlayerId: privateTarget.playerId });
+    }
+  }, [privateTarget?.playerId, unreadPrivateConversation]);
 
   const chatContent = (
     <div className={`floating-chat-layer country-${game.currentCountry.id}${open ? " open" : ""}`}>
@@ -8493,23 +8504,27 @@ function FloatingChat({
                           return (
                             <button
                               type="button"
-                              className="private-conversation-card"
+                              className={conversation.unreadCount > 0 ? "private-conversation-card unread" : "private-conversation-card"}
                               key={conversation.playerId}
                               onClick={() => setPrivateTarget({ playerId: conversation.playerId, name: conversation.name })}
-                          >
-                            <CharacterAvatar
-                              avatar={game.avatarCatalog.find((avatar) => avatar.id === conversation.avatarId) ?? game.avatarCatalog[0]}
-                              size={32}
-                              royal={(conversation.royalSealUntil ?? 0) > Date.now()}
-                              className="private-conversation-avatar"
-                            />
-                            <span className="private-conversation-main">
-                              <strong>{conversation.name}</strong>
+                            >
+                              <CharacterAvatar
+                                avatar={game.avatarCatalog.find((avatar) => avatar.id === conversation.avatarId) ?? game.avatarCatalog[0]}
+                                size={32}
+                                royal={(conversation.royalSealUntil ?? 0) > Date.now()}
+                                className="private-conversation-avatar"
+                              />
+                              <span className="private-conversation-main">
+                                <strong>{conversation.name}</strong>
                                 <small>{sentByCurrentPlayer ? "Você: " : ""}{latest.text}</small>
                               </span>
                               <span className="private-conversation-meta">
                                 <time dateTime={new Date(latest.createdAt).toISOString()}>{formatChatTimestamp(latest.createdAt)}</time>
-                                <small>{conversation.count} msg</small>
+                                {conversation.unreadCount > 0 ? (
+                                  <small className="private-unread-badge">{conversation.unreadCount} nova(s)</small>
+                                ) : (
+                                  <small>{conversation.count} msg</small>
+                                )}
                               </span>
                             </button>
                           );

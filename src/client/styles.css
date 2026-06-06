@@ -6731,6 +6731,29 @@ button:disabled .game-icon {
   font-size: 0.62rem;
 }
 
+.arena-fight-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  background-color: #7637f1 !important;
+}
+
+.arena-fight-btn span {
+  width: 18px;
+  height: 18px;
+}
+
+.arena-fight-btn span img {
+  padding: 0;
+}
+
+.arena-fight-btn span .asset-fallback {
+  font-size: 0.62rem;
+}
+
 .arena-reward-secondary {
   display: inline-flex;
   align-items: center;
@@ -10124,6 +10147,12 @@ button:disabled .game-icon {
   border-color: rgba(139, 233, 253, 0.3);
   background: rgba(139, 233, 253, 0.08);
 }
+.private-conversation-card.unread {
+  border-color: rgba(255, 121, 198, 0.38);
+  background:
+    linear-gradient(90deg, rgba(255, 121, 198, 0.11), rgba(33, 34, 44, 0.86) 42%),
+    rgba(33, 34, 44, 0.86);
+}
 .private-conversation-avatar {
   border: 1px solid rgba(139, 233, 253, 0.22);
   background: rgba(139, 233, 253, 0.08) !important;
@@ -10162,6 +10191,17 @@ button:disabled .game-icon {
 }
 .private-conversation-meta small {
   color: var(--cyan);
+}
+.private-unread-badge {
+  display: inline-grid;
+  place-items: center;
+  min-height: 18px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--ink) !important;
+  font-size: 0.64rem;
+  font-weight: 900;
 }
 .online-player-list {
   display: flex;
@@ -11868,5 +11908,9 @@ button:disabled {
 
   .arena-reward-card span {
     font-size: 0.6rem;
+  }
+
+  .dungeon-summary-card {
+    font-size: 0.7rem;
   }
 }

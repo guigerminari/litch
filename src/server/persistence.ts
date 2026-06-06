@@ -402,11 +402,13 @@ async function ensureMysqlSchema() {
       to_name VARCHAR(80) NOT NULL,
       text TEXT NOT NULL,
       created_at BIGINT NOT NULL,
+      read_at BIGINT NULL,
       KEY idx_private_from (from_player_id),
       KEY idx_private_to (to_player_id),
       KEY idx_private_created (created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_private_messages`, "read_at", "BIGINT NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("notifications")} (
@@ -844,7 +846,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
   }
 
   const [privateRows] = await connection.execute<Array<RowDataPacket & PrivateMessage>>(
-    `SELECT id, from_player_id AS fromPlayerId, from_name AS fromName, to_player_id AS toPlayerId, to_name AS toName, text, created_at AS createdAt FROM ${table("private_messages")} ORDER BY created_at DESC`
+    `SELECT id, from_player_id AS fromPlayerId, from_name AS fromName, to_player_id AS toPlayerId, to_name AS toName, text, created_at AS createdAt, read_at AS readAt FROM ${table("private_messages")} ORDER BY created_at DESC`
   );
   const privateMessages = privateRows.map((row) => ({
     id: row.id,
@@ -853,7 +855,8 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     toPlayerId: row.toPlayerId,
     toName: row.toName,
     text: row.text,
-    createdAt: Number(row.createdAt)
+    createdAt: Number(row.createdAt),
+    ...(row.readAt ? { readAt: Number(row.readAt) } : {})
   }));
 
   const [notificationRows] = await connection.execute<Array<RowDataPacket & {
@@ -1173,9 +1176,9 @@ async function saveMysqlStoreNow(source: GameStore = store) {
 
     for (const message of source.allPrivateMessages) {
       await connection.execute(
-        `INSERT INTO ${table("private_messages")} (id, from_player_id, from_name, to_player_id, to_name, text, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [message.id, message.fromPlayerId, message.fromName, message.toPlayerId, message.toName, message.text, message.createdAt]
+        `INSERT INTO ${table("private_messages")} (id, from_player_id, from_name, to_player_id, to_name, text, created_at, read_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [message.id, message.fromPlayerId, message.fromName, message.toPlayerId, message.toName, message.text, message.createdAt, message.readAt ?? null]
       );
     }
 

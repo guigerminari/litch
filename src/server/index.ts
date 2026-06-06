@@ -47,6 +47,7 @@ import type {
   PlayerPublicProfile,
   PlayerNotification,
   PlayerNotificationKind,
+  PrivateReadPayload,
   PrivateSendPayload,
   QuestCategory,
   QuestClaimPayload,
@@ -4922,6 +4923,29 @@ io.on("connection", (socket: AuthedSocket) => {
       store.allPrivateMessages = [msg, ...store.allPrivateMessages].slice(0, 500);
 
       emitMany([playerId, targetPlayer.id]);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("private:read", (payload: PrivateReadPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const targetPlayerId = String(payload?.targetPlayerId ?? "");
+      if (!targetPlayerId) return;
+
+      const readAt = Date.now();
+      let changed = false;
+      for (const message of store.allPrivateMessages) {
+        if (message.fromPlayerId === targetPlayerId && message.toPlayerId === playerId && !message.readAt) {
+          message.readAt = readAt;
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        emitMany([playerId]);
+      }
     } catch (error) {
       handleError(socket, error);
     }

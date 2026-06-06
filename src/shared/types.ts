@@ -507,6 +507,7 @@ export interface PrivateMessage {
   toName: string;
   text: string;
   createdAt: number;
+  readAt?: number;
 }
 
 export interface MarketListing {
@@ -974,6 +975,10 @@ export interface PrivateSendPayload {
   targetPlayerName?: string;
   targetPlayerId?: string;
   text: string;
+}
+
+export interface PrivateReadPayload {
+  targetPlayerId?: string;
 }
 
 export interface PlayerInspectPayload {
