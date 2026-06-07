@@ -35,6 +35,11 @@ import type {
   GameShopPurchasePayload,
   HuntStartPayload,
   InventoryItem,
+  ItemTradeActionPayload,
+  ItemTradeBundle,
+  ItemTradeCounterPayload,
+  ItemTradeCreatePayload,
+  ItemTradeOffer,
   ItemDefinition,
   LoginPayload,
   MarketBuyPayload,
@@ -126,6 +131,7 @@ import { getActiveTemporaryEventViews } from "../shared/temporaryEvents";
 import { normalizeClanCrestId } from "../shared/clan";
 
 const PORT = Number(process.env.PORT ?? 3001);
+const TRADE_INTERACTION_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL?.trim() || undefined;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? RENDER_EXTERNAL_URL ?? "http://127.0.0.1:5173";
 const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL ?? RENDER_EXTERNAL_URL ?? CLIENT_ORIGIN;
@@ -711,6 +717,9 @@ function serializeGameState(playerId: string): GameState {
     activeBattle,
     chatMessages: store.chatMessages,
     marketplaceListings: Array.from(store.marketplace.values()).sort((a, b) => b.createdAt - a.createdAt),
+    itemTrades: Array.from(store.itemTrades.values())
+      .filter((trade) => trade.fromPlayerId === playerId || trade.toPlayerId === playerId)
+      .sort((a, b) => b.createdAt - a.createdAt),
     quests: buildQuests(character),
     talents: TALENTS,
     clanBenefits: CLAN_BENEFITS,
@@ -748,6 +757,7 @@ function serializeGameState(playerId: string): GameState {
 }
 
 function emitState(playerId: string) {
+  expireStaleItemTrades();
   const socketIds = store.socketsByPlayer.get(playerId);
   if (!socketIds) {
     return;
@@ -761,8 +771,12 @@ function emitState(playerId: string) {
 }
 
 function emitMany(playerIds: Iterable<string>) {
+  const targetPlayerIds = new Set(playerIds);
+  for (const expiredPlayerId of expireStaleItemTrades()) {
+    targetPlayerIds.add(expiredPlayerId);
+  }
   persistStoreSoon();
-  for (const playerId of playerIds) {
+  for (const playerId of targetPlayerIds) {
     emitState(playerId);
   }
 }
@@ -3328,6 +3342,271 @@ function grantInventoryEntry(character: Character, item: InventoryItem) {
   });
 }
 
+function returnInventoryEntry(character: Character, item: InventoryItem) {
+  const definition = ITEM_CATALOG[item.itemId];
+  if (!definition) {
+    throw new Error("Item inválido.");
+  }
+
+  if (!definition.slot) {
+    const stack = character.inventory.find((entry) => entry.itemId === item.itemId);
+    if (stack) {
+      stack.quantity += item.quantity;
+      return;
+    }
+    character.inventory.push({
+      instanceId: randomUUID(),
+      itemId: item.itemId,
+      quantity: item.quantity
+    });
+    return;
+  }
+
+  character.inventory.push({
+    instanceId: randomUUID(),
+    itemId: item.itemId,
+    quantity: 1,
+    enhancementLevel: item.enhancementLevel,
+    rarity: item.rarity
+  });
+}
+
+function canReceiveInventoryEntry(character: Character, item: InventoryItem) {
+  const definition = ITEM_CATALOG[item.itemId];
+  if (!definition) {
+    return false;
+  }
+  if (!definition.slot && character.inventory.some((entry) => entry.itemId === item.itemId)) {
+    return true;
+  }
+  return hasCapacity(character, 1);
+}
+
+function canReceiveItemAfterRemoval(character: Character, item: InventoryItem, removedInstanceId: string | null) {
+  const definition = ITEM_CATALOG[item.itemId];
+  if (!definition) {
+    return false;
+  }
+  if (!definition.slot && character.inventory.some((entry) => entry.itemId === item.itemId && entry.instanceId !== removedInstanceId)) {
+    return true;
+  }
+  const usedAfterRemoval = inventoryUsed(character) - (removedInstanceId ? 1 : 0);
+  return usedAfterRemoval + 1 <= getInventoryCapacity(character);
+}
+
+function createEscrowItem(character: Character, instanceId: string, quantity: number) {
+  const inventoryItem = findInventoryItem(character, instanceId);
+  if (!inventoryItem) {
+    throw new Error("Item não encontrado.");
+  }
+  if (isEquipped(character, inventoryItem.instanceId)) {
+    throw new Error("Desequipe o item antes de oferecer em troca.");
+  }
+  const definition = ITEM_CATALOG[inventoryItem.itemId];
+  if (!definition) {
+    throw new Error("Item inválido.");
+  }
+  if (inventoryItem.itemId === DUNGEON_KEY_ITEM_ID) {
+    throw new Error("Chave de Masmorra não pode ser trocada.");
+  }
+
+  const requestedQuantity = Math.max(1, Math.floor(quantity));
+  const safeQuantity = definition.slot ? 1 : requestedQuantity;
+  if (safeQuantity > inventoryItem.quantity) {
+    throw new Error("Quantidade indisponível para troca.");
+  }
+  const escrowItem: InventoryItem = {
+    instanceId: safeQuantity === inventoryItem.quantity ? inventoryItem.instanceId : randomUUID(),
+    itemId: inventoryItem.itemId,
+    quantity: safeQuantity,
+    enhancementLevel: inventoryItem.enhancementLevel,
+    rarity: inventoryItem.rarity
+  };
+  removeItem(character, inventoryItem.instanceId, safeQuantity);
+  return escrowItem;
+}
+
+function createEscrowItems(character: Character, entries: Array<{ instanceId: string; quantity: number }> = []) {
+  const normalized = new Map<string, number>();
+  for (const entry of entries) {
+    const instanceId = String(entry.instanceId ?? "");
+    const quantity = Math.floor(Number(entry.quantity) || 0);
+    if (!instanceId || quantity <= 0) {
+      continue;
+    }
+    normalized.set(instanceId, (normalized.get(instanceId) ?? 0) + quantity);
+  }
+
+  if (normalized.size > 12) {
+    throw new Error("Selecione no máximo 12 itens por proposta.");
+  }
+
+  const prepared = Array.from(normalized.entries()).map(([instanceId, quantity]) => {
+    const inventoryItem = findInventoryItem(character, instanceId);
+    if (!inventoryItem) {
+      throw new Error("Item não encontrado.");
+    }
+    if (isEquipped(character, inventoryItem.instanceId)) {
+      throw new Error("Desequipe o item antes de oferecer em troca.");
+    }
+    const definition = ITEM_CATALOG[inventoryItem.itemId];
+    if (!definition) {
+      throw new Error("Item inválido.");
+    }
+    if (inventoryItem.itemId === DUNGEON_KEY_ITEM_ID) {
+      throw new Error("Chave de Masmorra não pode ser trocada.");
+    }
+    const safeQuantity = definition.slot ? 1 : Math.max(1, Math.floor(quantity));
+    if (safeQuantity > inventoryItem.quantity) {
+      throw new Error("Quantidade indisponível para troca.");
+    }
+    return {
+      instanceId: inventoryItem.instanceId,
+      quantity: safeQuantity,
+      escrowItem: {
+        instanceId: safeQuantity === inventoryItem.quantity ? inventoryItem.instanceId : randomUUID(),
+        itemId: inventoryItem.itemId,
+        quantity: safeQuantity,
+        enhancementLevel: inventoryItem.enhancementLevel,
+        rarity: inventoryItem.rarity
+      } as InventoryItem
+    };
+  });
+
+  for (const entry of prepared) {
+    removeItem(character, entry.instanceId, entry.quantity);
+  }
+  return prepared.map((entry) => entry.escrowItem);
+}
+
+function createTradeBundle(character: Character, items: Array<{ instanceId: string; quantity: number }> = [], gold = 0, requireContent = true): ItemTradeBundle {
+  const safeGold = Math.max(0, Math.floor(Number(gold) || 0));
+  if (safeGold > character.gold) {
+    throw new Error("Ouro insuficiente para a proposta.");
+  }
+
+  const escrowItems = createEscrowItems(character, items);
+  if (requireContent && escrowItems.length === 0 && safeGold <= 0) {
+    throw new Error("Inclua pelo menos um item ou ouro na proposta.");
+  }
+
+  character.gold -= safeGold;
+  return { items: escrowItems, gold: safeGold };
+}
+
+function canReceiveTradeBundle(character: Character, bundle: ItemTradeBundle) {
+  let usedSlots = inventoryUsed(character);
+  const stackableItemIds = new Set(
+    character.inventory
+      .filter((item) => {
+        const definition = ITEM_CATALOG[item.itemId];
+        return definition && !definition.slot;
+      })
+      .map((item) => item.itemId)
+  );
+
+  for (const item of bundle.items) {
+    const definition = ITEM_CATALOG[item.itemId];
+    if (!definition) {
+      return false;
+    }
+    if (!definition.slot) {
+      if (stackableItemIds.has(item.itemId)) {
+        continue;
+      }
+      stackableItemIds.add(item.itemId);
+    }
+    usedSlots += 1;
+    if (usedSlots > getInventoryCapacity(character)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function grantTradeBundle(character: Character, bundle: ItemTradeBundle) {
+  for (const item of bundle.items) {
+    grantInventoryEntry(character, item);
+  }
+  character.gold += Math.max(0, Math.floor(bundle.gold ?? 0));
+}
+
+function describeTradeBundle(bundle: ItemTradeBundle) {
+  const parts: string[] = [];
+  const itemQuantity = bundle.items.reduce((total, item) => total + Math.max(1, item.quantity), 0);
+  if (itemQuantity > 0) {
+    parts.push(`${itemQuantity} item${itemQuantity > 1 ? "s" : ""}`);
+  }
+  if ((bundle.gold ?? 0) > 0) {
+    parts.push(`${Math.floor(bundle.gold).toLocaleString("pt-BR")} ouro`);
+  }
+  return parts.join(" e ") || "nenhum item";
+}
+
+function pushTradeNotification(playerId: string, title: string, message: string, trade: ItemTradeOffer) {
+  pushPlayerNotification(playerId, "trade", title, message, {
+    tradeId: trade.id,
+    status: trade.status,
+    fromPlayerId: trade.fromPlayerId,
+    toPlayerId: trade.toPlayerId
+  });
+}
+
+function getTradeExpiresAt(trade: ItemTradeOffer) {
+  if (trade.status === "pending_response") {
+    return trade.expiresAt ?? trade.createdAt + TRADE_INTERACTION_TIMEOUT_MS;
+  }
+  if (trade.status === "countered") {
+    return trade.expiresAt ?? (trade.respondedAt ?? trade.createdAt) + TRADE_INTERACTION_TIMEOUT_MS;
+  }
+  return trade.expiresAt;
+}
+
+function expireTradeIfNeeded(trade: ItemTradeOffer, now = Date.now()) {
+  if (trade.status !== "pending_response" && trade.status !== "countered") {
+    return false;
+  }
+  const expiresAt = getTradeExpiresAt(trade);
+  trade.expiresAt = expiresAt;
+  if (!expiresAt || expiresAt > now) {
+    return false;
+  }
+
+  grantTradeBundle(currentCharacter(trade.fromPlayerId), trade.offer);
+  if (trade.status === "countered") {
+    grantTradeBundle(currentCharacter(trade.toPlayerId), trade.counter);
+  }
+  trade.status = "declined";
+  trade.resolvedAt = now;
+  pushTradeNotification(
+    trade.fromPlayerId,
+    "Troca recusada por expiração",
+    `A troca com ${trade.toName} expirou após 24 horas. Seus itens e ouro foram devolvidos.`,
+    trade
+  );
+  pushTradeNotification(
+    trade.toPlayerId,
+    "Troca recusada por expiração",
+    `A troca com ${trade.fromName} expirou após 24 horas.`,
+    trade
+  );
+  return true;
+}
+
+function expireStaleItemTrades(now = Date.now()) {
+  const affectedPlayerIds = new Set<string>();
+  for (const trade of store.itemTrades.values()) {
+    if (expireTradeIfNeeded(trade, now)) {
+      affectedPlayerIds.add(trade.fromPlayerId);
+      affectedPlayerIds.add(trade.toPlayerId);
+    }
+  }
+  if (affectedPlayerIds.size > 0) {
+    persistStoreSoon();
+  }
+  return affectedPlayerIds;
+}
+
 function getItemValue(item: InventoryItem) {
   const definition = ITEM_CATALOG[item.itemId];
   if (!definition) {
@@ -3338,28 +3617,42 @@ function getItemValue(item: InventoryItem) {
   return Math.max(1, Math.floor(definition.price * RARITY_PRICE_MULTIPLIER[rarity]));
 }
 
-function craftItem(character: Character, recipeId: string) {
+function craftItem(character: Character, recipeId: string, quantity = 1) {
   const recipe = CRAFTING_RECIPES[recipeId];
   if (!recipe) {
     throw new Error("Receita não encontrada.");
   }
+  const amount = Math.max(1, Math.min(999, Math.floor(quantity)));
   if (!recipe.cityIds.includes(character.cityId)) {
     throw new Error("Esta receita não está disponível nesta cidade.");
   }
-  if (character.gold < recipe.goldCost) {
+  const resultDefinition = ITEM_CATALOG[recipe.resultItemId];
+  if (!resultDefinition) {
+    throw new Error("Resultado da receita inválido.");
+  }
+  if (character.gold < recipe.goldCost * amount) {
     throw new Error("Ouro insuficiente para criar o item.");
   }
   for (const ingredient of recipe.ingredients) {
-    if (countItem(character, ingredient.itemId) < ingredient.quantity) {
+    if (countItem(character, ingredient.itemId) < ingredient.quantity * amount) {
       throw new Error(`Falta ${ITEM_CATALOG[ingredient.itemId]?.name ?? ingredient.itemId}.`);
     }
   }
-
-  character.gold -= recipe.goldCost;
-  for (const ingredient of recipe.ingredients) {
-    removeItemByItemId(character, ingredient.itemId, ingredient.quantity);
+  if (resultDefinition.slot) {
+    if (!hasCapacity(character, amount * recipe.resultQuantity)) {
+      throw new Error("Inventário cheio.");
+    }
+  } else if (!character.inventory.some((item) => item.itemId === recipe.resultItemId) && !hasCapacity(character, 1)) {
+    throw new Error("Inventário cheio.");
   }
-  addItem(character, recipe.resultItemId, ITEM_CATALOG, recipe.resultQuantity);
+
+  character.gold -= recipe.goldCost * amount;
+  for (const ingredient of recipe.ingredients) {
+    removeItemByItemId(character, ingredient.itemId, ingredient.quantity * amount);
+  }
+  for (let index = 0; index < amount; index += 1) {
+    addItem(character, recipe.resultItemId, ITEM_CATALOG, recipe.resultQuantity);
+  }
 }
 
 function buyTalent(character: Character, talentId: string) {
@@ -3991,7 +4284,7 @@ io.on("connection", (socket: AuthedSocket) => {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
-      craftItem(character, payload.recipeId);
+      craftItem(character, payload.recipeId, payload.quantity ?? 1);
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -4832,6 +5125,178 @@ io.on("connection", (socket: AuthedSocket) => {
       grantInventoryEntry(character, listing.item);
       store.marketplace.delete(listing.id);
       broadcastWorldState();
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("trade:create", (payload: ItemTradeCreatePayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      const targetPlayerId = String(payload.targetPlayerId ?? "");
+      if (!targetPlayerId || targetPlayerId === playerId) {
+        throw new Error("Jogador alvo inválido.");
+      }
+      const targetPlayer = store.players.get(targetPlayerId);
+      const targetCharacter = store.characters.get(targetPlayerId);
+      if (!targetPlayer || !targetCharacter) {
+        throw new Error("Jogador alvo não encontrado.");
+      }
+      const offer = createTradeBundle(character, payload.offeredItems, payload.offeredGold ?? 0);
+      const now = Date.now();
+      const trade: ItemTradeOffer = {
+        id: randomUUID(),
+        fromPlayerId: playerId,
+        fromName: character.name,
+        toPlayerId: targetPlayerId,
+        toName: targetCharacter.name ?? targetPlayer.username,
+        offer,
+        counter: { items: [], gold: 0 },
+        status: "pending_response",
+        createdAt: now,
+        expiresAt: now + TRADE_INTERACTION_TIMEOUT_MS
+      };
+      store.itemTrades.set(trade.id, trade);
+      pushTradeNotification(
+        targetPlayerId,
+        "Oferta de troca recebida",
+        `${character.name} enviou uma oferta com ${describeTradeBundle(offer)}.`,
+        trade
+      );
+      emitMany([playerId, targetPlayerId]);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("trade:counter", (payload: ItemTradeCounterPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const receiver = currentCharacter(playerId);
+      ensureNotInBattle(receiver);
+      expireStaleItemTrades();
+      const trade = store.itemTrades.get(String(payload.tradeId ?? ""));
+      if (!trade || trade.status !== "pending_response") {
+        throw new Error("Proposta de troca não encontrada.");
+      }
+      if (trade.toPlayerId !== playerId) {
+        throw new Error("Apenas o destinatário pode responder esta troca.");
+      }
+
+      const counter = createTradeBundle(receiver, payload.counterItems ?? [], payload.counterGold ?? 0, false);
+      const now = Date.now();
+      trade.counter = counter;
+      trade.status = "countered";
+      trade.respondedAt = now;
+      trade.expiresAt = now + TRADE_INTERACTION_TIMEOUT_MS;
+      pushTradeNotification(
+        trade.fromPlayerId,
+        "Resposta de troca recebida",
+        counter.items.length > 0 || counter.gold > 0
+          ? `${trade.toName} respondeu com uma contra-proposta de ${describeTradeBundle(counter)}.`
+          : `${trade.toName} aceitou sua oferta sem inserir itens ou ouro.`,
+        trade
+      );
+      emitMany([trade.fromPlayerId, trade.toPlayerId]);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("trade:accept", (payload: ItemTradeActionPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const sender = currentCharacter(playerId);
+      ensureNotInBattle(sender);
+      expireStaleItemTrades();
+      const trade = store.itemTrades.get(String(payload.tradeId ?? ""));
+      if (!trade || trade.status !== "countered") {
+        throw new Error("Proposta de troca não encontrada.");
+      }
+      if (trade.fromPlayerId !== playerId) {
+        throw new Error("Apenas quem criou a proposta pode aceitar a resposta.");
+      }
+      const receiver = currentCharacter(trade.toPlayerId);
+      ensureNotInBattle(receiver);
+      if (!canReceiveTradeBundle(sender, trade.counter)) {
+        throw new Error("O inventário do jogador que enviou a proposta está cheio.");
+      }
+      if (!canReceiveTradeBundle(receiver, trade.offer)) {
+        throw new Error("O inventário do destinatário está cheio para receber a oferta.");
+      }
+
+      grantTradeBundle(sender, trade.counter);
+      grantTradeBundle(receiver, trade.offer);
+      trade.status = "accepted";
+      trade.resolvedAt = Date.now();
+      pushTradeNotification(
+        trade.toPlayerId,
+        "Troca aprovada",
+        `${trade.fromName} aceitou a resposta da troca. Os itens e ouro foram entregues.`,
+        trade
+      );
+      emitMany([trade.fromPlayerId, trade.toPlayerId]);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("trade:decline", (payload: ItemTradeActionPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      expireStaleItemTrades();
+      const trade = store.itemTrades.get(String(payload.tradeId ?? ""));
+      if (!trade || trade.status !== "pending_response") {
+        throw new Error("Proposta de troca não encontrada.");
+      }
+      if (trade.toPlayerId !== playerId) {
+        throw new Error("Apenas o destinatário pode recusar esta troca.");
+      }
+      const sender = currentCharacter(trade.fromPlayerId);
+      grantTradeBundle(sender, trade.offer);
+      trade.status = "declined";
+      trade.resolvedAt = Date.now();
+      pushTradeNotification(
+        trade.fromPlayerId,
+        "Troca recusada",
+        `${trade.toName} recusou sua oferta de troca.`,
+        trade
+      );
+      emitMany([trade.fromPlayerId, trade.toPlayerId]);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("trade:cancel", (payload: ItemTradeActionPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      expireStaleItemTrades();
+      const trade = store.itemTrades.get(String(payload.tradeId ?? ""));
+      if (!trade || (trade.status !== "pending_response" && trade.status !== "countered")) {
+        throw new Error("Proposta de troca não encontrada.");
+      }
+      if (trade.fromPlayerId !== playerId) {
+        throw new Error("Apenas quem criou a proposta pode cancelar.");
+      }
+      const sender = currentCharacter(playerId);
+      grantTradeBundle(sender, trade.offer);
+      if (trade.status === "countered") {
+        grantTradeBundle(currentCharacter(trade.toPlayerId), trade.counter);
+      }
+      trade.status = "cancelled";
+      trade.resolvedAt = Date.now();
+      pushTradeNotification(
+        trade.toPlayerId,
+        "Troca cancelada",
+        trade.respondedAt
+          ? `${trade.fromName} não aceitou a contra-proposta. Seus itens e ouro foram devolvidos.`
+          : `${trade.fromName} cancelou a oferta de troca.`,
+        trade
+      );
+      emitMany([trade.fromPlayerId, trade.toPlayerId]);
     } catch (error) {
       handleError(socket, error);
     }

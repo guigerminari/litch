@@ -534,6 +534,31 @@ export interface MarketTransactionHistory {
   createdAt: number;
 }
 
+export type ItemTradeStatus = "pending_response" | "countered" | "accepted" | "declined" | "cancelled";
+
+export interface ItemTradeBundle {
+  items: InventoryItem[];
+  gold: number;
+}
+
+export interface ItemTradeOffer {
+  id: string;
+  fromPlayerId: string;
+  fromName: string;
+  toPlayerId: string;
+  toName: string;
+  offer: ItemTradeBundle;
+  counter: ItemTradeBundle;
+  offeredItem?: InventoryItem;
+  requestedItemId?: string;
+  requestedQuantity?: number;
+  status: ItemTradeStatus;
+  createdAt: number;
+  respondedAt?: number;
+  expiresAt?: number;
+  resolvedAt?: number;
+}
+
 export interface QuestReward {
   experience?: number;
   gold?: number;
@@ -741,7 +766,8 @@ export type PlayerNotificationKind =
   | "monarch_reward"
   | "arena_season"
   | "invite_used"
-  | "event_started";
+  | "event_started"
+  | "trade";
 
 export interface PlayerNotification {
   id: string;
@@ -804,6 +830,7 @@ export interface GameState {
   activeBattle: BattleState | null;
   chatMessages: ChatMessage[];
   marketplaceListings: MarketListing[];
+  itemTrades: ItemTradeOffer[];
   quests: {
     daily: QuestView[];
     fixed: QuestView[];
@@ -958,6 +985,22 @@ export interface MarketBuyPayload {
   listingId: string;
 }
 
+export interface ItemTradeCreatePayload {
+  targetPlayerId: string;
+  offeredItems: Array<{ instanceId: string; quantity: number }>;
+  offeredGold?: number;
+}
+
+export interface ItemTradeActionPayload {
+  tradeId: string;
+}
+
+export interface ItemTradeCounterPayload {
+  tradeId: string;
+  counterItems?: Array<{ instanceId: string; quantity: number }>;
+  counterGold?: number;
+}
+
 export interface QuestClaimPayload {
   questId: string;
 }
@@ -991,6 +1034,7 @@ export interface ReferralClaimPayload {
 
 export interface CraftPayload {
   recipeId: string;
+  quantity?: number;
 }
 
 export interface EnhancePayload {

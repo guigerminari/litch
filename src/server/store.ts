@@ -4,6 +4,7 @@ import type {
   Character,
   ChatMessage,
   Clan,
+  ItemTradeOffer,
   MarketListing,
   MonarchEventState,
   Player,
@@ -35,6 +36,7 @@ export interface GameStore {
   battles: Map<string, BattleState>;
   clans: Map<string, Clan>;
   marketplace: Map<string, MarketListing>;
+  itemTrades: Map<string, ItemTradeOffer>;
   chatMessages: ChatMessage[];
   clanChatMessages: Map<string, ChatMessage[]>;
   allPrivateMessages: PrivateMessage[];
@@ -56,6 +58,7 @@ export const store: GameStore = {
   battles: new Map(),
   clans: new Map(),
   marketplace: new Map(),
+  itemTrades: new Map(),
   chatMessages: [],
   clanChatMessages: new Map(),
   allPrivateMessages: [],

@@ -9,6 +9,7 @@ import type {
   ChatMessage,
   Clan,
   InventoryItem,
+  ItemTradeOffer,
   MarketListing,
   MonarchEventState,
   Player,
@@ -27,6 +28,7 @@ interface PersistedGameStore {
   battles: BattleState[];
   clans: Clan[];
   marketplace: MarketListing[];
+  itemTrades?: ItemTradeOffer[];
   chatMessages: ChatMessage[];
   clanChatMessages: Array<[string, ChatMessage[]]>;
   allPrivateMessages: PrivateMessage[];
@@ -40,6 +42,7 @@ interface PersistedGameStore {
 }
 
 type JsonValue = string | number | boolean | null | Record<string, unknown> | unknown[];
+const TRADE_INTERACTION_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_DATA_FILE = join(process.cwd(), "data", "game-state.json");
 const DATA_FILE = process.env.LITCH_DATA_FILE ?? DEFAULT_DATA_FILE;
@@ -65,6 +68,7 @@ function toPersistedStore(source: GameStore): PersistedGameStore {
     battles: Array.from(source.battles.values()),
     clans: Array.from(source.clans.values()),
     marketplace: Array.from(source.marketplace.values()),
+    itemTrades: Array.from(source.itemTrades.values()),
     chatMessages: source.chatMessages,
     clanChatMessages: Array.from(source.clanChatMessages.entries()),
     allPrivateMessages: source.allPrivateMessages,
@@ -156,6 +160,40 @@ function maybeNumber(value: unknown) {
   return value === null || value === undefined ? undefined : Number(value);
 }
 
+function normalizeItemTradeStatus(status: unknown): ItemTradeOffer["status"] {
+  if (status === "pending") {
+    return "pending_response";
+  }
+  if (status === "pending_response" || status === "countered" || status === "accepted" || status === "declined" || status === "cancelled") {
+    return status;
+  }
+  return "pending_response";
+}
+
+function normalizeItemTradeOffer(trade: ItemTradeOffer): ItemTradeOffer {
+  const legacyOfferedItem = trade.offeredItem ? [trade.offeredItem] : [];
+  const status = normalizeItemTradeStatus(trade.status);
+  const fallbackExpiresAt =
+    status === "pending_response"
+      ? trade.createdAt + TRADE_INTERACTION_TIMEOUT_MS
+      : status === "countered"
+        ? (trade.respondedAt ?? trade.createdAt) + TRADE_INTERACTION_TIMEOUT_MS
+        : undefined;
+  return {
+    ...trade,
+    offer: {
+      items: trade.offer?.items ?? legacyOfferedItem,
+      gold: Number(trade.offer?.gold ?? 0)
+    },
+    counter: {
+      items: trade.counter?.items ?? [],
+      gold: Number(trade.counter?.gold ?? 0)
+    },
+    status,
+    ...(trade.expiresAt || fallbackExpiresAt ? { expiresAt: trade.expiresAt ?? fallbackExpiresAt } : {})
+  };
+}
+
 function applyPersistedStore(target: GameStore, persisted: Partial<PersistedGameStore>) {
   target.players = new Map((persisted.players ?? []).map((player) => [player.id, { ...player, email: player.email ?? "" }]));
   target.accountsByEmail = new Map(
@@ -175,6 +213,10 @@ function applyPersistedStore(target: GameStore, persisted: Partial<PersistedGame
     { ...clan, description: clan.description ?? "", donationHistory: clan.donationHistory ?? [] }
   ]));
   target.marketplace = new Map((persisted.marketplace ?? []).map((listing) => [listing.id, listing]));
+  target.itemTrades = new Map((persisted.itemTrades ?? []).map((trade) => {
+    const normalized = normalizeItemTradeOffer(trade);
+    return [normalized.id, normalized];
+  }));
   target.chatMessages = persisted.chatMessages ?? [];
   target.clanChatMessages = new Map(persisted.clanChatMessages ?? []);
   target.allPrivateMessages = persisted.allPrivateMessages ?? [];
@@ -367,6 +409,40 @@ async function ensureMysqlSchema() {
       CONSTRAINT fk_market_seller FOREIGN KEY (seller_player_id) REFERENCES ${table("players")}(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
+
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS ${table("item_trades")} (
+      id VARCHAR(64) NOT NULL PRIMARY KEY,
+      from_player_id VARCHAR(64) NOT NULL,
+      from_name VARCHAR(80) NOT NULL,
+      to_player_id VARCHAR(64) NOT NULL,
+      to_name VARCHAR(80) NOT NULL,
+      offered_item JSON NOT NULL,
+      requested_item_id VARCHAR(120) NOT NULL,
+      requested_quantity INT NOT NULL,
+      offer_items JSON NULL,
+      offer_gold BIGINT NOT NULL DEFAULT 0,
+      counter_items JSON NULL,
+      counter_gold BIGINT NOT NULL DEFAULT 0,
+      status VARCHAR(24) NOT NULL,
+      created_at BIGINT NOT NULL,
+      responded_at BIGINT NULL,
+      expires_at BIGINT NULL,
+      resolved_at BIGINT NULL,
+      KEY idx_item_trades_from (from_player_id),
+      KEY idx_item_trades_to (to_player_id),
+      KEY idx_item_trades_status (status),
+      KEY idx_item_trades_created (created_at),
+      CONSTRAINT fk_item_trades_from FOREIGN KEY (from_player_id) REFERENCES ${table("players")}(id) ON DELETE CASCADE,
+      CONSTRAINT fk_item_trades_to FOREIGN KEY (to_player_id) REFERENCES ${table("players")}(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  `);
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_item_trades`, "offer_items", "JSON NULL");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_item_trades`, "offer_gold", "BIGINT NOT NULL DEFAULT 0");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_item_trades`, "counter_items", "JSON NULL");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_item_trades`, "counter_gold", "BIGINT NOT NULL DEFAULT 0");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_item_trades`, "responded_at", "BIGINT NULL");
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_item_trades`, "expires_at", "BIGINT NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("chat_messages")} (
@@ -824,6 +900,57 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     createdAt: Number(row.created_at)
   }));
 
+  const [tradeRows] = await connection.execute<Array<RowDataPacket & {
+    id: string;
+    from_player_id: string;
+    from_name: string;
+    to_player_id: string;
+    to_name: string;
+    offered_item: unknown;
+    requested_item_id: string;
+    requested_quantity: number;
+    offer_items: unknown;
+    offer_gold: number;
+    counter_items: unknown;
+    counter_gold: number;
+    status: ItemTradeOffer["status"];
+    created_at: number;
+    responded_at: number | null;
+    expires_at: number | null;
+    resolved_at: number | null;
+  }>>(`SELECT * FROM ${table("item_trades")} ORDER BY created_at DESC`);
+  const itemTrades = tradeRows.map((row): ItemTradeOffer => {
+    const legacyOfferedItem = parseJson<InventoryItem>(row.offered_item, { instanceId: "", itemId: "", quantity: 1 });
+    const offerItems = row.offer_items
+      ? parseJson<InventoryItem[]>(row.offer_items, [])
+      : legacyOfferedItem.itemId
+        ? [legacyOfferedItem]
+        : [];
+    return normalizeItemTradeOffer({
+      id: row.id,
+      fromPlayerId: row.from_player_id,
+      fromName: row.from_name,
+      toPlayerId: row.to_player_id,
+      toName: row.to_name,
+      offer: {
+        items: offerItems,
+        gold: Number(row.offer_gold ?? 0)
+      },
+      counter: {
+        items: parseJson<InventoryItem[]>(row.counter_items, []),
+        gold: Number(row.counter_gold ?? 0)
+      },
+      offeredItem: legacyOfferedItem.itemId ? legacyOfferedItem : undefined,
+      requestedItemId: row.requested_item_id,
+      requestedQuantity: Number(row.requested_quantity),
+      status: row.status,
+      createdAt: Number(row.created_at),
+      ...(row.responded_at ? { respondedAt: Number(row.responded_at) } : {}),
+      ...(row.expires_at ? { expiresAt: Number(row.expires_at) } : {}),
+      ...(row.resolved_at ? { resolvedAt: Number(row.resolved_at) } : {})
+    });
+  });
+
   const [chatRows] = await connection.execute<Array<RowDataPacket & ChatMessage>>(
     `SELECT id, player_id AS playerId, author, text, created_at AS createdAt FROM ${table("chat_messages")} ORDER BY created_at DESC`
   );
@@ -926,6 +1053,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
   target.battles = new Map(battles.map((battle) => [battle.id, battle]));
   target.clans = clans;
   target.marketplace = new Map(marketplace.map((listing) => [listing.id, listing]));
+  target.itemTrades = new Map(itemTrades.map((trade) => [trade.id, trade]));
   target.chatMessages = chatMessages;
   target.clanChatMessages = clanChatMessages;
   target.allPrivateMessages = privateMessages;
@@ -975,6 +1103,7 @@ async function clearMysqlTables(connection: PoolConnection) {
     "private_messages",
     "clan_chat_messages",
     "chat_messages",
+    "item_trades",
     "market_listings",
     "battles",
     "sessions",
@@ -1155,6 +1284,34 @@ async function saveMysqlStoreNow(source: GameStore = store) {
         `INSERT INTO ${table("market_listings")} (id, seller_player_id, seller_name, item, price, currency, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [listing.id, listing.sellerPlayerId, listing.sellerName, json(listing.item), listing.price, listing.currency, listing.createdAt]
+      );
+    }
+
+    for (const trade of source.itemTrades.values()) {
+      const normalizedTrade = normalizeItemTradeOffer(trade);
+      const legacyOfferedItem = normalizedTrade.offeredItem ?? normalizedTrade.offer.items[0] ?? { instanceId: "", itemId: "", quantity: 1 };
+      await connection.execute(
+        `INSERT INTO ${table("item_trades")} (id, from_player_id, from_name, to_player_id, to_name, offered_item, requested_item_id, requested_quantity, offer_items, offer_gold, counter_items, counter_gold, status, created_at, responded_at, expires_at, resolved_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          normalizedTrade.id,
+          normalizedTrade.fromPlayerId,
+          normalizedTrade.fromName,
+          normalizedTrade.toPlayerId,
+          normalizedTrade.toName,
+          json(legacyOfferedItem),
+          normalizedTrade.requestedItemId ?? "",
+          normalizedTrade.requestedQuantity ?? 0,
+          json(normalizedTrade.offer.items),
+          normalizedTrade.offer.gold,
+          json(normalizedTrade.counter.items),
+          normalizedTrade.counter.gold,
+          normalizedTrade.status,
+          normalizedTrade.createdAt,
+          normalizedTrade.respondedAt ?? null,
+          normalizedTrade.expiresAt ?? null,
+          normalizedTrade.resolvedAt ?? null
+        ]
       );
     }
 

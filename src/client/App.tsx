@@ -18,6 +18,7 @@ import {
   Gavel,
   Gem,
   Hammer,
+  Handshake,
   Heart,
   Info,
   KeyRound,
@@ -59,6 +60,8 @@ import type {
   Currency,
   GameState,
   InventoryItem,
+  ItemTradeBundle,
+  ItemTradeOffer,
   ItemDefinition,
   ItemKind,
   ItemStats,
@@ -462,6 +465,7 @@ export function App() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerReference | null>(null);
   const [privateChatTarget, setPrivateChatTarget] = useState<PlayerReference | null>(null);
+  const [tradeTarget, setTradeTarget] = useState<PlayerReference | null>(null);
   const [playerProfiles, setPlayerProfiles] = useState<Record<string, PlayerPublicProfile>>({});
   const [loadingPlayerProfileId, setLoadingPlayerProfileId] = useState<string | null>(null);
   const [regenMs, setRegenMs] = useState(0);
@@ -761,6 +765,11 @@ export function App() {
     setShowChat(true);
     setSelectedPlayer(null);
   };
+  const startItemTrade = (player: PlayerReference) => {
+    setTradeTarget(player);
+    setViewSafely("market");
+    setSelectedPlayer(null);
+  };
   const clearFirstClickNotice = (key: FirstClickNoticeKey) => {
     markFirstClickNoticeSeen(game.player.id, key);
     setFirstClickNoticeSeen((current) => ({ ...current, [key]: true }));
@@ -806,7 +815,7 @@ export function App() {
         <div className={game.activeBattle ? "game-grid in-battle" : "game-grid"}>
           <section className="city-stage">
             {!game.activeBattle && view === "city" && <CityHero game={game} view={view} setView={setViewSafely} />}
-            <GamePane game={game} view={view} setView={setViewSafely} />
+            <GamePane game={game} view={view} setView={setViewSafely} tradeTarget={tradeTarget} onTradeTargetConsumed={() => setTradeTarget(null)} />
           </section>
         </div>
         <BottomNav game={game} view={view} setView={setViewSafely} />
@@ -833,6 +842,7 @@ export function App() {
             loading={loadingPlayerProfileId === selectedPlayer.playerId}
             onInspect={() => inspectPlayer(selectedPlayer)}
             onMessage={() => startPrivateChat(selectedPlayer)}
+            onTrade={() => startItemTrade(selectedPlayer)}
             onDuel={() => {
               socket.emit("arena:duel", { playerId: selectedPlayer.playerId });
               setSelectedPlayer(null);
@@ -1046,6 +1056,7 @@ function PlayerActionModal({
   loading,
   onInspect,
   onMessage,
+  onTrade,
   onDuel,
   onClose
 }: {
@@ -1056,6 +1067,7 @@ function PlayerActionModal({
   loading: boolean;
   onInspect: () => void;
   onMessage: () => void;
+  onTrade: () => void;
   onDuel: () => void;
   onClose: () => void;
 }) {
@@ -1087,6 +1099,9 @@ function PlayerActionModal({
         <div className="player-action-buttons">
           <button className="primary-button" onClick={onMessage}>
             <MessageCircle size={15} /> Mensagem privada
+          </button>
+          <button className="ghost-button" onClick={onTrade}>
+            <ArrowLeftRight size={16} /> Troca
           </button>
           <button className="ghost-button" onClick={onDuel} disabled={!profile?.online}>
             <Swords size={16} /> Convidar para duelo
@@ -1334,6 +1349,8 @@ function getNotificationIcon(kind: GameState["notifications"][number]["kind"]) {
       return <UserPlus size={16} />;
     case "event_started":
       return <Sparkles size={16} />;
+    case "trade":
+      return <Handshake size={16} />;
     default:
       return <Bell size={16} />;
   }
@@ -3230,7 +3247,19 @@ function CityHero({ game, view, setView }: { game: GameState; view: View; setVie
   );
 }
 
-function GamePane({ game, view, setView }: { game: GameState; view: View; setView: (view: View) => void }) {
+function GamePane({
+  game,
+  view,
+  setView,
+  tradeTarget,
+  onTradeTargetConsumed
+}: {
+  game: GameState;
+  view: View;
+  setView: (view: View) => void;
+  tradeTarget: PlayerReference | null;
+  onTradeTargetConsumed: () => void;
+}) {
   if (game.activeBattle) {
     if (view === "inventory") {
       return <InventoryPanel game={game} onBackToBattle={() => setView("city")} />;
@@ -3266,7 +3295,7 @@ function GamePane({ game, view, setView }: { game: GameState; view: View; setVie
     return <InventoryPanel game={game} />;
   }
   if (view === "market") {
-    return <MarketPanel game={game} />;
+    return <MarketPanel game={game} initialTradeTarget={tradeTarget} onTradeTargetConsumed={onTradeTargetConsumed} />;
   }
   if (view === "missions") {
     return <MissionsPanel game={game} />;
@@ -3669,6 +3698,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
   const [selectedRecipeId, setSelectedRecipeId] = useState("");
   const [craftedRecipePulseId, setCraftedRecipePulseId] = useState("");
   const [craftingRecipeId, setCraftingRecipeId] = useState("");
+  const [craftQuantity, setCraftQuantity] = useState(1);
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
   const icon = station === "blacksmith" ? <GameIcon name="blacksmith" size={26} /> : <GameIcon name="alchemist" size={26} />;
   const npcName = station === "blacksmith" ? game.currentCity.npcs.blacksmith : game.currentCity.npcs.alchemist;
@@ -3690,9 +3720,17 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
       return Math.min(minCrafts, Math.floor(owned / ingredient.quantity));
     }, Number.POSITIVE_INFINITY);
     const hasMaterials = craftableByMaterials > 0;
-    const canCraft = hasMaterials && game.character.gold >= recipe.goldCost;
+    const craftableByGold = recipe.goldCost > 0 ? Math.floor(game.character.gold / recipe.goldCost) : Number.POSITIVE_INFINITY;
+    const existingResultStack = result && !result.slot ? game.character.inventory.some((item) => item.itemId === result.id) : false;
+    const craftableByCapacity = result?.slot
+      ? Math.max(0, Math.floor((game.inventoryCapacity - game.inventoryUsed) / recipe.resultQuantity))
+      : existingResultStack
+        ? Number.POSITIVE_INFINITY
+        : Math.max(0, game.inventoryCapacity - game.inventoryUsed);
+    const maxCrafts = Math.max(0, Math.min(craftableByMaterials, craftableByGold, craftableByCapacity));
+    const canCraft = hasMaterials && maxCrafts > 0;
     const craftableTotal = craftableByMaterials * recipe.resultQuantity;
-    return { recipe, result, hasMaterials, canCraft, craftableTotal };
+    return { recipe, result, hasMaterials, canCraft, craftableTotal, maxCrafts };
   });
 
   const selectedEntry = recipeEntries.find((entry) => entry.recipe.id === selectedRecipeId) ?? null;
@@ -3705,8 +3743,17 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
         .filter((entry) => entry.value != null && (entry.value as number) !== 0)
     : [];
 
+  useEffect(() => {
+    if (!selectedEntry) {
+      setCraftQuantity(1);
+      return;
+    }
+    setCraftQuantity((current) => Math.max(1, Math.min(selectedEntry.maxCrafts || 1, current)));
+  }, [selectedEntry?.recipe.id, selectedEntry?.maxCrafts]);
+
   function handleCreate(recipeId: string) {
-    socket.emit("craft:create", { recipeId });
+    const quantity = Math.max(1, Math.min(selectedEntry?.maxCrafts ?? 1, craftQuantity));
+    socket.emit("craft:create", { recipeId, quantity });
     setCraftingRecipeId(recipeId);
     setCraftedRecipePulseId(recipeId);
     window.setTimeout(() => {
@@ -3784,18 +3831,32 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
               {selectedRecipe.ingredients.map((ingredient) => {
                 const ingItem = game.itemCatalog[ingredient.itemId];
                 const owned = countInventoryItem(game, ingredient.itemId);
-                const hasEnough = owned >= ingredient.quantity;
+                const needed = ingredient.quantity * craftQuantity;
+                const hasEnough = owned >= needed;
                 return (
                   <small key={ingredient.itemId} className={hasEnough ? "" : "ingredient-missing"}>
                     <ItemVisual item={ingItem} className="ingredient-art" />
-                    {ingItem?.name}: <b>{owned}/{ingredient.quantity}</b>
+                    {ingItem?.name}: <b>{owned}/{needed}</b>
                   </small>
                 );
               })}
-              <small className={game.character.gold >= selectedRecipe.goldCost ? "" : "ingredient-missing"}>
-                <Coins size={15} style={{ color: "var(--gold)" }} /> {game.character.gold}/{selectedRecipe.goldCost}
+              <small className={game.character.gold >= selectedRecipe.goldCost * craftQuantity ? "" : "ingredient-missing"}>
+                <Coins size={15} style={{ color: "var(--gold)" }} /> {game.character.gold}/{selectedRecipe.goldCost * craftQuantity}
               </small>
             </div>
+
+            <label className="craft-batch-control">
+              <span>Lote</span>
+              <input
+                type="number"
+                min={1}
+                max={Math.max(1, selectedEntry.maxCrafts)}
+                value={craftQuantity}
+                disabled={selectedEntry.maxCrafts <= 1}
+                onChange={(event) => setCraftQuantity(Math.max(1, Math.min(selectedEntry.maxCrafts || 1, Number(event.target.value))))}
+              />
+              <small>Máximo x{selectedEntry.maxCrafts}</small>
+            </label>
 
             <button
               className={`primary-button craft-create-button${craftingRecipeId === selectedRecipe.id ? " is-building" : ""}`}
@@ -3807,7 +3868,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
                   <Hammer size={15} className="craft-building-icon" /> Construindo...
                 </>
               ) : (
-                "Criar"
+                `Criar x${craftQuantity}`
               )}
             </button>
           </article>
@@ -6851,7 +6912,15 @@ function TravelPanel({ game }: { game: GameState }) {
   );
 }
 
-function MarketPanel({ game }: { game: GameState }) {
+function MarketPanel({
+  game,
+  initialTradeTarget,
+  onTradeTargetConsumed
+}: {
+  game: GameState;
+  initialTradeTarget: PlayerReference | null;
+  onTradeTargetConsumed: () => void;
+}) {
   const tradableItems = game.character.inventory.filter((item) => !isItemEquipped(game, item.instanceId));
   const [instanceId, setInstanceId] = useState("");
   const [price, setPrice] = useState(25);
@@ -6860,9 +6929,16 @@ function MarketPanel({ game }: { game: GameState }) {
   const [currencyFilter, setCurrencyFilter] = useState<"all" | Currency>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | ItemKind>("all");
   const [sortBy, setSortBy] = useState<"date-desc" | "date-asc" | "price-desc" | "price-asc">("date-desc");
-  const [marketTab, setMarketTab] = useState<"buy" | "sell" | "history">("buy");
+  const [marketTab, setMarketTab] = useState<"buy" | "sell" | "trade" | "history">("buy");
   const [historyFilter, setHistoryFilter] = useState<"buy" | "sell">("buy");
   const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
+  const [tradeTargetPlayerId, setTradeTargetPlayerId] = useState("");
+  const [tradeTargetQuery, setTradeTargetQuery] = useState("");
+  const [tradeOfferItems, setTradeOfferItems] = useState<Record<string, string>>({});
+  const [tradeOfferGold, setTradeOfferGold] = useState(0);
+  const [responseTrade, setResponseTrade] = useState<ItemTradeOffer | null>(null);
+  const [counterOfferItems, setCounterOfferItems] = useState<Record<string, string>>({});
+  const [counterOfferGold, setCounterOfferGold] = useState(0);
   const selectedInventoryItem = tradableItems.find((item) => item.instanceId === instanceId) ?? null;
   const selectedItemDef = selectedInventoryItem ? game.itemCatalog[selectedInventoryItem.itemId] : null;
   const selectedSellStats = selectedInventoryItem && selectedItemDef ? getEnhancedItemStats(selectedItemDef, selectedInventoryItem) : null;
@@ -6875,6 +6951,21 @@ function MarketPanel({ game }: { game: GameState }) {
   const myListings = game.marketplaceListings.filter((listing) => listing.sellerPlayerId === game.player.id);
   const marketHistory = [...(game.character.marketHistory ?? [])].sort((left, right) => right.createdAt - left.createdAt);
   const historyEntries = marketHistory.filter((entry) => entry.kind === historyFilter);
+  const tradeTarget = game.playerDirectory.find((player) => player.playerId === tradeTargetPlayerId) ?? null;
+  const tradeTargetSearch = tradeTargetQuery.trim().toLowerCase();
+  const tradeTargetSuggestions = tradeTargetSearch
+    ? game.playerDirectory
+        .filter((player) => player.playerId !== game.player.id)
+        .filter((player) => player.name.toLowerCase().includes(tradeTargetSearch))
+        .slice(0, 6)
+    : [];
+  const selectedTradeOfferItems = getTradeSelectionEntries(tradeOfferItems, tradableItems, game);
+  const selectedCounterOfferItems = getTradeSelectionEntries(counterOfferItems, tradableItems, game);
+  const hasTradeOffer = selectedTradeOfferItems.some((entry) => entry.quantity > 0) || tradeOfferGold > 0;
+  const myTradeOffers = game.itemTrades.filter((trade) => trade.fromPlayerId === game.player.id || trade.toPlayerId === game.player.id);
+  const incomingTrades = myTradeOffers.filter((trade) => trade.toPlayerId === game.player.id && trade.status === "pending_response");
+  const outgoingTrades = myTradeOffers.filter((trade) => trade.fromPlayerId === game.player.id && (trade.status === "pending_response" || trade.status === "countered"));
+  const resolvedTrades = myTradeOffers.filter((trade) => trade.status === "accepted" || trade.status === "declined" || trade.status === "cancelled").slice(0, 20);
   const purchaseListings = game.marketplaceListings
     .filter((listing) => listing.sellerPlayerId !== game.player.id)
     .filter((listing) => currencyFilter === "all" || listing.currency === currencyFilter)
@@ -6902,6 +6993,21 @@ function MarketPanel({ game }: { game: GameState }) {
       setInstanceId("");
     }
   }, [instanceId, tradableItems]);
+
+  useEffect(() => {
+    if (!initialTradeTarget) {
+      return;
+    }
+    setMarketTab("trade");
+    setTradeTargetPlayerId(initialTradeTarget.playerId);
+    setTradeTargetQuery(initialTradeTarget.name);
+    onTradeTargetConsumed();
+  }, [initialTradeTarget?.playerId, onTradeTargetConsumed]);
+
+  useEffect(() => {
+    setTradeOfferItems((current) => pruneTradeSelection(current, tradableItems, game));
+    setCounterOfferItems((current) => pruneTradeSelection(current, tradableItems, game));
+  }, [game, tradableItems]);
 
   useEffect(() => {
     if (!selectedInventoryItem) {
@@ -6933,6 +7039,66 @@ function MarketPanel({ game }: { game: GameState }) {
     setQuantity(1);
   };
 
+  const createTradeOffer = (event: FormEvent) => {
+    event.preventDefault();
+    if (!tradeTargetPlayerId || !hasTradeOffer) {
+      return;
+    }
+    socket.emit("trade:create", {
+      targetPlayerId: tradeTargetPlayerId,
+      offeredItems: buildTradeItemPayload(tradeOfferItems, tradableItems, game),
+      offeredGold: Math.max(0, Math.floor(tradeOfferGold))
+    });
+    setTradeOfferItems({});
+    setTradeOfferGold(0);
+  };
+  const canCreateTrade = Boolean(tradeTargetPlayerId && hasTradeOffer);
+
+  const chooseTradeTarget = (player: PlayerReference) => {
+    setTradeTargetPlayerId(player.playerId);
+    setTradeTargetQuery(player.name);
+  };
+
+  const toggleTradeOfferItem = (item: InventoryItem) => {
+    setTradeOfferItems((current) => toggleTradeSelection(current, item));
+  };
+
+  const toggleCounterOfferItem = (item: InventoryItem) => {
+    setCounterOfferItems((current) => toggleTradeSelection(current, item));
+  };
+
+  const openTradeResponse = (trade: ItemTradeOffer) => {
+    setResponseTrade(trade);
+    setCounterOfferItems({});
+    setCounterOfferGold(0);
+  };
+
+  const closeTradeResponse = () => {
+    setResponseTrade(null);
+    setCounterOfferItems({});
+    setCounterOfferGold(0);
+  };
+
+  const submitTradeResponse = () => {
+    if (!responseTrade) {
+      return;
+    }
+    socket.emit("trade:counter", {
+      tradeId: responseTrade.id,
+      counterItems: buildTradeItemPayload(counterOfferItems, tradableItems, game),
+      counterGold: Math.max(0, Math.floor(counterOfferGold))
+    });
+    closeTradeResponse();
+  };
+
+  const declineTradeResponse = () => {
+    if (!responseTrade) {
+      return;
+    }
+    socket.emit("trade:decline", { tradeId: responseTrade.id });
+    closeTradeResponse();
+  };
+
   return (
     <section className="content-panel market-panel">
       <PanelTitle icon={<GameIcon name="market" size={26} />} title="Mercado de Trocas" />
@@ -6942,6 +7108,9 @@ function MarketPanel({ game }: { game: GameState }) {
         </button>
         <button type="button" className={marketTab === "sell" ? "mini-tab active" : "mini-tab"} onClick={() => setMarketTab("sell")}>
           Venda
+        </button>
+        <button type="button" className={marketTab === "trade" ? "mini-tab active" : "mini-tab"} onClick={() => setMarketTab("trade")}>
+          Troca
         </button>
         <button type="button" className={marketTab === "history" ? "mini-tab active" : "mini-tab"} onClick={() => setMarketTab("history")}>
           Histórico
@@ -7024,7 +7193,7 @@ function MarketPanel({ game }: { game: GameState }) {
                         <ItemVisual item={item} className="shop-card-image" quantity={listing.item.quantity > 1 ? listing.item.quantity : undefined} enhancementLevel={listing.item.enhancementLevel} rarity={listing.item.rarity} />
                         <strong>{formatInventoryItemName(item, listing.item)}</strong>
                         <small className="market-card-subtle">
-                          <PlayerName playerId={listing.sellerPlayerId} name={listing.sellerName} /> - NPC {formatCurrency(getNpcSellValue(item, listing.item))}
+                          <PlayerName playerId={listing.sellerPlayerId} name={listing.sellerName} />
                         </small>
                         <span className="shop-card-price">
                           {formatCurrency(listing.price)} {listing.currency === "gold" ? <Coins size={13} style={{ color: "var(--gold)" }} /> : <Gem size={13} style={{ color: "var(--cyan)" }} />}
@@ -7179,6 +7348,115 @@ function MarketPanel({ game }: { game: GameState }) {
           </section>
         )}
 
+        {marketTab === "trade" && (
+          <section className="market-block">
+            <div className="market-block-head market-block-head-wrap">
+              <div>
+                <h3>Trocas entre jogadores</h3>
+                <p className="muted">Envie itens e/ou ouro. A oferta fica guardada até a outra pessoa responder e você aprovar a resposta final.</p>
+              </div>
+            </div>
+
+            <form className="market-form trade-create-form" onSubmit={createTradeOffer}>
+              <label className="trade-player-search">
+                <span>Jogador</span>
+                <input
+                  type="text"
+                  value={tradeTargetQuery}
+                  placeholder="Digite o nome do jogador"
+                  onChange={(event) => {
+                    setTradeTargetQuery(event.target.value);
+                    setTradeTargetPlayerId("");
+                  }}
+                />
+                {tradeTargetSuggestions.length > 0 && !tradeTargetPlayerId && (
+                  <div className="trade-player-suggestions">
+                    {tradeTargetSuggestions.map((player) => (
+                      <button type="button" key={player.playerId} onClick={() => chooseTradeTarget(player)}>
+                        <CharacterAvatar
+                          avatar={game.avatarCatalog.find((avatar) => avatar.id === player.avatarId) ?? game.avatarCatalog[0]}
+                          size={28}
+                          royal={(player.royalSealUntil ?? 0) > Date.now()}
+                        />
+                        <span>{player.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </label>
+              {tradeTarget && (
+                <div className="trade-target-chip">
+                  <CharacterAvatar
+                    avatar={game.avatarCatalog.find((avatar) => avatar.id === tradeTarget.avatarId) ?? game.avatarCatalog[0]}
+                    size={32}
+                    royal={(tradeTarget.royalSealUntil ?? 0) > Date.now()}
+                  />
+                  <span>Proposta para <strong>{tradeTarget.name}</strong></span>
+                </div>
+              )}
+
+              <section className="trade-offer-builder">
+                <div className="trade-builder-head">
+                  <h4>Você oferece</h4>
+                  <label className="trade-gold-input">
+                    <span>Ouro</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={tradeOfferGold > 0 ? String(tradeOfferGold) : ""}
+                      placeholder="0"
+                      onChange={(event) => setTradeOfferGold(parseLimitedIntegerInput(event.target.value, game.character.gold))}
+                    />
+                  </label>
+                </div>
+                <TradeItemSelectionGrid
+                  game={game}
+                  items={tradableItems}
+                  selection={tradeOfferItems}
+                  selectedEntries={selectedTradeOfferItems}
+                  onToggle={toggleTradeOfferItem}
+                  onQuantityChange={(instanceId, quantity) => setTradeOfferItems((current) => setTradeSelectionQuantity(current, instanceId, quantity, tradableItems, game))}
+                />
+              </section>
+
+              <button className="primary-button" disabled={!canCreateTrade}>
+                Enviar proposta
+              </button>
+            </form>
+
+            <section className="market-group">
+              <h3>Recebidas</h3>
+              <div className="market-list">
+                {incomingTrades.length === 0 && <p className="empty-state">Nenhuma proposta recebida.</p>}
+                {incomingTrades.map((trade) => (
+                  <ItemTradeCard key={trade.id} trade={trade} game={game} perspective="incoming" onRespond={openTradeResponse} />
+                ))}
+              </div>
+            </section>
+
+            <section className="market-group">
+              <h3>Enviadas</h3>
+              <div className="market-list">
+                {outgoingTrades.length === 0 && <p className="empty-state">Nenhuma proposta enviada pendente.</p>}
+                {outgoingTrades.map((trade) => (
+                  <ItemTradeCard key={trade.id} trade={trade} game={game} perspective="outgoing" />
+                ))}
+              </div>
+            </section>
+
+            <section className="market-group">
+              <h3>Finalizadas</h3>
+              <div className="market-list">
+                {resolvedTrades.length === 0 && <p className="empty-state">Nenhuma troca finalizada.</p>}
+                {resolvedTrades.map((trade) => (
+                  <ItemTradeCard key={trade.id} trade={trade} game={game} perspective="resolved" />
+                ))}
+              </div>
+            </section>
+          </section>
+        )}
+
         {marketTab === "history" && (
           <section className="market-block">
             <div className="market-block-head market-block-head-wrap">
@@ -7204,7 +7482,314 @@ function MarketPanel({ game }: { game: GameState }) {
           </section>
         )}
       </div>
+      {responseTrade && (
+        <ItemTradeResponseModal
+          trade={responseTrade}
+          game={game}
+          tradableItems={tradableItems}
+          selection={counterOfferItems}
+          selectedEntries={selectedCounterOfferItems}
+          gold={counterOfferGold}
+          onGoldChange={(value) => setCounterOfferGold(Math.max(0, Math.min(game.character.gold, value)))}
+          onToggleItem={toggleCounterOfferItem}
+          onQuantityChange={(instanceId, quantity) => setCounterOfferItems((current) => setTradeSelectionQuantity(current, instanceId, quantity, tradableItems, game))}
+          onSubmit={submitTradeResponse}
+          onDecline={declineTradeResponse}
+          onClose={closeTradeResponse}
+        />
+      )}
     </section>
+  );
+}
+
+type TradeSelectionEntry = {
+  item: InventoryItem;
+  definition: ItemDefinition;
+  quantityText: string;
+  quantity: number;
+  maxQuantity: number;
+};
+
+function parseLimitedIntegerInput(value: string, max: number) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) {
+    return 0;
+  }
+  return Math.max(0, Math.min(max, Number(digits)));
+}
+
+function normalizeTradeQuantityInput(value: string, max: number) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) {
+    return "";
+  }
+  return String(Math.max(0, Math.min(max, Number(digits))));
+}
+
+function getTradeSelectionEntries(selection: Record<string, string>, items: InventoryItem[], game: GameState): TradeSelectionEntry[] {
+  return Object.entries(selection)
+    .map(([instanceId, quantityText]) => {
+      const item = items.find((entry) => entry.instanceId === instanceId);
+      if (!item) {
+        return null;
+      }
+      const definition = game.itemCatalog[item.itemId];
+      if (!definition) {
+        return null;
+      }
+      const maxQuantity = definition.slot ? 1 : item.quantity;
+      const normalizedQuantityText = normalizeTradeQuantityInput(quantityText, maxQuantity);
+      return {
+        item,
+        definition,
+        quantityText: normalizedQuantityText,
+        quantity: normalizedQuantityText ? Math.max(0, Math.min(maxQuantity, Number(normalizedQuantityText))) : 0,
+        maxQuantity
+      };
+    })
+    .filter((entry): entry is TradeSelectionEntry => Boolean(entry));
+}
+
+function pruneTradeSelection(selection: Record<string, string>, items: InventoryItem[], game: GameState) {
+  const next: Record<string, string> = {};
+  let changed = false;
+  for (const entry of getTradeSelectionEntries(selection, items, game)) {
+    next[entry.item.instanceId] = entry.quantityText;
+    if (selection[entry.item.instanceId] !== entry.quantityText) {
+      changed = true;
+    }
+  }
+  if (Object.keys(next).length !== Object.keys(selection).length) {
+    changed = true;
+  }
+  return changed ? next : selection;
+}
+
+function toggleTradeSelection(selection: Record<string, string>, item: InventoryItem) {
+  if (Object.prototype.hasOwnProperty.call(selection, item.instanceId)) {
+    const next = { ...selection };
+    delete next[item.instanceId];
+    return next;
+  }
+  return { ...selection, [item.instanceId]: "" };
+}
+
+function setTradeSelectionQuantity(selection: Record<string, string>, instanceId: string, quantity: string, items: InventoryItem[], game: GameState) {
+  const item = items.find((entry) => entry.instanceId === instanceId);
+  if (!item) {
+    return selection;
+  }
+  const definition = game.itemCatalog[item.itemId];
+  const maxQuantity = definition?.slot ? 1 : item.quantity;
+  return { ...selection, [instanceId]: normalizeTradeQuantityInput(quantity, maxQuantity) };
+}
+
+function buildTradeItemPayload(selection: Record<string, string>, items: InventoryItem[], game: GameState) {
+  return getTradeSelectionEntries(selection, items, game)
+    .filter((entry) => entry.quantity > 0)
+    .map((entry) => ({
+      instanceId: entry.item.instanceId,
+      quantity: entry.quantity
+    }));
+}
+
+function getTradeOfferBundle(trade: ItemTradeOffer): ItemTradeBundle {
+  return trade.offer ?? {
+    items: trade.offeredItem ? [trade.offeredItem] : [],
+    gold: 0
+  };
+}
+
+function getTradeCounterBundle(trade: ItemTradeOffer): ItemTradeBundle {
+  return trade.counter ?? { items: [], gold: 0 };
+}
+
+function TradeItemSelectionGrid({
+  game,
+  items,
+  selection,
+  selectedEntries,
+  onToggle,
+  onQuantityChange
+}: {
+  game: GameState;
+  items: InventoryItem[];
+  selection: Record<string, string>;
+  selectedEntries: TradeSelectionEntry[];
+  onToggle: (item: InventoryItem) => void;
+  onQuantityChange: (instanceId: string, quantity: string) => void;
+}) {
+  const slots: Array<InventoryItem | null> = [
+    ...items,
+    ...Array(Math.max(0, 24 - items.length)).fill(null)
+  ];
+
+  return (
+    <div className="trade-selection-panel">
+      <div className="inventory-grid market-sell-grid trade-item-grid">
+        {slots.map((slot, index) => {
+          if (!slot) {
+            return <div key={`trade-picker-empty-${index}`} className="inv-slot empty" />;
+          }
+          const item = game.itemCatalog[slot.itemId];
+          const selected = Boolean(selection[slot.instanceId]);
+          return (
+            <button
+              type="button"
+              key={slot.instanceId}
+              className={selected ? "inv-slot selected" : "inv-slot"}
+              title={formatInventoryItemName(item, slot)}
+              onClick={() => onToggle(slot)}
+            >
+              <ItemVisual
+                item={item}
+                className="slot-visual"
+                quantity={slot.quantity > 1 ? slot.quantity : undefined}
+                enhancementLevel={slot.enhancementLevel}
+                rarity={slot.rarity}
+              />
+            </button>
+          );
+        })}
+      </div>
+      {selectedEntries.length > 0 && (
+        <div className="trade-selection-list">
+          {selectedEntries.map((entry) => (
+            <label key={entry.item.instanceId} className="trade-selection-row">
+              <span>{formatInventoryItemName(entry.definition, entry.item)}</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={String(entry.maxQuantity).length}
+                value={entry.quantityText}
+                placeholder="Qtd"
+                onChange={(event) => onQuantityChange(entry.item.instanceId, event.target.value)}
+              />
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TradeBundleView({ bundle, game, emptyLabel = "Nada incluído" }: { bundle: ItemTradeBundle; game: GameState; emptyLabel?: string }) {
+  const hasItems = bundle.items.length > 0;
+  const hasGold = bundle.gold > 0;
+  if (!hasItems && !hasGold) {
+    return <p className="empty-state trade-empty-bundle">{emptyLabel}</p>;
+  }
+
+  return (
+    <div className="trade-bundle-view">
+      {bundle.items.map((entry) => {
+        const item = game.itemCatalog[entry.itemId];
+        return (
+          <div className="trade-bundle-entry" key={entry.instanceId}>
+            <ItemVisual
+              item={item}
+              className="market-item-box"
+              quantity={entry.quantity > 1 ? entry.quantity : undefined}
+              enhancementLevel={entry.enhancementLevel}
+              rarity={entry.rarity}
+            />
+            <span>
+              <strong>{formatInventoryItemName(item, entry)}</strong>
+              <small>{entry.quantity > 1 ? `x${entry.quantity}` : ITEM_KIND_LABELS[item.kind]}</small>
+            </span>
+          </div>
+        );
+      })}
+      {hasGold && (
+        <div className="trade-bundle-entry gold">
+          <span className="market-item-box trade-gold-box"><Coins size={18} /></span>
+          <span>
+            <strong>{formatCurrency(bundle.gold)} ouro</strong>
+            <small>Moeda ofertada</small>
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ItemTradeResponseModal({
+  trade,
+  game,
+  tradableItems,
+  selection,
+  selectedEntries,
+  gold,
+  onGoldChange,
+  onToggleItem,
+  onQuantityChange,
+  onSubmit,
+  onDecline,
+  onClose
+}: {
+  trade: ItemTradeOffer;
+  game: GameState;
+  tradableItems: InventoryItem[];
+  selection: Record<string, string>;
+  selectedEntries: TradeSelectionEntry[];
+  gold: number;
+  onGoldChange: (value: number) => void;
+  onToggleItem: (item: InventoryItem) => void;
+  onQuantityChange: (instanceId: string, quantity: string) => void;
+  onSubmit: () => void;
+  onDecline: () => void;
+  onClose: () => void;
+}) {
+  const hasCounter = selectedEntries.some((entry) => entry.quantity > 0) || gold > 0;
+
+  return (
+    <div className="drawer-backdrop trade-response-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal trade-response-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" onClick={onClose}><X size={18} /></button>
+        <header>
+          <span className="modal-avatar-fallback"><Handshake size={22} /></span>
+          <div>
+            <h2>Responder troca</h2>
+            <p>Oferta de <PlayerName playerId={trade.fromPlayerId} name={trade.fromName} /></p>
+          </div>
+        </header>
+        <div className="trade-response-offer">
+          <h3>Oferta recebida</h3>
+          <TradeBundleView bundle={getTradeOfferBundle(trade)} game={game} />
+        </div>
+        <div className="trade-offer-builder">
+          <div className="trade-builder-head">
+            <h3>Sua resposta</h3>
+            <label className="trade-gold-input">
+              <span>Ouro</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={gold > 0 ? String(gold) : ""}
+                placeholder="0"
+                onChange={(event) => onGoldChange(parseLimitedIntegerInput(event.target.value, game.character.gold))}
+              />
+            </label>
+          </div>
+          <TradeItemSelectionGrid
+            game={game}
+            items={tradableItems}
+            selection={selection}
+            selectedEntries={selectedEntries}
+            onToggle={onToggleItem}
+            onQuantityChange={onQuantityChange}
+          />
+        </div>
+        <div className="modal-actions">
+          <button className="primary-button" type="button" onClick={onSubmit}>
+            {hasCounter ? "Enviar contra-proposta" : "Aceitar sem contraproposta"}
+          </button>
+          <button className="ghost-button" type="button" onClick={onDecline}>Recusar</button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -7225,6 +7810,78 @@ function MarketHistoryRow({ entry, game }: { entry: MarketTransactionHistory; ga
       <div className="market-history-side">
         <b>{formatCurrency(entry.price)}</b>
         <small>{entry.currency === "gold" ? "Ouro" : "Diamantes"}</small>
+      </div>
+    </article>
+  );
+}
+
+function ItemTradeCard({
+  trade,
+  game,
+  perspective,
+  onRespond
+}: {
+  trade: ItemTradeOffer;
+  game: GameState;
+  perspective: "incoming" | "outgoing" | "resolved";
+  onRespond?: (trade: ItemTradeOffer) => void;
+}) {
+  const offer = getTradeOfferBundle(trade);
+  const counter = getTradeCounterBundle(trade);
+  const statusLabel: Record<ItemTradeOffer["status"], string> = {
+    pending_response: "Aguardando resposta",
+    countered: "Resposta recebida",
+    accepted: "Aceita",
+    declined: "Recusada",
+    cancelled: "Cancelada"
+  };
+  const counterEmptyLabel = trade.status === "pending_response" ? "Aguardando resposta" : "Sem itens ou ouro";
+  const isCurrentPlayerReceiver = trade.toPlayerId === game.player.id;
+  const counterpartyPlayerId = perspective === "incoming" || (perspective === "resolved" && isCurrentPlayerReceiver) ? trade.fromPlayerId : trade.toPlayerId;
+  const counterpartyName = perspective === "incoming" || (perspective === "resolved" && isCurrentPlayerReceiver) ? trade.fromName : trade.toName;
+  const isPendingInteraction = trade.status === "pending_response" || trade.status === "countered";
+  const expiryLabel = isPendingInteraction && trade.expiresAt
+    ? `Expira em ${formatDuration(trade.expiresAt - Date.now())}`
+    : null;
+
+  return (
+    <article className={`market-card trade-card trade-${trade.status}`}>
+      <div className="trade-card-items trade-card-bundles">
+        <section>
+          <small>Oferta de {trade.fromName}</small>
+          <TradeBundleView bundle={offer} game={game} />
+        </section>
+        <ArrowLeftRight size={18} />
+        <section>
+          <small>Resposta de {trade.toName}</small>
+          <TradeBundleView bundle={counter} game={game} emptyLabel={counterEmptyLabel} />
+        </section>
+      </div>
+      <div className="market-card-body">
+        <span className="market-card-meta">
+          {perspective === "incoming" ? "De" : perspective === "outgoing" ? "Para" : "Com"}{" "}
+          <PlayerName playerId={counterpartyPlayerId} name={counterpartyName} />
+        </span>
+        <span className="market-card-meta">{formatListingDate(trade.createdAt)}</span>
+        {expiryLabel && <span className="market-card-meta trade-expiry">{expiryLabel}</span>}
+        <span className="trade-status">{statusLabel[trade.status]}</span>
+      </div>
+      <div className="market-card-side trade-card-actions">
+        {perspective === "incoming" && trade.status === "pending_response" && (
+          <>
+            <button className="primary-button" onClick={() => onRespond?.(trade)}>Responder</button>
+            <button className="ghost-button" onClick={() => socket.emit("trade:decline", { tradeId: trade.id })}>Recusar</button>
+          </>
+        )}
+        {perspective === "outgoing" && trade.status === "pending_response" && (
+          <button className="ghost-button" onClick={() => socket.emit("trade:cancel", { tradeId: trade.id })}>Cancelar</button>
+        )}
+        {perspective === "outgoing" && trade.status === "countered" && (
+          <>
+            <button className="primary-button" onClick={() => socket.emit("trade:accept", { tradeId: trade.id })}>Aceitar resposta</button>
+            <button className="ghost-button" onClick={() => socket.emit("trade:cancel", { tradeId: trade.id })}>Não aceitar</button>
+          </>
+        )}
       </div>
     </article>
   );
