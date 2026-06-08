@@ -151,6 +151,18 @@ export interface DungeonRunState {
   currentEncounterMonsterIds?: string[];
 }
 
+export interface DungeonCompletionPayload {
+  countryId: string;
+  floor: number;
+  firstClear: boolean;
+  experience: number;
+  gold: number;
+  items: DungeonPendingRewardItem[];
+  dungeonKeyQuantity: number;
+  monarchKeyQuantity: number;
+  discardedItems: string[];
+}
+
 export interface QuestProgress {
   dayKey: string;
   dailyEnemyDefeats: number;

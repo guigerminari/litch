@@ -24,6 +24,7 @@ import type {
   DestroyItemPayload,
   DeveloperMessagePayload,
   DungeonBuffType,
+  DungeonCompletionPayload,
   DungeonRoomState,
   DungeonStartPayload,
   DungeonTrapType,
@@ -83,6 +84,7 @@ import {
   getEnhancementBaseChance,
   getEnhancementMaterialQuantity
 } from "../shared/enhancement";
+import { ARENA_ITEM_IDS, DUNGEON_ITEM_IDS } from "../shared/itemIds";
 import {
   CITIES,
   AVATARS,
@@ -159,7 +161,7 @@ const CLAN_BENEFIT_RESET_DIAMOND_COST = 1000;
 const CLAN_BENEFIT_RESET_REFUND_RATE = 0.8;
 const CLAN_JOIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const DEATH_XP_PENALTY_PERCENT = 0.2;
-const DUNGEON_KEY_ITEM_ID = "misc_dungeon_key";
+const DUNGEON_KEY_ITEM_ID = DUNGEON_ITEM_IDS.dungeonKey;
 const DUNGEON_TOTAL_FLOORS = 20;
 const DUNGEON_DAILY_KEYS = 5;
 const DUNGEON_ROOM_TIME_LIMIT_MS = 60 * 1000;
@@ -244,7 +246,7 @@ const REFERRAL_REWARD_LEVEL = 30;
 const REFERRAL_REWARD_GOLD = 30000;
 const REFERRAL_REWARD_DIAMONDS = 30;
 const MORTHALY_COUNTRY_ID = "morthaly";
-const MONARCH_ACCESS_KEY_ID = "misc_high_dungeon_key";
+const MONARCH_ACCESS_KEY_ID = DUNGEON_ITEM_IDS.monarchAccessKey;
 const MONARCH_DAILY_ATTEMPT_LIMIT = 10;
 const MONARCH_EXPIRED_REWARD_RATE = 0.15;
 const MONARCH_KING_REWARD_MULTIPLIER = 3;
@@ -255,9 +257,11 @@ const ARENA_RANKED_BLUE_COIN_COST = 1;
 const ARENA_RANKED_DAILY_BLUE_COINS = 10;
 const ARENA_RANKED_LOSS_GOLD = 5000;
 const ARENA_RANKED_WIN_GOLD = 10000;
+const ARENA_RANKED_LOSS_ARENA_COINS = 1;
+const ARENA_RANKED_WIN_ARENA_COINS = 3;
 const ARENA_RANKED_WIN_CREATION_STONES = 1;
-const ARENA_BLUE_COIN_ID = "material_blue_coin";
-const ARENA_GOLD_COIN_ID = "material_gold_coin";
+const ARENA_BLUE_COIN_ID = ARENA_ITEM_IDS.blueCoin;
+const ARENA_GOLD_COIN_ID = ARENA_ITEM_IDS.arenaCoin;
 const ARENA_CHAMPION_AVATAR_ID = "campeao_arena";
 const MONARCH_SCHEDULE = [
   {
@@ -2497,6 +2501,11 @@ function recordArenaResult(battleId: string) {
     }
     challenger.questProgress.dailyArenaBattles += 1;
     challenger.questProgress.arenaBattles += 1;
+    grantPackageStack(
+      challenger,
+      ARENA_GOLD_COIN_ID,
+      challengerWon ? ARENA_RANKED_WIN_ARENA_COINS : ARENA_RANKED_LOSS_ARENA_COINS
+    );
     if (challengerWon) {
       grantPackageStack(challenger, ENHANCEMENT_ITEMS.creationStone, ARENA_RANKED_WIN_CREATION_STONES);
       challenger.gold += ARENA_RANKED_WIN_GOLD;
@@ -2514,8 +2523,8 @@ function recordArenaResult(battleId: string) {
       id: randomUUID(),
       createdAt: Date.now(),
       text: challengerWon
-        ? `${challenger.name} recebeu ${ARENA_RANKED_WIN_GOLD} ouro e Pedra de Criação.`
-        : `${challenger.name} recebeu ${ARENA_RANKED_LOSS_GOLD} ouro.`
+        ? `${challenger.name} recebeu ${ARENA_RANKED_WIN_GOLD} ouro, ${ARENA_RANKED_WIN_ARENA_COINS} Moedas de Arena e Pedra de Criação.`
+        : `${challenger.name} recebeu ${ARENA_RANKED_LOSS_GOLD} ouro e ${ARENA_RANKED_LOSS_ARENA_COINS} Moeda de Arena.`
     });
     store.arenaRecordedBattleIds.add(battleId);
     return;
@@ -3152,10 +3161,16 @@ function completeDungeonRun(character: Character, playerId: string) {
     character.dungeonProgress.clearedFloorsByCountry[run.countryId] = [...clearedFloors, run.floor].sort((a, b) => a - b);
   }
 
+  const rewardExperience = run.pendingExperience;
+  const rewardGold = run.pendingGold;
+  const rewardItems = run.pendingItems.map((item) => ({ ...item }));
+  const dungeonKeyQuantity = firstClear ? 1 : 0;
+  const monarchKeyQuantity = 1;
   const discardedItems: string[] = [];
-  character.gold += run.pendingGold;
-  grantExperience(character, run.pendingExperience);
-  for (const reward of run.pendingItems) {
+
+  character.gold += rewardGold;
+  grantExperience(character, rewardExperience);
+  for (const reward of rewardItems) {
     try {
       addItem(character, reward.itemId, ITEM_CATALOG, reward.quantity, { rarity: reward.rarity });
     } catch {
@@ -3163,13 +3178,23 @@ function completeDungeonRun(character: Character, playerId: string) {
       discardedItems.push(`${itemName}${reward.quantity > 1 ? ` x${reward.quantity}` : ""}`);
     }
   }
-  if (firstClear) {
-    try {
-      addItem(character, DUNGEON_KEY_ITEM_ID, ITEM_CATALOG, 1);
-    } catch {
-      discardedItems.push(ITEM_CATALOG[DUNGEON_KEY_ITEM_ID]?.name ?? DUNGEON_KEY_ITEM_ID);
-    }
+  if (dungeonKeyQuantity > 0) {
+    grantPackageStack(character, DUNGEON_KEY_ITEM_ID, dungeonKeyQuantity);
   }
+  grantPackageStack(character, MONARCH_ACCESS_KEY_ID, monarchKeyQuantity);
+
+  const completionPayload: DungeonCompletionPayload = {
+    countryId: run.countryId,
+    floor: run.floor,
+    firstClear,
+    experience: rewardExperience,
+    gold: rewardGold,
+    items: rewardItems,
+    dungeonKeyQuantity,
+    monarchKeyQuantity,
+    discardedItems
+  };
+
   character.dungeonClears += 1;
   const nextUnlocked = Math.min(DUNGEON_TOTAL_FLOORS, run.floor + 1);
   character.dungeonProgress.unlockedFloorByCountry[run.countryId] = Math.max(
@@ -3177,9 +3202,7 @@ function completeDungeonRun(character: Character, playerId: string) {
     nextUnlocked
   );
   clearDungeonRun(character);
-  socketByPlayer(playerId)?.emit("game:error", {
-    message: `Andar ${run.floor} concluído. Recompensas recebidas: ${run.pendingExperience} XP, ${run.pendingGold} ouro${firstClear ? " e +1 Chave de Masmorra" : ""}.${discardedItems.length > 0 ? ` Itens descartados por falta de espaço: ${discardedItems.join(", ")}.` : ""}`
-  });
+  socketByPlayer(playerId)?.emit("dungeon:complete", completionPayload);
 }
 
 function resolveDungeonProgress(character: Character, playerId: string, battle: NonNullable<GameState["activeBattle"]>) {

@@ -1,13 +1,9 @@
+import { ENHANCEMENT_ITEM_IDS } from "./itemIds";
+
 export const ENHANCEMENT_GOLD_STEP = 10000;
 export const ENHANCEMENT_CREATION_STONE_BONUS = 3;
 
-export const ENHANCEMENT_ITEMS = {
-  oldStone: "material_old_stone",
-  eranStone: "misc_eran",
-  celena: "material_celena",
-  midran: "material_midran",
-  creationStone: "misc_stone_craft"
-} as const;
+export const ENHANCEMENT_ITEMS = ENHANCEMENT_ITEM_IDS;
 
 export type EnhancementLevelRange = {
   minLevel: number;

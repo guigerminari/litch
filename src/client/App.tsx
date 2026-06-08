@@ -58,6 +58,7 @@ import type {
   ClanRankingEntry,
   ClanSummary,
   Currency,
+  DungeonCompletionPayload,
   GameState,
   InventoryItem,
   ItemTradeBundle,
@@ -102,6 +103,7 @@ import {
 } from "../shared/work";
 import { formatTemporaryEventBonusPercent } from "../shared/temporaryEvents";
 import { CLAN_CRESTS, getClanCrestDefinition, normalizeClanCrestId, type ClanCrestId } from "../shared/clan";
+import { ARENA_ITEM_IDS, DUNGEON_ITEM_IDS, TRAVEL_ITEM_IDS } from "../shared/itemIds";
 import { CRAFTING_RECIPES } from "../server/content";
 import { socket } from "./socket";
 
@@ -346,8 +348,8 @@ const RARITY_COLORS: Record<Rarity, string> = {
 };
 
 const ENHANCEMENT_STAT_STEP = 0.2;
-const TRAIN_TICKET_ID = "ticket_train";
-const SHIP_TICKET_ID = "ticket_ship";
+const TRAIN_TICKET_ID = TRAVEL_ITEM_IDS.trainTicket;
+const SHIP_TICKET_ID = TRAVEL_ITEM_IDS.shipTicket;
 const MEMORY_SCROLL_ID = "memory_scroll";
 const OBLIVION_SCROLL_ID = "oblivion_scroll";
 const ATTRIBUTE_RESET_DIAMOND_COST = 20;
@@ -466,6 +468,7 @@ export function App() {
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerReference | null>(null);
   const [privateChatTarget, setPrivateChatTarget] = useState<PlayerReference | null>(null);
   const [tradeTarget, setTradeTarget] = useState<PlayerReference | null>(null);
+  const [dungeonCompletion, setDungeonCompletion] = useState<DungeonCompletionPayload | null>(null);
   const [playerProfiles, setPlayerProfiles] = useState<Record<string, PlayerPublicProfile>>({});
   const [loadingPlayerProfileId, setLoadingPlayerProfileId] = useState<string | null>(null);
   const [regenMs, setRegenMs] = useState(0);
@@ -498,12 +501,17 @@ export function App() {
 
     const onAuthLogout = () => {
       localStorage.removeItem("litch:session");
+      setDungeonCompletion(null);
       setGame(null);
       setAuthMode("login");
     };
 
     const onGameState = (state: GameState) => {
       setGame(state);
+    };
+
+    const onDungeonComplete = (payload: DungeonCompletionPayload) => {
+      setDungeonCompletion(payload);
     };
 
     const onPlayerProfile = (profile: PlayerPublicProfile) => {
@@ -548,6 +556,7 @@ export function App() {
     socket.on("auth:ok", onAuthOk);
     socket.on("auth:logout", onAuthLogout);
     socket.on("game:state", onGameState);
+    socket.on("dungeon:complete", onDungeonComplete);
     socket.on("player:profile", onPlayerProfile);
     socket.on("account:passwordChanged", onPasswordChanged);
     socket.on("developer:message:ok", onDeveloperMessageOk);
@@ -564,6 +573,7 @@ export function App() {
       socket.off("auth:ok", onAuthOk);
       socket.off("auth:logout", onAuthLogout);
       socket.off("game:state", onGameState);
+      socket.off("dungeon:complete", onDungeonComplete);
       socket.off("player:profile", onPlayerProfile);
       socket.off("account:passwordChanged", onPasswordChanged);
       socket.off("developer:message:ok", onDeveloperMessageOk);
@@ -633,6 +643,7 @@ export function App() {
     const token = localStorage.getItem("litch:session");
     socket.emit("auth:logout", token ?? "");
     localStorage.removeItem("litch:session");
+    setDungeonCompletion(null);
     setGame(null);
     setAuthMode("login");
   };
@@ -831,6 +842,13 @@ export function App() {
         {showDetails && <CharacterDrawer game={game} onClose={() => setShowDetails(false)} />}
         {showNotifications && <NotificationsModal game={game} onClose={() => setShowNotifications(false)} />}
         {showExchange && <CurrencyExchangeModal game={game} onClose={() => setShowExchange(false)} />}
+        {dungeonCompletion && (
+          <DungeonCompletionModal
+            game={game}
+            reward={dungeonCompletion}
+            onClose={() => setDungeonCompletion(null)}
+          />
+        )}
         {utilityModal === "settings" && <SettingsModal game={game} onClose={() => setUtilityModal(null)} />}
         {utilityModal === "guide" && <GuideModal game={game} onClose={() => setUtilityModal(null)} />}
         {selectedPlayer && (
@@ -1757,8 +1775,8 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     .filter((group) => group.services.length > 0);
   const arenaRankIndex = game.rankings.arena.findIndex((entry) => entry.playerId === game.player.id);
   const arenaRankLabel = arenaRankIndex >= 0 ? `#${arenaRankIndex + 1}` : "Top 20+";
-  const arenaBlueCoins = countInventoryItem(game, "material_gold_coin");
-  const dungeonKeys = countInventoryItem(game, "misc_dungeon_key");
+  const arenaBlueCoins = countInventoryItem(game, ARENA_ITEM_IDS.arenaCoin);
+  const dungeonKeys = countInventoryItem(game, DUNGEON_ITEM_IDS.dungeonKey);
   const dungeonUnlockedFloor = Math.max(
     1,
     Math.min(20, game.character.dungeonProgress?.unlockedFloorByCountry?.[game.currentCountry.id] ?? 1)
@@ -2093,6 +2111,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               <article><strong>Queda por inventário cheio</strong><span>Se faltar espaço, parte dos itens pode ser descartada ao finalizar a run.</span></article>
               <article><strong>Desbloqueio de andares</strong><span>Concluir um andar libera o próximo no mesmo país até o limite do andar 20.</span></article>
               <article><strong>Chave bônus</strong><span>A chave extra de conclusão só é concedida na primeira vez que você conclui aquele andar no país.</span></article>
+              <article><strong>Chave do monarca</strong><span>Cada conclusão de andar concede 1 chave para enfrentar o monarca, mesmo repetindo um andar já finalizado.</span></article>
             </section>
           </div>
         )}
@@ -4118,7 +4137,7 @@ function DungeonPanel({ game }: { game: GameState }) {
   const [selectedFloor, setSelectedFloor] = useState(unlockedFloor);
   const [now, setNow] = useState(Date.now());
   const [dungeonSuccessFx, setDungeonSuccessFx] = useState<{ token: number; floor: number } | null>(null);
-  const dungeonKeys = countInventoryItem(game, "misc_dungeon_key");
+  const dungeonKeys = countInventoryItem(game, DUNGEON_ITEM_IDS.dungeonKey);
   const currentRoom = activeRun && activeRun.roomIndex < activeRun.rooms.length ? activeRun.rooms[activeRun.roomIndex] : null;
   const dungeonBattleActive = game.activeBattle?.mode === "dungeon";
   const previousRunRef = useRef<typeof activeRun>(activeRun);
@@ -4168,7 +4187,7 @@ function DungeonPanel({ game }: { game: GameState }) {
   }, [activeRun?.floor, activeRun?.roomIndex, currentRoom?.type, game.activeBattle]);
 
   const floorButtons = Array.from({ length: 20 }, (_, index) => index + 1);
-  const dungeonKeyDefinition = game.itemCatalog["misc_dungeon_key"];
+  const dungeonKeyDefinition = game.itemCatalog[DUNGEON_ITEM_IDS.dungeonKey];
   const floorDoorOpenIconUrl = "/assets/dungeon/open_floor.png";
   const floorDoorClosedIconUrl = "/assets/dungeon/closed-floor.png";
   const floorBossIconUrl = "/assets/dungeon/boss.png";
@@ -4468,9 +4487,123 @@ function DungeonPanel({ game }: { game: GameState }) {
   );
 }
 
+function DungeonCompletionModal({
+  game,
+  reward,
+  onClose
+}: {
+  game: GameState;
+  reward: DungeonCompletionPayload;
+  onClose: () => void;
+}) {
+  const country = game.countries.find((entry) => entry.id === reward.countryId);
+  const dungeonKey = game.itemCatalog[DUNGEON_ITEM_IDS.dungeonKey];
+  const monarchKey = game.itemCatalog[DUNGEON_ITEM_IDS.monarchAccessKey];
+  const rewardItems = reward.items
+    .map((entry, index) => {
+      const item = game.itemCatalog[entry.itemId];
+      return item ? { item, quantity: entry.quantity, rarity: entry.rarity, key: `${entry.itemId}:${entry.rarity ?? "stack"}:${index}` } : null;
+    })
+    .filter(Boolean) as Array<{ item: ItemDefinition; quantity: number; rarity?: Rarity; key: string }>;
+  const rarityOrder: Record<Rarity, number> = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+  const sortedRewardItems = [...rewardItems].sort((left, right) => {
+    const leftEquipment = left.item.slot ? 1 : 0;
+    const rightEquipment = right.item.slot ? 1 : 0;
+    if (leftEquipment !== rightEquipment) {
+      return rightEquipment - leftEquipment;
+    }
+    return (rarityOrder[right.rarity ?? "common"] - rarityOrder[left.rarity ?? "common"]) || left.item.name.localeCompare(right.item.name);
+  });
+  const rewardItemCount = rewardItems.reduce((total, entry) => total + entry.quantity, 0);
+
+  return (
+    <div className="drawer-backdrop dungeon-completion-backdrop" role="presentation" onClick={onClose}>
+      <section className="player-action-modal dungeon-completion-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+        <header className="dungeon-completion-head">
+          <span className="dungeon-completion-icon"><CheckCircle2 size={24} /></span>
+          <div>
+            <span className="eyebrow">Andar concluído</span>
+            <h2>Andar {reward.floor} limpo</h2>
+            <small>{country?.name ?? "Masmorra"} • {reward.firstClear ? "Primeira conclusão" : "Conclusão repetida"}</small>
+          </div>
+        </header>
+
+        <div className="dungeon-completion-stats">
+          <article>
+            <Star size={16} />
+            <span>XP</span>
+            <strong>{formatCurrency(reward.experience)}</strong>
+          </article>
+          <article>
+            <Coins size={16} />
+            <span>Ouro</span>
+            <strong>{formatCurrency(reward.gold)}</strong>
+          </article>
+          <article>
+            <Backpack size={16} />
+            <span>Itens</span>
+            <strong>{rewardItemCount}</strong>
+          </article>
+        </div>
+
+        <div className="dungeon-completion-keys">
+          <article className={reward.dungeonKeyQuantity > 0 ? "dungeon-completion-key-card" : "dungeon-completion-key-card muted"}>
+            {dungeonKey ? <ItemVisual item={dungeonKey} className="dungeon-completion-key-visual" quantity={reward.dungeonKeyQuantity || undefined} /> : <KeyRound size={26} />}
+            <div>
+              <span>Chave da Masmorra</span>
+              <strong>{reward.dungeonKeyQuantity > 0 ? `+${reward.dungeonKeyQuantity}` : "Sem bônus"}</strong>
+              <small>{reward.dungeonKeyQuantity > 0 ? "Bônus de primeira conclusão" : "Já recebida neste andar"}</small>
+            </div>
+          </article>
+          <article className="dungeon-completion-key-card featured">
+            {monarchKey ? <ItemVisual item={monarchKey} className="dungeon-completion-key-visual" quantity={reward.monarchKeyQuantity} /> : <Crown size={28} />}
+            <div>
+              <span>Chave do Monarca</span>
+              <strong>+{reward.monarchKeyQuantity}</strong>
+              <small>Entrada para enfrentar o monarca</small>
+            </div>
+          </article>
+        </div>
+
+        <section className="dungeon-completion-items">
+          <h3>Espólios acumulados</h3>
+          {rewardItems.length > 0 ? (
+            <div className="dungeon-completion-item-grid">
+              {sortedRewardItems.map((entry) => (
+                <article className={`dungeon-completion-item${entry.item.slot ? " equipment" : ""} rarity-${entry.rarity ?? "common"}`} key={entry.key}>
+                  <ItemVisual item={entry.item} className="dungeon-completion-item-visual" quantity={entry.quantity > 1 ? entry.quantity : undefined} rarity={entry.rarity} />
+                  <strong>{entry.item.name}</strong>
+                  {entry.item.slot && entry.rarity && <small className={`item-rarity ${entry.rarity}`}>{RARITY_LABELS[entry.rarity]}</small>}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="empty-state">Nenhum item acumulado neste andar.</p>
+          )}
+        </section>
+
+        {reward.discardedItems.length > 0 && (
+          <p className="dungeon-completion-warning">
+            Inventário cheio: {reward.discardedItems.join(", ")} não couberam na mochila.
+          </p>
+        )}
+
+        <div className="benefit-modal-actions">
+          <button className="primary-button" type="button" onClick={onClose}>
+            Continuar
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function MonarchPanel({ game }: { game: GameState }) {
   const event = game.monarchEvent;
-  const highKeys = countInventoryItem(game, "misc_high_dungeon_key");
+  const highKeys = countInventoryItem(game, DUNGEON_ITEM_IDS.monarchAccessKey);
   if (!event) {
     return (
       <section className="content-panel monarch-panel">
@@ -6063,9 +6196,9 @@ function ArenaPanel({ game }: { game: GameState }) {
   const [rankedSearching, setRankedSearching] = useState(false);
   const [rankedStatus, setRankedStatus] = useState<string | null>(null);
   const queued = game.arenaQueueSize > 0;
-  const blueCoins = countInventoryItem(game, "material_blue_coin");
-  const arenaCoinItem = game.itemCatalog["material_gold_coin"];
-  const creationStoneItem = game.itemCatalog["misc_stone_craft"];
+  const blueCoins = countInventoryItem(game, ARENA_ITEM_IDS.blueCoin);
+  const arenaCoinItem = game.itemCatalog[ARENA_ITEM_IDS.arenaCoin];
+  const creationStoneItem = game.itemCatalog[ARENA_ITEM_IDS.creationStone];
   const currentArenaRank = game.rankings.arena.findIndex((entry) => entry.playerId === game.player.id) + 1;
   const hasArenaRank = currentArenaRank > 0;
   const today = new Date().toLocaleDateString("pt-BR", { timeZone: "UTC" });
@@ -6268,7 +6401,7 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
   const npcName = game.currentCity.npcs[shop];
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] : null;
-  const goldCoins = countInventoryItem(game, "material_gold_coin");
+  const goldCoins = countInventoryItem(game, ARENA_ITEM_IDS.arenaCoin);
 
   return (
     <section className="content-panel">
@@ -9523,7 +9656,7 @@ function ShopItemModal({
   const canChooseQuantity = !item.slot;
   const purchaseQuantity = canChooseQuantity ? Math.max(1, Math.min(999, Math.floor(quantity || 1))) : 1;
   const totalPrice = goldCoinMode ? (item.goldCoinPrice ?? 0) * purchaseQuantity : item.price * purchaseQuantity;
-  const playerGoldCoins = goldCoinMode ? countInventoryItem(game, "material_gold_coin") : 0;
+  const playerGoldCoins = goldCoinMode ? countInventoryItem(game, ARENA_ITEM_IDS.arenaCoin) : 0;
   const blockedReason = goldCoinMode
     ? (playerGoldCoins < totalPrice ? "Moedas insuficientes" : !canReceiveShopItem(game, item) ? "Inventário cheio" : null)
     : getNpcShopBlockedReason(game, item, purchaseQuantity);

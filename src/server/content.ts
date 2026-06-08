@@ -13,12 +13,13 @@ import type {
   TemporaryEventDefinition,
   WorkServiceDefinition
 } from "../shared/types";
+import { ITEM_IDS } from "../shared/itemIds";
 
 export const INVENTORY_CAPACITY = 40;
 export const STARTING_CITY_ID = "eldoria";
 
-export const TRAIN_TICKET_ID = "ticket_train";
-export const SHIP_TICKET_ID = "ticket_ship";
+export const TRAIN_TICKET_ID = ITEM_IDS.trainTicket;
+export const SHIP_TICKET_ID = ITEM_IDS.shipTicket;
 
 export const TEMPORARY_EVENTS: TemporaryEventDefinition[] = [
   {
@@ -69,8 +70,8 @@ export const AVATARS: AvatarDefinition[] = [
 ];
 
 export const ITEM_CATALOG: Record<string, ItemDefinition> = {
-  "ticket_train": {
-    "id": "ticket_train",
+  [ITEM_IDS.trainTicket]: {
+    "id": ITEM_IDS.trainTicket,
     "name": "Ticket de Trem",
     "kind": "ticket",
     "minLevel": 1,
@@ -79,8 +80,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Permite viajar de trem entre cidades do mesmo país."
   },
-  "ticket_ship": {
-    "id": "ticket_ship",
+  [ITEM_IDS.shipTicket]: {
+    "id": ITEM_IDS.shipTicket,
     "name": "Ticket de Navio",
     "kind": "ticket",
     "minLevel": 1,
@@ -243,8 +244,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     },
     "description": "Proteção lendária que aumenta defesa e constituição."
   },
-  "material_blue_coin": {
-    "id": "material_blue_coin",
+  [ITEM_IDS.blueCoin]: {
+    "id": ITEM_IDS.blueCoin,
     "name": "Moeda Azul",
     "kind": "material",
     "imageUrl": "/assets/items/materials/blue_coin.png",
@@ -254,8 +255,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Entrada azul para desafios e recompensas da arena."
   },
-  "material_gold_coin": {
-    "id": "material_gold_coin",
+  [ITEM_IDS.arenaCoin]: {
+    "id": ITEM_IDS.arenaCoin,
     "name": "Moeda da Arena",
     "kind": "material",
     "imageUrl": "/assets/items/materials/gold_coin.png",
@@ -274,8 +275,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Osso resistente para receitas rústicas e aprimoramentos básicos."
   },
-  "material_celena": {
-    "id": "material_celena",
+  [ITEM_IDS.celena]: {
+    "id": ITEM_IDS.celena,
     "name": "Celena",
     "kind": "material",
     "imageUrl": "/assets/items/materials/celena.png",
@@ -434,8 +435,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Essência arcana para alquimia e forjas mágicas."
   },
-  "material_midran": {
-    "id": "material_midran",
+  [ITEM_IDS.midran]: {
+    "id": ITEM_IDS.midran,
     "name": "Midran",
     "kind": "material",
     "imageUrl": "/assets/items/materials/midran.png",
@@ -464,8 +465,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Joia enigmática para refinamentos superiores e amuletos raros."
   },
-  "material_old_stone": {
-    "id": "material_old_stone",
+  [ITEM_IDS.oldStone]: {
+    "id": ITEM_IDS.oldStone,
     "name": "Pedra Antiga",
     "kind": "material",
     "imageUrl": "/assets/items/materials/old_stone.png",
@@ -574,8 +575,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Pergaminho refinado para receitas e efeitos especiais."
   },
-  "misc_eran": {
-    "id": "misc_eran",
+  [ITEM_IDS.eranStone]: {
+    "id": ITEM_IDS.eranStone,
     "name": "Pedra de Eran",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/eran.png",
@@ -794,8 +795,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Reagente de Serlen usado em receitas especiais."
   },
-  "misc_stone_craft": {
-    "id": "misc_stone_craft",
+  [ITEM_IDS.creationStone]: {
+    "id": ITEM_IDS.creationStone,
     "name": "Pedra de Criação",
     "kind": "misc",
     "imageUrl": "/assets/items/misc/stone-craft.png",
@@ -1620,7 +1621,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
       "necropole_de_morthaly"
     ],
     "name": "Condensar Pedra Antiga",
-    "resultItemId": "material_old_stone",
+    "resultItemId": ITEM_IDS.oldStone,
     "resultQuantity": 1,
     "goldCost": 180,
     "ingredients": [
@@ -1633,7 +1634,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 1
       }
     ]
@@ -1647,12 +1648,12 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
       "necropole_de_morthaly"
     ],
     "name": "Refinar Pedra de Eran",
-    "resultItemId": "misc_eran",
+    "resultItemId": ITEM_IDS.eranStone,
     "resultQuantity": 1,
     "goldCost": 420,
     "ingredients": [
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 3
       },
       {
@@ -1664,7 +1665,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 2
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 1
       }
     ]
@@ -1678,16 +1679,16 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
       "necropole_de_morthaly"
     ],
     "name": "Lapidar Celena",
-    "resultItemId": "material_celena",
+    "resultItemId": ITEM_IDS.celena,
     "resultQuantity": 1,
     "goldCost": 820,
     "ingredients": [
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 2
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 2
       },
       {
@@ -1699,7 +1700,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 2
       }
     ]
@@ -1713,20 +1714,20 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
       "necropole_de_morthaly"
     ],
     "name": "Forjar Núcleo de Midran",
-    "resultItemId": "material_midran",
+    "resultItemId": ITEM_IDS.midran,
     "resultQuantity": 1,
     "goldCost": 1600,
     "ingredients": [
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 2
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 2
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 4
       },
       {
@@ -1734,7 +1735,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 3
       }
     ]
@@ -1765,7 +1766,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 2
       }
     ]
@@ -1796,7 +1797,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 2
       }
     ]
@@ -1819,7 +1820,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 2
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 1
       },
       {
@@ -1827,7 +1828,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 4
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 3
       }
     ]
@@ -1850,7 +1851,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 2
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 1
       },
       {
@@ -1858,7 +1859,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 4
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 3
       }
     ]
@@ -1879,7 +1880,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 2
       },
       {
@@ -1891,7 +1892,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 4
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 1
       }
     ]
@@ -1912,7 +1913,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 2
       },
       {
@@ -1924,7 +1925,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 2
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 1
       }
     ]
@@ -1945,11 +1946,11 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 4
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 2
       },
       {
@@ -1957,7 +1958,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 4
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 2
       }
     ]
@@ -1978,11 +1979,11 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 4
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 2
       },
       {
@@ -1990,7 +1991,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 4
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 2
       }
     ]
@@ -2027,7 +2028,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 6
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 3
       }
     ]
@@ -2048,15 +2049,15 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 4
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 3
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 1
       },
       {
@@ -2064,7 +2065,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 3
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 3
       }
     ]
@@ -2085,15 +2086,15 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 4
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 3
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 1
       },
       {
@@ -2101,7 +2102,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 4
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 3
       }
     ]
@@ -2122,19 +2123,19 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 6
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 4
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 2
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 1
       },
       {
@@ -2142,7 +2143,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 3
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 4
       }
     ]
@@ -2163,19 +2164,19 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 6
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 4
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 2
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 1
       },
       {
@@ -2183,7 +2184,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 6
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 4
       }
     ]
@@ -2208,15 +2209,15 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 2
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 1
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 4
       }
     ]
@@ -2237,19 +2238,19 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 8
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 5
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 3
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 2
       },
       {
@@ -2261,7 +2262,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 5
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 5
       }
     ]
@@ -2282,19 +2283,19 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 8
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 5
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 3
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 2
       },
       {
@@ -2306,7 +2307,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 5
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 5
       }
     ]
@@ -2331,19 +2332,19 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 10
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 8
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 5
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 4
       },
       {
@@ -2351,7 +2352,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 5
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 6
       }
     ]
@@ -2376,19 +2377,19 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "quantity": 10
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "quantity": 8
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "quantity": 5
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 4
       },
       {
@@ -2396,7 +2397,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 8
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 6
       }
     ]
@@ -2445,7 +2446,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 1
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "quantity": 4
       },
       {
@@ -2453,7 +2454,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 4
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "quantity": 6
       }
     ]
@@ -2591,13 +2592,13 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     rewardsPerHour: {
       experience: 18,
       gold: 55,
-      items: [{ itemId: "material_old_stone", quantity: 0.18 }]
+      items: [{ itemId: ITEM_IDS.oldStone, quantity: 0.18 }]
     },
     bonus: {
       level: 5,
       description: "Fornecimento da fornalha: resgate 2 Pedras Antigas a cada 20 horas.",
       periodicHours: 20,
-      periodicReward: { items: [{ itemId: "material_old_stone", quantity: 2 }] }
+      periodicReward: { items: [{ itemId: ITEM_IDS.oldStone, quantity: 2 }] }
     }
   },
   {
@@ -2615,7 +2616,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
       experience: 26,
       gold: 80,
       items: [
-        { itemId: "material_old_stone", quantity: 0.24 },
+        { itemId: ITEM_IDS.oldStone, quantity: 0.24 },
         { itemId: "material_eran_fragment", quantity: 0.08 }
       ]
     },
@@ -2660,7 +2661,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     rewardsPerHour: {
       experience: 30,
       gold: 130,
-      items: [{ itemId: "ticket_train", quantity: 0.05 }]
+      items: [{ itemId: ITEM_IDS.trainTicket, quantity: 0.05 }]
     },
     bonus: {
       level: 5,
@@ -2772,7 +2773,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     rewardsPerHour: {
       experience: 48,
       gold: 90,
-      items: [{ itemId: "material_celena", quantity: 0.06 }]
+      items: [{ itemId: ITEM_IDS.celena, quantity: 0.06 }]
     },
     bonus: {
       level: 4,
@@ -2794,7 +2795,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
     rewardsPerHour: {
       experience: 56,
       gold: 110,
-      items: [{ itemId: "material_midran", quantity: 0.05 }]
+      items: [{ itemId: ITEM_IDS.midran, quantity: 0.05 }]
     },
     bonus: {
       level: 5,
@@ -2818,8 +2819,8 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
       gold: 75,
       diamonds: 0.05,
       items: [
-        { itemId: "misc_stone_craft", quantity: 0.04 },
-        { itemId: "material_midran", quantity: 0.05 }
+        { itemId: ITEM_IDS.creationStone, quantity: 0.04 },
+        { itemId: ITEM_IDS.midran, quantity: 0.05 }
       ]
     },
     bonus: {
@@ -2843,7 +2844,7 @@ export const WORK_SERVICES: WorkServiceDefinition[] = [
       experience: 58,
       gold: 160,
       diamonds: 0.06,
-      items: [{ itemId: "ticket_ship", quantity: 0.04 }]
+      items: [{ itemId: ITEM_IDS.shipTicket, quantity: 0.04 }]
     },
     bonus: {
       level: 8,
@@ -2918,8 +2919,8 @@ export const CITIES: CityDefinition[] = [
       "energy_potion_medium"
     ],
     "moneyChangerItemIds": [
-      "ticket_train",
-      "ticket_ship",
+      ITEM_IDS.trainTicket,
+      ITEM_IDS.shipTicket,
       "oblivion_scroll",
       "memory_scroll"
     ]
@@ -3136,8 +3137,8 @@ export const CITIES: CityDefinition[] = [
       "misc_dungeon_key"
     ],
     "moneyChangerItemIds": [
-      "ticket_train",
-      "ticket_ship",
+      ITEM_IDS.trainTicket,
+      ITEM_IDS.shipTicket,
       "oblivion_scroll",
       "memory_scroll"
     ]
@@ -3218,7 +3219,7 @@ export const CITIES: CityDefinition[] = [
       "celtic_yellow_amulet",
     ],
     "goldCoinMerchantItemIds": [
-      "material_blue_coin",
+      ITEM_IDS.blueCoin,
       "energy_potion_high",
       "health_potion_high",
       "oblivion_scroll",
@@ -3311,8 +3312,8 @@ export const CITIES: CityDefinition[] = [
       "zombie_rat"
     ],
     "moneyChangerItemIds": [
-      "ticket_train",
-      "ticket_ship",
+      ITEM_IDS.trainTicket,
+      ITEM_IDS.shipTicket,
       "oblivion_scroll",
       "memory_scroll"
     ]
@@ -3929,7 +3930,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0221
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "chance": 0.0161
       },
       {
@@ -4342,7 +4343,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0167
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0384
       },
       {
@@ -4393,19 +4394,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0348
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0243
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0179
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -4452,7 +4453,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0164
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.039
       },
       {
@@ -4495,15 +4496,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0176
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0361
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0253
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0184
       },
       {
@@ -4546,15 +4547,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0244
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.036
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0252
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0184
       },
       {
@@ -4593,7 +4594,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.075
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "chance": 0.023
       },
       {
@@ -4601,7 +4602,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0167
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0383
       },
       {
@@ -4644,7 +4645,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0164
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0389
       },
       {
@@ -4687,7 +4688,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0164
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0389
       },
       {
@@ -4765,7 +4766,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0166
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0384
       },
       {
@@ -4816,19 +4817,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0347
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0243
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0179
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -4875,11 +4876,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0171
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0372
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.026
       },
       {
@@ -4926,7 +4927,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0166
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0384
       },
       {
@@ -4969,11 +4970,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0172
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0371
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.026
       },
       {
@@ -5020,7 +5021,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0165
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0389
       },
       {
@@ -5063,11 +5064,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0172
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.037
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0259
       },
       {
@@ -5114,15 +5115,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0172
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.037
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0259
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0188
       },
       {
@@ -5169,15 +5170,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0172
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.037
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0259
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0188
       },
       {
@@ -5224,7 +5225,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0167
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0382
       },
       {
@@ -5267,7 +5268,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0167
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0382
       },
       {
@@ -5310,11 +5311,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0171
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0372
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.026
       },
       {
@@ -5361,7 +5362,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0167
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0382
       },
       {
@@ -5404,7 +5405,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0168
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0381
       },
       {
@@ -5447,7 +5448,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0168
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0381
       },
       {
@@ -5490,11 +5491,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0168
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.038
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0266
       },
       {
@@ -5537,7 +5538,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0166
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0385
       },
       {
@@ -5576,15 +5577,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0232
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "chance": 0.0168
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0379
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0266
       },
       {
@@ -5627,7 +5628,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0165
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0387
       },
       {
@@ -5666,7 +5667,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0166
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0386
       },
       {
@@ -5709,11 +5710,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0168
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0379
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0265
       },
       {
@@ -5756,7 +5757,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0165
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0387
       },
       {
@@ -5799,7 +5800,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0165
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0387
       },
       {
@@ -5842,7 +5843,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0166
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0386
       },
       {
@@ -5885,11 +5886,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0169
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0379
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0265
       },
       {
@@ -5932,11 +5933,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0169
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0377
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0264
       },
       {
@@ -5983,11 +5984,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0169
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0378
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0265
       },
       {
@@ -6030,11 +6031,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0169
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0377
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0264
       },
       {
@@ -6120,11 +6121,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0169
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0377
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0264
       },
       {
@@ -6171,11 +6172,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.017
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0376
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0263
       },
       {
@@ -6222,11 +6223,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.017
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0376
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0263
       },
       {
@@ -6273,7 +6274,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0165
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0388
       },
       {
@@ -6316,11 +6317,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.017
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0375
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0263
       },
       {
@@ -6367,11 +6368,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.017
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0374
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0262
       },
       {
@@ -6418,15 +6419,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0175
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0362
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0253
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0185
       },
       {
@@ -6473,11 +6474,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.017
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0374
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0262
       },
       {
@@ -6524,11 +6525,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0171
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0374
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0261
       },
       {
@@ -6575,11 +6576,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0171
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0373
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0261
       },
       {
@@ -6626,15 +6627,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0172
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0369
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0258
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0188
       },
       {
@@ -6681,15 +6682,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0173
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0369
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0258
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0187
       },
       {
@@ -6736,15 +6737,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0173
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0368
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0258
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0187
       },
       {
@@ -6791,15 +6792,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0173
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0367
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0257
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0187
       },
       {
@@ -6846,15 +6847,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0173
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0367
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0257
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0187
       },
       {
@@ -6901,11 +6902,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0171
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0372
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0261
       },
       {
@@ -6952,15 +6953,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0173
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0367
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0257
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0187
       },
       {
@@ -7007,15 +7008,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0174
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0366
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0256
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0186
       },
       {
@@ -7062,15 +7063,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0174
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0365
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0256
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0186
       },
       {
@@ -7109,7 +7110,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.055
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "chance": 0.0241
       },
       {
@@ -7117,15 +7118,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0174
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0365
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0255
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0186
       },
       {
@@ -7172,15 +7173,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0174
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0365
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0255
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0186
       },
       {
@@ -7235,19 +7236,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0347
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0243
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0179
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -7294,15 +7295,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0174
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0364
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0255
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0186
       },
       {
@@ -7349,15 +7350,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0175
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0364
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0254
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0185
       },
       {
@@ -7404,15 +7405,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0175
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0363
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0254
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0185
       },
       {
@@ -7463,15 +7464,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0175
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0362
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0254
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0185
       },
       {
@@ -7518,15 +7519,15 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0175
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0362
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0253
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0185
       },
       {
@@ -7573,19 +7574,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0176
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.036
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0252
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0184
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0132
       },
       {
@@ -7640,19 +7641,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0176
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.036
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0252
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0184
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0132
       },
       {
@@ -7707,19 +7708,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0176
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0359
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0251
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0184
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0132
       },
       {
@@ -7774,19 +7775,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0177
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0358
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0251
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0183
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0132
       },
       {
@@ -7841,19 +7842,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0346
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0242
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0178
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -7908,19 +7909,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0345
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0242
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0178
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -7975,19 +7976,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.035
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0245
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.018
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -8042,19 +8043,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0177
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0358
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0251
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0183
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0132
       },
       {
@@ -8101,19 +8102,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0177
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0358
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.025
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0183
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0132
       },
       {
@@ -8168,19 +8169,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0179
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0353
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0247
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0181
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8235,19 +8236,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0177
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0357
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.025
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0183
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8294,19 +8295,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0177
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0357
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.025
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0183
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8361,19 +8362,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0178
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0356
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0249
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0182
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8416,23 +8417,23 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0247
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "chance": 0.0178
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0355
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0249
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0182
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8487,19 +8488,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0178
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0355
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0249
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0182
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8554,19 +8555,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0178
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0355
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0248
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0182
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8625,19 +8626,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0178
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0354
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0248
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0182
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8696,19 +8697,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0179
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0353
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0247
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0181
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -8767,19 +8768,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0344
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0241
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0178
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -8838,19 +8839,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0343
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.024
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0177
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -8905,19 +8906,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0345
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0242
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0178
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -8968,7 +8969,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.01
       },
       {
-        "itemId": "misc_stone_craft",
+        "itemId": ITEM_IDS.creationStone,
         "chance": 0.025
       },
       {
@@ -8976,19 +8977,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0345
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0241
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0178
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -9047,19 +9048,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0179
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0353
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0247
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0181
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0131
       },
       {
@@ -9110,19 +9111,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.025
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0349
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0244
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.018
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9177,19 +9178,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0179
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0352
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0246
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0181
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9244,19 +9245,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0348
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0244
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0179
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9311,19 +9312,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0179
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0352
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0246
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0181
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9378,19 +9379,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0351
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0246
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.018
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9449,19 +9450,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0343
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.024
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0177
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -9520,19 +9521,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0343
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.024
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0177
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0129
       },
       {
@@ -9587,19 +9588,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0348
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0244
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0179
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9654,19 +9655,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0342
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0239
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0177
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0128
       },
       {
@@ -9721,19 +9722,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0341
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0239
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0177
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0128
       },
       {
@@ -9788,19 +9789,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.035
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0245
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.018
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9855,19 +9856,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.035
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0245
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.018
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.013
       },
       {
@@ -9922,19 +9923,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.0341
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0239
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0176
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0128
       },
       {
@@ -9989,19 +9990,19 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.018
       },
       {
-        "itemId": "material_old_stone",
+        "itemId": ITEM_IDS.oldStone,
         "chance": 0.034
       },
       {
-        "itemId": "misc_eran",
+        "itemId": ITEM_IDS.eranStone,
         "chance": 0.0238
       },
       {
-        "itemId": "material_celena",
+        "itemId": ITEM_IDS.celena,
         "chance": 0.0176
       },
       {
-        "itemId": "material_midran",
+        "itemId": ITEM_IDS.midran,
         "chance": 0.0128
       },
       {
