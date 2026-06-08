@@ -316,6 +316,16 @@ export interface TemporaryEventView extends TemporaryEventDefinition {
   nowMs: number;
 }
 
+export interface GameNewsDefinition {
+  id: string;
+  category: string;
+  title: string;
+  headline: string;
+  publishedAt: string;
+  body: string[];
+  highlights?: string[];
+}
+
 export type MonarchEventStatus = "active" | "defeated" | "expired";
 
 export interface MonarchRankingEntry {

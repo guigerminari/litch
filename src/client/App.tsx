@@ -27,6 +27,7 @@ import {
   LogOut,
   Mail,
   MapPinned,
+  Menu,
   MessageCircle,
   ScrollText,
   Send,
@@ -104,7 +105,7 @@ import {
 import { formatTemporaryEventBonusPercent } from "../shared/temporaryEvents";
 import { CLAN_CRESTS, getClanCrestDefinition, normalizeClanCrestId, type ClanCrestId } from "../shared/clan";
 import { ARENA_ITEM_IDS, DUNGEON_ITEM_IDS, TRAVEL_ITEM_IDS } from "../shared/itemIds";
-import { CRAFTING_RECIPES } from "../server/content";
+import { CRAFTING_RECIPES, GAME_NEWS } from "../server/content";
 import { socket } from "./socket";
 
 type View =
@@ -126,7 +127,8 @@ type View =
   | "monarch"
   | "rankings"
   | "gameShop"
-  | "clan";
+  | "clan"
+  | "moreInfo";
 
 type AuthMode = "login" | "register" | "forgot" | "reset";
 
@@ -815,6 +817,7 @@ export function App() {
             clearFirstClickNotice("guide");
             setUtilityModal("guide");
           }}
+          onMore={() => setViewSafely("moreInfo")}
           onLogout={logout}
           firstClickNotices={{
             exchange: !firstClickNoticeSeen.exchange,
@@ -1171,30 +1174,74 @@ function PlayerActionModal({
   );
 }
 
-function UtilityStrip({
+function TopMenu({
+  onRanking,
   onSettings,
   onGuide,
+  onMore,
   onLogout,
+  rankingNotice,
   guideNotice
 }: {
+  onRanking: () => void;
   onSettings: () => void;
   onGuide: () => void;
+  onMore: () => void;
   onLogout: () => void;
+  rankingNotice?: boolean;
   guideNotice?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
+  const hasNotice = Boolean(rankingNotice || guideNotice);
+  const trigger = (action: () => void) => {
+    setOpen(false);
+    action();
+  };
+
   return (
-    <nav className="utility-strip" aria-label="Menu do jogador">
-      <button type="button" title="Configuração" aria-label="Configuração" onClick={onSettings}>
-        <Settings size={15} />
+    <div className="top-menu">
+      <button
+        type="button"
+        className="stat-pill stat-action top-menu-trigger"
+        title="Menu"
+        aria-label="Menu"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <Menu size={17} />
+        {hasNotice && <span className="attention-dot" aria-hidden="true" />}
       </button>
-      <button type="button" title="Guia" aria-label="Guia" onClick={onGuide}>
-        <BookOpen size={15} />
-        {guideNotice && <span className="attention-dot" aria-hidden="true" />}
-      </button>
-      <button type="button" title="Logoff" aria-label="Logoff" onClick={onLogout}>
-        <LogOut size={15} />
-      </button>
-    </nav>
+      {open && (
+        <>
+          <button type="button" className="top-menu-backdrop" aria-label="Fechar menu" onClick={() => setOpen(false)} />
+          <nav className="top-menu-popover" aria-label="Menu do jogador" role="menu">
+            <button type="button" role="menuitem" onClick={() => trigger(onRanking)}>
+              <Trophy size={16} />
+              <span>Ranking</span>
+              {rankingNotice && <span className="menu-attention-dot" aria-hidden="true" />}
+            </button>
+            <button type="button" role="menuitem" onClick={() => trigger(onGuide)}>
+              <BookOpen size={16} />
+              <span>Guia</span>
+              {guideNotice && <span className="menu-attention-dot" aria-hidden="true" />}
+            </button>
+            <button type="button" role="menuitem" onClick={() => trigger(onSettings)}>
+              <Settings size={16} />
+              <span>Config</span>
+            </button>
+            <button type="button" role="menuitem" onClick={() => trigger(onMore)}>
+              <Info size={16} />
+              <span>Saber Mais</span>
+            </button>
+            <button type="button" role="menuitem" onClick={() => trigger(onLogout)}>
+              <LogOut size={16} />
+              <span>Logoff</span>
+            </button>
+          </nav>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -1208,6 +1255,7 @@ function Header({
   onNotifications,
   onSettings,
   onGuide,
+  onMore,
   onLogout,
   firstClickNotices
 }: {
@@ -1220,6 +1268,7 @@ function Header({
   onNotifications: () => void;
   onSettings: () => void;
   onGuide: () => void;
+  onMore: () => void;
   onLogout: () => void;
   firstClickNotices: Record<FirstClickNoticeKey, boolean>;
 }) {
@@ -1271,14 +1320,6 @@ function Header({
             {firstClickNotices.diamonds && <span className="attention-dot" aria-hidden="true" />}
           </button>
           <button
-            className="stat-pill stat-action"
-            title="Ranking"
-            onClick={onRanking}
-          >
-            <Trophy size={17} style={{ color: "var(--gold)" }} />
-            {firstClickNotices.ranking && <span className="attention-dot" aria-hidden="true" />}
-          </button>
-          <button
             className="stat-pill stat-action notification-top-button"
             title="Notificações"
             onClick={onNotifications}
@@ -1287,7 +1328,15 @@ function Header({
             {unreadNotifications > 0 && <span className="notification-count">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}
           </button>
 
-          <UtilityStrip onSettings={onSettings} onGuide={onGuide} onLogout={onLogout} guideNotice={firstClickNotices.guide} />
+          <TopMenu
+            onRanking={onRanking}
+            onSettings={onSettings}
+            onGuide={onGuide}
+            onMore={onMore}
+            onLogout={onLogout}
+            rankingNotice={firstClickNotices.ranking}
+            guideNotice={firstClickNotices.guide}
+          />
         </div>
         <div className="resource-stack">
           <ResourceBar
@@ -1615,7 +1664,7 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
   );
 }
 
-type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "dungeon" | "creation" | "items" | "monsters" | "monarchs" | "developer" | "stats";
+type GuideTab = "history" | "faq" | "world" | "work" | "arena" | "dungeon" | "creation" | "items" | "monsters" | "monarchs" | "stats";
 type CraftingStationTab = "blacksmith" | "alchemist";
 
 function HistoryGuide() {
@@ -1718,8 +1767,6 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   const [monsterFilter, setMonsterFilter] = useState("");
   const [monsterCity, setMonsterCity] = useState("all");
   const [selectedMonsterId, setSelectedMonsterId] = useState("");
-  const [developerSubject, setDeveloperSubject] = useState("");
-  const [developerMessage, setDeveloperMessage] = useState("");
   const countriesById = new Map(game.countries.map((country) => [country.id, country]));
   const citiesById = new Map(game.cities.map((city) => [city.id, city]));
   const allItems = Object.values(game.itemCatalog).sort((a, b) => {
@@ -1788,14 +1835,6 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
   };
 
-  const sendDeveloperMessage = (event: FormEvent) => {
-    event.preventDefault();
-    if (!developerMessage.trim()) return;
-    socket.emit("developer:message", { subject: developerSubject, message: developerMessage });
-    setDeveloperSubject("");
-    setDeveloperMessage("");
-  };
-
   const tabs: Array<{ id: GuideTab; label: string; icon: React.ReactNode }> = [
     { id: "history", label: "História", icon: <GameIcon name="history" size={18} /> },
     { id: "faq", label: "FAQ", icon: <GameIcon name="faq" size={18} /> },
@@ -1807,7 +1846,6 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     { id: "items", label: "Itens", icon: <GameIcon name="inventory" size={18} /> },
     { id: "monsters", label: "Monstros", icon: <GameIcon name="hunt" size={18} /> },
     { id: "monarchs", label: "Monarcas", icon: <GameIcon name="monarch" size={18} /> },
-    { id: "developer", label: "Dev", icon: <GameIcon name="dev" size={18} /> },
     { id: "stats", label: "Stats", icon: <GameIcon name="stats" size={18} /> }
   ];
 
@@ -2203,27 +2241,6 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
           </div>
         )}
 
-        {tab === "developer" && (
-          <form className="utility-form" onSubmit={sendDeveloperMessage}>
-            <div className="guide-copy developer-copy">
-              <h3>Fale com o desenvolvedor</h3>
-              <p>Obrigado por jogar e testar Litch. Cada bug reportado, sugestão de balanceamento e comentário sobre a experiência ajuda a deixar o jogo mais vivo, justo e divertido.</p>
-              <p>Use este canal para contar o que travou seu progresso, qual sistema ficou confuso, que item parece forte demais ou que ideia você gostaria de ver no mundo.</p>
-            </div>
-            <label>
-              <span>Assunto</span>
-              <input value={developerSubject} onChange={(event) => setDeveloperSubject(event.target.value)} placeholder="Bug, sugestão ou dúvida" />
-            </label>
-            <label>
-              <span>Mensagem</span>
-              <textarea value={developerMessage} onChange={(event) => setDeveloperMessage(event.target.value)} placeholder="Escreva sua mensagem direta ao desenvolvedor" />
-            </label>
-            <button className="primary-button" disabled={!developerMessage.trim()} type="submit">
-              <Send size={15} /> Enviar
-            </button>
-          </form>
-        )}
-
         {tab === "stats" && (
           <div className="guide-stat-grid">
             <Metric icon={<Users size={17} />} label="Recrutas" value={game.registeredPlayersCount} />
@@ -2238,6 +2255,210 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
         {selectedMonster && <GuideMonsterDetail monster={selectedMonster} game={game} onClose={() => setSelectedMonsterId("")} />}
       </section>
     </div>
+  );
+}
+
+function MoreInfoPanel({ game }: { game: GameState }) {
+  const [developerSubject, setDeveloperSubject] = useState("");
+  const [developerMessage, setDeveloperMessage] = useState("");
+
+  const sendDeveloperMessage = (event: FormEvent) => {
+    event.preventDefault();
+    if (!developerMessage.trim()) return;
+    socket.emit("developer:message", { subject: developerSubject, message: developerMessage });
+    setDeveloperSubject("");
+    setDeveloperMessage("");
+  };
+
+  const formatDate = (timestamp: number) =>
+    new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    }).format(new Date(timestamp));
+  const formatDateTime = (timestamp: number) =>
+    new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(new Date(timestamp));
+  const formatDateRange = (startsAtMs: number, endsAtMs?: number) => {
+    if (!endsAtMs || startsAtMs === endsAtMs) return formatDate(startsAtMs);
+    return `${formatDate(startsAtMs)} - ${formatDate(endsAtMs)}`;
+  };
+  const parseArenaSeasonStart = (key: string) => {
+    const [year, month] = key.split("-").map(Number);
+    if (!year || !month) return Date.now();
+    return new Date(year, month - 1, 1).getTime();
+  };
+  const arenaSeasonStartMs = parseArenaSeasonStart(game.arenaSeasonKey);
+  const arenaSeasonEndMs = (() => {
+    const [year, month] = game.arenaSeasonKey.split("-").map(Number);
+    if (!year || !month) return arenaSeasonStartMs;
+    return new Date(year, month, 0, 23, 59, 59).getTime();
+  })();
+  const monarchDayStartMs = (() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today.getTime();
+  })();
+  const calendarEntries = [
+    ...game.activeEvents.map((event) => ({
+      id: `event-${event.id}`,
+      startsAtMs: event.startsAtMs,
+      endsAtMs: event.endsAtMs,
+      title: event.name,
+      status: "Evento temporário",
+      description: `${event.subtitle ? `${event.subtitle}. ` : ""}${event.description}`
+    })),
+    {
+      id: "arena-season",
+      startsAtMs: arenaSeasonStartMs,
+      endsAtMs: arenaSeasonEndMs,
+      title: "Temporada da Arena",
+      status: "Ranking mensal",
+      description: "A temporada atual mede os pontos da Arena Ranqueada e entrega recompensas ao virar o ciclo."
+    },
+    {
+      id: "monarch-day",
+      startsAtMs: monarchDayStartMs,
+      endsAtMs: monarchDayStartMs + 24 * 60 * 60 * 1000 - 1,
+      title: "Monarcas de Morthaly",
+      status: game.monarchEvent ? game.monarchEvent.status : "Diário",
+      description: game.monarchEvent
+        ? `${game.monarchEvent.name} está ${game.monarchEvent.status}.`
+        : "Evento diário dos monarcas ainda não carregado."
+    }
+  ].sort((a, b) => a.startsAtMs - b.startsAtMs || a.title.localeCompare(b.title));
+  const pastArenaWinner = game.lastArenaSeason?.ranking[0];
+  const pastEvents = [
+    {
+      id: "beta-prep",
+      title: "Preparação do beta",
+      dateMs: new Date("2026-05-01T00:00:00-03:00").getTime(),
+      description: "Primeiro ciclo de ajustes para estabilizar conta, combate, inventário, mercado e progressão."
+    },
+    ...(game.lastArenaSeason
+      ? [
+          {
+            id: "last-arena-season",
+            title: "Última temporada da Arena",
+            dateMs: parseArenaSeasonStart(game.lastArenaSeason.seasonKey),
+            description: `${game.lastArenaSeason.seasonKey}${pastArenaWinner ? ` - campeão: ${pastArenaWinner.name}.` : "."}`
+          }
+        ]
+      : [
+          {
+            id: "last-arena-season-empty",
+            title: "Temporadas encerradas",
+            dateMs: Date.now(),
+            description: "Ainda não há temporada anterior registrada."
+          }
+        ])
+  ].sort((a, b) => b.dateMs - a.dateMs);
+
+  return (
+    <section className="content-panel more-info-page">
+      <PanelTitle icon={<Info size={20} />} title="Saber Mais" />
+
+      <div className="more-info-content">
+        <section className="more-section newsroom-section">
+          <div className="more-section-heading">
+            <span className="eyebrow">Noticiário</span>
+            <h3>Últimas notícias</h3>
+            <p>Comunicados oficiais, contexto do beta e próximos passos do desenvolvimento.</p>
+          </div>
+          <div className="newsroom-list">
+            {GAME_NEWS.map((entry) => (
+              <article className="news-article" key={entry.id}>
+                <div className="news-meta">
+                  <span>{entry.category}</span>
+                  <time dateTime={entry.publishedAt}>{formatDateTime(new Date(entry.publishedAt).getTime())}</time>
+                </div>
+                <h4>{entry.title}</h4>
+                <strong className="news-headline">{entry.headline}</strong>
+                <div className="news-body">
+                  {entry.body.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+                {entry.highlights && (
+                  <ul className="news-highlight-list">
+                    {entry.highlights.map((highlight) => (
+                      <li key={highlight}>
+                        <ChevronRight size={15} />
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="more-section">
+          <div className="more-section-heading">
+            <span className="eyebrow">Agenda</span>
+            <h3>Calendário de eventos</h3>
+            <p>Timeline ordenada por data de início, reunindo eventos temporários, temporada e monarcas.</p>
+          </div>
+          <div className="event-timeline">
+            {calendarEntries.map((entry) => (
+              <article className="event-timeline-item" key={entry.id}>
+                <time>{formatDateRange(entry.startsAtMs, entry.endsAtMs)}</time>
+                <div className="event-timeline-marker" aria-hidden="true" />
+                <div className="event-timeline-card">
+                  <span>{entry.status}</span>
+                  <strong>{entry.title}</strong>
+                  <p>{entry.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="more-section">
+          <div className="more-section-heading">
+            <span className="eyebrow">Histórico</span>
+            <h3>Eventos passados</h3>
+          </div>
+          <div className="past-event-list">
+            {pastEvents.map((entry) => (
+              <article className="past-event-card" key={entry.id}>
+                <CheckCircle2 size={18} />
+                <div>
+                  <time>{formatDate(entry.dateMs)}</time>
+                  <strong>{entry.title}</strong>
+                  <span>{entry.description}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <form className="utility-form more-developer-form" onSubmit={sendDeveloperMessage}>
+          <div className="guide-copy developer-copy">
+            <h3>Fale com o desenvolvedor</h3>
+            <p>Obrigado por jogar e testar Litch. Cada bug reportado, sugestão de balanceamento e comentário sobre a experiência ajuda a deixar o jogo mais vivo, justo e divertido.</p>
+            <p>Use este canal para contar o que travou seu progresso, qual sistema ficou confuso, que item parece forte demais ou que ideia você gostaria de ver no mundo.</p>
+          </div>
+          <label>
+            <span>Assunto</span>
+            <input value={developerSubject} onChange={(event) => setDeveloperSubject(event.target.value)} placeholder="Bug, sugestão ou dúvida" />
+          </label>
+          <label>
+            <span>Mensagem</span>
+            <textarea value={developerMessage} onChange={(event) => setDeveloperMessage(event.target.value)} placeholder="Escreva sua mensagem direta ao desenvolvedor" />
+          </label>
+          <button className="primary-button" disabled={!developerMessage.trim()} type="submit">
+            <Send size={15} /> Enviar
+          </button>
+        </form>
+      </div>
+    </section>
   );
 }
 
@@ -3339,6 +3560,9 @@ function GamePane({
   }
   if (view === "clan") {
     return <ClanPanel game={game} />;
+  }
+  if (view === "moreInfo") {
+    return <MoreInfoPanel game={game} />;
   }
 
   return <CityOverview game={game} setView={setView} />;

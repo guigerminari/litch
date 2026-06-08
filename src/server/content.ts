@@ -5,6 +5,7 @@ import type {
   ClanSuperBenefitDefinition,
   CountryDefinition,
   CraftingRecipe,
+  GameNewsDefinition,
   GameShopPackage,
   HuntingLocationDefinition,
   ItemDefinition,
@@ -39,6 +40,54 @@ export const TEMPORARY_EVENTS: TemporaryEventDefinition[] = [
         xpBonusPercent: 0.5,
         goldBonusPercent: 0.5
       }
+    ]
+  }
+];
+
+export const GAME_NEWS: GameNewsDefinition[] = [
+  {
+    id: "roadmap_next_update",
+    category: "Roadmap",
+    title: "Próxima atualização mira combate, classes e clãs",
+    headline: "O próximo ciclo de desenvolvimento vai dar mais identidade ao personagem e mais objetivos coletivos aos clãs.",
+    publishedAt: "2026-06-08T08:00:00-03:00",
+    body: [
+      "A próxima atualização vai ampliar a forma como cada jogador participa das batalhas. A ideia é reduzir a sensação de combate estático, criar escolhas durante a luta e abrir espaço para estilos de personagem mais definidos.",
+      "As classes também entram como uma camada importante de identidade. Paladino, Assassino e Gladiador terão papéis diferentes, com habilidades e talentos específicos para reforçar tanque, dano e versatilidade.",
+      "Além do combate individual, o roadmap inclui sistemas sociais e competitivos para clãs, criando mais motivos para organização, progressão coletiva e disputa entre grupos."
+    ],
+    highlights: [
+      "Habilidade do jogador e ações em combate para dar mais dinamismo às lutas.",
+      "Classes do jogador: Paladino/Tank, Assassino/DPS e Gladiador/Versátil.",
+      "Habilidades e talentos específicos para cada classe.",
+      "Cassino com diversos jogos.",
+      "Guerra de clãs.",
+      "Batalha contra monstro do clã.",
+      "Hierarquia no clã."
+    ]
+  },
+  {
+    id: "beta_launch",
+    category: "Beta",
+    title: "Litch entra em beta",
+    headline: "A primeira fase pública existe para entender os jogadores, corrigir bugs e calibrar a jornada.",
+    publishedAt: "2026-06-08T09:00:00-03:00",
+    body: [
+      "O lançamento beta de Litch marca uma etapa de observação ativa. O objetivo principal é entender como os jogadores avançam, onde o ritmo fica confuso, quais sistemas precisam de mais clareza e quais bugs aparecem quando o jogo passa a ser usado de verdade.",
+      "Durante essa fase, cada relato importa: travamentos, mensagens estranhas, recompensas fora do esperado, monstros fortes demais, telas confusas ou ideias de melhoria ajudam a priorizar os próximos ajustes.",
+      "O beta não é tratado como ponto final. Ele é o campo de teste vivo para estabilizar progressão, combate, economia, masmorras, arena, clãs e eventos antes de expandir o jogo com novas camadas."
+    ]
+  },
+  {
+    id: "about_litch",
+    category: "Comunidade",
+    title: "Um mundo em evolução constante",
+    headline: "Litch mistura caça, trabalho, mercado, arena, masmorras, clãs e eventos em uma jornada de crescimento contínuo.",
+    publishedAt: "2026-06-08T10:00:00-03:00",
+    body: [
+      "Em Litch, o personagem começa pequeno e cresce por decisões repetidas: onde caçar, quando trabalhar, o que vender, que item aprimorar, qual evento enfrentar e como usar energia, ouro, diamantes e chaves raras.",
+      "O Guia continua sendo o melhor lugar para entender sistemas, itens, monstros, criação, masmorras, monarcas e regras de combate. Sempre que algo parecer novo ou estranho, vale passar por ele antes de gastar recursos importantes.",
+      "A compra de diamantes ajuda quem quer acelerar a própria jornada e também apoia diretamente a evolução do jogo. Esse apoio permite investir mais tempo em correções, balanceamento, conteúdo novo e melhorias de experiência."
     ]
   }
 ];
