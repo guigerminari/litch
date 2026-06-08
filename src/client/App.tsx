@@ -2333,6 +2333,8 @@ function MoreInfoPanel({ game }: { game: GameState }) {
     }
   ].sort((a, b) => a.startsAtMs - b.startsAtMs || a.title.localeCompare(b.title));
   const pastArenaWinner = game.lastArenaSeason?.ranking[0];
+  const heroImageUrl = game.activeEvents[0]?.bannerImageUrl ?? "/assets/banner/events/boas_vindas.png";
+  const heroStatus = game.activeEvents[0]?.name ?? "Beta em evolução";
   const pastEvents = [
     {
       id: "beta-prep",
@@ -2364,6 +2366,37 @@ function MoreInfoPanel({ game }: { game: GameState }) {
       <PanelTitle icon={<Info size={20} />} title="Saber Mais" />
 
       <div className="more-info-content">
+        <section className="more-hero">
+          <div className="more-hero-copy">
+            <span className="eyebrow">Central do Reino</span>
+            <h2>Notícias, agenda e bastidores de Litch</h2>
+            <p>
+              Acompanhe o beta, veja os próximos eventos e mande feedback direto para ajudar a moldar as próximas versões do jogo.
+            </p>
+            <div className="more-hero-metrics">
+              <div>
+                <strong>{GAME_NEWS.length}</strong>
+                <span>notícias</span>
+              </div>
+              <div>
+                <strong>{calendarEntries.length}</strong>
+                <span>entradas na agenda</span>
+              </div>
+              <div>
+                <strong>{game.onlineCount}</strong>
+                <span>online agora</span>
+              </div>
+            </div>
+          </div>
+          <div className="more-hero-art">
+            <img src={heroImageUrl} alt="" />
+            <div>
+              <span>Agora</span>
+              <strong>{heroStatus}</strong>
+            </div>
+          </div>
+        </section>
+
         <section className="more-section newsroom-section">
           <div className="more-section-heading">
             <span className="eyebrow">Noticiário</span>
@@ -2371,8 +2404,8 @@ function MoreInfoPanel({ game }: { game: GameState }) {
             <p>Comunicados oficiais, contexto do beta e próximos passos do desenvolvimento.</p>
           </div>
           <div className="newsroom-list">
-            {GAME_NEWS.map((entry) => (
-              <article className="news-article" key={entry.id}>
+            {GAME_NEWS.map((entry, index) => (
+              <article className={index === 0 ? "news-article featured" : "news-article"} key={entry.id}>
                 <div className="news-meta">
                   <span>{entry.category}</span>
                   <time dateTime={entry.publishedAt}>{formatDateTime(new Date(entry.publishedAt).getTime())}</time>

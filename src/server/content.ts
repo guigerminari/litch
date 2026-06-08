@@ -3765,16 +3765,16 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.08
       },
       {
+        "itemId": "armor_leather",
+        "chance": 0.0819
+      },
+      {
         "itemId": "material_bone",
         "chance": 0.022
       },
       {
         "itemId": "misc_doemia",
         "chance": 0.016
-      },
-      {
-        "itemId": "armor_leather",
-        "chance": 0.0819
       }
     ]
   },
@@ -3809,7 +3809,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "novice_amulet",
-        "chance": 0.0817
+        "chance": 0.0517
       }
     ]
   },
