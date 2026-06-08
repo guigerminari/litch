@@ -1403,7 +1403,7 @@ button:disabled {
 
 .guide-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 10px;
 }
 
@@ -1428,8 +1428,8 @@ button:disabled {
 }
 
 .guide-card-art {
-  width: 96px;
-  height: 96px;
+  width: 75px;
+  height: 75px;
   border-radius: 9px;
 }
 
@@ -1440,7 +1440,8 @@ button:disabled {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  font-size: 0.86rem;
+  font-size: 0.65rem;
+  font-weight: 400;
 }
 
 .guide-detail-backdrop {
@@ -1648,8 +1649,8 @@ button:disabled {
 }
 
 .guide-detail-art {
-  width: min(180px, 100%);
-  height: 160px;
+  width: min(90px, 100%);
+  height: 100px;
   justify-self: center;
 }
 

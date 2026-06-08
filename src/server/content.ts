@@ -139,26 +139,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Permite cruzar mares e chegar aos portos de outros países."
   },
-  "armor_leather": {
-    "id": "armor_leather",
-    "name": "Armadura de Couro",
-    "kind": "armor",
-    "slot": "armor",
-    "imageUrl": "/assets/items/armor/00-leather.png",
-    "minLevel": 1,
-    "price": 165,
-    "stats": {
-      "defense": 11,
-      "constitution": 1
-    },
-    "description": "Proteção leve que aumenta defesa e constituição."
-  },
   "armor_steel": {
     "id": "armor_steel",
     "name": "Armadura de Aco",
     "kind": "armor",
     "slot": "armor",
-    "imageUrl": "/assets/items/armor/01-steel.png",
+    "imageUrl": "/assets/items/armor/02-steel.png",
     "minLevel": 10,
     "price": 1010,
     "stats": {
@@ -214,7 +200,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Armadura da Justiça",
     "kind": "armor",
     "slot": "armor",
-    "imageUrl": "/assets/items/armor/05-justice.png",
+    "imageUrl": "/assets/items/armor/05-justice2.png",
     "minLevel": 50,
     "price": 16130,
     "stats": {
@@ -970,7 +956,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/assassin_sword.png",
-    "minLevel": 1,
+    "minLevel": 5,
     "price": 150,
     "stats": {
       "strength": 9,
@@ -993,7 +979,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_claymore_3": {
     "id": "weapon_claymore_3",
-    "name": "Montante 3",
+    "name": "Montante de Claymore",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/claymore_3.png",
@@ -1019,7 +1005,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_double_sword_2": {
     "id": "weapon_double_sword_2",
-    "name": "Espada Dupla 2",
+    "name": "Espada Dupla Especial",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/double_sword_2.png",
@@ -1086,7 +1072,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_greatsword_2": {
     "id": "weapon_greatsword_2",
-    "name": "Espadão 2",
+    "name": "Espada Larga",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/greatsword_2.png",
@@ -1099,7 +1085,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_greatsword_4": {
     "id": "weapon_greatsword_4",
-    "name": "Espadão 4",
+    "name": "Florete",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/greatsword_4.png",
@@ -1128,7 +1114,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Espada Longa",
     "kind": "weapon",
     "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/long_sword.png",
+    "imageUrl": "/assets/items/weapons/long_sword2.png",
     "minLevel": 60,
     "price": 22795,
     "stats": {
@@ -1178,7 +1164,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_triple_sword_2": {
     "id": "weapon_triple_sword_2",
-    "name": "Espada Tripla 2",
+    "name": "Espada Tripla",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/triple_sword_2.png",
@@ -1192,7 +1178,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "weapon_triple_sword_3": {
     "id": "weapon_triple_sword_3",
-    "name": "Espada Tripla 3",
+    "name": "Espada Tripla",
     "kind": "weapon",
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/triple_sword_3.png",
@@ -1229,19 +1215,6 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "strength": 3
     },
     "description": "Arma simples que aumenta força."
-  },
-  "iron_sword": {
-    "id": "iron_sword",
-    "name": "Espada de Ferro",
-    "kind": "weapon",
-    "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/claymore.png",
-    "minLevel": 5,
-    "price": 165,
-    "stats": {
-      "strength": 18
-    },
-    "description": "Arma confiável que aumenta força."
   },
   "leather_armor": {
     "id": "leather_armor",
@@ -1305,12 +1278,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Lamina de Brasa",
     "kind": "weapon",
     "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/chaos_axe.png",
+    "imageUrl": "/assets/items/weapons/ember_blade.png",
     "minLevel": 20,
     "price": 0,
     "stats": {
-      "strength": 82,
-      "agility": 8
+      "strength": 182,
+      "agility": 38
     },
     "description": "Arma flamejante que aumenta força e agilidade."
   },
@@ -1323,8 +1296,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 20,
     "price": 0,
     "stats": {
-      "defense": 78,
-      "constitution": 10
+      "defense": 178,
+      "constitution": 90
     },
     "description": "Proteção guardiã que aumenta defesa e constituição."
   },
@@ -1365,8 +1338,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 25,
     "price": 0,
     "stats": {
-      "agility": 35,
-      "constitution": 10
+      "agility": 55,
+      "constitution": 30
     },
     "description": "Amuleto cristalino que aumenta agilidade e constituição."
   },
@@ -1393,8 +1366,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 35,
     "price": 0,
     "stats": {
-      "defense": 80,
-      "constitution": 42
+      "defense": 140,
+      "constitution": 82
     },
     "description": "Amuleto sagrado que aumenta defesa e constituição."
   },
@@ -1521,12 +1494,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Machado Rúnico de Ironhold",
     "kind": "weapon",
     "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/executioner_axe.png",
+    "imageUrl": "/assets/items/weapons/forged_ironhold_axe_40.png",
     "minLevel": 40,
     "price": 0,
     "stats": {
-      "strength": 145,
-      "defense": 8
+      "strength": 195,
+      "defense": 78
     },
     "description": "Arma rúnica que aumenta força e defesa."
   },
@@ -1535,7 +1508,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Couraça Rúnica de Ironhold",
     "kind": "armor",
     "slot": "armor",
-    "imageUrl": "/assets/items/armor/05-justice.png",
+    "imageUrl": "/assets/items/armor/runic.png",
     "minLevel": 40,
     "price": 0,
     "stats": {
@@ -1549,12 +1522,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Sabre Solar de Valfria",
     "kind": "weapon",
     "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/long_sword.png",
+    "imageUrl": "/assets/items/weapons/forged_valfria_sabre_50.png",
     "minLevel": 50,
     "price": 0,
     "stats": {
-      "strength": 178,
-      "agility": 14
+      "strength": 248,
+      "agility": 73
     },
     "description": "Arma solar que aumenta força e agilidade."
   },
@@ -1563,12 +1536,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Brunea Solar de Valfria",
     "kind": "armor",
     "slot": "armor",
-    "imageUrl": "/assets/items/armor/114-dragon.png",
+    "imageUrl": "/assets/items/armor/114-dragon-solar.png",
     "minLevel": 50,
     "price": 0,
     "stats": {
-      "defense": 178,
-      "constitution": 23
+      "defense": 248,
+      "constitution": 73
     },
     "description": "Proteção solar que aumenta defesa e constituição."
   },
@@ -1577,12 +1550,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Lâmina do Sol Seco",
     "kind": "weapon",
     "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/triple_sword_2.png",
+    "imageUrl": "/assets/items/weapons/dry_sun.png",
     "minLevel": 70,
     "price": 0,
     "stats": {
-      "strength": 244,
-      "agility": 22
+      "strength": 344,
+      "agility": 92
     },
     "description": "Arma solar que aumenta força e agilidade."
   },
@@ -1591,12 +1564,12 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Armadura das Dunas Rubras",
     "kind": "armor",
     "slot": "armor",
-    "imageUrl": "/assets/items/armor/124-dhron.png",
+    "imageUrl": "/assets/items/armor/114-dragon-dune.png",
     "minLevel": 70,
     "price": 0,
     "stats": {
-      "defense": 244,
-      "constitution": 34
+      "defense": 344,
+      "constitution": 92
     },
     "description": "Proteção desértica que aumenta defesa e constituição."
   },
@@ -1609,8 +1582,8 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "minLevel": 80,
     "price": 0,
     "stats": {
-      "strength": 282,
-      "defense": 18
+      "strength": 482,
+      "agility": 118
     },
     "description": "Arma sombria que aumenta força e defesa."
   },
@@ -1619,44 +1592,44 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "name": "Placas Ósseas do Porto Sombrio",
     "kind": "armor",
     "slot": "armor",
-    "imageUrl": "/assets/items/armor/04-cursed.png",
+    "imageUrl": "/assets/items/armor/bone.png",
     "minLevel": 80,
     "price": 0,
     "stats": {
-      "defense": 282,
-      "constitution": 44
+      "constitution": 118,
+      "defense": 482
     },
-    "description": "Proteção óssea que aumenta defesa e constituição."
+    "description": "Proteção óssea que aumenta constituição e defesa."
   },
   "forged_morthaly_voidblade_100": {
     "id": "forged_morthaly_voidblade_100",
     "name": "Vorgonax do Vazio",
     "kind": "weapon",
     "slot": "weapon",
-    "imageUrl": "/assets/items/weapons/vorgonax.png",
+    "imageUrl": "/assets/items/weapons/vorgonax_void.png",
     "minLevel": 100,
     "price": 0,
     "stats": {
-      "strength": 360,
-      "agility": 30,
-      "defense": 30
+      "strength": 630,
+      "constitution": 210,
+      "agility": 420
     },
-    "description": "Arma lendária que aumenta força, agilidade e defesa."
+    "description": "Arma lendária que aumenta força, agilidade e constituição."
   },
   "forged_morthaly_voidarmor_100": {
     "id": "forged_morthaly_voidarmor_100",
     "name": "Armadura do Vazio de Morthaly",
     "kind": "armor",
     "slot": "armor",
-    "imageUrl": "/assets/items/armor/106-death.png",
+    "imageUrl": "/assets/items/armor/106-death-void.png",
     "minLevel": 100,
     "price": 0,
     "stats": {
-      "defense": 360,
-      "constitution": 62,
-      "strength": 20
+      "defense": 630,
+      "constitution": 420,
+      "agility": 210
     },
-    "description": "Proteção abissal que aumenta força, defesa e constituição."
+    "description": "Proteção abissal que aumenta defesa, constituição e agilidade."
   }
 };
 
@@ -1816,7 +1789,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
       },
       {
         "itemId": ITEM_IDS.creationStone,
-        "quantity": 2
+        "quantity": 1
       }
     ]
   },
@@ -1847,7 +1820,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
       },
       {
         "itemId": ITEM_IDS.creationStone,
-        "quantity": 2
+        "quantity": 1
       }
     ]
   },
@@ -1878,7 +1851,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
       },
       {
         "itemId": ITEM_IDS.creationStone,
-        "quantity": 3
+        "quantity": 1
       }
     ]
   },
@@ -1925,7 +1898,7 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
     "goldCost": 900,
     "ingredients": [
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_chaos_axe",
         "quantity": 1
       },
       {
@@ -2946,7 +2919,6 @@ export const CITIES: CityDefinition[] = [
     "armorerItemIds": [
       "training_sword",
       "leather_armor",
-      "iron_sword",
       "iron_armor",
       "weapon_assassin_sword",
       "weapon_chaos_axe",
@@ -2954,7 +2926,6 @@ export const CITIES: CityDefinition[] = [
       "weapon_claymore",
       "weapon_double_sword_2",
       "weapon_double_sword_new",
-      "armor_leather",
       "armor_steel",
       "armor_mystic",
       "armor_kharlee",
@@ -3765,7 +3736,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.08
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0819
       },
       {
@@ -3836,7 +3807,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_herb",
-        "chance": 0.0223
+        "chance": 0.05
       },
       {
         "itemId": "misc_dragon_stone",
@@ -4057,7 +4028,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0161
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0811
       }
     ]
@@ -4092,7 +4063,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0162
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0804
       }
     ]
@@ -4159,7 +4130,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_energy_jewell",
-        "chance": 0.0222
+        "chance": 0.05
       },
       {
         "itemId": "material_laede_fragment",
@@ -4277,10 +4248,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_assassin_sword",
         "chance": 0.0801
-      },
-      {
-        "itemId": "iron_sword",
-        "chance": 0.051
       }
     ]
   },
@@ -4307,7 +4274,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "wolf_pelt",
-        "chance": 0.0225
+        "chance": 0.05
       },
       {
         "itemId": "misc_seed_rustic",
@@ -4465,10 +4432,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_obscure",
         "chance": 0.044
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -4538,7 +4501,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_energy_jewell",
-        "chance": 0.0243
+        "chance": 0.05
       },
       {
         "itemId": "material_dragon_essence",
@@ -4563,10 +4526,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_kharlee",
         "chance": 0.0458
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -4702,7 +4661,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0789
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0503
       }
     ]
@@ -4918,7 +4877,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "ember_core",
-        "chance": 0.0237
+        "chance": 0.05
       },
       {
         "itemId": "material_dragon_essence",
@@ -4980,7 +4939,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0384
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0774
       },
       {
@@ -5033,10 +4992,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_assassin_sword",
         "chance": 0.0474
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -5121,16 +5076,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0259
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0732
       },
       {
         "itemId": "moon_amulet",
         "chance": 0.0473
-      },
-      {
-        "itemId": "crystal_white_amulet",
-        "chance": 0.0025
       }
     ]
   },
@@ -5182,10 +5133,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_mystic",
         "chance": 0.0471
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -5237,10 +5184,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "leather_armor",
         "chance": 0.0472
-      },
-      {
-        "itemId": "forged_ironhold_axe_40",
-        "chance": 0.0025
       }
     ]
   },
@@ -5353,7 +5296,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "wolf_pelt",
-        "chance": 0.0237
+        "chance": 0.05
       },
       {
         "itemId": "misc_seed_rustic",
@@ -5374,10 +5317,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_chaos_axe",
         "chance": 0.0475
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -5501,7 +5440,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0381
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0762
       },
       {
@@ -5584,7 +5523,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_magic_essence",
-        "chance": 0.0166
+        "chance": 0.02
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -5638,7 +5577,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0266
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0759
       },
       {
@@ -5681,7 +5620,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0387
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0783
       }
     ]
@@ -5713,14 +5652,14 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_energy_jewell",
-        "chance": 0.0166
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
         "chance": 0.0386
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0776
       },
       {
@@ -5752,7 +5691,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_energy_jewell",
-        "chance": 0.0233
+        "chance": 0.05
       },
       {
         "itemId": "material_dragon_jewell",
@@ -5853,7 +5792,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0387
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.078
       },
       {
@@ -5975,11 +5914,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_herb",
-        "chance": 0.0233
+        "chance": 0.05
       },
       {
         "itemId": "wolf_pelt",
-        "chance": 0.0169
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -5990,16 +5929,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0264
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0753
       },
       {
         "itemId": "novice_amulet",
         "chance": 0.0484
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -6094,10 +6029,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_double_sword_2",
         "chance": 0.0483
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -6131,7 +6062,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0163
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0796
       },
       {
@@ -6163,7 +6094,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_magic_essence",
-        "chance": 0.0234
+        "chance": 0.05
       },
       {
         "itemId": "misc_seed_bitter",
@@ -6184,10 +6115,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "novice_amulet",
         "chance": 0.0482
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -6235,10 +6162,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_double_sword_2",
         "chance": 0.0482
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -6280,16 +6203,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0263
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0747
       },
       {
         "itemId": "novice_amulet",
         "chance": 0.0481
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -6363,7 +6282,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_herb",
-        "chance": 0.017
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -6380,10 +6299,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_mystic",
         "chance": 0.048
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -6429,12 +6344,8 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0743
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.0479
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -6484,12 +6395,8 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0704
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0458
-      },
-      {
-        "itemId": "forged_valfria_sabre_50",
-        "chance": 0.0025
       }
     ]
   },
@@ -6520,7 +6427,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "ember_core",
-        "chance": 0.017
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -6537,10 +6444,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_claymore",
         "chance": 0.0478
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -6588,10 +6491,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_greatsword_2",
         "chance": 0.0478
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -6618,7 +6517,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "wolf_pelt",
-        "chance": 0.0236
+        "chance": 0.05
       },
       {
         "itemId": "misc_seed_moss",
@@ -6694,10 +6593,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_justice",
         "chance": 0.047
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -6749,10 +6644,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_steel",
         "chance": 0.047
-      },
-      {
-        "itemId": "forged_valfria_sabre_50",
-        "chance": 0.0025
       }
     ]
   },
@@ -6804,10 +6695,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_executioner_axe",
         "chance": 0.0469
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -6914,10 +6801,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_extreme_axe",
         "chance": 0.0467
-      },
-      {
-        "itemId": "crystal_white_amulet",
-        "chance": 0.0025
       }
     ]
   },
@@ -6965,10 +6848,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_extreme_axe",
         "chance": 0.0476
-      },
-      {
-        "itemId": "forged_ironhold_axe_40",
-        "chance": 0.0025
       }
     ]
   },
@@ -7020,10 +6899,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "training_sword",
         "chance": 0.0466
-      },
-      {
-        "itemId": "forged_ironhold_axe_40",
-        "chance": 0.0025
       }
     ]
   },
@@ -7075,10 +6950,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "acid_amulet",
         "chance": 0.0466
-      },
-      {
-        "itemId": "forged_valfria_scale_50",
-        "chance": 0.0025
       }
     ]
   },
@@ -7130,10 +7001,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_insane_axe",
         "chance": 0.0465
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -7185,10 +7052,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_claymore",
         "chance": 0.0464
-      },
-      {
-        "itemId": "forged_valfria_sabre_50",
-        "chance": 0.0025
       }
     ]
   },
@@ -7240,10 +7103,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_greatsword_2",
         "chance": 0.0463
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -7307,10 +7166,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_steel",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -7417,10 +7272,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "acid_amulet",
         "chance": 0.0462
-      },
-      {
-        "itemId": "crystal_white_amulet",
-        "chance": 0.0025
       }
     ]
   },
@@ -7472,10 +7323,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_insane_axe",
         "chance": 0.0461
-      },
-      {
-        "itemId": "forged_ironhold_axe_40",
-        "chance": 0.0025
       }
     ]
   },
@@ -7525,16 +7372,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0185
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0708
       },
       {
         "itemId": "weapon_double_sword_new",
         "chance": 0.046
-      },
-      {
-        "itemId": "forged_valfria_scale_50",
-        "chance": 0.0025
       }
     ]
   },
@@ -7586,10 +7429,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "celtic_yellow_amulet",
         "chance": 0.0459
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -7645,10 +7484,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_chaos_axe",
         "chance": 0.0456
-      },
-      {
-        "itemId": "crystal_white_amulet",
-        "chance": 0.0025
       }
     ]
   },
@@ -7712,10 +7547,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_executioner_axe_6",
         "chance": 0.0455
-      },
-      {
-        "itemId": "forged_ironhold_axe_40",
-        "chance": 0.0025
       }
     ]
   },
@@ -7846,10 +7677,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_steel",
         "chance": 0.0454
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -7913,10 +7740,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_executioner_axe",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_morthaly_boneplate_80",
-        "chance": 0.0018
       }
     ]
   },
@@ -7980,10 +7803,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_death",
         "chance": 0.044
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -8022,7 +7841,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "wolf_pelt",
-        "chance": 0.018
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -8045,12 +7864,8 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.067
       },
       {
-        "itemId": "armor_leather",
+        "itemId": "leather_armor",
         "chance": 0.044
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -8085,7 +7900,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_energy_jewell",
-        "chance": 0.0245
+        "chance": 0.05
       },
       {
         "itemId": "material_gromin_mycelium",
@@ -8114,10 +7929,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_executioner_axe",
         "chance": 0.0453
-      },
-      {
-        "itemId": "celtic_magenta_amulet",
-        "chance": 0.0025
       }
     ]
   },
@@ -8173,10 +7984,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_steel",
         "chance": 0.0452
-      },
-      {
-        "itemId": "forged_ironhold_axe_40",
-        "chance": 0.0025
       }
     ]
   },
@@ -8238,12 +8045,8 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.068
       },
       {
-        "itemId": "iron_sword",
+        "itemId": "weapon_assassin_sword",
         "chance": 0.0446
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -8307,10 +8110,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_executioner_axe",
         "chance": 0.0451
-      },
-      {
-        "itemId": "forged_valfria_scale_50",
-        "chance": 0.0025
       }
     ]
   },
@@ -8337,7 +8136,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_herb",
-        "chance": 0.0246
+        "chance": 0.05
       },
       {
         "itemId": "misc_doemia",
@@ -8366,10 +8165,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_death",
         "chance": 0.045
-      },
-      {
-        "itemId": "crystal_white_amulet",
-        "chance": 0.0025
       }
     ]
   },
@@ -8433,10 +8228,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_chaos_axe",
         "chance": 0.045
-      },
-      {
-        "itemId": "guardian_mail",
-        "chance": 0.0025
       }
     ]
   },
@@ -8463,7 +8254,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_magic_essence",
-        "chance": 0.0247
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.creationStone,
@@ -8492,10 +8283,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_executioner_axe_6",
         "chance": 0.0449
-      },
-      {
-        "itemId": "forged_valfria_sabre_50",
-        "chance": 0.0025
       }
     ]
   },
@@ -8559,10 +8346,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "hunter_charm",
         "chance": 0.0448
-      },
-      {
-        "itemId": "forged_valfria_sandmail_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -8601,7 +8384,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_energy_jewell",
-        "chance": 0.0178
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -8624,16 +8407,8 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0684
       },
       {
-        "itemId": "celtic_magenta_amulet",
-        "chance": 0.044
-      },
-      {
         "itemId": "armor_cursed",
         "chance": 0.0447
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -8672,11 +8447,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_magic_essence",
-        "chance": 0.0178
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
-        "chance": 0.0354
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.eranStone,
@@ -8691,20 +8466,12 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.0131
       },
       {
-        "itemId": "celtic_magenta_amulet",
-        "chance": 0.044
-      },
-      {
         "itemId": "weapon_insane_axe",
         "chance": 0.0682
       },
       {
         "itemId": "weapon_orcish_dagger",
         "chance": 0.0446
-      },
-      {
-        "itemId": "forged_morthaly_boneplate_80",
-        "chance": 0.0018
       }
     ]
   },
@@ -8768,10 +8535,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_kharlee",
         "chance": 0.0445
-      },
-      {
-        "itemId": "celtic_magenta_amulet",
-        "chance": 0.044
       },
       {
         "itemId": "forged_ironhold_plate_40",
@@ -8841,10 +8604,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
         "chance": 0.044
       },
       {
-        "itemId": "celtic_magenta_amulet",
-        "chance": 0.044
-      },
-      {
         "itemId": "forged_ironhold_plate_40",
         "chance": 0.0025
       }
@@ -8906,14 +8665,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_greatsword_4",
         "chance": 0.067
-      },
-      {
-        "itemId": "celtic_magenta_amulet",
-        "chance": 0.044
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -8981,10 +8732,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "forged_ironhold_plate_40",
         "chance": 0.0025
-      },
-      {
-        "itemId": "forged_morthaly_voidblade_100",
-        "chance": 0.001
       }
     ]
   },
@@ -9048,14 +8795,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_mystic",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
-      },
-      {
-        "itemId": "forged_morthaly_voidarmor_100",
-        "chance": 0.001
       }
     ]
   },
@@ -9119,10 +8858,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_claymore_3",
         "chance": 0.0444
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -9249,10 +8984,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_extreme_axe",
         "chance": 0.0443
-      },
-      {
-        "itemId": "forged_morthaly_boneplate_80",
-        "chance": 0.0018
       }
     ]
   },
@@ -9316,10 +9047,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_greatsword_2",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -9354,11 +9081,11 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "wolf_pelt",
-        "chance": 0.0249
+        "chance": 0.05
       },
       {
         "itemId": "material_dark_magic_rune",
-        "chance": 0.0179
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -9383,10 +9110,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_dragon",
         "chance": 0.0442
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -9421,7 +9144,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "ember_core",
-        "chance": 0.0249
+        "chance": 0.05
       },
       {
         "itemId": "material_dragon_nail",
@@ -9454,10 +9177,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "forged_ironhold_plate_40",
         "chance": 0.0025
-      },
-      {
-        "itemId": "forged_morthaly_scythe_80",
-        "chance": 0.0015
       }
     ]
   },
@@ -9521,10 +9240,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "iron_armor",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_morthaly_boneplate_80",
-        "chance": 0.0018
       },
       {
         "itemId": "celtic_cyan_amulet",
@@ -9592,10 +9307,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_double_sword_new",
         "chance": 0.044
-      },
-      {
-        "itemId": "crystal_white_amulet",
-        "chance": 0.0025
       }
     ]
   },
@@ -9659,10 +9370,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_real_axe",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_morthaly_boneplate_80",
-        "chance": 0.0018
       }
     ]
   },
@@ -9701,7 +9408,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "ember_core",
-        "chance": 0.018
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -9726,10 +9433,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "celtic_yellow_amulet",
         "chance": 0.044
-      },
-      {
-        "itemId": "ember_blade",
-        "chance": 0.0025
       }
     ]
   },
@@ -9835,7 +9538,7 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       },
       {
         "itemId": "material_herb",
-        "chance": 0.018
+        "chance": 0.05
       },
       {
         "itemId": ITEM_IDS.oldStone,
@@ -9860,10 +9563,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "weapon_double_sword_new",
         "chance": 0.0441
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -9927,10 +9626,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "celtic_yellow_amulet",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_morthaly_boneplate_80",
-        "chance": 0.0018
       }
     ]
   },
@@ -9994,10 +9689,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "hunter_charm",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_valfria_sunblade_70",
-        "chance": 0.0025
       }
     ]
   },
@@ -10061,10 +9752,6 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
       {
         "itemId": "armor_cursed",
         "chance": 0.044
-      },
-      {
-        "itemId": "forged_morthaly_boneplate_80",
-        "chance": 0.0018
       }
     ]
   }
