@@ -35,6 +35,57 @@ export function isEquipped(character: Character, instanceId: string) {
   return Object.values(character.equipment).includes(instanceId);
 }
 
+function isVisibleInventoryItem(character: Character, item: InventoryItem, itemCatalog: Record<string, ItemDefinition>) {
+  return Boolean(itemCatalog[item.itemId]) && !isEquipped(character, item.instanceId);
+}
+
+function getInventorySlot(item: InventoryItem) {
+  return Number.isInteger(item.inventorySlot) ? Number(item.inventorySlot) : null;
+}
+
+function buildVisibleInventorySlots(character: Character, itemCatalog: Record<string, ItemDefinition>) {
+  const visibleItems = character.inventory.filter((item) => isVisibleInventoryItem(character, item, itemCatalog));
+  const totalSlots = Math.max(getInventoryCapacity(character), visibleItems.length);
+  const slots: Array<InventoryItem | null> = Array(totalSlots).fill(null);
+  const pending: InventoryItem[] = [];
+
+  for (const item of visibleItems) {
+    const slot = getInventorySlot(item);
+    if (slot !== null && slot >= 0 && slot < totalSlots && !slots[slot]) {
+      slots[slot] = item;
+    } else {
+      pending.push(item);
+    }
+  }
+
+  for (const item of pending) {
+    const openSlot = slots.findIndex((entry) => entry === null);
+    if (openSlot === -1) {
+      break;
+    }
+    slots[openSlot] = item;
+  }
+
+  return slots;
+}
+
+export function normalizeInventorySlots(character: Character, itemCatalog: Record<string, ItemDefinition>) {
+  let changed = false;
+  const slots = buildVisibleInventorySlots(character, itemCatalog);
+
+  slots.forEach((item, slot) => {
+    if (!item) {
+      return;
+    }
+    if (item.inventorySlot !== slot) {
+      item.inventorySlot = slot;
+      changed = true;
+    }
+  });
+
+  return changed;
+}
+
 export function normalizeInventory(character: Character, itemCatalog: Record<string, ItemDefinition>) {
   const originalLength = character.inventory.length;
   character.inventory = character.inventory.filter((item) => Boolean(itemCatalog[item.itemId]));
@@ -50,7 +101,46 @@ export function normalizeInventory(character: Character, itemCatalog: Record<str
     }
   }
 
+  changed = normalizeInventorySlots(character, itemCatalog) || changed;
   return changed;
+}
+
+export function moveInventoryItemToSlot(
+  character: Character,
+  itemCatalog: Record<string, ItemDefinition>,
+  instanceId: string,
+  targetSlot: number
+) {
+  const item = findInventoryItem(character, instanceId);
+  if (!item) {
+    throw new Error("Item nÃ£o encontrado.");
+  }
+  if (!isVisibleInventoryItem(character, item, itemCatalog)) {
+    throw new Error("Item nÃ£o disponÃ­vel no inventÃ¡rio.");
+  }
+
+  const slots = buildVisibleInventorySlots(character, itemCatalog);
+  const safeTargetSlot = Math.floor(Number(targetSlot));
+  if (!Number.isInteger(safeTargetSlot) || safeTargetSlot < 0 || safeTargetSlot >= slots.length) {
+    throw new Error("Slot de inventÃ¡rio invÃ¡lido.");
+  }
+
+  const sourceSlot = slots.findIndex((entry) => entry?.instanceId === item.instanceId);
+  if (sourceSlot === -1) {
+    throw new Error("Item nÃ£o disponÃ­vel no inventÃ¡rio.");
+  }
+  if (sourceSlot === safeTargetSlot) {
+    return item;
+  }
+
+  const targetItem = slots[safeTargetSlot];
+  item.inventorySlot = safeTargetSlot;
+  if (targetItem && targetItem.instanceId !== item.instanceId) {
+    targetItem.inventorySlot = sourceSlot;
+  }
+  normalizeInventorySlots(character, itemCatalog);
+
+  return item;
 }
 
 export function addItem(

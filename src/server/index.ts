@@ -35,6 +35,7 @@ import type {
   GameShopAdminGrantPayload,
   GameShopPurchasePayload,
   HuntStartPayload,
+  InventoryMovePayload,
   InventoryItem,
   ItemTradeActionPayload,
   ItemTradeBundle,
@@ -116,7 +117,7 @@ import {
   takeBattleTurn,
   takeAutoPveTurn
 } from "./domain/battle";
-import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, normalizeInventory, removeItem } from "./domain/inventory";
+import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, moveInventoryItemToSlot, normalizeInventory, removeItem } from "./domain/inventory";
 import { deriveStats, experienceForNextLevel, grantExperience } from "./domain/stats";
 import { store, type AuthAccount } from "./store";
 import { closePersistentStore, flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
@@ -4300,6 +4301,17 @@ io.on("connection", (socket: AuthedSocket) => {
 
       character.equipment[definition.slot] = null;
       normalizeVitals(character);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("inventory:move", (payload: InventoryMovePayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      moveInventoryItemToSlot(character, ITEM_CATALOG, payload.instanceId, payload.targetSlot);
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);

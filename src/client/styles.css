@@ -4403,12 +4403,22 @@ button:disabled .game-icon {
   background: rgba(255, 255, 255, 0.02);
   border-style: dashed;
   cursor: default;
-  pointer-events: none;
 }
 
 .inv-slot.equipped {
   border-color: rgba(80, 250, 123, 0.6);
   background: rgba(80, 250, 123, 0.08);
+}
+
+.inv-slot.dragging {
+  opacity: 0.48;
+  transform: scale(0.96);
+}
+
+.inv-slot.drop-target {
+  border-color: var(--cyan);
+  background: rgba(139, 233, 253, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(139, 233, 253, 0.32);
 }
 
 .inv-slot.selected {

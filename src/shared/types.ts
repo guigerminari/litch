@@ -63,6 +63,7 @@ export interface InventoryItem {
   instanceId: string;
   itemId: string;
   quantity: number;
+  inventorySlot?: number;
   enhancementLevel?: number;
   rarity?: Rarity;
 }
@@ -976,6 +977,11 @@ export interface EquipPayload {
 
 export interface UnequipPayload {
   instanceId: string;
+}
+
+export interface InventoryMovePayload {
+  instanceId: string;
+  targetSlot: number;
 }
 
 export interface UseItemPayload {

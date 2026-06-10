@@ -345,6 +345,7 @@ async function ensureMysqlSchema() {
       instance_id VARCHAR(64) NOT NULL,
       item_id VARCHAR(120) NOT NULL,
       quantity INT NOT NULL,
+      inventory_slot INT NULL,
       enhancement_level INT NULL,
       rarity VARCHAR(32) NULL,
       PRIMARY KEY (character_player_id, instance_id),
@@ -352,6 +353,7 @@ async function ensureMysqlSchema() {
       CONSTRAINT fk_inventory_character FOREIGN KEY (character_player_id) REFERENCES ${table("characters")}(player_id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
+  await ensureMysqlColumn(pool, `${MYSQL_TABLE_PREFIX}_character_inventory`, "inventory_slot", "INT NULL");
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS ${table("clan_members")} (
@@ -830,6 +832,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
     instance_id: string;
     item_id: string;
     quantity: number;
+    inventory_slot: number | null;
     enhancement_level: number | null;
     rarity: InventoryItem["rarity"] | null;
   }>>(`SELECT * FROM ${table("character_inventory")} ORDER BY character_player_id ASC`);
@@ -838,6 +841,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
       instanceId: row.instance_id,
       itemId: row.item_id,
       quantity: Number(row.quantity),
+      inventorySlot: maybeNumber(row.inventory_slot),
       enhancementLevel: maybeNumber(row.enhancement_level),
       rarity: row.rarity ?? undefined
     };
@@ -1243,9 +1247,17 @@ async function saveMysqlStoreNow(source: GameStore = store) {
       for (const item of character.inventory ?? []) {
         await connection.execute(
           `INSERT INTO ${table("character_inventory")} (
-            character_player_id, instance_id, item_id, quantity, enhancement_level, rarity
-          ) VALUES (?, ?, ?, ?, ?, ?)`,
-          [character.playerId, item.instanceId, item.itemId, item.quantity, item.enhancementLevel ?? null, item.rarity ?? null]
+            character_player_id, instance_id, item_id, quantity, inventory_slot, enhancement_level, rarity
+          ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            character.playerId,
+            item.instanceId,
+            item.itemId,
+            item.quantity,
+            item.inventorySlot ?? null,
+            item.enhancementLevel ?? null,
+            item.rarity ?? null
+          ]
         );
       }
     }

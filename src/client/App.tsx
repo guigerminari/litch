@@ -168,6 +168,7 @@ type InventorySlotEntry = {
   instanceId: string;
   itemId: string;
   quantity: number;
+  inventorySlot?: number;
   enhancementLevel?: number;
   rarity?: Rarity;
 };
@@ -6940,6 +6941,8 @@ function QuickPotionSelector({ game }: { game: GameState }) {
 
 function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBattle?: () => void }) {
   const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null);
+  const [draggedInstanceId, setDraggedInstanceId] = useState<string | null>(null);
+  const [dropSlotIndex, setDropSlotIndex] = useState<number | null>(null);
   const { preferences, setPreference } = useQuickPotionSettings();
   const battleLocked = game.activeBattle?.status === "active";
 
@@ -6948,21 +6951,47 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
     const def = game.itemCatalog[inv.itemId];
     return def?.slot && !isItemEquipped(game, inv.instanceId);
   });
-  const stackableMap = game.character.inventory
-    .filter((inv) => !game.itemCatalog[inv.itemId]?.slot)
-    .reduce<Record<string, InventorySlotEntry>>((acc, inv) => {
-      if (!acc[inv.itemId]) acc[inv.itemId] = { instanceId: inv.instanceId, itemId: inv.itemId, quantity: 0 };
-      acc[inv.itemId].quantity += inv.quantity;
-      return acc;
-    }, {});
-  const filledSlots = [...equipmentItems, ...Object.values(stackableMap)];
+  const stackableMap = new Map<string, InventorySlotEntry>();
+  for (const inv of game.character.inventory) {
+    if (game.itemCatalog[inv.itemId]?.slot) {
+      continue;
+    }
+    const current = stackableMap.get(inv.itemId);
+    if (current) {
+      current.quantity += inv.quantity;
+      current.inventorySlot ??= inv.inventorySlot;
+    } else {
+      stackableMap.set(inv.itemId, {
+        instanceId: inv.instanceId,
+        itemId: inv.itemId,
+        quantity: inv.quantity,
+        inventorySlot: inv.inventorySlot,
+        enhancementLevel: inv.enhancementLevel,
+        rarity: inv.rarity
+      });
+    }
+  }
+  const filledSlots: InventorySlotEntry[] = [...equipmentItems, ...Array.from(stackableMap.values())];
 
   // Pad to player's real inventory capacity from server state
   const TOTAL_SLOTS = Math.max(game.inventoryCapacity, filledSlots.length);
-  const slots: Array<InventorySlotEntry | null> = [
-    ...filledSlots,
-    ...Array(Math.max(0, TOTAL_SLOTS - filledSlots.length)).fill(null),
-  ];
+  const slots: Array<InventorySlotEntry | null> = Array(TOTAL_SLOTS).fill(null);
+  const pendingSlots: InventorySlotEntry[] = [];
+  for (const entry of filledSlots) {
+    const inventorySlot = Number.isInteger(entry.inventorySlot) ? Number(entry.inventorySlot) : null;
+    if (inventorySlot !== null && inventorySlot >= 0 && inventorySlot < TOTAL_SLOTS && !slots[inventorySlot]) {
+      slots[inventorySlot] = entry;
+    } else {
+      pendingSlots.push(entry);
+    }
+  }
+  for (const entry of pendingSlots) {
+    const openSlot = slots.findIndex((slot) => slot === null);
+    if (openSlot === -1) {
+      break;
+    }
+    slots[openSlot] = entry;
+  }
 
   const selectedEntry = selectedInstanceId ? filledSlots.find((s) => s.instanceId === selectedInstanceId) ?? null : null;
   const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
@@ -6978,6 +7007,38 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
   const selectedEquippedStats = selectedEquippedItem && selectedEquippedEntry
     ? getEnhancedItemStats(selectedEquippedItem, selectedEquippedEntry)
     : null;
+  const clearDragState = () => {
+    setDraggedInstanceId(null);
+    setDropSlotIndex(null);
+  };
+  const moveInventoryItem = (instanceId: string, targetSlot: number) => {
+    socket.emit("inventory:move", { instanceId, targetSlot });
+  };
+  const handleSlotDrop = (event: React.DragEvent<HTMLElement>, targetSlot: number) => {
+    event.preventDefault();
+    const instanceId = event.dataTransfer.getData("application/x-litch-inventory-item") || draggedInstanceId;
+    if (instanceId) {
+      moveInventoryItem(instanceId, targetSlot);
+    }
+    clearDragState();
+  };
+  const getDropHandlers = (slotIndex: number) => ({
+    onDragEnter: (event: React.DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      setDropSlotIndex(slotIndex);
+    },
+    onDragOver: (event: React.DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      setDropSlotIndex(slotIndex);
+    },
+    onDragLeave: (event: React.DragEvent<HTMLElement>) => {
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        setDropSlotIndex((current) => (current === slotIndex ? null : current));
+      }
+    },
+    onDrop: (event: React.DragEvent<HTMLElement>) => handleSlotDrop(event, slotIndex)
+  });
 
   return (
     <section className="content-panel">
@@ -6990,8 +7051,15 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
       <QuickPotionSelector game={game} />
       <div className="inventory-grid">
         {slots.map((slot, index) => {
+          const dropHandlers = getDropHandlers(index);
           if (!slot) {
-            return <div key={`empty-${index}`} className="inv-slot empty" />;
+            return (
+              <div
+                key={`empty-${index}`}
+                className={`inv-slot empty${dropSlotIndex === index ? " drop-target" : ""}`}
+                {...dropHandlers}
+              />
+            );
           }
           const item = game.itemCatalog[slot.itemId];
           const equipped = isItemEquipped(game, slot.instanceId);
@@ -7007,10 +7075,20 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
           return (
             <button
               key={slot.instanceId}
-              className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""} ${enhancementClasses}`}
+              className={`inv-slot${equipped ? " equipped" : ""}${selected ? " selected" : ""}${draggedInstanceId === slot.instanceId ? " dragging" : ""}${dropSlotIndex === index ? " drop-target" : ""} ${enhancementClasses}`}
               title={formatInventoryItemName(item, slot)}
               style={rarityColor ? ({ borderColor: rarityColor, "--rarity-color": rarityColor } as React.CSSProperties) : undefined}
               onClick={() => setSelectedInstanceId(slot.instanceId)}
+              draggable
+              onDragStart={(event) => {
+                event.dataTransfer.effectAllowed = "move";
+                event.dataTransfer.setData("application/x-litch-inventory-item", slot.instanceId);
+                event.dataTransfer.setData("text/plain", slot.instanceId);
+                setDraggedInstanceId(slot.instanceId);
+                setDropSlotIndex(index);
+              }}
+              onDragEnd={clearDragState}
+              {...dropHandlers}
             >
               <ItemVisual item={item} className="slot-visual" quantity={slot.quantity} enhancementLevel={slot.enhancementLevel} rarity={slot.rarity} />
               {enhancement >= 10 && <span className="inv-slot-light-sweep" aria-hidden="true" />}
