@@ -974,6 +974,10 @@ export interface EquipPayload {
   instanceId: string;
 }
 
+export interface UnequipPayload {
+  instanceId: string;
+}
+
 export interface UseItemPayload {
   instanceId: string;
 }

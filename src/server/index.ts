@@ -67,6 +67,7 @@ import type {
   ShopBuyPayload,
   TalentBuyPayload,
   TravelPayload,
+  UnequipPayload,
   UseItemPayload,
   VerifyEmailPayload,
   WorkBonusClaimPayload,
@@ -4272,6 +4273,32 @@ io.on("connection", (socket: AuthedSocket) => {
       }
 
       character.equipment[definition.slot] = item.instanceId;
+      normalizeVitals(character);
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("inventory:unequip", (payload: UnequipPayload) => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      ensureNotInBattle(character);
+      const item = findInventoryItem(character, payload.instanceId);
+      if (!item) {
+        throw new Error("Item nÃ£o encontrado.");
+      }
+
+      const definition = ITEM_CATALOG[item.itemId];
+      if (!definition?.slot) {
+        throw new Error("Este item nÃ£o Ã© equipÃ¡vel.");
+      }
+      if (character.equipment[definition.slot] !== item.instanceId) {
+        throw new Error("Este item nÃ£o estÃ¡ equipado.");
+      }
+
+      character.equipment[definition.slot] = null;
       normalizeVitals(character);
       emitState(playerId);
     } catch (error) {

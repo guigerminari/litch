@@ -6827,8 +6827,8 @@ button:disabled .game-icon {
 
 .asset-enhancement {
   position: absolute;
-  right: -2px;
-  top: 0px;
+  right: 0px;
+  top: 1px;
   padding: 2px 6px;
   color: var(--green);
   font-size: 0.7rem;
@@ -7366,6 +7366,18 @@ button:disabled .game-icon {
   background: rgba(16, 13, 26, 0.42);
 }
 
+.craft-batch-control input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel-soft) 88%, #000 12%);
+  color: var(--text);
+  padding: 0 12px;
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
 .craft-batch-control span,
 .craft-batch-control small {
   color: var(--muted);
@@ -7461,7 +7473,7 @@ button:disabled .game-icon {
 .craft-rarity-row {
   display: flex !important;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 7px !important;
 }
 
 .craft-rarity-row .item-rarity {
@@ -8890,7 +8902,6 @@ button:disabled .game-icon {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.85rem;
   padding: 4px 10px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.06);
@@ -13318,5 +13329,13 @@ button:disabled {
 
   .royal-status {
     font-size: 0.55rem;
+  }
+
+  .player-public-equipment .asset-enhancement, .equipment-visual .asset-enhancement {
+    font-size: 0.5rem;;
+  }
+
+  .inventory-item-meta {
+    font-size: 0.7rem;
   }
 }

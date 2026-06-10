@@ -1496,7 +1496,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/forged_ironhold_axe_40.png",
     "minLevel": 40,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "strength": 195,
       "defense": 78
@@ -1510,7 +1510,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/runic.png",
     "minLevel": 40,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "defense": 145,
       "constitution": 18
@@ -1524,7 +1524,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/forged_valfria_sabre_50.png",
     "minLevel": 50,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "strength": 248,
       "agility": 73
@@ -1538,7 +1538,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/114-dragon-solar.png",
     "minLevel": 50,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "defense": 248,
       "constitution": 73
@@ -1552,7 +1552,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/dry_sun.png",
     "minLevel": 70,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "strength": 344,
       "agility": 92
@@ -1566,7 +1566,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/114-dragon-dune.png",
     "minLevel": 70,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "defense": 344,
       "constitution": 92
@@ -1580,7 +1580,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/death_scythe.png",
     "minLevel": 80,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "strength": 482,
       "agility": 118
@@ -1594,7 +1594,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/bone.png",
     "minLevel": 80,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "constitution": 118,
       "defense": 482
@@ -1608,7 +1608,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/vorgonax_void.png",
     "minLevel": 100,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "strength": 630,
       "constitution": 210,
@@ -1623,7 +1623,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/106-death-void.png",
     "minLevel": 100,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "defense": 630,
       "constitution": 420,

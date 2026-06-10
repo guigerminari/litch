@@ -3326,6 +3326,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
           <EquippedItemDetailModal
             item={selectedEquipmentItem}
             inventoryItem={selectedEquipmentEntry}
+            locked={locked}
             onClose={() => setSelectedEquipmentInstanceId(null)}
           />
         )}
@@ -3406,10 +3407,12 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
 function EquippedItemDetailModal({
   item,
   inventoryItem,
+  locked,
   onClose
 }: {
   item: ItemDefinition;
   inventoryItem: InventoryItem;
+  locked: boolean;
   onClose: () => void;
 }) {
   const stats = getEnhancedItemStats(item, inventoryItem);
@@ -3448,6 +3451,16 @@ function EquippedItemDetailModal({
         </div>
         <div className="inv-action-buttons">
           <span className="equipped-label">Equipado</span>
+          <button
+            className="primary-button"
+            disabled={locked}
+            onClick={() => {
+              socket.emit("inventory:unequip", { instanceId: inventoryItem.instanceId });
+              onClose();
+            }}
+          >
+            Desequipar
+          </button>
           <button className="ghost-button" onClick={onClose}>
             Fechar
           </button>
