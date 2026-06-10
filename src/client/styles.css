@@ -18,8 +18,8 @@
   --line-strong: rgba(220, 203, 255, 0.22);
   --line-active: rgba(157, 107, 255, 0.55);
   --text: #f3ecff;
-  --muted: #afa3c7;
-  --faint: #746a86;
+  --muted: #9185a7;
+  --faint: #6b627c;
   --gold: #d8b24a;
   --green: #52d89b;
   --red: #c94e6b;
@@ -36,9 +36,10 @@
   --shadow-elevated: 0 24px 70px rgba(3, 2, 8, 0.48);
   --rarity-common: #9ca3af;
   --rarity-uncommon: #52d89b;
-  --rarity-rare: #9d6bff;
+  --rarity-rare: #e4f831;
   --rarity-epic: #7c4dff;
-  --rarity-legendary: #d8b24a;
+  --rarity-legendary: #eba92f;
+  --rarity-mythic: #ff0000;
 }
 
 /* Litch dark fantasy theme */
@@ -550,6 +551,7 @@ button:disabled {
 .news-highlight-list span {
   margin: 0;
   color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .community-invite {
@@ -717,7 +719,8 @@ button:disabled {
 .news-headline {
   color: var(--lavender);
   font-size: 1rem;
-  line-height: 1.45;
+  line-height: 1.2;
+  padding: 14px;
 }
 
 .news-body {
@@ -1970,7 +1973,8 @@ button:disabled {
 .topbar-status {
   min-width: 0;
   display: grid;
-  gap: 8px;
+  gap: 5px;
+  align-self: flex-start;
 }
 
 .title-lockup {
@@ -2014,11 +2018,14 @@ button:disabled {
   display: inline-grid;
   grid-template-columns: auto auto auto;
   align-items: center;
-  gap: 7px;
   padding: 8px 15px;
   border: none;
   background: transparent;
   border-radius: 6px;
+}
+
+.stat-pill strong {
+  margin-left: 6px;
 }
 
 .stat-action {
@@ -2066,7 +2073,7 @@ button:disabled {
   border: none;
   background: transparent;
   color: var(--text);
-  padding: 8px 10px;
+  padding: 2px;
   text-align: center;
 }
 
@@ -2152,6 +2159,7 @@ button:disabled {
 
 .character-chip small {
   color: var(--muted);
+  font-size: 0.6rem;
 }
 
 .character-chip-clan {
@@ -2160,7 +2168,7 @@ button:disabled {
   justify-content: center;
   gap: 4px;
   color: var(--purple);
-  font-size: 0.7rem;
+  font-size: 0.7rem !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2371,7 +2379,8 @@ button:disabled {
 
 .resource-stack {
   display: grid;
-  gap: 5px;
+  grid-template-columns: 1fr;
+  gap: 2px;
 }
 
 .resource-bar {
@@ -2415,9 +2424,9 @@ button:disabled {
 
 .resource-bar strong {
   color: var(--text);
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   white-space: nowrap;
-  font-weight: 600;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2435,6 +2444,11 @@ button:disabled {
   place-items: center;
   color: var(--muted);
 }
+
+ .resource-icon svg {
+    width: 11px;
+    height: 11px;
+  }
 
 .clan-ranking-main {
   display: flex;
@@ -2565,6 +2579,10 @@ button:disabled {
 .character-identity-copy h2,
 .character-identity-copy p {
   margin: 0 !important;
+}
+
+.character-identity-copy p {
+  font-size: 0.8rem;
 }
 
 .character-identity-copy h2 {
@@ -3977,6 +3995,9 @@ button:disabled {
 .content-panel {
   padding: 16px;
   min-height: 260px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .panel-title {
@@ -4487,7 +4508,7 @@ button:disabled .game-icon {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  margin-top: 2px;
+  margin: 5px;
 }
 
 .inventory-item-meta small {
@@ -4630,15 +4651,18 @@ button:disabled .game-icon {
 }
 
 .equip-emoji {
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   line-height: 1;
   flex-shrink: 0;
+  align-content: space-around;
+  text-align: center;
 }
 
 .equip-item-visual {
   width: 42px;
   height: 42px;
   flex-shrink: 0;
+  border-radius: 6px;
 }
 
 .equip-item-visual img {
@@ -6803,8 +6827,8 @@ button:disabled .game-icon {
 
 .asset-enhancement {
   position: absolute;
-  right: -6px;
-  top: -3px;
+  right: -2px;
+  top: 0px;
   padding: 2px 6px;
   color: var(--green);
   font-size: 0.7rem;
@@ -8879,22 +8903,27 @@ button:disabled .game-icon {
 
 .item-rarity.uncommon {
   color: var(--rarity-uncommon);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid var(--rarity-uncommon);
 }
 
 .item-rarity.rare {
   color: var(--rarity-rare);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid var(--rarity-rare);
 }
 
 .item-rarity.epic {
   color: var(--rarity-epic);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  border: 1px solid var(--rarity-epic);
 }
 
 .item-rarity.legendary {
   color: var(--rarity-legendary);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid var(--rarity-legendary);
+}
+
+.item-rarity.mythic {
+  color: var(--rarity-mythic);
+  border: 1px solid var(--rarity-mythic);
 }
 
 /* Item border highlight by rarity */
@@ -9584,8 +9613,8 @@ button:disabled .game-icon {
   gap: 16px;
 }
 
-.clan-panel {
-  width: min(720px, 100%);
+.clan-panel-content {
+  grid-template-columns: min(720px, 1fr);
   margin: 0 auto;
 }
 
@@ -10793,7 +10822,7 @@ button:disabled .game-icon {
   border: 1px solid rgba(241, 250, 140, 0.24);
   border-radius: 999px;
   color: white;
-  font-size: 0.5rem;
+  font-size: 0.6rem;
 }
 
 .ranking-section h3,
@@ -11345,7 +11374,6 @@ button:disabled .game-icon {
   display: block;
   font-size: 0.6rem;
   color: var(--green);
-  margin-top: 2px;
   opacity: 0.85;
 }
 .regen-hint.regen-full {
@@ -12660,14 +12688,8 @@ button:disabled {
     display: none;
   }
 
-  .topbar-status {
-    gap: 5px;
-    align-self: flex-start;
-  }
-
   .character-chip {
     min-height: 80px;
-    padding: 5px 6px;
   }
 
   .character-chip-avatar {
@@ -12677,10 +12699,6 @@ button:disabled {
 
   .character-chip strong {
     font-size: 0.84rem;
-  }
-
-  .character-chip small {
-    font-size: 0.68rem;
   }
 
   .top-economy {
@@ -12705,12 +12723,6 @@ button:disabled {
     padding-inline: 6px;
   }
 
-  .resource-stack {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 3px;
-  }
-
   .resource-bar {
     gap: 2px;
   }
@@ -12724,18 +12736,13 @@ button:disabled {
   }
 
   .resource-icon {
-    width: 16px;
-    height: 16px;
-    flex-basis: 16px;
+    width: 12px;
+    height: 12px;
+    flex-basis: 12px;
   }
 
   .resource-bar i {
     height: 7px;
-  }
-
-  .resource-bar strong {
-    font-size: 0.6rem;
-    font-weight: 500;
   }
 
   .regen-hint {
@@ -13145,7 +13152,6 @@ button:disabled {
 
   .character-chip {
     min-height: 74px;
-    padding: 3px 5px;
   }
 
   .character-chip-avatar {
@@ -13155,10 +13161,6 @@ button:disabled {
 
   .character-chip strong {
     font-size: 0.78rem;
-  }
-
-  .character-chip small {
-    font-size: 0.6rem;
   }
 
   .character-chip-level {
@@ -13186,10 +13188,6 @@ button:disabled {
   .stat-pill svg {
     width: 14px;
     height: 14px;
-  }
-
-  .resource-stack {
-    gap: 2px;
   }
 
   .resource-icon {
@@ -13311,6 +13309,14 @@ button:disabled {
   .invite-header p,
   .guide-copy p,
   .guide-detail-card p {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
+  }
+
+  .quest-reward span {
+    font-size: 0.5rem;
+  }
+
+  .royal-status {
+    font-size: 0.55rem;
   }
 }

@@ -35,6 +35,24 @@ export function isEquipped(character: Character, instanceId: string) {
   return Object.values(character.equipment).includes(instanceId);
 }
 
+export function normalizeInventory(character: Character, itemCatalog: Record<string, ItemDefinition>) {
+  const originalLength = character.inventory.length;
+  character.inventory = character.inventory.filter((item) => Boolean(itemCatalog[item.itemId]));
+
+  const inventoryInstanceIds = new Set(character.inventory.map((item) => item.instanceId));
+  let changed = character.inventory.length !== originalLength;
+
+  for (const slot of Object.keys(character.equipment) as Array<keyof typeof character.equipment>) {
+    const equippedInstanceId = character.equipment[slot];
+    if (equippedInstanceId && !inventoryInstanceIds.has(equippedInstanceId)) {
+      character.equipment[slot] = null;
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
 export function addItem(
   character: Character,
   itemId: string,

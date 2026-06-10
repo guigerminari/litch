@@ -47,7 +47,8 @@ import {
   X,
   Zap,
   Crosshair,
-  PencilRuler
+  PencilRuler,
+  FoldHorizontal
 } from "lucide-react";
 import type {
   AttributeKey,
@@ -1167,7 +1168,7 @@ function PlayerActionModal({
                     {definition ? (
                       <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={item?.enhancementLevel} rarity={item?.rarity} />
                     ) : (
-                      <span className="equip-emoji">{slot === "weapon" ? "Arma" : slot === "armor" ? "Armadura" : "Amuleto"}</span>
+                      <span className="equip-emoji equip-item-visual">{slot === "weapon" ? ITEM_KIND_EMOJI.weapon : slot === "armor" ? ITEM_KIND_EMOJI.armor : ITEM_KIND_EMOJI.amulet}</span>
                     )}
                     <div className="equip-info">
                       <small>{EQUIPMENT_LABEL[slot]}</small>
@@ -5715,7 +5716,7 @@ function ClanPanel({ game }: { game: GameState }) {
   const clanMembers = clan?.members?.length
     ? clan.members
     : (clan?.memberPlayerIds ?? []).map((playerId) => ({ playerId, name: playerId, isLeader: playerId === clan?.leaderPlayerId }));
-
+  const leaderName = clanMembers?.find((member) => member.playerId === clan?.leaderPlayerId)?.name ?? "Desconhecido";
   useEffect(() => {
     if (!clan) return;
     setActiveTab("members");
@@ -5817,216 +5818,220 @@ function ClanPanel({ game }: { game: GameState }) {
 
   return (
     <section className="content-panel clan-panel">
-      <PanelTitle icon={getClanCrestIcon(clan.icon, 50)} title={clan.name} />
-      <div className="clan-header-grid">
-        <div className="clan-summary">
-          <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
-          <Metric icon={<Users size={18} />} label="Membros" value={`${clanMembers.length}/${clan.memberCapacity}`} />
-          <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : "Clã"} />
-          <p className="clan-description-text">{clan.description || "Sem descrição do clã."}</p>
-        </div>
-        <section className="clan-treasury-card">
-          <div className="clan-treasury-head">
-            <strong>Tesouro do Clã</strong>
-            <small>Recursos compartilhados para evolução coletiva.</small>
+      <div className="clan-panel-content">
+        <PanelTitle icon={getClanCrestIcon(clan.icon, 50)} title={clan.name} />
+        <div className="clan-header-grid">
+          <div className="clan-summary">
+            <Metric icon={<Trophy size={18} />} label="Nível" value={clan.level} />
+            <Metric icon={<Users size={18} />} label="Membros" value={`${clanMembers.length}/${clan.memberCapacity}`} />
+            <Metric icon={<Shield size={18} />} label="Líder" value={leader ? "Você" : leaderName} />
+            <p className="clan-description-text">{clan.description || "Sem descrição do clã."}</p>
           </div>
-          <div className="clan-treasury-grid">
-            <Metric icon={<Coins size={18} style={{ color: "var(--gold)" }} />} label="" value={clan.gold} />
-            <Metric icon={<Gem size={18} style={{ color: "var(--cyan)" }} />} label="" value={clan.diamonds} />
-          </div>
-        </section>
-      </div>
-
-      <section className="clan-donate-card">
-        <div className="clan-donate-card-head">
-          <strong>Doação</strong>
-          <small>Envie recursos para fortalecer o clã.</small>
-        </div>
-        <form className="clan-donate-form" onSubmit={donate}>
-          <label className="clan-donate-field" htmlFor="clan-donate-gold">
-            <span><Coins size={15} style={{ color: "var(--gold)" }} /> Ouro</span>
-            <input
-              id="clan-donate-gold"
-              type="number"
-              min={0}
-              step={1}
-              inputMode="numeric"
-              value={gold}
-              onChange={(event) => setGold(Number(event.target.value))}
-              placeholder="0"
-              aria-label="Ouro"
-            />
-          </label>
-          <label className="clan-donate-field" htmlFor="clan-donate-diamonds">
-            <span><Gem size={15} style={{ color: "var(--cyan)" }} /> Diamantes</span>
-            <input
-              id="clan-donate-diamonds"
-              type="number"
-              min={0}
-              step={1}
-              inputMode="numeric"
-              value={diamonds}
-              onChange={(event) => setDiamonds(Number(event.target.value))}
-              placeholder="0"
-              aria-label="Diamantes"
-            />
-          </label>
-          <button type="submit" className="primary-button" disabled={gold <= 0 && diamonds <= 0}>
-            Doar
-          </button>
-        </form>
-      </section>
-
-      {!leader && (
-        <button className="ghost-button clan-leave-button" onClick={() => socket.emit("clan:leave")}>Sair do clã</button>
-      )}
-
-      <div className="clan-tabs">
-        <button type="button" className={activeTab === "members" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("members")}>
-          <Users size={16} />
-          <span>Membros</span>
-          <small>Lista e liderança</small>
-        </button>
-        <button type="button" className={activeTab === "benefits" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("benefits")}>
-          <Sparkles size={16} />
-          <span>Benefícios</span>
-          <small>Árvore do clã</small>
-        </button>
-        <button type="button" className={activeTab === "admin" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("admin")}>
-          <Settings size={16} />
-          <span>Administração</span>
-          <small>{leader ? "Editar e resetar" : "Apenas líder"}</small>
-        </button>
-        <button type="button" className={activeTab === "donations" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("donations")}>
-          <Coins size={16} />
-          <span>Doações</span>
-          <small>{clan.donationHistory?.length ?? 0} registro(s)</small>
-        </button>
-        <button type="button" className={activeTab === "benefits" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("benefits")}>Benefícios</button>
-        <button type="button" className={activeTab === "members" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("members")}>Membros</button>
-        {leader && (
-          <button type="button" className={activeTab === "admin" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("admin")}>Administração</button>
-        )}
-      </div>
-
-      {activeTab === "benefits" && <ClanBenefitTree game={game} leader={leader} />}
-
-      {activeTab === "members" && (
-        <section className="clan-member-list">
-          <h3>Membros</h3>
-          <div className="market-list">
-            {clanMembers.map((member) => (
-              <article className="market-row clan-member-row" key={member.playerId}>
-                <div>
-                  <strong><PlayerName playerId={member.playerId} name={member.name} /></strong>
-                  <span>{member.isLeader ? "Líder" : "Membro"}</span>
-                </div>
-                {leader && !member.isLeader && (
-                  <div className="clan-member-actions">
-                    <button
-                      type="button"
-                      className="ghost-button"
-                      onClick={() => {
-                        if (window.confirm(`Nomear ${member.name} como novo líder? Você perderá a liderança.`)) {
-                          socket.emit("clan:leadership:transfer", { memberPlayerId: member.playerId });
-                        }
-                      }}
-                    >
-                      Nomear líder
-                    </button>
-                    <button type="button" className="danger-button" onClick={() => socket.emit("clan:kick", { memberPlayerId: member.playerId })}>
-                      Remover
-                    </button>
-                  </div>
-                )}
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {activeTab === "donations" && (
-        <section className="clan-donation-history">
-          <h3>Histórico de Doação</h3>
-          <div className="market-list">
-            {(clan.donationHistory ?? []).length === 0 && <p className="empty-state">Nenhuma doação registrada ainda.</p>}
-            {(clan.donationHistory ?? []).map((entry) => (
-              <article className="market-row clan-donation-row" key={entry.id}>
-                <div>
-                  <strong><PlayerName playerId={entry.playerId} name={entry.playerName} /></strong>
-                  <span className="clan-donation-date">{formatListingDate(entry.createdAt)}</span>
-                </div>
-                <div className="clan-donation-values">
-                  {entry.gold > 0 && <span><Coins size={14} style={{ color: "var(--gold)" }} /> {formatCurrency(entry.gold)}</span>}
-                  {entry.diamonds > 0 && <span><Gem size={14} style={{ color: "var(--cyan)" }} /> {formatCurrency(entry.diamonds)}</span>}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {activeTab === "admin" && !leader && (
-        <section className="clan-reset-panel clan-admin-locked">
-          <div>
-            <strong>Administração restrita</strong>
-            <span>Apenas o líder pode alterar dados do clã ou resetar benefícios.</span>
-          </div>
-        </section>
-      )}
-
-      {leader && activeTab === "admin" && (
-        <>
-          <form className="clan-manage-form" onSubmit={updateClanProfile}>
-            <div>
-              <strong>Editar clã</strong>
-              <span>Altere nome, descrição e brasão do clã.</span>
+          <section className="clan-treasury-card">
+            <div className="clan-treasury-head">
+              <strong>Tesouro do Clã</strong>
+              <small>Recursos compartilhados para evolução coletiva.</small>
             </div>
-            <input value={editName} onChange={(event) => setEditName(event.target.value)} maxLength={28} placeholder="Nome do clã" />
-            <textarea
-              value={editDescription}
-              onChange={(event) => setEditDescription(event.target.value)}
-              maxLength={220}
-              rows={4}
-              placeholder="Descrição do clã (visível para todos)"
-            />
-            <div className="crest-picker" aria-label="Brasão do clã">
-              {CLAN_CRESTS.map((crest) => (
-                <button
-                  type="button"
-                  className={editCrestIcon === crest.id ? "crest-option selected" : "crest-option"}
-                  key={crest.id}
-                  title={crest.label}
-                  onClick={() => setEditCrestIcon(crest.id)}
-                >
-                  {getClanCrestIcon(crest.id, 60)}
-                </button>
-              ))}
+            <div className="clan-treasury-grid">
+              <Metric icon={<Coins size={18} style={{ color: "var(--gold)" }} />} label="" value={clan.gold} />
+              <Metric icon={<Gem size={18} style={{ color: "var(--cyan)" }} />} label="" value={clan.diamonds} />
             </div>
-            <button className="primary-button" disabled={editName.trim().length < 3}>
-              Salvar alterações
+          </section>
+        </div>
+
+        <section className="clan-donate-card">
+          <div className="clan-donate-card-head">
+            <strong>Doação</strong>
+            <small>Envie recursos para fortalecer o clã.</small>
+          </div>
+          <form className="clan-donate-form" onSubmit={donate}>
+            <label className="clan-donate-field" htmlFor="clan-donate-gold">
+              <span><Coins size={15} style={{ color: "var(--gold)" }} /> Ouro</span>
+              <input
+                id="clan-donate-gold"
+                type="number"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                value={gold}
+                onChange={(event) => setGold(Number(event.target.value))}
+                placeholder="0"
+                aria-label="Ouro"
+              />
+            </label>
+            <label className="clan-donate-field" htmlFor="clan-donate-diamonds">
+              <span><Gem size={15} style={{ color: "var(--cyan)" }} /> Diamantes</span>
+              <input
+                id="clan-donate-diamonds"
+                type="number"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                value={diamonds}
+                onChange={(event) => setDiamonds(Number(event.target.value))}
+                placeholder="0"
+                aria-label="Diamantes"
+              />
+            </label>
+            <button type="submit" className="primary-button" disabled={gold <= 0 && diamonds <= 0}>
+              Doar
             </button>
           </form>
+        </section>
 
-          <section className="clan-reset-panel">
-            <div>
-              <strong>Resetar benefícios</strong>
-              <span>Custa 1000 <Gem size={12} style={{ color: "var(--cyan)" }} /> do líder e devolve 80% do gold e <Gem size={12} style={{ color: "var(--cyan)" }} /> gastos para o tesouro do clã.</span>
+        {!leader && (
+          <button className="ghost-button clan-leave-button" onClick={() => socket.emit("clan:leave")}>Sair do clã</button>
+        )}
+
+        <div className="clan-tabs">
+          <button type="button" className={activeTab === "members" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("members")}>
+            <Users size={16} />
+            <span>Membros</span>
+            <small>Lista e liderança</small>
+          </button>
+          <button type="button" className={activeTab === "benefits" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("benefits")}>
+            <Sparkles size={16} />
+            <span>Benefícios</span>
+            <small>Árvore do clã</small>
+          </button>
+          {!leader && (
+          <button type="button" className={activeTab === "admin" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("admin")}>
+            <Settings size={16} />
+            <span>Administração</span>
+            <small>Editar e resetar</small>
+          </button>
+          )}
+          <button type="button" className={activeTab === "donations" ? "clan-tab-card active" : "clan-tab-card"} onClick={() => setActiveTab("donations")}>
+            <Coins size={16} />
+            <span>Doações</span>
+            <small>{clan.donationHistory?.length ?? 0} registro(s)</small>
+          </button>
+          <button type="button" className={activeTab === "benefits" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("benefits")}>Benefícios</button>
+          <button type="button" className={activeTab === "members" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("members")}>Membros</button>
+          {leader && (
+            <button type="button" className={activeTab === "admin" ? "mini-tab active" : "mini-tab"} onClick={() => setActiveTab("admin")}>Administração</button>
+          )}
+        </div>
+
+        {activeTab === "benefits" && <ClanBenefitTree game={game} leader={leader} />}
+
+        {activeTab === "members" && (
+          <section className="clan-member-list">
+            <h3>Membros</h3>
+            <div className="market-list">
+              {clanMembers.map((member) => (
+                <article className="market-row clan-member-row" key={member.playerId}>
+                  <div>
+                    <strong><PlayerName playerId={member.playerId} name={member.name} /></strong>
+                    <span>{member.isLeader ? "Líder" : "Membro"}</span>
+                  </div>
+                  {leader && !member.isLeader && (
+                    <div className="clan-member-actions">
+                      <button
+                        type="button"
+                        className="ghost-button"
+                        onClick={() => {
+                          if (window.confirm(`Nomear ${member.name} como novo líder? Você perderá a liderança.`)) {
+                            socket.emit("clan:leadership:transfer", { memberPlayerId: member.playerId });
+                          }
+                        }}
+                      >
+                        Nomear líder
+                      </button>
+                      <button type="button" className="danger-button" onClick={() => socket.emit("clan:kick", { memberPlayerId: member.playerId })}>
+                        Remover
+                      </button>
+                    </div>
+                  )}
+                </article>
+              ))}
             </div>
-            <button
-              className="ghost-button"
-              disabled={game.character.diamonds < 1000 || clan.level <= 0}
-              onClick={() => {
-                if (window.confirm("Resetar todos os benefícios do clã por 1000 diamantes?")) {
-                  socket.emit("clan:benefit:reset");
-                }
-              }}
-            >
-              Resetar Pontos de Atributos
-            </button>
           </section>
-        </>
-      )}
+        )}
+
+        {activeTab === "donations" && (
+          <section className="clan-donation-history">
+            <h3>Histórico de Doação</h3>
+            <div className="market-list">
+              {(clan.donationHistory ?? []).length === 0 && <p className="empty-state">Nenhuma doação registrada ainda.</p>}
+              {(clan.donationHistory ?? []).map((entry) => (
+                <article className="market-row clan-donation-row" key={entry.id}>
+                  <div>
+                    <strong><PlayerName playerId={entry.playerId} name={entry.playerName} /></strong>
+                    <span className="clan-donation-date">{formatListingDate(entry.createdAt)}</span>
+                  </div>
+                  <div className="clan-donation-values">
+                    {entry.gold > 0 && <span><Coins size={14} style={{ color: "var(--gold)" }} /> {formatCurrency(entry.gold)}</span>}
+                    {entry.diamonds > 0 && <span><Gem size={14} style={{ color: "var(--cyan)" }} /> {formatCurrency(entry.diamonds)}</span>}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === "admin" && !leader && (
+          <section className="clan-reset-panel clan-admin-locked">
+            <div>
+              <strong>Administração restrita</strong>
+              <span>Apenas o líder pode alterar dados do clã ou resetar benefícios.</span>
+            </div>
+          </section>
+        )}
+
+        {leader && activeTab === "admin" && (
+          <>
+            <form className="clan-manage-form" onSubmit={updateClanProfile}>
+              <div>
+                <strong>Editar clã</strong>
+                <span>Altere nome, descrição e brasão do clã.</span>
+              </div>
+              <input value={editName} onChange={(event) => setEditName(event.target.value)} maxLength={28} placeholder="Nome do clã" />
+              <textarea
+                value={editDescription}
+                onChange={(event) => setEditDescription(event.target.value)}
+                maxLength={220}
+                rows={4}
+                placeholder="Descrição do clã (visível para todos)"
+              />
+              <div className="crest-picker" aria-label="Brasão do clã">
+                {CLAN_CRESTS.map((crest) => (
+                  <button
+                    type="button"
+                    className={editCrestIcon === crest.id ? "crest-option selected" : "crest-option"}
+                    key={crest.id}
+                    title={crest.label}
+                    onClick={() => setEditCrestIcon(crest.id)}
+                  >
+                    {getClanCrestIcon(crest.id, 60)}
+                  </button>
+                ))}
+              </div>
+              <button className="primary-button" disabled={editName.trim().length < 3}>
+                Salvar alterações
+              </button>
+            </form>
+
+            <section className="clan-reset-panel">
+              <div>
+                <strong>Resetar benefícios</strong>
+                <span>Custa 1000 <Gem size={12} style={{ color: "var(--cyan)" }} /> do líder e devolve 80% do gold e <Gem size={12} style={{ color: "var(--cyan)" }} /> gastos para o tesouro do clã.</span>
+              </div>
+              <button
+                className="ghost-button"
+                disabled={game.character.diamonds < 1000 || clan.level <= 0}
+                onClick={() => {
+                  if (window.confirm("Resetar todos os benefícios do clã por 1000 diamantes?")) {
+                    socket.emit("clan:benefit:reset");
+                  }
+                }}
+              >
+                Resetar Pontos de Atributos
+              </button>
+            </section>
+          </>
+        )}
+      </div>
     </section>
   );
 }
@@ -7020,7 +7025,6 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
             <div className="inventory-item-meta">
               <small>{ITEM_KIND_LABELS[selectedItem.kind]}</small>
               {selectedItem.slot && selectedRarity && <div className={`item-rarity ${selectedRarity}`}>{RARITY_LABELS[selectedRarity]}</div>}
-              <small>Quantidade: {selectedEntry.quantity}</small>
               {selectedItem.slot && <small>Nível mínimo: {selectedItem.minLevel}</small>}
               <small>Valor em ouro: {formatCurrency(selectedPrice)}</small>
               {selectedItem.slot && (selectedEntry.enhancementLevel ?? 0) > 0 && <small>Melhoria: +{selectedEntry.enhancementLevel ?? 0}</small>}
@@ -7050,8 +7054,8 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
             {!selectedItem.slot && (
               <div className="market-modal-stats">
                 <h4>Informações</h4>
-                {selectedItem.stats.healPercent && <p>Restaura {selectedItem.stats.healPercent * 100}% da vida ao usar.</p>}
-                {selectedItem.stats.energyPercent && <p>Restaura {selectedItem.stats.energyPercent * 100}% da energia ao usar.</p>}
+                {selectedItem.stats.healPercent && <p>Restaura {Math.floor(selectedItem.stats.healPercent * 100)}% da vida ao usar.</p>}
+                {selectedItem.stats.energyPercent && <p>Restaura {Math.floor(selectedItem.stats.energyPercent * 100)}% da energia ao usar.</p>}
                 {selectedItem.stats.heal && <p>Restaura {selectedItem.stats.heal} de vida.</p>}
               </div>
             )}

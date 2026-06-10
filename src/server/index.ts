@@ -115,7 +115,7 @@ import {
   takeBattleTurn,
   takeAutoPveTurn
 } from "./domain/battle";
-import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, removeItem } from "./domain/inventory";
+import { addItem, findInventoryItem, getInventoryCapacity, hasCapacity, inventoryUsed, isEquipped, normalizeInventory, removeItem } from "./domain/inventory";
 import { deriveStats, experienceForNextLevel, grantExperience } from "./domain/stats";
 import { store, type AuthAccount } from "./store";
 import { closePersistentStore, flushPersistentStore, loadPersistentStore, persistStoreSoon } from "./persistence";
@@ -554,6 +554,8 @@ function currentCharacter(playerId: string) {
   character.talentAllocations ??= {};
   character.clanId ??= null;
   syncClanBenefits(character);
+  character.equipment ??= { weapon: null, armor: null, amulet: null };
+  normalizeInventory(character, ITEM_CATALOG);
   character.arenaWins ??= 0;
   character.arenaLosses ??= 0;
   character.arenaRankedPoints ??= ARENA_RANKED_STARTING_POINTS;
