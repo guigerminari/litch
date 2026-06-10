@@ -5801,11 +5801,13 @@ button:disabled .game-icon {
 
 .dungeon-active-run {
   display: grid;
-  gap: 6px;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(139, 233, 253, 0.08), transparent 32rem),
+    rgba(255, 255, 255, 0.035);
 }
 
 .dungeon-active-run h3 {
@@ -5815,6 +5817,63 @@ button:disabled .game-icon {
 .dungeon-active-run p {
   margin: 0;
   color: var(--muted);
+}
+
+.dungeon-run-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.dungeon-run-header > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.dungeon-run-header h3 {
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 1.35rem;
+}
+
+.dungeon-abandon-button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.dungeon-run-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.dungeon-run-overview article {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(16, 13, 26, 0.5);
+}
+
+.dungeon-run-overview small {
+  color: var(--muted);
+}
+
+.dungeon-run-overview strong {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.danger-text {
+  color: var(--red) !important;
 }
 
 .dungeon-room-timer.paused {
@@ -5828,6 +5887,21 @@ button:disabled .game-icon {
   background: rgba(139, 233, 253, 0.08);
   color: var(--cyan);
   font-weight: 700;
+}
+
+.dungeon-effects-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.dungeon-effects-panel .dungeon-active-modifiers {
+  align-content: start;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(16, 13, 26, 0.42);
 }
 
 .dungeon-pending-rewards {
@@ -5927,6 +6001,36 @@ button:disabled .game-icon {
 .dungeon-room-body {
   display: grid;
   gap: 10px;
+}
+
+.dungeon-horde-status {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.dungeon-horde-status > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(16, 13, 26, 0.48);
+}
+
+.dungeon-horde-status small {
+  color: var(--muted);
+}
+
+.dungeon-horde-status strong {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.dungeon-horde-status.completed > div {
+  border-color: rgba(80, 250, 123, 0.22);
+  background: rgba(80, 250, 123, 0.06);
 }
 
 .dungeon-room-horde .dungeon-room-art-shell,
@@ -6299,6 +6403,20 @@ button:disabled .game-icon {
 }
 
 @media (max-width: 640px) {
+  .dungeon-run-header,
+  .dungeon-effects-panel,
+  .dungeon-horde-status {
+    grid-template-columns: 1fr;
+  }
+
+  .dungeon-run-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dungeon-abandon-button {
+    width: 100%;
+  }
+
   .dungeon-floor-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 8px;
@@ -6442,6 +6560,34 @@ button:disabled .game-icon {
 
 .battle-dungeon-modifiers {
   margin-top: 4px;
+}
+
+.battle-dungeon-room-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(139, 233, 253, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(21, 42, 52, 0.46), rgba(16, 13, 26, 0.56));
+}
+
+.battle-dungeon-room-banner span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid rgba(220, 203, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(16, 13, 26, 0.48);
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.battle-dungeon-room-banner strong {
+  color: var(--text);
 }
 
 .enhancement-result-fx {

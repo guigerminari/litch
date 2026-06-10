@@ -149,6 +149,7 @@ export interface DungeonRunState {
   pendingGold: number;
   pendingItems: DungeonPendingRewardItem[];
   currentEncounterMonsterIds?: string[];
+  completedRoomIndexes?: number[];
 }
 
 export interface DungeonCompletionPayload {

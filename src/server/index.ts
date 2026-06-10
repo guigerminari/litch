@@ -2852,7 +2852,8 @@ function createDungeonRun(character: Character, countryId: string, floor: number
     pendingExperience: 0,
     pendingGold: 0,
     pendingItems: [],
-    currentEncounterMonsterIds: []
+    currentEncounterMonsterIds: [],
+    completedRoomIndexes: []
   };
   armDungeonRoomTimer(character, character.playerId);
 }
@@ -2943,6 +2944,7 @@ function clearDungeonRun(character: Character) {
   run.pendingExperience = 0;
   run.pendingGold = 0;
   run.currentEncounterMonsterIds = [];
+  run.completedRoomIndexes = [];
   character.activeBattleId = null;
   character.dungeonProgress!.activeRun = null;
 }
@@ -3016,6 +3018,9 @@ function startNextDungeonCombat(character: Character) {
   if (!room || (room.type !== "horde" && room.type !== "boss")) {
     return;
   }
+  if (run.completedRoomIndexes?.includes(run.roomIndex)) {
+    return;
+  }
   if (!run.currentEncounterMonsterIds || run.currentEncounterMonsterIds.length === 0) {
     run.currentEncounterMonsterIds = [...(room.monsterIds ?? [])];
   }
@@ -3030,7 +3035,7 @@ function startNextDungeonCombat(character: Character) {
     floor: run.floor,
     roomIndex: run.roomIndex,
     roomType: room.type,
-    roomLabel: room.type === "boss" ? "Chefe" : `Horda ${run.roomIndex + 1}`,
+    roomLabel: room.type === "boss" ? "Chefe" : `Sala ${run.roomIndex + 1} - Horda`,
     remainingMonsters: run.currentEncounterMonsterIds.length,
     activeBuffs: [...run.activeBuffs],
     activeTraps: [...run.activeTraps]
@@ -3046,6 +3051,7 @@ function progressToNextDungeonRoom(character: Character) {
   }
   run.roomIndex += 1;
   run.currentEncounterMonsterIds = [];
+  run.completedRoomIndexes = (run.completedRoomIndexes ?? []).filter((index) => index >= run.roomIndex);
   armDungeonRoomTimer(character, character.playerId);
 }
 
@@ -3105,6 +3111,10 @@ function applyDungeonRoomAction(character: Character, playerId: string) {
 
   const room = run.rooms[run.roomIndex];
   if (room.type === "horde" || room.type === "boss") {
+    if (room.type === "horde" && run.completedRoomIndexes?.includes(run.roomIndex)) {
+      progressToNextDungeonRoom(character);
+      return;
+    }
     startNextDungeonCombat(character);
     return;
   }
@@ -3230,6 +3240,14 @@ function resolveDungeonProgress(character: Character, playerId: string, battle: 
   }
 
   character.activeBattleId = null;
+  if (battle.dungeon?.roomType === "horde") {
+    run.completedRoomIndexes ??= [];
+    if (!run.completedRoomIndexes.includes(run.roomIndex)) {
+      run.completedRoomIndexes.push(run.roomIndex);
+    }
+    return;
+  }
+
   progressToNextDungeonRoom(character);
 
   if (!character.dungeonProgress?.activeRun) {
@@ -3239,11 +3257,6 @@ function resolveDungeonProgress(character: Character, playerId: string, battle: 
   if (updatedRun.roomIndex >= updatedRun.rooms.length) {
     completeDungeonRun(character, playerId);
     return;
-  }
-
-  const nextRoom = updatedRun.rooms[updatedRun.roomIndex];
-  if (nextRoom?.type === "horde") {
-    startNextDungeonCombat(character);
   }
 }
 
@@ -4661,6 +4674,9 @@ io.on("connection", (socket: AuthedSocket) => {
       }
       removeItemByItemId(character, DUNGEON_KEY_ITEM_ID, 1);
       createDungeonRun(character, countryId, floor);
+      if (character.dungeonProgress?.activeRun?.rooms[0]?.type === "horde") {
+        startNextDungeonCombat(character);
+      }
       leaveArenaQueue(playerId);
       emitState(playerId);
     } catch (error) {
@@ -4695,6 +4711,30 @@ io.on("connection", (socket: AuthedSocket) => {
           startNextDungeonCombat(character);
         }
       }
+      emitState(playerId);
+    } catch (error) {
+      handleError(socket, error);
+    }
+  });
+
+  socket.on("dungeon:abandon", () => {
+    try {
+      const playerId = requirePlayer(socket);
+      const character = currentCharacter(playerId);
+      const run = character.dungeonProgress?.activeRun;
+      if (!run) {
+        throw new Error("Nenhuma masmorra ativa.");
+      }
+      const penalty = Math.max(1, Math.floor(experienceForNextLevel(character.level) * DEATH_XP_PENALTY_PERCENT));
+      const lost = Math.min(character.experience, penalty);
+      character.experience = Math.max(0, character.experience - penalty);
+      character.currentHp = 0;
+      failDungeonRun(character);
+      socket.emit("game:error", {
+        message: lost > 0
+          ? `Você desistiu da masmorra, morreu e perdeu ${lost} XP e todos os espólios acumulados.`
+          : "Você desistiu da masmorra, morreu e perdeu todos os espólios acumulados."
+      });
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);
@@ -5569,7 +5609,7 @@ io.on("connection", (socket: AuthedSocket) => {
   });
 });
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Litch realtime server running on port ${PORT}`);
 });
 

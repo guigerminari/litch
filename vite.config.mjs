@@ -54,7 +54,7 @@ export default defineConfig({
     })
   ],
   server: {
-    host: "127.0.0.1",
+    host: "0.0.0.0",
     port: 5173,
     proxy: {
       "/socket.io": {
@@ -65,7 +65,7 @@ export default defineConfig({
     }
   },
   preview: {
-    host: "127.0.0.1",
+    host: "0.0.0.0",
     port: 4173,
     allowedHosts: [".loca.lt"],
     proxy: {
