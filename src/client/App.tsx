@@ -1,4 +1,4 @@
-import { createContext, FormEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, FormEvent, JSX, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeftRight,
@@ -358,7 +358,6 @@ const OBLIVION_SCROLL_ID = "oblivion_scroll";
 const ATTRIBUTE_RESET_DIAMOND_COST = 20;
 const TALENT_RESET_DIAMOND_COST = 25;
 const AVATAR_OPTIONS_SEEN_STORAGE_PREFIX = "litch:avatar-options-seen";
-const BRAND_ICON_URL = "/assets/brand/litch-logo-square-512x512.png";
 const BRAND_WORDMARK_URL = "/assets/brand/litch-1500x1500.png";
 const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
   strength: "Força",
@@ -1301,79 +1300,81 @@ function Header({
 
   return (
     <header className="topbar">
-      <div className="topbar-profile">
-        <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
-          <CharacterAvatar
-            avatar={getCurrentAvatar(game)}
-            size={50}
-            royal={royalSealActive}
-            className="character-chip-avatar"
-            alert={hasGrowthPoints}
-            alertLabel={growthPointLabels.join(" e ") || "Pontos para distribuir"}
-          />
-          <strong>{game.character.name}</strong>
-          <small className="character-chip-level">Nv {game.character.level}</small>
-          <small className="character-chip-clan">
-            {game.clan ? <>{getClanCrestIcon(game.clan.icon, 11)} {game.clan.name}</> : "Sem clã"}
-          </small>
-        </button>
-      </div>
-      <div className="topbar-status">
-        <div className="top-economy">
-          <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
-            <Coins size={17} style={{ color: "var(--gold)" }} />
-            <strong>{formatCurrency(game.character.gold)}</strong>
-            {firstClickNotices.exchange && <span className="attention-dot" aria-hidden="true" />}
+      <div className="topbar-content">
+        <div className="topbar-profile">
+          <button className="character-chip" onClick={onDetails} title="Detalhes do personagem">
+            <CharacterAvatar
+              avatar={getCurrentAvatar(game)}
+              size={50}
+              royal={royalSealActive}
+              className="character-chip-avatar"
+              alert={hasGrowthPoints}
+              alertLabel={growthPointLabels.join(" e ") || "Pontos para distribuir"}
+            />
+            <strong>{game.character.name}</strong>
+            <small className="character-chip-level">Nv {game.character.level}</small>
+            <small className="character-chip-clan">
+              {game.clan ? <>{getClanCrestIcon(game.clan.icon, 11)} {game.clan.name}</> : "Sem clã"}
+            </small>
           </button>
-          <button className="stat-pill stat-action" onClick={onGameShop} title="Loja do Jogo">
-            <Gem size={17} style={{ color: "var(--cyan)" }} />
-            <strong>{formatCurrency(game.character.diamonds)}</strong>
-            {firstClickNotices.diamonds && <span className="attention-dot" aria-hidden="true" />}
-          </button>
-          <button
-            className="stat-pill stat-action notification-top-button"
-            title="Notificações"
-            onClick={onNotifications}
-          >
-            <Bell size={17} style={{ color: unreadNotifications > 0 ? "var(--cyan)" : "var(--muted)" }} />
-            {unreadNotifications > 0 && <span className="notification-count">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}
-          </button>
-
-          <TopMenu
-            onRanking={onRanking}
-            onSettings={onSettings}
-            onGuide={onGuide}
-            onMore={onMore}
-            onLogout={onLogout}
-            rankingNotice={firstClickNotices.ranking}
-            guideNotice={firstClickNotices.guide}
-          />
         </div>
-        <div className="resource-stack">
-          <ResourceBar
-            className="life"
-            icon={<Heart size={15} style={{ color: "var(--red)" }} />}
-            value={`${game.character.currentHp}/${game.derived.maxHp}`}
-            progress={hpProgress}
-            regenAmount={game.regenHpAmount}
-            timerLabel={timerLabel}
-            atMax={game.character.currentHp >= game.derived.maxHp}
-          />
-          <ResourceBar
-            className="energy"
-            icon={<Zap size={15} style={{ color: "var(--green)" }} />}
-            value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
-            progress={energyProgress}
-            regenAmount={game.regenEnergyAmount}
-            timerLabel={timerLabel}
-            atMax={game.character.currentEnergy >= game.derived.maxEnergy}
-          />
-          <ResourceBar
-            className="xp"
-            icon={<Star size={15} style={{ color: "var(--purple)" }} />}
-            value={`${formatCurrency(game.character.experience)}/${formatCurrency(nextXp)}`}
-            progress={xpProgress}
-          />
+        <div className="topbar-status">
+          <div className="top-economy">
+            <button className="stat-pill stat-action" onClick={onExchange} title="Trocar moedas">
+              <Coins size={17} style={{ color: "var(--gold)" }} />
+              <strong>{formatCurrency(game.character.gold)}</strong>
+              {firstClickNotices.exchange && <span className="attention-dot" aria-hidden="true" />}
+            </button>
+            <button className="stat-pill stat-action" onClick={onGameShop} title="Loja do Jogo">
+              <Gem size={17} style={{ color: "var(--cyan)" }} />
+              <strong>{formatCurrency(game.character.diamonds)}</strong>
+              {firstClickNotices.diamonds && <span className="attention-dot" aria-hidden="true" />}
+            </button>
+            <button
+              className="stat-pill stat-action notification-top-button"
+              title="Notificações"
+              onClick={onNotifications}
+            >
+              <Bell size={17} style={{ color: unreadNotifications > 0 ? "var(--cyan)" : "var(--muted)" }} />
+              {unreadNotifications > 0 && <span className="notification-count">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}
+            </button>
+
+            <TopMenu
+              onRanking={onRanking}
+              onSettings={onSettings}
+              onGuide={onGuide}
+              onMore={onMore}
+              onLogout={onLogout}
+              rankingNotice={firstClickNotices.ranking}
+              guideNotice={firstClickNotices.guide}
+            />
+          </div>
+          <div className="resource-stack">
+            <ResourceBar
+              className="life"
+              icon={<Heart size={15} style={{ color: "var(--red)" }} />}
+              value={`${game.character.currentHp}/${game.derived.maxHp}`}
+              progress={hpProgress}
+              regenAmount={game.regenHpAmount}
+              timerLabel={timerLabel}
+              atMax={game.character.currentHp >= game.derived.maxHp}
+            />
+            <ResourceBar
+              className="energy"
+              icon={<Zap size={15} style={{ color: "var(--green)" }} />}
+              value={`${game.character.currentEnergy}/${game.derived.maxEnergy}`}
+              progress={energyProgress}
+              regenAmount={game.regenEnergyAmount}
+              timerLabel={timerLabel}
+              atMax={game.character.currentEnergy >= game.derived.maxEnergy}
+            />
+            <ResourceBar
+              className="xp"
+              icon={<Star size={15} style={{ color: "var(--purple)" }} />}
+              value={`${formatCurrency(game.character.experience)}/${formatCurrency(nextXp)}`}
+              progress={xpProgress}
+            />
+          </div>
         </div>
       </div>
     </header>
@@ -3589,9 +3590,9 @@ function CityHero({ game, view, setView }: { game: GameState; view: View; setVie
           <span className="eyebrow">Cidade</span>
           <h1>{game.currentCity.name}</h1>
           <strong className="city-country">{game.currentCountry.name}</strong>
+          <p className="city-hero-desc">{game.currentCity.description}</p>
         </div>
       </header>
-      <p className="city-hero-desc">{game.currentCity.description}</p>
     </>
   );
 }
@@ -6754,14 +6755,14 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
     shop === "armorer"
       ? game.currentCity.armorerItemIds
       : shop === "apothecary"
-        ? game.currentCity.apothecaryItemIds.filter((itemId) => {
+        ? game.currentCity.apothecaryItemIds?.filter((itemId) => {
             const item = game.itemCatalog[itemId];
             return item?.kind !== "scroll" && item?.kind !== "ticket";
           })
         : isGoldCoinShop
           ? game.currentCity.goldCoinMerchantItemIds ?? []
           : game.currentCity.moneyChangerItemIds ?? [];
-  const sortedItemIds = [...itemIds].sort((leftId, rightId) => {
+  const sortedItemIds = itemIds && [...itemIds].sort((leftId, rightId) => {
     const left = game.itemCatalog[leftId];
     const right = game.itemCatalog[rightId];
     if (isGoldCoinShop) {
@@ -6790,7 +6791,7 @@ function ShopPanel({ game, shop }: { game: GameState; shop: "armorer" | "apothec
         </div>
       )}
       <div className="shop-grid npc-shop-grid">
-        {sortedItemIds.map((itemId) => {
+        {sortedItemIds && sortedItemIds.map((itemId) => {
           const item = game.itemCatalog[itemId];
           if (!item) {
             return null;

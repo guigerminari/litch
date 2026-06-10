@@ -1946,16 +1946,21 @@ button:disabled {
 .topbar {
   position: relative;
   z-index: 30;
-  display: grid;
-  grid-template-columns: minmax(130px, 140px) minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
   padding: 12px 14px;
   border: 1px solid var(--line);
   background: rgba(40, 42, 54, 0.92);
+  align-items: start;
   border-radius: 8px;
   box-shadow: 0 18px 56px rgba(0, 0, 0, 0.34);
   backdrop-filter: blur(16px);
+}
+
+.topbar-content {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 14px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .topbar-profile {
@@ -2410,8 +2415,9 @@ button:disabled {
 
 .resource-bar strong {
   color: var(--text);
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   white-space: nowrap;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2422,10 +2428,9 @@ button:disabled {
 }
 
 .resource-icon {
-
-  width: 20px;
-  height: 20px;
-  flex: 0 0 20px;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
   display: grid;
   place-items: center;
   color: var(--muted);
@@ -3006,7 +3011,7 @@ button:disabled {
 
 .city-stage {
   display: grid;
-  gap: 16px;
+  gap: 5px;
   min-width: 0;
 }
 
@@ -3027,21 +3032,19 @@ button:disabled {
 
 .city-copy {
   position: relative;
-  width: min(600px, calc(100% - 32px));
   padding: 28px 24px;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  width: min(1000px, calc(100% - 32px));
+  margin: 0 auto;
+  z-index: 1;
 }
 
 .city-hero-desc {
   margin-top: -12px;
   margin-bottom: -8px;
   font-size: 0.7rem;
-  padding: 6px 10px;
   color: var(--muted);
   text-align: justify;
-  border: 1px solid rgba(220, 203, 255, 0.1);
-  border-radius: 9px;
-  background: rgba(11, 9, 18, 0.42);
 }
 
 .city-country,
@@ -11340,7 +11343,7 @@ button:disabled .game-icon {
 /* ── Regen hint ── */
 .regen-hint {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   color: var(--green);
   margin-top: 2px;
   opacity: 0.85;
@@ -11959,7 +11962,7 @@ button:disabled {
 
 .resource-bar i,
 .hp-bar {
-  height: 10px;
+  height: 7px;
   border-color: rgba(220, 203, 255, 0.14);
   background: #0b0912;
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.42);
@@ -12121,13 +12124,6 @@ button:disabled {
   opacity: 0.82;
   filter: saturate(0.96) brightness(0.72) contrast(1.08);
   mix-blend-mode: normal;
-}
-
-.city-copy {
-  z-index: 1;
-  width: min(650px, calc(100% - 32px));
-  padding: 34px 28px;
-  text-shadow: none;
 }
 
 .eyebrow,
@@ -12628,6 +12624,10 @@ button:disabled {
   color: var(--green);
 }
 
+.life .regen-hint {
+  color: #ffa4a4;
+}
+
 @keyframes turnGlow {
   from {
     box-shadow: 0 0 0 color-mix(in srgb, var(--theme-accent) 0%, transparent);
@@ -12740,7 +12740,7 @@ button:disabled {
 
   .regen-hint {
     margin-top: 0;
-    font-size: 0.62rem;
+    font-size: 0.55rem;
     line-height: 1.05;
     white-space: nowrap;
     overflow: hidden;
