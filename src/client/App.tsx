@@ -442,6 +442,14 @@ function markFirstClickNoticeSeen(playerId: string, key: FirstClickNoticeKey) {
   }
 }
 
+function scrollPageToTop() {
+  window.requestAnimationFrame(() => {
+    document.scrollingElement?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.querySelector<HTMLElement>(".game-shell, .auth-screen")?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  });
+}
+
 export function App() {
   const [game, setGame] = useState<GameState | null>(null);
   const [quickPotionPreferences, setQuickPotionPreferences] = useState<QuickPotionPreferences>(readQuickPotionPreferences);
@@ -483,6 +491,7 @@ export function App() {
       return;
     }
     setView(nextView);
+    scrollPageToTop();
   }, [game]);
 
   useEffect(() => {
@@ -624,6 +633,10 @@ export function App() {
     }
     setFirstClickNoticeSeen(readFirstClickNoticeSeen(game.player.id));
   }, [game?.player.id]);
+
+  useEffect(() => {
+    scrollPageToTop();
+  }, [authMode, game?.player.id, view]);
 
   const submitAuth = (event: FormEvent) => {
     event.preventDefault();
