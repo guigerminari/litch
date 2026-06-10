@@ -21,6 +21,7 @@ import {
   Handshake,
   Heart,
   Info,
+  Instagram,
   KeyRound,
   Lock,
   LogIn,
@@ -1895,6 +1896,8 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
               <article><strong>Como funcionam esquiva e precisão?</strong><span>A chance final compara esquiva do defensor contra precisão do atacante. AGI aumenta esquiva, precisão, crítico e também o multiplicador de dano crítico.</span></article>
             </section>
 
+            <CommunityInvite game={game} context="guide" />
+
             <section className="faq-section highlighted">
               <h3>Diamantes e Amigo do Rei</h3>
               <article><strong>Quando vale comprar diamantes?</strong><span>Diamantes aceleram resets, criação de clã, compra de avatares premium e trocas por ouro quando você precisa agir rápido no mercado.</span></article>
@@ -2255,6 +2258,67 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
   );
 }
 
+function CommunityInvite({ game, context }: { game: GameState; context: "guide" | "more" }) {
+  const whatsappUrl = game.communityLinks?.whatsappUrl?.trim() || game.gameShopContact.whatsappUrl?.trim() || "";
+  const instagramUrl = game.communityLinks?.instagramUrl?.trim() ?? "";
+  const sectionClassName = context === "guide" ? "community-invite guide-community-invite" : "more-section community-invite";
+
+  return (
+    <section className={sectionClassName}>
+      <div className="community-invite-header">
+        <span className="eyebrow">Comunidade</span>
+        <h3>Junte-se aos recrutas de Litch</h3>
+        <p>
+          Entre no grupo do WhatsApp para trocar dicas, combinar clãs, avisar bugs e acompanhar os próximos passos do beta.
+          Siga também o Instagram para ver novidades, eventos e bastidores do desenvolvimento.
+        </p>
+      </div>
+
+      <div className="community-action-grid">
+        {whatsappUrl ? (
+          <a className="community-action-card whatsapp" href={whatsappUrl} target="_blank" rel="noreferrer">
+            <MessageCircle size={22} />
+            <span className="community-action-copy">
+              <strong>Grupo do WhatsApp</strong>
+              <span>Participe das conversas da comunidade.</span>
+            </span>
+            <b className="community-action-cta">Participar</b>
+          </a>
+        ) : (
+          <div className="community-action-card whatsapp disabled" aria-disabled="true">
+            <MessageCircle size={22} />
+            <span className="community-action-copy">
+              <strong>Grupo do WhatsApp</strong>
+              <span>Link da comunidade em breve.</span>
+            </span>
+            <b className="community-action-cta">Em breve</b>
+          </div>
+        )}
+
+        {instagramUrl ? (
+          <a className="community-action-card instagram" href={instagramUrl} target="_blank" rel="noreferrer">
+            <Instagram size={22} />
+            <span className="community-action-copy">
+              <strong>Instagram</strong>
+              <span>Siga Litch nas redes sociais.</span>
+            </span>
+            <b className="community-action-cta">Seguir</b>
+          </a>
+        ) : (
+          <div className="community-action-card instagram disabled" aria-disabled="true">
+            <Instagram size={22} />
+            <span className="community-action-copy">
+              <strong>Instagram</strong>
+              <span>Perfil oficial em breve.</span>
+            </span>
+            <b className="community-action-cta">Em breve</b>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function MoreInfoPanel({ game }: { game: GameState }) {
   const [developerSubject, setDeveloperSubject] = useState("");
   const [developerMessage, setDeveloperMessage] = useState("");
@@ -2393,6 +2457,8 @@ function MoreInfoPanel({ game }: { game: GameState }) {
             </div>
           </div>
         </section>
+
+        <CommunityInvite game={game} context="more" />
 
         <section className="more-section newsroom-section">
           <div className="more-section-heading">

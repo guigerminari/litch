@@ -144,6 +144,8 @@ const GAME_SHOP_PIX_HASH = (
 ).trim();
 const GAME_SHOP_WHATSAPP_URL = (process.env.GAME_SHOP_WHATSAPP_URL ?? "https://wa.me/5535984652456").trim();
 const GAME_SHOP_CONTACT_EMAIL = (process.env.GAME_SHOP_CONTACT_EMAIL ?? "gags.guilherme@gmail.com").trim();
+const COMMUNITY_WHATSAPP_URL = (process.env.LITCH_COMMUNITY_WHATSAPP_URL ?? GAME_SHOP_WHATSAPP_URL).trim();
+const COMMUNITY_INSTAGRAM_URL = (process.env.LITCH_INSTAGRAM_URL ?? "").trim();
 const PASSWORD_MIN_LENGTH = 6;
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
@@ -228,6 +230,13 @@ function gameShopContactInfo() {
     pixHash: GAME_SHOP_PIX_HASH,
     whatsappUrl: GAME_SHOP_WHATSAPP_URL || undefined,
     contactEmail: GAME_SHOP_CONTACT_EMAIL || undefined
+  };
+}
+
+function communityLinks() {
+  return {
+    whatsappUrl: COMMUNITY_WHATSAPP_URL || undefined,
+    instagramUrl: COMMUNITY_INSTAGRAM_URL || undefined
   };
 }
 const DEFAULT_AVATAR_ID = "recruta";
@@ -733,6 +742,7 @@ function serializeGameState(playerId: string): GameState {
     diamondPackages: DIAMOND_PACKAGES,
     diamondPurchaseHistory: [...(character.diamondPurchaseHistory ?? [])].sort((a, b) => b.grantedAt - a.grantedAt).slice(0, 50),
     gameShopContact: gameShopContactInfo(),
+    communityLinks: communityLinks(),
     gameShopCanManualGrant: Boolean(GAME_SHOP_ADMIN_EMAIL) && (player.email ?? "").toLowerCase() === GAME_SHOP_ADMIN_EMAIL,
     availableCraftingRecipes: availableRecipes,
     rankings: buildRankings(),

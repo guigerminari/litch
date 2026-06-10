@@ -730,6 +730,11 @@ export interface GameShopContactInfo {
   contactEmail?: string;
 }
 
+export interface CommunityLinks {
+  whatsappUrl?: string;
+  instagramUrl?: string;
+}
+
 export interface RankingEntry {
   playerId: string;
   name: string;
@@ -866,6 +871,7 @@ export interface GameState {
   diamondPackages: GameShopPackage[];
   diamondPurchaseHistory: GameShopPurchaseHistoryEntry[];
   gameShopContact: GameShopContactInfo;
+  communityLinks: CommunityLinks;
   gameShopCanManualGrant: boolean;
   availableCraftingRecipes: {
     blacksmith: CraftingRecipe[];
