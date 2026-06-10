@@ -84,7 +84,13 @@ import type {
   WorkReward,
   WorkServiceDefinition
 } from "../shared/types";
-import { RARITY_CHANCES, RARITY_PRICE_MULTIPLIER, RARITY_STAT_MULTIPLIER } from "../shared/rarity";
+import {
+  RARITY_ORDER,
+  RARITY_PRICE_MULTIPLIER,
+  RARITY_STAT_MULTIPLIER,
+  getCraftRarityBoostTier,
+  getCraftRarityChances
+} from "../shared/rarity";
 import { experienceForNextLevel } from "../shared/progression";
 import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL, MONARCH_BATTLE_ATTACK_LIMIT } from "../shared/types";
 import {
@@ -4049,15 +4055,14 @@ function QuestSection({ title, quests }: { title: string; quests: QuestView[] })
   );
 }
 
-const CRAFT_COMMON_CHANCE = 1 - RARITY_CHANCES.uncommon - RARITY_CHANCES.rare - RARITY_CHANCES.epic - RARITY_CHANCES.legendary;
+function getCraftBaseSelectionKey(recipeId: string, itemId: string) {
+  return `${recipeId}:${itemId}`;
+}
 
-const CRAFT_RARITY_TABLE: Array<{ rarity: Rarity; pct: number }> = [
-  { rarity: "common", pct: Math.round(CRAFT_COMMON_CHANCE * 100) },
-  { rarity: "uncommon", pct: Math.round(RARITY_CHANCES.uncommon * 100) },
-  { rarity: "rare", pct: Math.round(RARITY_CHANCES.rare * 100) },
-  { rarity: "epic", pct: Math.round(RARITY_CHANCES.epic * 100) },
-  { rarity: "legendary", pct: Math.round(RARITY_CHANCES.legendary * 100) },
-];
+function getCraftRarityTable(baseRarities: Rarity[] = []): Array<{ rarity: Rarity; pct: number }> {
+  const chances = getCraftRarityChances(baseRarities);
+  return RARITY_ORDER.map((rarity) => ({ rarity, pct: Math.round(chances[rarity] * 100) }));
+}
 
 const CRAFT_ANIMATION_MS = 2400;
 
@@ -4067,6 +4072,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
   const [craftedRecipePulseId, setCraftedRecipePulseId] = useState("");
   const [craftingRecipeId, setCraftingRecipeId] = useState("");
   const [craftQuantity, setCraftQuantity] = useState(1);
+  const [craftBaseSelection, setCraftBaseSelection] = useState<Record<string, string[]>>({});
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
   const icon = station === "blacksmith" ? <GameIcon name="blacksmith" size={26} /> : <GameIcon name="alchemist" size={26} />;
   const npcName = station === "blacksmith" ? game.currentCity.npcs.blacksmith : game.currentCity.npcs.alchemist;
@@ -4083,18 +4089,27 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
 
   const recipeEntries = recipes.map((recipe) => {
     const result = game.itemCatalog[recipe.resultItemId];
+    const equipmentBaseQuantityPerCraft = recipe.ingredients.reduce((total, ingredient) => {
+      return total + (game.itemCatalog[ingredient.itemId]?.slot ? ingredient.quantity : 0);
+    }, 0);
     const craftableByMaterials = recipe.ingredients.reduce((minCrafts, ingredient) => {
-      const owned = countInventoryItem(game, ingredient.itemId);
+      const ingredientDefinition = game.itemCatalog[ingredient.itemId];
+      const owned = ingredientDefinition?.slot
+        ? game.character.inventory.filter((item) => item.itemId === ingredient.itemId && !isItemEquipped(game, item.instanceId)).length
+        : countInventoryItem(game, ingredient.itemId);
       return Math.min(minCrafts, Math.floor(owned / ingredient.quantity));
     }, Number.POSITIVE_INFINITY);
     const hasMaterials = craftableByMaterials > 0;
     const craftableByGold = recipe.goldCost > 0 ? Math.floor(game.character.gold / recipe.goldCost) : Number.POSITIVE_INFINITY;
     const existingResultStack = result && !result.slot ? game.character.inventory.some((item) => item.itemId === result.id) : false;
-    const craftableByCapacity = result?.slot
-      ? Math.max(0, Math.floor((game.inventoryCapacity - game.inventoryUsed) / recipe.resultQuantity))
+    const capacityDeltaPerCraft = result?.slot
+      ? recipe.resultQuantity - equipmentBaseQuantityPerCraft
       : existingResultStack
-        ? Number.POSITIVE_INFINITY
-        : Math.max(0, game.inventoryCapacity - game.inventoryUsed);
+        ? 0
+        : 1 - equipmentBaseQuantityPerCraft;
+    const craftableByCapacity = capacityDeltaPerCraft <= 0
+      ? Number.POSITIVE_INFINITY
+      : Math.max(0, Math.floor((game.inventoryCapacity - game.inventoryUsed) / capacityDeltaPerCraft));
     const maxCrafts = Math.max(0, Math.min(craftableByMaterials, craftableByGold, craftableByCapacity));
     const canCraft = hasMaterials && maxCrafts > 0;
     const craftableTotal = craftableByMaterials * recipe.resultQuantity;
@@ -4105,11 +4120,41 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
   const selectedResult = selectedEntry?.result;
   const selectedRecipe = selectedEntry?.recipe;
   const selectedIsEquipment = Boolean(selectedResult?.slot);
+  const effectiveCraftQuantity = selectedIsEquipment ? 1 : craftQuantity;
   const selectedStatEntries = selectedIsEquipment
     ? EQUIPMENT_STAT_KEYS
         .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key], value: selectedResult?.stats?.[key] }))
         .filter((entry) => entry.value != null && (entry.value as number) !== 0)
     : [];
+  const selectedEquipmentRequirements = selectedRecipe
+    ? selectedRecipe.ingredients
+        .map((ingredient) => {
+          const item = game.itemCatalog[ingredient.itemId];
+          if (!item?.slot) {
+            return null;
+          }
+          const needed = ingredient.quantity * effectiveCraftQuantity;
+          const selectionKey = getCraftBaseSelectionKey(selectedRecipe.id, ingredient.itemId);
+          const available = game.character.inventory.filter((inventoryItem) => {
+            return inventoryItem.itemId === ingredient.itemId && !isItemEquipped(game, inventoryItem.instanceId);
+          });
+          const selectedIds = craftBaseSelection[selectionKey] ?? [];
+          return { ingredient, item, needed, selectionKey, available, selectedIds };
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+    : [];
+  const selectedBaseEquipmentIds = selectedEquipmentRequirements.flatMap((entry) => entry.selectedIds);
+  const selectedBaseEquipmentItems = selectedBaseEquipmentIds
+    .map((instanceId) => game.character.inventory.find((item) => item.instanceId === instanceId) ?? null)
+    .filter((item): item is InventoryItem => item !== null);
+  const selectedBaseRarities = selectedBaseEquipmentItems.map((inventoryItem) => {
+    const item = game.itemCatalog[inventoryItem.itemId];
+    return item ? getItemRarity(item, inventoryItem) ?? "common" : "common";
+  });
+  const selectedBaseSelectionReady = selectedEquipmentRequirements.every((entry) => entry.selectedIds.length === entry.needed);
+  const craftRarityTable = getCraftRarityTable(selectedBaseRarities);
+  const craftBoostTier = getCraftRarityBoostTier(selectedBaseRarities);
+  const craftBoostRarity = RARITY_ORDER[craftBoostTier] ?? "common";
 
   useEffect(() => {
     if (!selectedEntry) {
@@ -4119,9 +4164,46 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
     setCraftQuantity((current) => Math.max(1, Math.min(selectedEntry.maxCrafts || 1, current)));
   }, [selectedEntry?.recipe.id, selectedEntry?.maxCrafts]);
 
+  useEffect(() => {
+    if (!selectedRecipe) {
+      return;
+    }
+    setCraftBaseSelection((current) => {
+      let changed = false;
+      const next = { ...current };
+      for (const requirement of selectedEquipmentRequirements) {
+        const availableIds = new Set(requirement.available.map((item) => item.instanceId));
+        const currentIds = next[requirement.selectionKey] ?? [];
+        const validIds = currentIds.filter((instanceId) => availableIds.has(instanceId)).slice(0, requirement.needed);
+        if (validIds.length !== currentIds.length || validIds.some((instanceId, index) => instanceId !== currentIds[index])) {
+          next[requirement.selectionKey] = validIds;
+          changed = true;
+        }
+      }
+      return changed ? next : current;
+    });
+  }, [game.character.inventory, selectedRecipe?.id, effectiveCraftQuantity]);
+
+  function toggleCraftBaseEquipment(selectionKey: string, instanceId: string, needed: number) {
+    setCraftBaseSelection((current) => {
+      const currentIds = current[selectionKey] ?? [];
+      const alreadySelected = currentIds.includes(instanceId);
+      const nextIds = alreadySelected
+        ? currentIds.filter((id) => id !== instanceId)
+        : currentIds.length >= needed
+          ? [...currentIds.slice(0, Math.max(0, needed - 1)), instanceId]
+          : [...currentIds, instanceId];
+      return { ...current, [selectionKey]: nextIds };
+    });
+  }
+
   function handleCreate(recipeId: string) {
-    const quantity = Math.max(1, Math.min(selectedEntry?.maxCrafts ?? 1, craftQuantity));
-    socket.emit("craft:create", { recipeId, quantity });
+    const quantity = selectedIsEquipment ? 1 : Math.max(1, Math.min(selectedEntry?.maxCrafts ?? 1, craftQuantity));
+    socket.emit("craft:create", {
+      recipeId,
+      quantity,
+      baseEquipmentInstanceIds: selectedBaseEquipmentIds
+    });
     setCraftingRecipeId(recipeId);
     setCraftedRecipePulseId(recipeId);
     window.setTimeout(() => {
@@ -4186,20 +4268,66 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
 
             {selectedIsEquipment && (
               <div className="craft-rarity-table">
-                <span className="craft-rarity-label">Chances de raridade</span>
+                <span className="craft-rarity-label">
+                  Chances de raridade
+                  {selectedEquipmentRequirements.length > 0 && selectedBaseEquipmentItems.length > 0
+                    ? ` - base ${RARITY_LABELS[craftBoostRarity]}`
+                    : ""}
+                </span>
                 <div className="craft-rarity-row">
-                  {CRAFT_RARITY_TABLE.map(({ rarity, pct }) => (
+                  {craftRarityTable.map(({ rarity, pct }) => (
                     <span key={rarity} className={`item-rarity ${rarity}`}>{RARITY_LABELS[rarity]} {pct}%</span>
                   ))}
                 </div>
               </div>
             )}
 
+            {selectedEquipmentRequirements.length > 0 && (
+              <div className="craft-base-selector">
+                <span className="craft-rarity-label">Equipamento base</span>
+                {selectedEquipmentRequirements.map((requirement) => (
+                  <div className="craft-base-group" key={requirement.selectionKey}>
+                    <div className="craft-base-group-head">
+                      <span>{requirement.item.name}</span>
+                      <small className={requirement.selectedIds.length >= requirement.needed ? "" : "ingredient-missing"}>
+                        {requirement.selectedIds.length}/{requirement.needed}
+                      </small>
+                    </div>
+                    <div className="craft-base-grid">
+                      {requirement.available.length === 0 && (
+                        <p className="craft-base-empty">Nenhum equipamento disponÃ­vel fora do uso.</p>
+                      )}
+                      {requirement.available.map((inventoryItem) => {
+                        const selected = requirement.selectedIds.includes(inventoryItem.instanceId);
+                        const rarity = getItemRarity(requirement.item, inventoryItem) ?? "common";
+                        const rarityColor = getEquipmentRarityColor(requirement.item, inventoryItem.rarity);
+                        return (
+                          <button
+                            type="button"
+                            key={inventoryItem.instanceId}
+                            className={selected ? "craft-base-option selected" : "craft-base-option"}
+                            style={rarityColor ? ({ borderColor: rarityColor, "--rarity-color": rarityColor } as React.CSSProperties) : undefined}
+                            onClick={() => toggleCraftBaseEquipment(requirement.selectionKey, inventoryItem.instanceId, requirement.needed)}
+                            title={formatInventoryItemName(requirement.item, inventoryItem)}
+                          >
+                            <ItemVisual item={requirement.item} className="craft-base-visual" enhancementLevel={inventoryItem.enhancementLevel} rarity={inventoryItem.rarity} />
+                            <small className={`item-rarity ${rarity}`}>{RARITY_LABELS[rarity]}</small>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="recipe-ingredients">
               {selectedRecipe.ingredients.map((ingredient) => {
                 const ingItem = game.itemCatalog[ingredient.itemId];
-                const owned = countInventoryItem(game, ingredient.itemId);
-                const needed = ingredient.quantity * craftQuantity;
+                const owned = ingItem?.slot
+                  ? game.character.inventory.filter((item) => item.itemId === ingredient.itemId && !isItemEquipped(game, item.instanceId)).length
+                  : countInventoryItem(game, ingredient.itemId);
+                const needed = ingredient.quantity * effectiveCraftQuantity;
                 const hasEnough = owned >= needed;
                 return (
                   <small key={ingredient.itemId} className={hasEnough ? "" : "ingredient-missing"}>
@@ -4208,11 +4336,12 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
                   </small>
                 );
               })}
-              <small className={game.character.gold >= selectedRecipe.goldCost * craftQuantity ? "" : "ingredient-missing"}>
-                <Coins size={15} style={{ color: "var(--gold)" }} /> {game.character.gold}/{selectedRecipe.goldCost * craftQuantity}
+              <small className={game.character.gold >= selectedRecipe.goldCost * effectiveCraftQuantity ? "" : "ingredient-missing"}>
+                <Coins size={15} style={{ color: "var(--gold)" }} /> {game.character.gold}/{selectedRecipe.goldCost * effectiveCraftQuantity}
               </small>
             </div>
 
+            {!selectedIsEquipment && (
             <label className="craft-batch-control">
               <span>Lote</span>
               <input
@@ -4225,10 +4354,11 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
               />
               <small>Máximo x{selectedEntry.maxCrafts}</small>
             </label>
+            )}
 
             <button
               className={`primary-button craft-create-button${craftingRecipeId === selectedRecipe.id ? " is-building" : ""}`}
-              disabled={!selectedEntry.canCraft || craftingRecipeId === selectedRecipe.id}
+              disabled={!selectedEntry.canCraft || !selectedBaseSelectionReady || craftingRecipeId === selectedRecipe.id}
               onClick={() => handleCreate(selectedRecipe.id)}
             >
               {craftingRecipeId === selectedRecipe.id ? (
@@ -4236,7 +4366,7 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
                   <Hammer size={15} className="craft-building-icon" /> Construindo...
                 </>
               ) : (
-                `Criar x${craftQuantity}`
+                selectedIsEquipment ? "Criar" : `Criar x${craftQuantity}`
               )}
             </button>
           </article>

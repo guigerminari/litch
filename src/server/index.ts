@@ -19,6 +19,7 @@ import type {
   ClanTransferLeadershipPayload,
   ClanUpdatePayload,
   CraftPayload,
+  CraftingRecipe,
   Currency,
   CurrencyExchangePayload,
   DestroyItemPayload,
@@ -76,7 +77,7 @@ import type {
   WorkServiceDefinition,
   WorkStartPayload
 } from "../shared/types";
-import { RARITY_PRICE_MULTIPLIER, getRarityFromRoll } from "../shared/rarity";
+import { RARITY_PRICE_MULTIPLIER, getCraftRarityFromRoll, getRarityFromRoll } from "../shared/rarity";
 import {
   ENHANCEMENT_CREATION_STONE_BONUS,
   ENHANCEMENT_GOLD_STEP,
@@ -3667,12 +3668,71 @@ function getItemValue(item: InventoryItem) {
   return Math.max(1, Math.floor(definition.price * RARITY_PRICE_MULTIPLIER[rarity]));
 }
 
-function craftItem(character: Character, recipeId: string, quantity = 1) {
+function getCraftEquipmentRequirements(recipe: CraftingRecipe, amount: number) {
+  const requirements = new Map<string, number>();
+  for (const ingredient of recipe.ingredients) {
+    const definition = ITEM_CATALOG[ingredient.itemId];
+    if (!definition?.slot) {
+      continue;
+    }
+    requirements.set(ingredient.itemId, (requirements.get(ingredient.itemId) ?? 0) + ingredient.quantity * amount);
+  }
+  return requirements;
+}
+
+function getSelectedCraftBaseEquipment(
+  character: Character,
+  requirements: Map<string, number>,
+  baseEquipmentInstanceIds: string[] = []
+) {
+  const instanceIds = baseEquipmentInstanceIds.map((instanceId) => String(instanceId ?? "").trim()).filter(Boolean);
+  const totalRequired = Array.from(requirements.values()).reduce((total, quantity) => total + quantity, 0);
+  if (totalRequired === 0) {
+    if (instanceIds.length > 0) {
+      throw new Error("Esta receita nÃ£o usa equipamento base.");
+    }
+    return [];
+  }
+  if (instanceIds.length !== totalRequired) {
+    throw new Error(`Selecione ${totalRequired} equipamento(s) base para a forja.`);
+  }
+
+  const uniqueInstanceIds = new Set(instanceIds);
+  if (uniqueInstanceIds.size !== instanceIds.length) {
+    throw new Error("Selecione equipamentos base diferentes.");
+  }
+
+  const selectedItems = instanceIds.map((instanceId) => {
+    const item = findInventoryItem(character, instanceId);
+    if (!item) {
+      throw new Error("Equipamento base nÃ£o encontrado.");
+    }
+    if (isEquipped(character, item.instanceId)) {
+      throw new Error("Desequipe o equipamento base antes de usar na forja.");
+    }
+    const definition = ITEM_CATALOG[item.itemId];
+    if (!definition?.slot || !requirements.has(item.itemId)) {
+      throw new Error("Equipamento base invÃ¡lido para esta receita.");
+    }
+    return item;
+  });
+
+  for (const [itemId, requiredQuantity] of requirements) {
+    const selectedQuantity = selectedItems.filter((item) => item.itemId === itemId).length;
+    if (selectedQuantity !== requiredQuantity) {
+      throw new Error(`Selecione ${requiredQuantity} ${ITEM_CATALOG[itemId]?.name ?? itemId} para a forja.`);
+    }
+  }
+
+  return selectedItems;
+}
+
+function craftItem(character: Character, recipeId: string, quantity = 1, baseEquipmentInstanceIds: string[] = []) {
   const recipe = CRAFTING_RECIPES[recipeId];
   if (!recipe) {
     throw new Error("Receita não encontrada.");
   }
-  const amount = Math.max(1, Math.min(999, Math.floor(quantity)));
+  let amount = Math.max(1, Math.min(999, Math.floor(quantity)));
   if (!recipe.cityIds.includes(character.cityId)) {
     throw new Error("Esta receita não está disponível nesta cidade.");
   }
@@ -3680,28 +3740,56 @@ function craftItem(character: Character, recipeId: string, quantity = 1) {
   if (!resultDefinition) {
     throw new Error("Resultado da receita inválido.");
   }
+  if (resultDefinition.slot) {
+    amount = 1;
+  }
   if (character.gold < recipe.goldCost * amount) {
     throw new Error("Ouro insuficiente para criar o item.");
   }
+  const equipmentRequirements = getCraftEquipmentRequirements(recipe, amount);
+  const selectedBaseEquipment = getSelectedCraftBaseEquipment(character, equipmentRequirements, baseEquipmentInstanceIds);
   for (const ingredient of recipe.ingredients) {
+    if (ITEM_CATALOG[ingredient.itemId]?.slot) {
+      continue;
+    }
     if (countItem(character, ingredient.itemId) < ingredient.quantity * amount) {
       throw new Error(`Falta ${ITEM_CATALOG[ingredient.itemId]?.name ?? ingredient.itemId}.`);
     }
   }
+  const usedAfterBaseRemoval = inventoryUsed(character) - selectedBaseEquipment.length;
   if (resultDefinition.slot) {
-    if (!hasCapacity(character, amount * recipe.resultQuantity)) {
+    if (usedAfterBaseRemoval + amount * recipe.resultQuantity > getInventoryCapacity(character)) {
       throw new Error("Inventário cheio.");
     }
-  } else if (!character.inventory.some((item) => item.itemId === recipe.resultItemId) && !hasCapacity(character, 1)) {
+  } else if (
+    !character.inventory.some((item) => item.itemId === recipe.resultItemId) &&
+    usedAfterBaseRemoval + 1 > getInventoryCapacity(character)
+  ) {
     throw new Error("Inventário cheio.");
   }
 
   character.gold -= recipe.goldCost * amount;
+  const baseRarities = selectedBaseEquipment.map((item) => {
+    const definition = ITEM_CATALOG[item.itemId];
+    return (item.rarity ?? definition?.rarity ?? "common") as Rarity;
+  });
+  for (const item of selectedBaseEquipment) {
+    removeItem(character, item.instanceId, 1);
+  }
   for (const ingredient of recipe.ingredients) {
+    if (ITEM_CATALOG[ingredient.itemId]?.slot) {
+      continue;
+    }
     removeItemByItemId(character, ingredient.itemId, ingredient.quantity * amount);
   }
   for (let index = 0; index < amount; index += 1) {
-    addItem(character, recipe.resultItemId, ITEM_CATALOG, recipe.resultQuantity);
+    if (resultDefinition.slot) {
+      for (let resultIndex = 0; resultIndex < recipe.resultQuantity; resultIndex += 1) {
+        addItem(character, recipe.resultItemId, ITEM_CATALOG, 1, { rarity: getCraftRarityFromRoll(baseRarities) });
+      }
+    } else {
+      addItem(character, recipe.resultItemId, ITEM_CATALOG, recipe.resultQuantity);
+    }
   }
 }
 
@@ -4371,7 +4459,8 @@ io.on("connection", (socket: AuthedSocket) => {
       const playerId = requirePlayer(socket);
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
-      craftItem(character, payload.recipeId, payload.quantity ?? 1);
+      const baseEquipmentInstanceIds = Array.isArray(payload.baseEquipmentInstanceIds) ? payload.baseEquipmentInstanceIds : [];
+      craftItem(character, payload.recipeId, payload.quantity ?? 1, baseEquipmentInstanceIds);
       emitState(playerId);
     } catch (error) {
       handleError(socket, error);

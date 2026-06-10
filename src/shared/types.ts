@@ -1074,6 +1074,7 @@ export interface ReferralClaimPayload {
 export interface CraftPayload {
   recipeId: string;
   quantity?: number;
+  baseEquipmentInstanceIds?: string[];
 }
 
 export interface EnhancePayload {
