@@ -5615,45 +5615,33 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     "cityId": "ironhold",
     "name": "Lebre Alpina Encantada",
     "imageUrl": "/assets/monsters/easter_bunny.png",
-    "level": 56,
-    "maxHp": 1735,
-    "strength": 615,
-    "defense": 68,
-    "agility": 56,
-    "experience": 72437.8,
-    "gold": 108656.7,
+    "level": 5,
+    "maxHp": 154,
+    "strength": 54,
+    "defense": 6,
+    "agility": 5,
+    "experience": 213.7,
+    "gold": 320.55,
     "drops": [
       {
-        "itemId": "health_potion_high",
-        "chance": 0.085
+        "itemId": "health_potion_light",
+        "chance": 0.11
       },
       {
-        "itemId": "energy_potion_high",
-        "chance": 0.055
+        "itemId": "energy_potion_light",
+        "chance": 0.08
       },
       {
-        "itemId": "wolf_pelt",
-        "chance": 0.05
+        "itemId": "material_dragon_jewell",
+        "chance": 0.0221
       },
       {
-        "itemId": "misc_seed_rustic",
-        "chance": 0.0171
+        "itemId": ITEM_IDS.creationStone,
+        "chance": 0.0161
       },
       {
-        "itemId": ITEM_IDS.oldStone,
-        "chance": 0.0372
-      },
-      {
-        "itemId": ITEM_IDS.eranStone,
-        "chance": 0.026
-      },
-      {
-        "itemId": "weapon_claymore_3",
-        "chance": 0.0736
-      },
-      {
-        "itemId": "weapon_chaos_axe",
-        "chance": 0.0475
+        "itemId": "training_sword",
+        "chance": 0.0813
       }
     ]
   },
@@ -10093,4 +10081,376 @@ export const MONSTERS: Record<string, MonsterDefinition> = {
     ]
   }
 };
+
+type MonsterCatalogOverride = {
+  name: string;
+  imageUrl: string;
+  cityId: string;
+};
+
+type ExtraMonsterCatalogEntry = MonsterCatalogOverride & {
+  baseId: string;
+};
+
+const MONSTER_CATALOG_OVERRIDES: Record<string, MonsterCatalogOverride> = {
+  "training_dummy": { cityId: "eldoria", name: "Boneco de Treino", imageUrl: "/assets/monsters/new/dummy-001@300.png" },
+  "forest_rat": { cityId: "eldoria", name: "Rato", imageUrl: "/assets/monsters/new/rat-001@300.png" },
+  "aberr": { cityId: "eldoria", name: "Monstro do Lago", imageUrl: "/assets/monsters/new/lake-monster-001@300.png" },
+  "anaconda_new": { cityId: "eldoria", name: "Cobra", imageUrl: "/assets/monsters/new/snake-001@300.png" },
+  "gray_wolf": { cityId: "eldoria", name: "Lobo", imageUrl: "/assets/monsters/new/wolf-001@300.png" },
+  "anubis_guard": { cityId: "eldoria", name: "Jacaré", imageUrl: "/assets/monsters/new/aligator-001@300.png" },
+  "black_mamba_new": { cityId: "eldoria", name: "Basilisco", imageUrl: "/assets/monsters/new/basilisc-001@300.png" },
+  "brown_ooze": { cityId: "eldoria", name: "Slime", imageUrl: "/assets/monsters/new/slime-001@300.png" },
+  "centaur_demon": { cityId: "eldoria", name: "Centauro", imageUrl: "/assets/monsters/new/centaur-001@300.png" },
+  "clay_golem": { cityId: "eldoria", name: "Golem de Argila", imageUrl: "/assets/monsters/new/clay-golem-001@300.png" },
+  "cursed_goblin": { cityId: "eldoria", name: "Duende", imageUrl: "/assets/monsters/new/duende-001@300.png" },
+  "damnation_elemental": { cityId: "eldoria", name: "Elemental de Água", imageUrl: "/assets/monsters/new/water-elemental-001@300.png" },
+  "damnation_cyclops": { cityId: "eldoria", name: "Ciclope", imageUrl: "/assets/monsters/new/ciclop-001@300.png" },
+  "deathcap": { cityId: "eldoria", name: "Cogumelo", imageUrl: "/assets/monsters/new/mushrrom-001@300.png" },
+  "joree_plant": { cityId: "eldoria", name: "Planta Assassina", imageUrl: "/assets/monsters/new/assassin-plant-001@300.png" },
+  "giant_spore": { cityId: "eldoria", name: "Fada", imageUrl: "/assets/monsters/new/fairy-001@300.png" },
+  "easter_bunny": { cityId: "eldoria", name: "Coelho", imageUrl: "/assets/monsters/new/rabit-001@300.png" },
+  "road_bandit": { cityId: "ravenspire", name: "Goblin", imageUrl: "/assets/monsters/new/goblin-001@300.png" },
+  "human_bandit": { cityId: "ravenspire", name: "Hobgoblin", imageUrl: "/assets/monsters/new/hobgoblin-001@300.png" },
+  "thorn_boar": { cityId: "ravenspire", name: "Javali", imageUrl: "/assets/monsters/new/boar-001@300.png" },
+  "damnation_golem": { cityId: "ravenspire", name: "Ente", imageUrl: "/assets/monsters/new/ente-001@300.png" },
+  "damnation_harpy": { cityId: "ravenspire", name: "Harpia", imageUrl: "/assets/monsters/new/harpia-001@300.png" },
+  "damnation_orc": { cityId: "ravenspire", name: "Bugbear", imageUrl: "/assets/monsters/new/bugbear-001@300.png" },
+  "damnation_spider": { cityId: "ravenspire", name: "Drow", imageUrl: "/assets/monsters/new/drow-001@300.png" },
+  "damnation_troll": { cityId: "ravenspire", name: "Troll", imageUrl: "/assets/monsters/new/troll-001@300.png" },
+  "demoniac_wolf": { cityId: "ravenspire", name: "Lobisomem", imageUrl: "/assets/monsters/new/werewolf-001@300.png" },
+  "demon_dragon": { cityId: "ravenspire", name: "Dragão", imageUrl: "/assets/monsters/new/dragon-001@300.png" },
+  "giant_leech": { cityId: "ravenspire", name: "Sanguessuga", imageUrl: "/assets/monsters/new/leech-001@300.png" },
+  "giant_toad": { cityId: "ravenspire", name: "Sapo", imageUrl: "/assets/monsters/new/frog-001@300.png" },
+  "grey_bear": { cityId: "ravenspire", name: "Urso", imageUrl: "/assets/monsters/new/bear-001@300.png" },
+  "grey_wolf": { cityId: "ravenspire", name: "Corvo", imageUrl: "/assets/monsters/new/raven001@300.png" },
+  "guardian_serpent": { cityId: "ravenspire", name: "Banshrae", imageUrl: "/assets/monsters/new/banshrae-001@300.png" },
+  "deep_dwarf": { cityId: "ironhold", name: "Anão", imageUrl: "/assets/monsters/new/dwarf-001@300.png" },
+  "ember_golem": { cityId: "ironhold", name: "Elemental de Fogo", imageUrl: "/assets/monsters/new/fire-elemental-001@300.png" },
+  "cave_wyvern": { cityId: "ironhold", name: "Serpe Voadora", imageUrl: "/assets/monsters/new/fly-serpe-001@300.png" },
+  "dorrene_orc": { cityId: "ironhold", name: "Gnoll", imageUrl: "/assets/monsters/new/gnol-001@300.png" },
+  "dorrene_snake": { cityId: "ironhold", name: "Kobold", imageUrl: "/assets/monsters/new/kobolt-001@300.png" },
+  "emperor_scorpion": { cityId: "ironhold", name: "Centopeia", imageUrl: "/assets/monsters/new/centopeia-001@300.png" },
+  "eye_of_devastation_new": { cityId: "ironhold", name: "Cem Olhos", imageUrl: "/assets/monsters/new/hundred-eyes-001@300.png" },
+  "giant_ant": { cityId: "ironhold", name: "Constructo", imageUrl: "/assets/monsters/new/constructo-001@300.png" },
+  "giant_gecko": { cityId: "ironhold", name: "Gnomo", imageUrl: "/assets/monsters/new/gnome-001@300.png" },
+  "giant_scorpion": { cityId: "ironhold", name: "Elemental de Terra", imageUrl: "/assets/monsters/new/earth-elemental-001@300.png" },
+  "grey_rat": { cityId: "ironhold", name: "Gremlin", imageUrl: "/assets/monsters/new/gremilin-001@300.png" },
+  "hell_lizard": { cityId: "ironhold", name: "Diabrete", imageUrl: "/assets/monsters/new/diabret-001@300.png" },
+  "hell_worm": { cityId: "ironhold", name: "Elemental de Pedra", imageUrl: "/assets/monsters/new/stone-elemental-001@300.png" },
+  "hell_salamander": { cityId: "ironhold", name: "Demônio", imageUrl: "/assets/monsters/new/demon-001@300.png" },
+  "hill_giant_new": { cityId: "ironhold", name: "Pé Grande", imageUrl: "/assets/monsters/new/big-foot-001@300.png" },
+  "infernal_serpent": { cityId: "ironhold", name: "Elemental de Gelo", imageUrl: "/assets/monsters/new/ice-elemental-001@300.png" },
+  "jelly": { cityId: "ironhold", name: "Armadura Viva", imageUrl: "/assets/monsters/new/live-armor-001@300.png" },
+  "joree_giant": { cityId: "ironhold", name: "Ogro", imageUrl: "/assets/monsters/new/ogre-001@300.png" },
+  "joree_walker": { cityId: "ironhold", name: "Minotauro", imageUrl: "/assets/monsters/new/minotaur-001@300.png" },
+  "labrat_unseen": { cityId: "ironhold", name: "Korred", imageUrl: "/assets/monsters/new/korred-001@300.png" },
+  "ogre_mage": { cityId: "ironhold", name: "Gárgula", imageUrl: "/assets/monsters/new/gargole-001@300.png" },
+  "ogre": { cityId: "ironhold", name: "Gorila", imageUrl: "/assets/monsters/new/gorilla-001@300.png" },
+  "orc_knight": { cityId: "ironhold", name: "Grifo", imageUrl: "/assets/monsters/new/grifo-001@300.png" },
+  "rock_troll": { cityId: "ironhold", name: "Yeti", imageUrl: "/assets/monsters/new/yeti-001@300.png" },
+  "demon_desert_giant": { cityId: "vila_de_valfria", name: "Mamute", imageUrl: "/assets/monsters/new/mamut-001@300.png" },
+  "demoniac_elephant": { cityId: "vila_de_valfria", name: "Touro", imageUrl: "/assets/monsters/new/bull-001@300.png" },
+  "desert_giant": { cityId: "vila_de_valfria", name: "Leão", imageUrl: "/assets/monsters/new/lion-001@300.png" },
+  "desert_walker": { cityId: "vila_de_valfria", name: "Pantera", imageUrl: "/assets/monsters/new/panter-001@300.png" },
+  "orc_warrior": { cityId: "vila_de_valfria", name: "Orc", imageUrl: "/assets/monsters/new/orc-001@300.png" },
+  "orc": { cityId: "vila_de_valfria", name: "Xamã", imageUrl: "/assets/monsters/new/xama-001@300.png" },
+  "redback_new": { cityId: "vila_de_valfria", name: "Tigre", imageUrl: "/assets/monsters/new/tiger-001@300.png" },
+  "salamander_firebrand": { cityId: "vila_de_valfria", name: "Fênix", imageUrl: "/assets/monsters/new/phoenix-001@300.png" },
+  "salamander": { cityId: "vila_de_valfria", name: "Homem-Lagarto", imageUrl: "/assets/monsters/new/lizard-man-001@300.png" },
+  "skeleton_bat": { cityId: "vila_de_valfria", name: "Esqueleto", imageUrl: "/assets/monsters/new/skeleton-001@300.png" },
+  "skeleton_centaur": { cityId: "vila_de_valfria", name: "Cavalo Esqueleto", imageUrl: "/assets/monsters/new/skeleton-horse-001@300.png" },
+  "skeleton_quadruped_small": { cityId: "vila_de_valfria", name: "Rato Esqueleto", imageUrl: "/assets/monsters/new/skeleton-rat-001@300.png" },
+  "skeleton_snake": { cityId: "vila_de_valfria", name: "Esqueleto com Maça", imageUrl: "/assets/monsters/new/mace-skeleton-001@300.png" },
+  "damnation_scorpion": { cityId: "kheredu", name: "Escorpião", imageUrl: "/assets/monsters/new/scorpion-001@300.png" },
+  "damnation_snake": { cityId: "kheredu", name: "Escavador de Areia", imageUrl: "/assets/monsters/new/dinossaur-001@300.png" },
+  "desert_worm": { cityId: "kheredu", name: "Verme de Areia", imageUrl: "/assets/monsters/new/sand-worm-001@300.png" },
+  "mummy": { cityId: "kheredu", name: "Seth", imageUrl: "/assets/monsters/new/seth-001@300.png" },
+  "pulsating_lump": { cityId: "kheredu", name: "Devorador de Intelecto", imageUrl: "/assets/monsters/new/intellect-devourer-001@300.png" },
+  "sand_elemental": { cityId: "kheredu", name: "Jin", imageUrl: "/assets/monsters/new/jin-001@300.png" },
+  "sand_spider": { cityId: "kheredu", name: "Esfinge", imageUrl: "/assets/monsters/new/sphinx-001@300.png" },
+  "skeleton_naga": { cityId: "kheredu", name: "Medusa", imageUrl: "/assets/monsters/new/medusa-001@300.png" },
+  "skeleton_quadruped_large_new": { cityId: "kheredu", name: "Mamute Esqueleto", imageUrl: "/assets/monsters/new/skeleton-mamut-001@300.png" },
+  "skeleton_ugly_thing": { cityId: "kheredu", name: "Frankenstein", imageUrl: "/assets/monsters/new/frankenstein-001@300.png" },
+  "spectral_ant_old": { cityId: "rosindale", name: "Águia", imageUrl: "/assets/monsters/new/eagle-001@300.png" },
+  "spectral_bat_old": { cityId: "rosindale", name: "Morcegos", imageUrl: "/assets/monsters/new/bats-001@300.png" },
+  "spectral_bee_old": { cityId: "rosindale", name: "Abelha Gigante", imageUrl: "/assets/monsters/new/giant-bee-001@300.png" },
+  "spectral_centaur_old": { cityId: "rosindale", name: "Sátiro", imageUrl: "/assets/monsters/new/satyr-001@300.png" },
+  "spectral_naga_old": { cityId: "rosindale", name: "Devorador de Mentes", imageUrl: "/assets/monsters/new/mind-flayer-001@300.png" },
+  "spectral_quadruped_small_old": { cityId: "rosindale", name: "Raposa", imageUrl: "/assets/monsters/new/fox-001@300.png" },
+  "spectral_snake_old": { cityId: "rosindale", name: "Grito", imageUrl: "/assets/monsters/new/scream-001@300.png" },
+  "spectral_spider_old": { cityId: "rosindale", name: "Urso-Coruja", imageUrl: "/assets/monsters/new/owlbear-001@300.png" },
+  "spectral_thing": { cityId: "rosindale", name: "Andarilho Noturno", imageUrl: "/assets/monsters/new/nightwalker-001@300.png" },
+  "spectral_worm": { cityId: "rosindale", name: "Corcunda", imageUrl: "/assets/monsters/new/hunchback-001@300.png" },
+  "two_headed_ogre": { cityId: "rosindale", name: "Ogro de Duas Cabeças", imageUrl: "/assets/monsters/new/2-head-ogre-001@300.png" },
+  "viper": { cityId: "rosindale", name: "Babuíno", imageUrl: "/assets/monsters/new/baboon-001@300.png" },
+  "wolf_spider_new": { cityId: "rosindale", name: "Aranha", imageUrl: "/assets/monsters/new/spider-001@300.png" },
+  "wolf_spider_old": { cityId: "rosindale", name: "Vampiro", imageUrl: "/assets/monsters/new/vampire-001@300.png" },
+  "zombie_crab": { cityId: "porto_sombrio", name: "Pirata", imageUrl: "/assets/monsters/new/pirate-001@300.png" },
+  "spectral_fish_old": { cityId: "porto_sombrio", name: "Sereia", imageUrl: "/assets/monsters/new/mermaid-001@300.png" },
+  "zombie_kraken_head": { cityId: "porto_sombrio", name: "Polvo", imageUrl: "/assets/monsters/new/octopus-001@300.png" },
+  "zombie_kraken_infected": { cityId: "porto_sombrio", name: "Tubarão", imageUrl: "/assets/monsters/new/shark-001@300.png" },
+  "zombie_lizard": { cityId: "porto_sombrio", name: "Pirata Fantasma", imageUrl: "/assets/monsters/new/ghost-pirate-001@300.png" },
+  "zombie_lizard_infected": { cityId: "porto_sombrio", name: "Cobra Infectada", imageUrl: "/assets/monsters/new/infected-snake-001@300.png" },
+  "zombie_octopode": { cityId: "porto_sombrio", name: "Tartaruga", imageUrl: "/assets/monsters/new/turtle-001@300.png" },
+  "zombie_octopode_infected": { cityId: "porto_sombrio", name: "Hipopótamo", imageUrl: "/assets/monsters/new/hippo-001@300.png" },
+  "zombie_rat": { cityId: "porto_sombrio", name: "Rato Infectado", imageUrl: "/assets/monsters/new/infected-rat-001@300.png" },
+  "zombie_turtle": { cityId: "porto_sombrio", name: "Pirata Saqueador", imageUrl: "/assets/monsters/new/pirate-002@300.png" },
+  "zombie_turtle_infected": { cityId: "porto_sombrio", name: "Capitão Pirata", imageUrl: "/assets/monsters/new/capitan-pirate-001@300.png" },
+  "damnation_mummy": { cityId: "necropole_de_morthaly", name: "Múmia", imageUrl: "/assets/monsters/new/mummy-001@300.png" },
+  "demon_bareon": { cityId: "necropole_de_morthaly", name: "Diabo das Correntes", imageUrl: "/assets/monsters/new/chain-devil-001@300.png" },
+  "skeleton_dragon": { cityId: "necropole_de_morthaly", name: "Dragão Esqueleto", imageUrl: "/assets/monsters/new/skeleton-dragon-001@300.png" },
+  "spectral_dragon_old": { cityId: "necropole_de_morthaly", name: "Dracolich", imageUrl: "/assets/monsters/new/dracolich-001@300.png" },
+  "spectral_hydra_3_old": { cityId: "necropole_de_morthaly", name: "Hidra", imageUrl: "/assets/monsters/new/hidra-001@300.png" },
+  "zombie_drake": { cityId: "necropole_de_morthaly", name: "Cavalo Infectado", imageUrl: "/assets/monsters/new/infected-horse-001@300.png" },
+  "zombie_drake_infected": { cityId: "necropole_de_morthaly", name: "Dragão Infectado", imageUrl: "/assets/monsters/new/infected-dragon-001@300.png" },
+  "zombie_hound": { cityId: "necropole_de_morthaly", name: "Cérbero", imageUrl: "/assets/monsters/new/cerbero-001@300.png" },
+  "zombie_hound_infected": { cityId: "necropole_de_morthaly", name: "Urso Infectado", imageUrl: "/assets/monsters/new/infected-bear-001@300.png" },
+  "zombie_ogre": { cityId: "necropole_de_morthaly", name: "Guerreiro Zumbi", imageUrl: "/assets/monsters/new/zumbie-warrior-001@300.png" },
+  "zombie_ogre_infected": { cityId: "necropole_de_morthaly", name: "Mamute Infectado", imageUrl: "/assets/monsters/new/infected-mamut-001@300.png" },
+  "zombie_small": { cityId: "necropole_de_morthaly", name: "Zumbi", imageUrl: "/assets/monsters/new/sumbie-001@300.png" },
+  "zombie_toad": { cityId: "necropole_de_morthaly", name: "Ghoul", imageUrl: "/assets/monsters/new/ghoul-001@300.png" },
+  "zombie_ugly_thing": { cityId: "necropole_de_morthaly", name: "Íncubo", imageUrl: "/assets/monsters/new/incubus-001@300.png" },
+  "zombie_ugly_thing_infected": { cityId: "necropole_de_morthaly", name: "Súcubo", imageUrl: "/assets/monsters/new/sucubus-001@300.png" }
+};
+
+const EXTRA_MONSTER_CATALOG_ENTRIES: Record<string, ExtraMonsterCatalogEntry> = {
+  "pirate_boarder": { baseId: "zombie_crab", cityId: "porto_sombrio", name: "Pirata das Docas", imageUrl: "/assets/monsters/new/pirate-003@300.png" },
+  "pirate_gunner": { baseId: "zombie_turtle", cityId: "porto_sombrio", name: "Pirata Artilheiro", imageUrl: "/assets/monsters/new/pirate-004@300.png" },
+  "pirate_duelist": { baseId: "zombie_turtle_infected", cityId: "porto_sombrio", name: "Pirata Duelista", imageUrl: "/assets/monsters/new/pirate-005@300.png" },
+  "violet_apex_angel": { baseId: "spectral_dragon_old", cityId: "necropole_de_morthaly", name: "Anjo do Ápice", imageUrl: "/assets/monsters/new/angel-001@300.png" },
+  "necropolis_horde": { baseId: "zombie_ogre", cityId: "necropole_de_morthaly", name: "Horda Zumbi", imageUrl: "/assets/monsters/new/horde-zumbie-001@300.png" },
+  "void_watcher": { baseId: "spectral_hydra_3_old", cityId: "necropole_de_morthaly", name: "Elemental do Vazio", imageUrl: "/assets/monsters/new/void-elemental-001@300.png" },
+  "bronze_mafdet": { baseId: "mummy", cityId: "kheredu", name: "Mafdet", imageUrl: "/assets/monsters/new/mafdet-001@300.png" },
+  "bronze_scarab_panther": { baseId: "sand_spider", cityId: "kheredu", name: "Quimera do Bronze", imageUrl: "/assets/monsters/new/chimera-001@300.png" },
+  "ravenspire_witch": { baseId: "demoniac_wolf", cityId: "ravenspire", name: "Bruxa", imageUrl: "/assets/monsters/new/witch-001@300.png" },
+  "ravenspire_scream": { baseId: "guardian_serpent", cityId: "ravenspire", name: "Dríade da Torre", imageUrl: "/assets/monsters/new/driad-001@300.png" },
+  "ironhold_owlbear": { baseId: "hill_giant_new", cityId: "ironhold", name: "Wyvern Alpina", imageUrl: "/assets/monsters/new/wyvern-001@300.png" }
+};
+
+const HUNTING_LOCATION_MONSTER_OVERRIDES: Record<string, string[]> = {
+  "eldoria_training_fields": [
+    "training_dummy",
+    "forest_rat",
+    "easter_bunny",
+    "gray_wolf",
+    "anaconda_new"
+  ],
+  "eldoria_old_woods": [
+    "black_mamba_new",
+    "brown_ooze",
+    "cursed_goblin",
+    "deathcap",
+    "joree_plant",
+    "giant_spore"
+  ],
+  "eldoria_sunken_ruins": [
+    "anubis_guard",
+    "aberr",
+    "centaur_demon",
+    "damnation_elemental",
+    "damnation_cyclops",
+    "clay_golem"
+  ],
+  "ravenspire_bandit_road": [
+    "road_bandit",
+    "human_bandit",
+    "thorn_boar",
+    "grey_bear",
+    "grey_wolf",
+    "damnation_orc"
+  ],
+  "ravenspire_damned_lands": [
+    "damnation_golem",
+    "damnation_harpy",
+    "damnation_spider",
+    "damnation_troll",
+    "demoniac_wolf",
+    "ravenspire_witch"
+  ],
+  "ravenspire_desert_pass": [
+    "giant_toad",
+    "giant_leech",
+    "guardian_serpent",
+    "ravenspire_scream",
+    "demon_dragon"
+  ],
+  "ironhold_ember_mines": [
+    "deep_dwarf",
+    "ember_golem",
+    "cave_wyvern",
+    "dorrene_orc",
+    "eye_of_devastation_new",
+    "hell_salamander"
+  ],
+  "ironhold_beast_caves": [
+    "dorrene_snake",
+    "emperor_scorpion",
+    "giant_ant",
+    "giant_gecko",
+    "giant_scorpion",
+    "grey_rat",
+    "hell_lizard",
+    "hell_worm"
+  ],
+  "ironhold_giant_valley": [
+    "hill_giant_new",
+    "infernal_serpent",
+    "jelly",
+    "joree_giant",
+    "joree_walker",
+    "labrat_unseen",
+    "ogre_mage",
+    "ogre",
+    "orc_knight",
+    "rock_troll",
+    "ironhold_owlbear"
+  ],
+  "valfria_orc_marsh": [
+    "orc_warrior",
+    "orc",
+    "redback_new",
+    "salamander",
+    "desert_walker",
+    "demoniac_elephant"
+  ],
+  "valfria_bone_fields": [
+    "demon_desert_giant",
+    "desert_giant",
+    "skeleton_bat",
+    "skeleton_centaur",
+    "skeleton_quadruped_small",
+    "skeleton_snake"
+  ],
+  "valfria_spectral_mire": [
+    "salamander_firebrand",
+    "skeleton_naga",
+    "skeleton_quadruped_large_new",
+    "skeleton_ugly_thing",
+    "mummy"
+  ],
+  "kheredu_scarab_labyrinth": [
+    "sand_spider",
+    "damnation_scorpion",
+    "pulsating_lump",
+    "damnation_snake",
+    "bronze_scarab_panther"
+  ],
+  "kheredu_bronze_kings_forge": [
+    "skeleton_quadruped_large_new",
+    "skeleton_ugly_thing",
+    "mummy",
+    "bronze_mafdet"
+  ],
+  "kheredu_tears_of_isis_aqueduct": [
+    "desert_worm",
+    "damnation_snake",
+    "sand_elemental",
+    "skeleton_naga"
+  ],
+  "rosindale_infected_coast": [
+    "spectral_ant_old",
+    "spectral_bat_old",
+    "spectral_bee_old",
+    "spectral_centaur_old",
+    "spectral_naga_old",
+    "spectral_snake_old",
+    "viper"
+  ],
+  "rosindale_zombie_quarter": [
+    "spectral_quadruped_small_old",
+    "spectral_spider_old",
+    "spectral_thing",
+    "spectral_worm",
+    "two_headed_ogre",
+    "wolf_spider_new",
+    "wolf_spider_old"
+  ],
+  "morthaly_black_docks": [
+    "zombie_crab",
+    "zombie_turtle",
+    "zombie_turtle_infected",
+    "zombie_rat",
+    "pirate_boarder",
+    "pirate_gunner",
+    "pirate_duelist"
+  ],
+  "morthaly_tide_catacombs": [
+    "zombie_octopode",
+    "zombie_octopode_infected",
+    "zombie_lizard",
+    "zombie_lizard_infected",
+    "spectral_fish_old"
+  ],
+  "morthaly_wailing_breakwater": [
+    "zombie_kraken_head",
+    "zombie_kraken_infected",
+    "spectral_fish_old",
+    "zombie_octopode"
+  ],
+  "morthaly_runic_wastes": [
+    "damnation_mummy",
+    "skeleton_dragon",
+    "zombie_hound",
+    "zombie_hound_infected",
+    "zombie_small"
+  ],
+  "morthaly_lich_spire": [
+    "zombie_drake",
+    "zombie_drake_infected",
+    "demon_bareon",
+    "zombie_toad",
+    "spectral_dragon_old"
+  ],
+  "morthaly_ossuary_labs": [
+    "zombie_ogre",
+    "zombie_ogre_infected",
+    "zombie_ugly_thing",
+    "zombie_ugly_thing_infected",
+    "necropolis_horde"
+  ],
+  "morthaly_violet_apex": [
+    "spectral_dragon_old",
+    "spectral_hydra_3_old",
+    "zombie_ugly_thing_infected",
+    "violet_apex_angel",
+    "void_watcher"
+  ]
+};
+
+for (const [monsterId, override] of Object.entries(MONSTER_CATALOG_OVERRIDES)) {
+  const monster = MONSTERS[monsterId];
+  if (!monster) {
+    continue;
+  }
+  monster.cityId = override.cityId;
+  monster.name = override.name;
+  monster.imageUrl = override.imageUrl;
+}
+
+for (const [monsterId, extra] of Object.entries(EXTRA_MONSTER_CATALOG_ENTRIES)) {
+  const base = MONSTERS[extra.baseId];
+  if (!base) {
+    continue;
+  }
+  MONSTERS[monsterId] = {
+    ...base,
+    id: monsterId,
+    cityId: extra.cityId,
+    name: extra.name,
+    imageUrl: extra.imageUrl
+  };
+}
+
+for (const [locationId, monsterIds] of Object.entries(HUNTING_LOCATION_MONSTER_OVERRIDES)) {
+  const location = HUNTING_LOCATIONS[locationId];
+  if (!location) {
+    continue;
+  }
+  const validMonsterIds = monsterIds.filter((monsterId) => Boolean(MONSTERS[monsterId]));
+  if (validMonsterIds.length < 3) {
+    throw new Error(`Local de caça ${locationId} precisa de pelo menos 3 monstros.`);
+  }
+  location.monsterIds = validMonsterIds;
+}
 
