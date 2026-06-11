@@ -1637,6 +1637,7 @@ type ItemCatalogVisualOverride = {
   name: string;
   imageUrl: string;
   description?: string;
+  kind?: ItemDefinition["kind"];
   stats?: ItemDefinition["stats"];
 };
 
@@ -1701,6 +1702,217 @@ const ITEM_CATALOG_VISUAL_OVERRIDES: Record<string, ItemCatalogVisualOverride> =
     name: "Poção de Energia 50%",
     imageUrl: "/assets/items/potions/new/50p-energy-potion-001@512.png",
     stats: { energyPercent: 0.5 }
+  },
+  "material_bone": {
+    name: "Osso Pequeno",
+    imageUrl: "/assets/items/materials/new/small-bone-001@512.png"
+  },
+  [ITEM_IDS.celena]: {
+    name: "Lingote de Ouro",
+    imageUrl: "/assets/items/materials/new/gold-ingot-001@512.png"
+  },
+  "material_chimera_jewell": {
+    name: "Couro de Escama de Basilisco",
+    imageUrl: "/assets/items/materials/new/basilisk-scale-hide-001@512.png"
+  },
+  "material_dark_magic_rune": {
+    name: "Sal do Vazio",
+    imageUrl: "/assets/items/materials/new/void-salt-001@512.png"
+  },
+  "material_dark_residue": {
+    name: "Barra de Obsidiana",
+    imageUrl: "/assets/items/materials/new/obsidian-bar-001@512.png"
+  },
+  "material_dexerity_jewell": {
+    name: "Gema de Safira",
+    imageUrl: "/assets/items/materials/new/sapphire-gem-001@512.png"
+  },
+  "material_dragon_essence": {
+    name: "Frasco de Icor",
+    imageUrl: "/assets/items/materials/new/ichor-vial-001@512.png"
+  },
+  "material_dragon_jewell": {
+    name: "Escama de Dragao",
+    imageUrl: "/assets/items/materials/new/dragon-scale-001@512.png"
+  },
+  "material_dragon_nail": {
+    name: "Fragmento de Chifre",
+    imageUrl: "/assets/items/materials/new/horn-fragment-001@512.png"
+  },
+  "material_dragons_tooth": {
+    name: "Costela de Dragao",
+    imageUrl: "/assets/items/materials/new/dragon-rib-001@512.png"
+  },
+  "material_energy_jewell": {
+    name: "Gema de Esmeralda",
+    imageUrl: "/assets/items/materials/new/emerald-gem-001@512.png"
+  },
+  "material_eran_fragment": {
+    name: "Conjunto de Rebites de Cobre",
+    imageUrl: "/assets/items/materials/new/copper-rivet-set-001@512.png"
+  },
+  "material_gromin_mycelium": {
+    name: "Cogumelo Luminescente",
+    imageUrl: "/assets/items/materials/new/glowing-mushroom-001@512.png"
+  },
+  "material_herb": {
+    name: "Erva Curativa",
+    imageUrl: "/assets/items/materials/new/healing-herb-001@512.png"
+  },
+  "material_laede_fragment": {
+    name: "Pena de Corvo",
+    imageUrl: "/assets/items/materials/new/raven-feather-001@512.png"
+  },
+  "material_magic_essence": {
+    name: "Oleo de Eter",
+    imageUrl: "/assets/items/materials/new/aether-oil-001@512.png"
+  },
+  [ITEM_IDS.midran]: {
+    name: "Lingote de Adamantita",
+    imageUrl: "/assets/items/materials/new/adamantite-ingot-001@512.png"
+  },
+  "material_mycelium_fungus": {
+    name: "Cogumelo Chapeu-Vermelho",
+    imageUrl: "/assets/items/materials/new/redcap-mushroom-001@512.png"
+  },
+  "material_mysterious_jewell": {
+    name: "Gema de Onix",
+    imageUrl: "/assets/items/materials/new/onyx-gem-001@512.png"
+  },
+  [ITEM_IDS.oldStone]: {
+    name: "Lingote de Cobre",
+    imageUrl: "/assets/items/materials/new/copper-ingot-001@512.png"
+  },
+  "material_spectre_fragment": {
+    name: "Po de Osso",
+    imageUrl: "/assets/items/materials/new/bone-dust-001@512.png"
+  },
+  "material_spectre_jewell": {
+    name: "Gema de Ametista",
+    imageUrl: "/assets/items/materials/new/amethyst-gem-001@512.png"
+  },
+  "material_stone_fragment": {
+    name: "Minerio de Ferro",
+    imageUrl: "/assets/items/materials/new/iron-ore-001@512.png"
+  },
+  "material_strenght_jewell": {
+    name: "Gema de Rubi",
+    imageUrl: "/assets/items/materials/new/ruby-gem-001@512.png"
+  },
+  "material_udania": {
+    name: "Pena de Fenix",
+    imageUrl: "/assets/items/materials/new/phoenix-feather-001@512.png"
+  },
+  "misc_doemia": {
+    name: "Pele de Urso",
+    imageUrl: "/assets/items/materials/new/bear-pelt-001@512.png",
+    kind: "material"
+  },
+  "misc_dragon_stone": {
+    name: "Couro de Dragao",
+    imageUrl: "/assets/items/materials/new/dragonhide-001@512.png",
+    kind: "material"
+  },
+  [ITEM_IDS.dungeonKey]: {
+    name: "Chave de Portao de Bronze",
+    imageUrl: "/assets/items/materials/new/bronze-gate-key-001@512.png",
+    description: "Abre uma entrada de masmorra comum."
+  },
+  [ITEM_IDS.eranStone]: {
+    name: "Lingote de Prata",
+    imageUrl: "/assets/items/materials/new/silver-ingot-001@512.png",
+    kind: "material"
+  },
+  "misc_herb_bitter": {
+    name: "Extrato de Beladona",
+    imageUrl: "/assets/items/materials/new/nightshade-extract-001@512.png",
+    kind: "material"
+  },
+  "misc_herb_moss": {
+    name: "Polen Cintilante",
+    imageUrl: "/assets/items/materials/new/glittering-pollen-001@512.png",
+    kind: "material"
+  },
+  "misc_herb_rustic": {
+    name: "Funil de Pocao",
+    imageUrl: "/assets/items/materials/new/potion-funnel-001@512.png",
+    kind: "material"
+  },
+  [ITEM_IDS.monarchAccessKey]: {
+    name: "Chave de Caveira",
+    imageUrl: "/assets/items/materials/new/skull-key-001@512.png",
+    description: "Permite enfrentar o monarca ativo em Morthaly."
+  },
+  "misc_kaede_stone": {
+    name: "Lingote de Metal Estelar",
+    imageUrl: "/assets/items/materials/new/star-metal-ingot-001@512.png",
+    kind: "material"
+  },
+  "misc_laede": {
+    name: "Pilha de Lingotes de Prata",
+    imageUrl: "/assets/items/materials/new/silver-ingots-stack-001@512.png",
+    kind: "material"
+  },
+  "misc_maginia": {
+    name: "Frasco de Mercurio",
+    imageUrl: "/assets/items/materials/new/mercury-vial-001@512.png",
+    kind: "material"
+  },
+  "misc_misc_phial": {
+    name: "Frasco de Agua",
+    imageUrl: "/assets/items/materials/new/water-flask-001@512.png",
+    kind: "material"
+  },
+  "misc_ressu": {
+    name: "Po de Enxofre",
+    imageUrl: "/assets/items/materials/new/sulfur-powder-001@512.png",
+    kind: "material"
+  },
+  "misc_seed_bitter": {
+    name: "Fio Encantado",
+    imageUrl: "/assets/items/materials/new/enchanted-thread-001@512.png",
+    kind: "material"
+  },
+  "misc_seed_moss": {
+    name: "Bobina de Linha",
+    imageUrl: "/assets/items/materials/new/thread-bobbin-001@512.png",
+    kind: "material"
+  },
+  "misc_seed_mycelium_fungus": {
+    name: "Pote de Cola Pequeno",
+    imageUrl: "/assets/items/materials/new/small-glue-pot-001@512.png",
+    kind: "material"
+  },
+  "misc_seed_rustic": {
+    name: "Seda de Aranha",
+    imageUrl: "/assets/items/materials/new/spider-silk-001@512.png",
+    kind: "material"
+  },
+  "misc_serlen": {
+    name: "Lingote de Aco Sombrio",
+    imageUrl: "/assets/items/materials/new/darksteel-ingot-001@512.png",
+    kind: "material"
+  },
+  [ITEM_IDS.creationStone]: {
+    name: "Fragmento de Pedra Runica",
+    imageUrl: "/assets/items/materials/new/runestone-fragment-001@512.png",
+    kind: "material"
+  },
+  "wolf_pelt": {
+    name: "Pele de Lobo",
+    imageUrl: "/assets/items/materials/new/wolf-pelt-001@512.png"
+  },
+  "ember_core": {
+    name: "Pedaco de Carvao",
+    imageUrl: "/assets/items/materials/new/charcoal-chunk-001@512.png"
+  },
+  "crystal_dust": {
+    name: "Cristal Azul",
+    imageUrl: "/assets/items/materials/new/blue-crystal-001@512.png"
+  },
+  "wyvern_scale": {
+    name: "Couro Escamado",
+    imageUrl: "/assets/items/materials/new/scaled-hide-001@512.png"
   },
   "training_sword": {
     name: "Adaga Rústica",
@@ -1940,6 +2152,30 @@ function describeVisualItem(item: ItemDefinition, name: string) {
     return `${name} preparada para restaurar recursos em aventura.`;
   }
 
+  if (item.kind === "material") {
+    if (item.id === ITEM_IDS.creationStone) {
+      return `${name} consumido em criacoes, refinos e reforcos especiais.`;
+    }
+    if ([ITEM_IDS.oldStone, ITEM_IDS.eranStone, ITEM_IDS.celena, ITEM_IDS.midran].includes(item.id as typeof ITEM_IDS.oldStone)) {
+      return `${name} usado em fortalecimento de equipamentos e receitas de forja.`;
+    }
+
+    const lowerName = name.toLowerCase();
+    if (/(lingote|minerio|barra|rebite|metal|adamantita|aco|cobre|prata|ouro)/.test(lowerName)) {
+      return `${name} usado em forja, criacao e fortalecimento de equipamentos.`;
+    }
+    if (/(frasco|oleo|extrato|erva|cogumelo|polen|funil|sal|po de enxofre)/.test(lowerName)) {
+      return `${name} usado em alquimia, pocoes e receitas de criacao.`;
+    }
+    if (/(couro|pele|escama|osso|chifre|costela|pena|seda|fio|linha|cola)/.test(lowerName)) {
+      return `${name} usado como componente de criacao em equipamentos e melhorias.`;
+    }
+    if (/(gema|cristal|fragmento)/.test(lowerName)) {
+      return `${name} usado para catalisar criacoes, refinos e aprimoramentos.`;
+    }
+    return `${name} usado em receitas de criacao e fortalecimento.`;
+  }
+
   const statLabels = ITEM_CATALOG_EQUIPMENT_STAT_KEYS
     .filter((key) => item.stats[key] !== undefined && item.stats[key] !== 0)
     .map((key) => ITEM_CATALOG_STAT_LABELS[key] ?? key);
@@ -1961,6 +2197,9 @@ for (const [itemId, override] of Object.entries(ITEM_CATALOG_VISUAL_OVERRIDES)) 
   const item = ITEM_CATALOG[itemId];
   if (!item) {
     continue;
+  }
+  if (override.kind) {
+    item.kind = override.kind;
   }
   item.name = override.name;
   item.imageUrl = override.imageUrl;
@@ -2819,6 +3058,21 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
     ]
   }
 };
+
+const MATERIAL_REFINEMENT_RECIPE_ACTIONS: Record<string, string> = {
+  refine_old_stone: "Fundir",
+  refine_eran: "Fundir",
+  refine_celena: "Fundir",
+  refine_midran: "Fundir"
+};
+
+for (const [recipeId, action] of Object.entries(MATERIAL_REFINEMENT_RECIPE_ACTIONS)) {
+  const recipe = CRAFTING_RECIPES[recipeId];
+  const result = recipe ? ITEM_CATALOG[recipe.resultItemId] : null;
+  if (recipe && result) {
+    recipe.name = `${action} ${result.name}`;
+  }
+}
 
 export const TALENTS: TalentDefinition[] = [
   { id: "off_power_1", category: "offensive", name: "Golpe firme", description: "+4% dano", maxRank: 3, costPerRank: 1, icon: "damage" },

@@ -3313,10 +3313,6 @@ button:disabled {
   flex: 0 0 auto;
 }
 
-.travel-ticket-visual img {
-  padding: 4px !important;
-}
-
 .travel-panel {
   display: grid;
   gap: 16px;
@@ -3604,10 +3600,6 @@ button:disabled {
   color: var(--gold);
   font-size: 0.7rem;
   font-weight: 800;
-}
-
-.travel-action-ticket-visual img {
-  padding: 2px !important;
 }
 
 .travel-selection-meta strong {
@@ -5752,6 +5744,12 @@ button:disabled .game-icon {
 
 .dungeon-key-item-icon .asset-fallback {
   color: var(--gold);
+}
+
+.dungeon-key-item-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .dungeon-floor-grid {
