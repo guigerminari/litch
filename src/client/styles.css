@@ -1765,8 +1765,8 @@ button:disabled {
 }
 
 .guide-detail-art {
-  width: min(90px, 100%);
-  height: 100px;
+  width: min(140px, 100%);
+  height: 150px;
   justify-self: center;
 }
 
@@ -4444,10 +4444,6 @@ button:disabled .game-icon {
   background: transparent;
 }
 
-.slot-visual img {
-  padding: 4px;
-}
-
 .slot-qty {
   position: absolute;
   bottom: 2px;
@@ -4492,10 +4488,6 @@ button:disabled .game-icon {
   border: 1px solid rgba(220, 203, 255, 0.14);
   border-radius: 14px;
   background: rgba(11, 9, 18, 0.42);
-}
-
-.inventory-modal-visual img {
-  padding: 12px;
 }
 
 .inventory-item-modal .inv-action-info > strong {
@@ -6812,7 +6804,6 @@ button:disabled .game-icon {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 8px;
 }
 
 .asset-fallback {
@@ -7323,12 +7314,6 @@ button:disabled .game-icon {
 .craft-grid-item.ready.selected {
   border-color: rgba(255, 255, 255, 0.98);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-
-.craft-grid-art {
-  width: 54px !important;
-  height: 54px !important;
-  border-radius: 8px;
 }
 
 .craft-grid-total {

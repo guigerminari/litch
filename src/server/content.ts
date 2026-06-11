@@ -1633,6 +1633,343 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   }
 };
 
+type ItemCatalogVisualOverride = {
+  name: string;
+  imageUrl: string;
+  description?: string;
+  stats?: ItemDefinition["stats"];
+};
+
+const ITEM_CATALOG_STAT_LABELS: Partial<Record<keyof ItemDefinition["stats"], string>> = {
+  agility: "agilidade",
+  constitution: "constituição",
+  defense: "defesa",
+  strength: "força"
+};
+
+const ITEM_CATALOG_EQUIPMENT_STAT_KEYS: Array<keyof ItemDefinition["stats"]> = [
+  "strength",
+  "agility",
+  "defense",
+  "constitution"
+];
+
+const ITEM_CATALOG_VISUAL_OVERRIDES: Record<string, ItemCatalogVisualOverride> = {
+  "energy_potion": {
+    name: "Poção de Energia 30%",
+    imageUrl: "/assets/items/potions/new/30p-energy-potion-001@512.png"
+  },
+  "energy_potion_light": {
+    name: "Pequena Poção de Energia",
+    imageUrl: "/assets/items/potions/new/small-energy-potion-001@512.png"
+  },
+  "energy_potion_medium": {
+    name: "Poção Média de Energia",
+    imageUrl: "/assets/items/potions/new/medium-energy-potion-001@512.png"
+  },
+  "energy_potion_high": {
+    name: "Poção Alta de Energia",
+    imageUrl: "/assets/items/potions/new/high-energy-potion-001@512.png"
+  },
+  "health_potion": {
+    name: "Poção de Vida 30%",
+    imageUrl: "/assets/items/potions/new/30p-health-potion-001@512.png"
+  },
+  "health_potion_light": {
+    name: "Pequena Poção de Vida",
+    imageUrl: "/assets/items/potions/new/small-health-potion-001@512.png"
+  },
+  "health_potion_medium": {
+    name: "Poção Média de Vida",
+    imageUrl: "/assets/items/potions/new/medium-health-potion-001@512.png"
+  },
+  "health_potion_high": {
+    name: "Poção Alta de Vida",
+    imageUrl: "/assets/items/potions/new/high-health-potion-001@512.png"
+  },
+  "major_health_potion": {
+    name: "Poção de Vida 50%",
+    imageUrl: "/assets/items/potions/new/50p-health-potion-001@512.png",
+    stats: { healPercent: 0.5 }
+  },
+  "major_energy_potion": {
+    name: "Poção de Energia 50%",
+    imageUrl: "/assets/items/potions/new/50p-energy-potion-001@512.png",
+    stats: { energyPercent: 0.5 }
+  },
+  "potion_mana": {
+    name: "Poção de Energia 50%",
+    imageUrl: "/assets/items/potions/new/50p-energy-potion-001@512.png",
+    stats: { energyPercent: 0.5 }
+  },
+  "training_sword": {
+    name: "Adaga Rústica",
+    imageUrl: "/assets/items/weapons/new/crude-dagger-001@512.png"
+  },
+  "weapon_assassin_sword": {
+    name: "Adaga Curva",
+    imageUrl: "/assets/items/weapons/new/curved-dagger-001@512.png"
+  },
+  "weapon_chaos_axe": {
+    name: "Machado Rústico",
+    imageUrl: "/assets/items/weapons/new/crude-axe-001@512.png"
+  },
+  "weapon_claymore_3": {
+    name: "Espada de Osso",
+    imageUrl: "/assets/items/weapons/new/bone-sword-001@512.png"
+  },
+  "weapon_claymore": {
+    name: "Espada de Ferro Enegrecido",
+    imageUrl: "/assets/items/weapons/new/blackened-iron-sword-001@512.png"
+  },
+  "weapon_double_sword_2": {
+    name: "Adaga de Prata",
+    imageUrl: "/assets/items/weapons/new/silver-dagger-001@512.png"
+  },
+  "weapon_double_sword_new": {
+    name: "Adaga de Vidro",
+    imageUrl: "/assets/items/weapons/new/glass-dagger-001@512.png"
+  },
+  "weapon_executioner_axe_6": {
+    name: "Machado de Batalha",
+    imageUrl: "/assets/items/weapons/new/battle-axe-001@512.png"
+  },
+  "weapon_executioner_axe": {
+    name: "Martelo Gélido",
+    imageUrl: "/assets/items/weapons/new/frost-hammer-001@512.png"
+  },
+  "weapon_extreme_axe": {
+    name: "Machado de Fogo",
+    imageUrl: "/assets/items/weapons/new/fire-axe-001@512.png"
+  },
+  "weapon_greatsword_2": {
+    name: "Espada de Cristal",
+    imageUrl: "/assets/items/weapons/new/crystal-sword-001@512.png"
+  },
+  "weapon_greatsword_4": {
+    name: "Espada de Fogo",
+    imageUrl: "/assets/items/weapons/new/fire-sword-001@512.png"
+  },
+  "weapon_insane_axe": {
+    name: "Machado Amaldiçoado",
+    imageUrl: "/assets/items/weapons/new/cursed-axe-001@512.png"
+  },
+  "weapon_long_sword": {
+    name: "Espada Rúnica",
+    imageUrl: "/assets/items/weapons/new/runed-sword-001@512.png"
+  },
+  "weapon_obs_axe": {
+    name: "Machado de Gelo",
+    imageUrl: "/assets/items/weapons/new/ice-axe-001@512.png"
+  },
+  "weapon_orcish_dagger": {
+    name: "Adaga Envenenada",
+    imageUrl: "/assets/items/weapons/new/poison-dagger-001@512.png"
+  },
+  "weapon_real_axe": {
+    name: "Lança de Dragão",
+    imageUrl: "/assets/items/weapons/new/dragon-spear-001@512.png"
+  },
+  "weapon_triple_sword_2": {
+    name: "Pique de Ferro",
+    imageUrl: "/assets/items/weapons/new/iron-pike-001@512.png"
+  },
+  "weapon_triple_sword_3": {
+    name: "Lança Gélida",
+    imageUrl: "/assets/items/weapons/new/frost-lance-001@512.png"
+  },
+  "weapon_vorgonax": {
+    name: "Lâmina Sombria",
+    imageUrl: "/assets/items/weapons/new/shadow-blade-001@512.png"
+  },
+  "ember_blade": {
+    name: "Adaga de Fogo",
+    imageUrl: "/assets/items/weapons/new/fire-dagger-001@512.png"
+  },
+  "forged_ironhold_axe_40": {
+    name: "Maça Rúnica",
+    imageUrl: "/assets/items/weapons/new/runed-maul-001@512.png"
+  },
+  "forged_valfria_sabre_50": {
+    name: "Lança de Fogo",
+    imageUrl: "/assets/items/weapons/new/fire-spear-001@512.png"
+  },
+  "forged_valfria_sunblade_70": {
+    name: "Adaga Sagrada",
+    imageUrl: "/assets/items/weapons/new/holy-dagger-001@512.png"
+  },
+  "forged_morthaly_scythe_80": {
+    name: "Espada Amaldiçoada",
+    imageUrl: "/assets/items/weapons/new/cursed-sword-001@512.png"
+  },
+  "forged_morthaly_voidblade_100": {
+    name: "Adaga Sombria",
+    imageUrl: "/assets/items/weapons/new/shadow-dagger-001@512.png"
+  },
+  "leather_armor": {
+    name: "Armadura de Couro",
+    imageUrl: "/assets/items/armor/new/leather-armor-001@512.png"
+  },
+  "iron_armor": {
+    name: "Peitoral de Ferro",
+    imageUrl: "/assets/items/armor/new/iron-breastplate-001@512.png"
+  },
+  "armor_steel": {
+    name: "Couraça de Aço",
+    imageUrl: "/assets/items/armor/new/steel-cuirass-001@512.png"
+  },
+  "armor_mystic": {
+    name: "Manto de Mago",
+    imageUrl: "/assets/items/armor/new/wizard-robe-001@512.png"
+  },
+  "armor_kharlee": {
+    name: "Cota de Malha",
+    imageUrl: "/assets/items/armor/new/chainmail-armor-001@512.png"
+  },
+  "armor_cursed": {
+    name: "Peitoral Amaldiçoado",
+    imageUrl: "/assets/items/armor/new/cursed-chest-armor-001@512.png"
+  },
+  "armor_justice": {
+    name: "Armadura de Placas",
+    imageUrl: "/assets/items/armor/new/plate-armor-001@512.png"
+  },
+  "armor_obscure": {
+    name: "Couro de Ladino",
+    imageUrl: "/assets/items/armor/new/rogue-leather-armor-001@512.png"
+  },
+  "armor_death": {
+    name: "Arnês Bárbaro",
+    imageUrl: "/assets/items/armor/new/barbarian-harness-001@512.png"
+  },
+  "armor_dragon": {
+    name: "Armadura de Escamas de Dragão",
+    imageUrl: "/assets/items/armor/new/dragon-scale-armor-001@512.png"
+  },
+  "armor_dhron": {
+    name: "Malha de Escamas",
+    imageUrl: "/assets/items/armor/new/scale-mail-001@512.png"
+  },
+  "armor_erins": {
+    name: "Peitoral de Cristal",
+    imageUrl: "/assets/items/armor/new/crystal-breastplate-001@512.png"
+  },
+  "guardian_mail": {
+    name: "Peitoral Sagrado",
+    imageUrl: "/assets/items/armor/new/holy-chest-armor-001@512.png"
+  },
+  "forged_ironhold_plate_40": {
+    name: "Armadura Acolchoada",
+    imageUrl: "/assets/items/armor/new/padded-armor-001@512.png"
+  },
+  "forged_valfria_scale_50": {
+    name: "Peitoral Ignífugo",
+    imageUrl: "/assets/items/armor/new/fireproof-chest-armor-001@512.png"
+  },
+  "forged_valfria_sandmail_70": {
+    name: "Túnica de Patrulheiro",
+    imageUrl: "/assets/items/armor/new/ranger-tunic-001@512.png"
+  },
+  "forged_morthaly_boneplate_80": {
+    name: "Peitoral de Gelo",
+    imageUrl: "/assets/items/armor/new/frost-chest-armor-001@512.png"
+  },
+  "forged_morthaly_voidarmor_100": {
+    name: "Manto Sombrio",
+    imageUrl: "/assets/items/armor/new/shadow-robe-001@512.png"
+  },
+  "novice_amulet": {
+    name: "Amuleto de Grama I",
+    imageUrl: "/assets/items/amulet/new/grass-amulet-001@512.png"
+  },
+  "hunter_charm": {
+    name: "Amuleto de Grama II",
+    imageUrl: "/assets/items/amulet/new/grass-amulet-002@512.png"
+  },
+  "moon_amulet": {
+    name: "Amuleto de Gelo I",
+    imageUrl: "/assets/items/amulet/new/ice-amulet-001@512.png"
+  },
+  "acid_amulet": {
+    name: "Amuleto de Fogo I",
+    imageUrl: "/assets/items/amulet/new/fire-amulet-001@512.png"
+  },
+  "crystal_white_amulet": {
+    name: "Amuleto de Gelo II",
+    imageUrl: "/assets/items/amulet/new/ice-amulet-002@512.png"
+  },
+  "celtic_yellow_amulet": {
+    name: "Amuleto de Fogo II",
+    imageUrl: "/assets/items/amulet/new/fire-amulet-002@512.png"
+  },
+  "celtic_magenta_amulet": {
+    name: "Amuleto Divino",
+    imageUrl: "/assets/items/amulet/new/divine-amulet-001@512.png"
+  },
+  "celtic_orange_amulet": {
+    name: "Amuleto da Alma",
+    imageUrl: "/assets/items/amulet/new/soul-amulet-001@512.png"
+  },
+  "celtic_cyan_amulet": {
+    name: "Amuleto Sombrio",
+    imageUrl: "/assets/items/amulet/new/shadow-amulet-001@512.png"
+  }
+};
+
+function formatCatalogList(values: string[]) {
+  if (values.length <= 1) {
+    return values[0] ?? "";
+  }
+  return `${values.slice(0, -1).join(", ")} e ${values[values.length - 1]}`;
+}
+
+function describeVisualItem(item: ItemDefinition, name: string) {
+  if (item.kind === "potion") {
+    if (item.stats.healPercent !== undefined) {
+      return `${name} que restaura ${Math.round(item.stats.healPercent * 100)}% da vida máxima.`;
+    }
+    if (item.stats.energyPercent !== undefined) {
+      return `${name} que restaura ${Math.round(item.stats.energyPercent * 100)}% da energia máxima.`;
+    }
+    if (item.stats.heal !== undefined) {
+      return `${name} que recupera ${item.stats.heal} de vida durante combates.`;
+    }
+    if (item.stats.energy !== undefined) {
+      return `${name} que recupera ${item.stats.energy} de energia para continuar caçando.`;
+    }
+    return `${name} preparada para restaurar recursos em aventura.`;
+  }
+
+  const statLabels = ITEM_CATALOG_EQUIPMENT_STAT_KEYS
+    .filter((key) => item.stats[key] !== undefined && item.stats[key] !== 0)
+    .map((key) => ITEM_CATALOG_STAT_LABELS[key] ?? key);
+  const statText = statLabels.length > 0 ? ` que aumenta ${formatCatalogList(statLabels)}.` : ".";
+
+  if (item.kind === "weapon") {
+    return `Arma do tipo ${name.toLowerCase()}${statText}`;
+  }
+  if (item.kind === "armor") {
+    return `Proteção do tipo ${name.toLowerCase()}${statText}`;
+  }
+  if (item.kind === "amulet") {
+    return `${name} que canaliza poder${statText}`;
+  }
+  return `${name} com visual atualizado.`;
+}
+
+for (const [itemId, override] of Object.entries(ITEM_CATALOG_VISUAL_OVERRIDES)) {
+  const item = ITEM_CATALOG[itemId];
+  if (!item) {
+    continue;
+  }
+  item.name = override.name;
+  item.imageUrl = override.imageUrl;
+  if (override.stats) {
+    item.stats = override.stats;
+  }
+  item.description = override.description ?? describeVisualItem(item, override.name);
+}
+
 export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
   "refine_old_stone": {
     "id": "refine_old_stone",
