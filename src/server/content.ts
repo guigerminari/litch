@@ -584,7 +584,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "id": "scroll_enhanced_parchment",
     "name": "Pergaminho Aprimorado",
     "kind": "scroll",
-    "imageUrl": "/assets/items/misc/enhanced-parchment.png",
+    "imageUrl": "/assets/items/scroll/royal-scroll@512.png",
     "minLevel": 1,
     "price": 20,
     "stats": {},
@@ -599,16 +599,6 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "price": 300,
     "stats": {},
     "description": "Pedra superior usada na segunda etapa de aprimoramentos."
-  },
-  "scroll_fraddo_parchment": {
-    "id": "scroll_fraddo_parchment",
-    "name": "Pergaminho de Fraddo",
-    "kind": "scroll",
-    "imageUrl": "/assets/items/misc/fraddo-parchment.png",
-    "minLevel": 2,
-    "price": 28,
-    "stats": {},
-    "description": "Pergaminho antigo para receitas e efeitos especiais."
   },
   "misc_herb_bitter": {
     "id": "misc_herb_bitter",
@@ -672,13 +662,13 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
   },
   "scroll_magic_lands_parchment": {
     "id": "scroll_magic_lands_parchment",
-    "name": "Pergaminho das Terras Mágicas",
+    "name": "Pergaminho da Visão",
     "kind": "scroll",
-    "imageUrl": "/assets/items/misc/magic-lands-parchment.png",
+    "imageUrl": "/assets/items/scroll/eye-scroll@512.png",
     "minLevel": 4,
     "price": 44,
     "stats": {},
-    "description": "Pergaminho das terras mágicas para receitas arcanas."
+    "description": "Pergaminho da Visão para receitas arcanas."
   },
   "misc_maginia": {
     "id": "misc_maginia",
@@ -1361,7 +1351,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "id": "oblivion_scroll",
     "name": "Pergaminho do Esquecimento",
     "kind": "scroll",
-    "imageUrl": "/assets/items/misc/enhanced-parchment.png",
+    "imageUrl": "/assets/items/scroll/tree-scroll@512.png",
     "minLevel": 1,
     "price": 180000,
     "goldCoinPrice": 3,
@@ -1372,7 +1362,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "id": "memory_scroll",
     "name": "Pergaminho da Memória",
     "kind": "scroll",
-    "imageUrl": "/assets/items/misc/fraddo-parchment.png",
+    "imageUrl": "/assets/items/scroll/stelar-scroll@512.png",
     "minLevel": 1,
     "price": 180000,
     "goldCoinPrice": 3,
@@ -2021,27 +2011,27 @@ const ITEM_CATALOG_VISUAL_OVERRIDES: Record<string, ItemCatalogVisualOverride> =
     imageUrl: "/assets/items/armor/new/shadow-robe-001@512.png"
   },
   "novice_amulet": {
-    name: "Amuleto de Grama I",
+    name: "Amuleto de Grama",
     imageUrl: "/assets/items/amulet/new/grass-amulet-001@512.png"
   },
   "hunter_charm": {
-    name: "Amuleto de Grama II",
+    name: "Amuleto da Natureza",
     imageUrl: "/assets/items/amulet/new/grass-amulet-002@512.png"
   },
   "moon_amulet": {
-    name: "Amuleto de Gelo I",
+    name: "Amuleto de Gelo",
     imageUrl: "/assets/items/amulet/new/ice-amulet-001@512.png"
   },
   "acid_amulet": {
-    name: "Amuleto de Fogo I",
+    name: "Amuleto de Fogo",
     imageUrl: "/assets/items/amulet/new/fire-amulet-001@512.png"
   },
   "crystal_white_amulet": {
-    name: "Amuleto de Gelo II",
+    name: "Amuleto da Nevasca",
     imageUrl: "/assets/items/amulet/new/ice-amulet-002@512.png"
   },
   "celtic_yellow_amulet": {
-    name: "Amuleto de Fogo II",
+    name: "Amuleto da Fúria",
     imageUrl: "/assets/items/amulet/new/fire-amulet-002@512.png"
   },
   "celtic_magenta_amulet": {
@@ -3440,18 +3430,12 @@ export const CITIES: CityDefinition[] = [
     "armorerItemIds": [
       "training_sword",
       "leather_armor",
-      "iron_armor",
       "weapon_assassin_sword",
-      "weapon_chaos_axe",
       "weapon_claymore_3",
-      "weapon_claymore",
       "weapon_double_sword_2",
-      "weapon_double_sword_new",
       "armor_steel",
       "armor_mystic",
-      "armor_kharlee",
-      "novice_amulet",
-      "hunter_charm"
+      "novice_amulet"
     ],
     "apothecaryItemIds": [
       "health_potion_light",
@@ -3594,23 +3578,16 @@ export const CITIES: CityDefinition[] = [
     ],
     "armorerItemIds": [
       "weapon_double_sword_new",
-      "weapon_executioner_axe_6",
       "weapon_executioner_axe",
       "weapon_extreme_axe",
-      "weapon_greatsword_2",
       "weapon_greatsword_4",
       "weapon_insane_axe",
-      "weapon_long_sword",
       "weapon_obs_axe",
-      "weapon_orcish_dagger",
       "armor_kharlee",
-      "armor_cursed",
       "armor_justice",
       "armor_obscure",
-      "armor_death",
       "moon_amulet",
-      "acid_amulet",
-      "celtic_yellow_amulet"
+      "acid_amulet"
     ]
   },
   {
@@ -3745,7 +3722,6 @@ export const CITIES: CityDefinition[] = [
       "wolf_spider_old"
     ],
     "armorerItemIds": [
-      "weapon_long_sword",
       "weapon_obs_axe",
       "weapon_orcish_dagger",
       "weapon_real_axe",
@@ -3756,8 +3732,7 @@ export const CITIES: CityDefinition[] = [
       "armor_death",
       "armor_dragon",
       "armor_dhron",
-      "armor_erins",
-      "celtic_yellow_amulet",
+      "armor_erins"
     ],
     "goldCoinMerchantItemIds": [
       ITEM_IDS.blueCoin,

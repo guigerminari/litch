@@ -5383,10 +5383,7 @@ button:disabled .game-icon {
   width: 60px;
   height: 60px;
   border-radius: 8px;
-}
-
-.shop-card-image img {
-  padding: 8px;
+  border: 1px solid var(--line);
 }
 
 .shop-item-card strong {
@@ -5398,6 +5395,10 @@ button:disabled .game-icon {
   -webkit-box-orient: vertical;
   line-height: 1.18;
   font-size: 0.7rem;
+}
+
+.shop-item-card:not(.market-shop-card) .shop-card-image {
+  border: none;
 }
 
 .shop-card-price {
@@ -8965,8 +8966,9 @@ button:disabled .game-icon {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.market-modal-icon img {
-  padding: 12px;
+.shop-modal .market-modal-icon {
+  border: none;
+  background: transparent;
 }
 
 .market-modal-icon .asset-fallback {
