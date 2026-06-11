@@ -1077,6 +1077,11 @@ export interface CraftPayload {
   baseEquipmentInstanceIds?: string[];
 }
 
+export interface CraftResultPayload {
+  recipeId: string;
+  items: InventoryItem[];
+}
+
 export interface EnhancePayload {
   instanceId: string;
   creationStones?: number;

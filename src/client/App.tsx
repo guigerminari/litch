@@ -77,6 +77,7 @@ import type {
   TalentCategory,
   QuestView,
   QuestCategory,
+  CraftResultPayload,
   CraftingRecipe,
   Rarity,
   TalentDefinition,
@@ -4065,6 +4066,20 @@ function getCraftRarityTable(baseRarities: Rarity[] = []): Array<{ rarity: Rarit
 }
 
 const CRAFT_ANIMATION_MS = 2400;
+const CRAFT_RESULT_CONFETTI = [
+  { x: 8, delay: 0, duration: 1650, color: "#ff79c6", rotate: -22 },
+  { x: 14, delay: 120, duration: 1800, color: "#8be9fd", rotate: 36 },
+  { x: 21, delay: 40, duration: 1500, color: "#f1fa8c", rotate: 12 },
+  { x: 28, delay: 180, duration: 1720, color: "#50fa7b", rotate: -48 },
+  { x: 35, delay: 60, duration: 1900, color: "#bd93f9", rotate: 24 },
+  { x: 43, delay: 220, duration: 1580, color: "#ffb86c", rotate: 58 },
+  { x: 51, delay: 20, duration: 1750, color: "#ff79c6", rotate: -18 },
+  { x: 58, delay: 150, duration: 1680, color: "#8be9fd", rotate: 42 },
+  { x: 66, delay: 80, duration: 1880, color: "#f1fa8c", rotate: -36 },
+  { x: 73, delay: 250, duration: 1540, color: "#50fa7b", rotate: 28 },
+  { x: 81, delay: 90, duration: 1760, color: "#bd93f9", rotate: -54 },
+  { x: 89, delay: 190, duration: 1640, color: "#ffb86c", rotate: 18 }
+] as const;
 
 function CraftingPanel({ game, station }: { game: GameState; station: "blacksmith" | "alchemist" }) {
   const recipes = game.availableCraftingRecipes[station];
@@ -4073,6 +4088,8 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
   const [craftingRecipeId, setCraftingRecipeId] = useState("");
   const [craftQuantity, setCraftQuantity] = useState(1);
   const [craftBaseSelection, setCraftBaseSelection] = useState<Record<string, string[]>>({});
+  const [craftedEquipmentResult, setCraftedEquipmentResult] = useState<InventoryItem | null>(null);
+  const craftResultTimerRef = useRef<number | null>(null);
   const title = station === "blacksmith" ? "Ferreiro" : "Alquimista";
   const icon = station === "blacksmith" ? <GameIcon name="blacksmith" size={26} /> : <GameIcon name="alchemist" size={26} />;
   const npcName = station === "blacksmith" ? game.currentCity.npcs.blacksmith : game.currentCity.npcs.alchemist;
@@ -4155,6 +4172,10 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
   const craftRarityTable = getCraftRarityTable(selectedBaseRarities);
   const craftBoostTier = getCraftRarityBoostTier(selectedBaseRarities);
   const craftBoostRarity = RARITY_ORDER[craftBoostTier] ?? "common";
+  const craftedEquipmentItem = craftedEquipmentResult ? game.itemCatalog[craftedEquipmentResult.itemId] ?? null : null;
+  const craftedEquipmentInventoryItem = craftedEquipmentResult
+    ? game.character.inventory.find((item) => item.instanceId === craftedEquipmentResult.instanceId) ?? craftedEquipmentResult
+    : null;
 
   useEffect(() => {
     if (!selectedEntry) {
@@ -4183,6 +4204,32 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
       return changed ? next : current;
     });
   }, [game.character.inventory, selectedRecipe?.id, effectiveCraftQuantity]);
+
+  useEffect(() => {
+    const handleCraftResult = (payload: CraftResultPayload) => {
+      const craftedItem = payload.items[0];
+      if (!craftedItem) {
+        return;
+      }
+      if (craftResultTimerRef.current) {
+        window.clearTimeout(craftResultTimerRef.current);
+      }
+      craftResultTimerRef.current = window.setTimeout(() => {
+        setCraftedEquipmentResult(craftedItem);
+        craftResultTimerRef.current = null;
+      }, CRAFT_ANIMATION_MS);
+    };
+
+    socket.on("craft:createResult", handleCraftResult);
+
+    return () => {
+      socket.off("craft:createResult", handleCraftResult);
+      if (craftResultTimerRef.current) {
+        window.clearTimeout(craftResultTimerRef.current);
+        craftResultTimerRef.current = null;
+      }
+    };
+  }, []);
 
   function toggleCraftBaseEquipment(selectionKey: string, instanceId: string, needed: number) {
     setCraftBaseSelection((current) => {
@@ -4374,7 +4421,107 @@ function CraftingPanel({ game, station }: { game: GameState; station: "blacksmit
 
         {recipes.length === 0 && <p className="empty-state">Nenhuma receita disponível nesta cidade.</p>}
       </div>
+
+      {craftedEquipmentItem?.slot && craftedEquipmentInventoryItem && (
+        <CraftEquipmentResultModal
+          item={craftedEquipmentItem}
+          inventoryItem={craftedEquipmentInventoryItem}
+          onClose={() => setCraftedEquipmentResult(null)}
+        />
+      )}
     </section>
+  );
+}
+
+function CraftEquipmentResultModal({
+  item,
+  inventoryItem,
+  onClose
+}: {
+  item: ItemDefinition;
+  inventoryItem: InventoryItem;
+  onClose: () => void;
+}) {
+  const rarity = getItemRarity(item, inventoryItem) ?? "common";
+  const rarityColor = getEquipmentRarityColor(item, rarity);
+  const stats = getEnhancedItemStats(item, inventoryItem);
+  const statRows = EQUIPMENT_STAT_KEYS
+    .map((key) => ({ key, label: EQUIPMENT_STAT_LABELS[key] ?? key, value: stats[key] }))
+    .filter((entry) => entry.value != null && entry.value !== 0);
+  const modalStyle = rarityColor
+    ? ({ borderColor: rarityColor, "--rarity-color": rarityColor } as React.CSSProperties)
+    : undefined;
+
+  return (
+    <div className="drawer-backdrop craft-result-modal-backdrop" role="presentation" onClick={onClose}>
+      <section className={`player-action-modal craft-result-modal rarity-${rarity}`} role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()} style={modalStyle}>
+        <div className="craft-result-party" aria-hidden="true">
+          {CRAFT_RESULT_CONFETTI.map((piece, index) => (
+            <span
+              key={`${piece.x}-${index}`}
+              style={{
+                "--confetti-x": `${piece.x}%`,
+                "--confetti-delay": `${piece.delay}ms`,
+                "--confetti-duration": `${piece.duration}ms`,
+                "--confetti-color": piece.color,
+                "--confetti-rotate": `${piece.rotate}deg`
+              } as React.CSSProperties}
+            />
+          ))}
+        </div>
+
+        <button className="close-button" title="Fechar" onClick={onClose}>
+          <X size={18} />
+        </button>
+
+        <header className="craft-result-modal-head">
+          <span className="craft-result-kicker">
+            <Sparkles size={15} /> Forja concluída
+          </span>
+          <h2>{formatInventoryItemName(item, inventoryItem)}</h2>
+          {item.description && <p>{item.description}</p>}
+        </header>
+
+        <div className="craft-result-showcase">
+          <ItemVisual
+            item={item}
+            className="craft-result-modal-visual"
+            enhancementLevel={inventoryItem.enhancementLevel}
+            rarity={inventoryItem.rarity}
+          />
+          <span className={`item-rarity ${rarity}`}>{RARITY_LABELS[rarity]}</span>
+        </div>
+
+        <div className="inventory-item-meta craft-result-modal-meta">
+          <small>{ITEM_KIND_LABELS[item.kind]}</small>
+          {item.slot && <small>{EQUIPMENT_LABEL[item.slot]}</small>}
+          <small>Nível mínimo: {item.minLevel}</small>
+          <small>Valor: {formatCurrency(getItemValue(item, inventoryItem))} ouro</small>
+        </div>
+
+        <div className="market-modal-stats craft-result-modal-stats">
+          <h4>Atributos</h4>
+          {statRows.length > 0 ? (
+            <div className="stat-list">
+              {statRows.map(({ key, label, value }) => (
+                <div key={key}>
+                  <span>{label}</span>
+                  <strong>+{value}</strong>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>Nenhum atributo direto.</p>
+          )}
+        </div>
+
+        <div className="inv-action-buttons craft-result-modal-actions">
+          <button className="primary-button" onClick={onClose}>
+            Continuar
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 

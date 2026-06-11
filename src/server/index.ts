@@ -19,6 +19,7 @@ import type {
   ClanTransferLeadershipPayload,
   ClanUpdatePayload,
   CraftPayload,
+  CraftResultPayload,
   CraftingRecipe,
   Currency,
   CurrencyExchangePayload,
@@ -3782,15 +3783,19 @@ function craftItem(character: Character, recipeId: string, quantity = 1, baseEqu
     }
     removeItemByItemId(character, ingredient.itemId, ingredient.quantity * amount);
   }
+  const craftedItems: InventoryItem[] = [];
   for (let index = 0; index < amount; index += 1) {
     if (resultDefinition.slot) {
       for (let resultIndex = 0; resultIndex < recipe.resultQuantity; resultIndex += 1) {
-        addItem(character, recipe.resultItemId, ITEM_CATALOG, 1, { rarity: getCraftRarityFromRoll(baseRarities) });
+        const craftedItem = addItem(character, recipe.resultItemId, ITEM_CATALOG, 1, { rarity: getCraftRarityFromRoll(baseRarities) });
+        craftedItems.push({ ...craftedItem });
       }
     } else {
-      addItem(character, recipe.resultItemId, ITEM_CATALOG, recipe.resultQuantity);
+      const craftedItem = addItem(character, recipe.resultItemId, ITEM_CATALOG, recipe.resultQuantity);
+      craftedItems.push({ ...craftedItem });
     }
   }
+  return craftedItems;
 }
 
 function buyTalent(character: Character, talentId: string) {
@@ -4460,8 +4465,16 @@ io.on("connection", (socket: AuthedSocket) => {
       const character = currentCharacter(playerId);
       ensureNotInBattle(character);
       const baseEquipmentInstanceIds = Array.isArray(payload.baseEquipmentInstanceIds) ? payload.baseEquipmentInstanceIds : [];
-      craftItem(character, payload.recipeId, payload.quantity ?? 1, baseEquipmentInstanceIds);
+      const craftedItems = craftItem(character, payload.recipeId, payload.quantity ?? 1, baseEquipmentInstanceIds);
       emitState(playerId);
+      const craftedEquipment = craftedItems.filter((item) => Boolean(ITEM_CATALOG[item.itemId]?.slot));
+      if (craftedEquipment.length > 0) {
+        const resultPayload: CraftResultPayload = {
+          recipeId: payload.recipeId,
+          items: craftedEquipment
+        };
+        socket.emit("craft:createResult", resultPayload);
+      }
     } catch (error) {
       handleError(socket, error);
     }
