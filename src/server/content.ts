@@ -420,16 +420,6 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Fragmento usado para refinar a Pedra de Eran."
   },
-  "material_green_coin": {
-    "id": "material_green_coin",
-    "name": "Moeda Verde",
-    "kind": "material",
-    "imageUrl": "/assets/items/materials/green_coin.png",
-    "minLevel": 4,
-    "price": 36,
-    "stats": {},
-    "description": "Moeda verde usada em trocas especiais de criação."
-  },
   "material_gromin_mycelium": {
     "id": "material_gromin_mycelium",
     "name": "Micelio de Gromin",
@@ -509,16 +499,6 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "price": 140,
     "stats": {},
     "description": "Base mineral para a primeira etapa de aprimoramentos."
-  },
-  "material_purple_coin": {
-    "id": "material_purple_coin",
-    "name": "Moeda Roxa",
-    "kind": "material",
-    "imageUrl": "/assets/items/materials/purple_coin.png",
-    "minLevel": 6,
-    "price": 50,
-    "stats": {},
-    "description": "Moeda roxa usada em trocas raras e receitas especiais."
   },
   "material_spectre_fragment": {
     "id": "material_spectre_fragment",
@@ -620,46 +600,6 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Pedra superior usada na segunda etapa de aprimoramentos."
   },
-  "misc_erins_chest_1": {
-    "id": "misc_erins_chest_1",
-    "name": "Bau de Erins 1",
-    "kind": "misc",
-    "imageUrl": "/assets/items/misc/erins-chest-1.png",
-    "minLevel": 2,
-    "price": 28,
-    "stats": {},
-    "description": "Baú simples com recompensas ligadas a Erins."
-  },
-  "misc_erins_chest_2": {
-    "id": "misc_erins_chest_2",
-    "name": "Bau de Erins 2",
-    "kind": "misc",
-    "imageUrl": "/assets/items/misc/erins-chest-2.png",
-    "minLevel": 2,
-    "price": 28,
-    "stats": {},
-    "description": "Baú reforçado com recompensas ligadas a Erins."
-  },
-  "misc_erins_chest_3": {
-    "id": "misc_erins_chest_3",
-    "name": "Bau de Erins 3",
-    "kind": "misc",
-    "imageUrl": "/assets/items/misc/erins-chest-3.png",
-    "minLevel": 2,
-    "price": 28,
-    "stats": {},
-    "description": "Baú valioso com recompensas ligadas a Erins."
-  },
-  "misc_erins_chest": {
-    "id": "misc_erins_chest",
-    "name": "Bau de Erins",
-    "kind": "misc",
-    "imageUrl": "/assets/items/misc/erins-chest.png",
-    "minLevel": 2,
-    "price": 28,
-    "stats": {},
-    "description": "Baú de Erins com recompensas variadas."
-  },
   "scroll_fraddo_parchment": {
     "id": "scroll_fraddo_parchment",
     "name": "Pergaminho de Fraddo",
@@ -709,16 +649,6 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "price": 36,
     "stats": {},
     "description": "Abre masmorras avançadas e desafios mais perigosos."
-  },
-  "misc_hozir_box": {
-    "id": "misc_hozir_box",
-    "name": "Caixa de Hozir",
-    "kind": "misc",
-    "imageUrl": "/assets/items/misc/hozir-box.png",
-    "minLevel": 3,
-    "price": 36,
-    "stats": {},
-    "description": "Caixa misteriosa com componentes raros de Hozir."
   },
   "misc_kaede_stone": {
     "id": "misc_kaede_stone",

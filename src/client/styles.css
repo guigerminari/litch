@@ -8048,8 +8048,8 @@ button:disabled .game-icon {
 }
 
 .arena-reward-item-visual {
-  width: 18px;
-  height: 18px;
+  width: 30px;
+  height: 30px;
   flex: 0 0 auto;
 }
 
@@ -8140,6 +8140,11 @@ button:disabled .game-icon {
 .arena-rank-pts {
   color: var(--gold);
   font-weight: 600;
+}
+
+.arena-blue-coin-visual {
+  width: 33px;
+  height: 33px;
 }
 
 .sell-strip {

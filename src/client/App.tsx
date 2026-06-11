@@ -6868,6 +6868,7 @@ function ArenaPanel({ game }: { game: GameState }) {
   const queued = game.arenaQueueSize > 0;
   const blueCoins = countInventoryItem(game, ARENA_ITEM_IDS.blueCoin);
   const arenaCoinItem = game.itemCatalog[ARENA_ITEM_IDS.arenaCoin];
+  const blueCoinItem = game.itemCatalog[ARENA_ITEM_IDS.blueCoin];
   const creationStoneItem = game.itemCatalog[ARENA_ITEM_IDS.creationStone];
   const currentArenaRank = game.rankings.arena.findIndex((entry) => entry.playerId === game.player.id) + 1;
   const hasArenaRank = currentArenaRank > 0;
@@ -6985,7 +6986,7 @@ function ArenaPanel({ game }: { game: GameState }) {
               </div>
             </div>
             <div className="arena-coins-row">
-              <Coins size={16} style={{ color: "#8be9fd" }} />
+              <ItemVisual item={blueCoinItem} className="arena-blue-coin-visual" />
               <span>Moedas Azuis: <strong>{blueCoins}</strong></span>
               {canClaimDaily ? (
                 <button
@@ -7027,7 +7028,7 @@ function ArenaPanel({ game }: { game: GameState }) {
               </div>
             </div>
             <button className="primary-button arena-fight-btn" type="button" onClick={startRankedDuel} disabled={rankedSearching}>
-              <ItemVisual item={arenaCoinItem} />
+              <ItemVisual item={blueCoinItem} className="arena-blue-coin-visual" />
               {rankedSearching ? "Buscando..." : "Buscar Oponente"}
             </button>
             {rankedStatus && <small className="arena-ranked-status">{rankedStatus}</small>}
