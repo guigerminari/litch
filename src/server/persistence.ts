@@ -778,7 +778,7 @@ async function loadRelationalMysqlStore(target: GameStore, connection: PoolConne
         agility: Number(row.agility)
       },
       unspentAttributePoints: Number(row.unspent_attribute_points),
-      equipment: parseJson(row.equipment, { weapon: null, armor: null, amulet: null }),
+      equipment: parseJson(row.equipment, { weapon: null, armor: null, amulet: null, offhand: null }),
       inventory: [],
       activeBattleId: row.active_battle_id,
       questProgress: parseJson(row.quest_progress, {

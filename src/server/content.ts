@@ -139,6 +139,180 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Permite cruzar mares e chegar aos portos de outros países."
   },
+  "shield_wooden": {
+    "id": "shield_wooden",
+    "name": "Escudo de Madeira",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/wooden-shield-001@512.png",
+    "minLevel": 5,
+    "price": 520,
+    "stats": {
+      "defense": 14,
+      "constitution": 3
+    },
+    "description": "Escudo de segunda mão que reforça defesa e constituição."
+  },
+  "shield_buckler": {
+    "id": "shield_buckler",
+    "name": "Broquel",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/buckler-shield-001@512.png",
+    "minLevel": 10,
+    "price": 1150,
+    "stats": {
+      "defense": 28,
+      "constitution": 6
+    },
+    "description": "Escudo leve de segunda mão que reforça defesa e constituição."
+  },
+  "shield_round": {
+    "id": "shield_round",
+    "name": "Escudo Redondo",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/round-shield-001@512.png",
+    "minLevel": 20,
+    "price": 3200,
+    "stats": {
+      "defense": 55,
+      "constitution": 12
+    },
+    "description": "Escudo redondo de segunda mão que reforça defesa e constituição."
+  },
+  "shield_bone": {
+    "id": "shield_bone",
+    "name": "Escudo de Osso",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/bone-shield-001@512.png",
+    "minLevel": 30,
+    "price": 7200,
+    "stats": {
+      "strength": 10,
+      "constitution": 24,
+      "agility": 8,
+      "defense": 90
+    },
+    "description": "Escudo de segunda mão que reforça todos os atributos em forjas raras."
+  },
+  "shield_iron": {
+    "id": "shield_iron",
+    "name": "Escudo de Ferro",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/iron-shield-001@512.png",
+    "minLevel": 40,
+    "price": 12800,
+    "stats": {
+      "defense": 125,
+      "constitution": 32
+    },
+    "description": "Escudo de ferro para a segunda mão, focado em defesa e constituição."
+  },
+  "shield_kite": {
+    "id": "shield_kite",
+    "name": "Escudo Kite",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/kite-shield-001@512.png",
+    "minLevel": 50,
+    "price": 21200,
+    "stats": {
+      "defense": 170,
+      "constitution": 44
+    },
+    "description": "Escudo alongado de segunda mão que reforça defesa e constituição."
+  },
+  "shield_fire": {
+    "id": "shield_fire",
+    "name": "Escudo Ígneo",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/fire-shield-armor-001@512.png",
+    "minLevel": 60,
+    "price": 32000,
+    "stats": {
+      "defense": 220,
+      "constitution": 58
+    },
+    "description": "Escudo ígneo de segunda mão que reforça defesa e constituição."
+  },
+  "shield_frost": {
+    "id": "shield_frost",
+    "name": "Escudo Glacial",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/frost-shield-armor-001@512.png",
+    "minLevel": 70,
+    "price": 46800,
+    "stats": {
+      "strength": 30,
+      "constitution": 76,
+      "agility": 26,
+      "defense": 285
+    },
+    "description": "Escudo de segunda mão que reforça todos os atributos em forjas raras."
+  },
+  "shield_steel_tower": {
+    "id": "shield_steel_tower",
+    "name": "Escudo Torre de Aço",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/steel-tower-shield-001@512.png",
+    "minLevel": 80,
+    "price": 65000,
+    "stats": {
+      "defense": 360,
+      "constitution": 96
+    },
+    "description": "Escudo torre de segunda mão que reforça defesa e constituição."
+  },
+  "shield_holy": {
+    "id": "shield_holy",
+    "name": "Escudo Sagrado",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/holy-shield-armor-001@512.png",
+    "minLevel": 90,
+    "price": 85000,
+    "stats": {
+      "defense": 450,
+      "constitution": 120
+    },
+    "description": "Escudo sagrado de segunda mão que reforça defesa e constituição."
+  },
+  "shield_cursed": {
+    "id": "shield_cursed",
+    "name": "Escudo Amaldiçoado",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/cursed-shield-armor-001@512.png",
+    "minLevel": 95,
+    "price": 102000,
+    "stats": {
+      "defense": 540,
+      "constitution": 150
+    },
+    "description": "Escudo amaldiçoado de segunda mão que reforça defesa e constituição."
+  },
+  "shield_crystal": {
+    "id": "shield_crystal",
+    "name": "Escudo de Cristal",
+    "kind": "shield",
+    "slot": "offhand",
+    "imageUrl": "/assets/items/shield/crystal-shield-001@512.png",
+    "minLevel": 100,
+    "price": 125000,
+    "stats": {
+      "strength": 80,
+      "constitution": 190,
+      "agility": 70,
+      "defense": 660
+    },
+    "description": "Escudo de segunda mão que reforça todos os atributos em forjas lendárias."
+  },
   "armor_steel": {
     "id": "armor_steel",
     "name": "Armadura de Aco",
@@ -640,6 +814,16 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "stats": {},
     "description": "Abre masmorras avançadas e desafios mais perigosos."
   },
+  "material_crystal_key": {
+    "id": "material_crystal_key",
+    "name": "Chave de Cristal",
+    "kind": "material",
+    "imageUrl": "/assets/items/materials/new/crystal-key-001@512.png",
+    "minLevel": 90,
+    "price": 640,
+    "stats": {},
+    "description": "Chave cristalina consumida em forjas finais e receitas arcanas."
+  },
   "misc_kaede_stone": {
     "id": "misc_kaede_stone",
     "name": "Pedra de Kaede",
@@ -857,18 +1041,6 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
       "heal": 3200
     },
     "description": "Recupera 3200 de vida durante combates."
-  },
-  "potion_mana": {
-    "id": "potion_mana",
-    "name": "Poção de Mana",
-    "kind": "potion",
-    "imageUrl": "/assets/items/potions/mana.png",
-    "minLevel": 20,
-    "price": 900,
-    "stats": {
-      "energyPercent": 0.2
-    },
-    "description": "Restaura 20% da energia máxima em jornadas longas."
   },
   "weapon_assassin_sword": {
     "id": "weapon_assassin_sword",
@@ -1200,7 +1372,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "weapon",
     "imageUrl": "/assets/items/weapons/ember_blade.png",
     "minLevel": 20,
-    "price": 0,
+    "price": 3036,
     "stats": {
       "strength": 182,
       "agility": 38
@@ -1214,7 +1386,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "armor",
     "imageUrl": "/assets/items/armor/05-justice.png",
     "minLevel": 20,
-    "price": 0,
+    "price": 3036,
     "stats": {
       "defense": 178,
       "constitution": 90
@@ -1256,7 +1428,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/crystal_white.png",
     "minLevel": 25,
-    "price": 0,
+    "price": 5000,
     "stats": {
       "agility": 55,
       "constitution": 30
@@ -1284,7 +1456,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/stone_3_magenta.png",
     "minLevel": 35,
-    "price": 0,
+    "price": 24000,
     "stats": {
       "defense": 140,
       "constitution": 82
@@ -1312,7 +1484,7 @@ export const ITEM_CATALOG: Record<string, ItemDefinition> = {
     "slot": "amulet",
     "imageUrl": "/assets/items/amulet/ring_cyan.png",
     "minLevel": 40,
-    "price": 0,
+    "price": 100000,
     "stats": {
       "agility": 120,
       "strength": 120,
@@ -1577,51 +1749,46 @@ const ITEM_CATALOG_EQUIPMENT_STAT_KEYS: Array<keyof ItemDefinition["stats"]> = [
 
 const ITEM_CATALOG_VISUAL_OVERRIDES: Record<string, ItemCatalogVisualOverride> = {
   "energy_potion": {
-    name: "Poção de Energia 30%",
+    name: "Poção de Energia Maior",
     imageUrl: "/assets/items/potions/new/30p-energy-potion-001@512.png"
   },
   "energy_potion_light": {
-    name: "Pequena Poção de Energia",
+    name: "Poção de Energia Pequena",
     imageUrl: "/assets/items/potions/new/small-energy-potion-001@512.png"
   },
   "energy_potion_medium": {
-    name: "Poção Média de Energia",
+    name: "Poção de Energia Média",
     imageUrl: "/assets/items/potions/new/medium-energy-potion-001@512.png"
   },
   "energy_potion_high": {
-    name: "Poção Alta de Energia",
+    name: "Poção de Energia Alta",
     imageUrl: "/assets/items/potions/new/high-energy-potion-001@512.png"
   },
+  "major_energy_potion": {
+    name: "Poção de Energia Extrema",
+    imageUrl: "/assets/items/potions/new/50p-energy-potion-001@512.png",
+    stats: { energyPercent: 0.5 }
+  },
   "health_potion": {
-    name: "Poção de Vida 30%",
+    name: "Poção de Vida Maior",
     imageUrl: "/assets/items/potions/new/30p-health-potion-001@512.png"
   },
   "health_potion_light": {
-    name: "Pequena Poção de Vida",
+    name: "Poção de Vida Pequena",
     imageUrl: "/assets/items/potions/new/small-health-potion-001@512.png"
   },
   "health_potion_medium": {
-    name: "Poção Média de Vida",
+    name: "Poção de Vida Média",
     imageUrl: "/assets/items/potions/new/medium-health-potion-001@512.png"
   },
   "health_potion_high": {
-    name: "Poção Alta de Vida",
+    name: "Poção de Vida Alta",
     imageUrl: "/assets/items/potions/new/high-health-potion-001@512.png"
   },
   "major_health_potion": {
-    name: "Poção de Vida 50%",
+    name: "Poção de Vida Extrema",
     imageUrl: "/assets/items/potions/new/50p-health-potion-001@512.png",
     stats: { healPercent: 0.5 }
-  },
-  "major_energy_potion": {
-    name: "Poção de Energia 50%",
-    imageUrl: "/assets/items/potions/new/50p-energy-potion-001@512.png",
-    stats: { energyPercent: 0.5 }
-  },
-  "potion_mana": {
-    name: "Poção de Energia 50%",
-    imageUrl: "/assets/items/potions/new/50p-energy-potion-001@512.png",
-    stats: { energyPercent: 0.5 }
   },
   "material_bone": {
     name: "Osso Pequeno",
@@ -2106,6 +2273,9 @@ function describeVisualItem(item: ItemDefinition, name: string) {
   }
   if (item.kind === "armor") {
     return `Proteção do tipo ${name.toLowerCase()}${statText}`;
+  }
+  if (item.kind === "shield") {
+    return `Escudo do tipo ${name.toLowerCase()}${statText}`;
   }
   if (item.kind === "amulet") {
     return `${name} que canaliza poder${statText}`;
@@ -2976,6 +3146,462 @@ export const CRAFTING_RECIPES: Record<string, CraftingRecipe> = {
         "quantity": 6
       }
     ]
+  },
+  "forge_shield_wooden": {
+    "id": "forge_shield_wooden",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Escudo de Madeira",
+    "resultItemId": "shield_wooden",
+    "resultQuantity": 1,
+    "goldCost": 650,
+    "ingredients": [
+      {
+        "itemId": "material_gromin_mycelium",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_seed_moss",
+        "quantity": 2
+      },
+      {
+        "itemId": "wolf_pelt",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 1
+      }
+    ]
+  },
+  "forge_shield_buckler": {
+    "id": "forge_shield_buckler",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Broquel",
+    "resultItemId": "shield_buckler",
+    "resultQuantity": 1,
+    "goldCost": 1050,
+    "ingredients": [
+      {
+        "itemId": "shield_wooden",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_stone_fragment",
+        "quantity": 3
+      },
+      {
+        "itemId": "misc_seed_rustic",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_seed_mycelium_fungus",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 1
+      }
+    ]
+  },
+  "forge_shield_round": {
+    "id": "forge_shield_round",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Escudo Redondo",
+    "resultItemId": "shield_round",
+    "resultQuantity": 1,
+    "goldCost": 1750,
+    "ingredients": [
+      {
+        "itemId": "shield_buckler",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.oldStone,
+        "quantity": 2
+      },
+      {
+        "itemId": "material_spectre_fragment",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_doemia",
+        "quantity": 2
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 2
+      }
+    ]
+  },
+  "forge_shield_bone": {
+    "id": "forge_shield_bone",
+    "station": "blacksmith",
+    "cityIds": [
+      "ironhold"
+    ],
+    "name": "Forjar Escudo de Osso",
+    "resultItemId": "shield_bone",
+    "resultQuantity": 1,
+    "goldCost": 2600,
+    "ingredients": [
+      {
+        "itemId": "shield_round",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_bone",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_spectre_jewell",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_strenght_jewell",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_ressu",
+        "quantity": 2
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 2
+      }
+    ]
+  },
+  "forge_shield_iron": {
+    "id": "forge_shield_iron",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Escudo de Ferro",
+    "resultItemId": "shield_iron",
+    "resultQuantity": 1,
+    "goldCost": 3600,
+    "ingredients": [
+      {
+        "itemId": "shield_bone",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.oldStone,
+        "quantity": 4
+      },
+      {
+        "itemId": ITEM_IDS.eranStone,
+        "quantity": 2
+      },
+      {
+        "itemId": "material_chimera_jewell",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_seed_bitter",
+        "quantity": 2
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 3
+      }
+    ]
+  },
+  "forge_shield_kite": {
+    "id": "forge_shield_kite",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Escudo Kite",
+    "resultItemId": "shield_kite",
+    "resultQuantity": 1,
+    "goldCost": 4700,
+    "ingredients": [
+      {
+        "itemId": "shield_iron",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.eranStone,
+        "quantity": 3
+      },
+      {
+        "itemId": ITEM_IDS.celena,
+        "quantity": 1
+      },
+      {
+        "itemId": "material_dexerity_jewell",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_dragon_jewell",
+        "quantity": 2
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 3
+      }
+    ]
+  },
+  "forge_shield_fire": {
+    "id": "forge_shield_fire",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Escudo Ígneo",
+    "resultItemId": "shield_fire",
+    "resultQuantity": 1,
+    "goldCost": 6200,
+    "ingredients": [
+      {
+        "itemId": "shield_kite",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.celena,
+        "quantity": 2
+      },
+      {
+        "itemId": "material_dragons_tooth",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_dragon_nail",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_herb_bitter",
+        "quantity": 2
+      },
+      {
+        "itemId": "ember_core",
+        "quantity": 3
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 4
+      }
+    ]
+  },
+  "forge_shield_frost": {
+    "id": "forge_shield_frost",
+    "station": "blacksmith",
+    "cityIds": [
+      "vila_de_valfria"
+    ],
+    "name": "Forjar Escudo Glacial",
+    "resultItemId": "shield_frost",
+    "resultQuantity": 1,
+    "goldCost": 7800,
+    "ingredients": [
+      {
+        "itemId": "shield_fire",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.celena,
+        "quantity": 2
+      },
+      {
+        "itemId": ITEM_IDS.midran,
+        "quantity": 1
+      },
+      {
+        "itemId": "material_udania",
+        "quantity": 2
+      },
+      {
+        "itemId": "material_laede_fragment",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_herb_moss",
+        "quantity": 2
+      },
+      {
+        "itemId": "crystal_dust",
+        "quantity": 3
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 4
+      }
+    ]
+  },
+  "forge_shield_steel_tower": {
+    "id": "forge_shield_steel_tower",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Escudo Torre de Aço",
+    "resultItemId": "shield_steel_tower",
+    "resultQuantity": 1,
+    "goldCost": 9400,
+    "ingredients": [
+      {
+        "itemId": "shield_frost",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.midran,
+        "quantity": 2
+      },
+      {
+        "itemId": "material_dark_residue",
+        "quantity": 4
+      },
+      {
+        "itemId": "misc_serlen",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_maginia",
+        "quantity": 2
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 5
+      }
+    ]
+  },
+  "forge_shield_holy": {
+    "id": "forge_shield_holy",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Escudo Sagrado",
+    "resultItemId": "shield_holy",
+    "resultQuantity": 1,
+    "goldCost": 11200,
+    "ingredients": [
+      {
+        "itemId": "shield_steel_tower",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.midran,
+        "quantity": 3
+      },
+      {
+        "itemId": "material_mysterious_jewell",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_laede",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_kaede_stone",
+        "quantity": 1
+      },
+      {
+        "itemId": "misc_misc_phial",
+        "quantity": 3
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 5
+      }
+    ]
+  },
+  "forge_shield_cursed": {
+    "id": "forge_shield_cursed",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Escudo Amaldiçoado",
+    "resultItemId": "shield_cursed",
+    "resultQuantity": 1,
+    "goldCost": 13200,
+    "ingredients": [
+      {
+        "itemId": "shield_holy",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.midran,
+        "quantity": 3
+      },
+      {
+        "itemId": "material_dark_magic_rune",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_mycelium_fungus",
+        "quantity": 3
+      },
+      {
+        "itemId": "misc_dragon_stone",
+        "quantity": 2
+      },
+      {
+        "itemId": "misc_herb_rustic",
+        "quantity": 2
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 6
+      }
+    ]
+  },
+  "forge_shield_crystal": {
+    "id": "forge_shield_crystal",
+    "station": "blacksmith",
+    "cityIds": [
+      "porto_sombrio"
+    ],
+    "name": "Forjar Escudo de Cristal",
+    "resultItemId": "shield_crystal",
+    "resultQuantity": 1,
+    "goldCost": 15500,
+    "ingredients": [
+      {
+        "itemId": "shield_cursed",
+        "quantity": 1
+      },
+      {
+        "itemId": ITEM_IDS.midran,
+        "quantity": 4
+      },
+      {
+        "itemId": "material_crystal_key",
+        "quantity": 1
+      },
+      {
+        "itemId": "material_dragon_essence",
+        "quantity": 3
+      },
+      {
+        "itemId": "material_energy_jewell",
+        "quantity": 4
+      },
+      {
+        "itemId": "material_magic_essence",
+        "quantity": 4
+      },
+      {
+        "itemId": "crystal_dust",
+        "quantity": 5
+      },
+      {
+        "itemId": ITEM_IDS.creationStone,
+        "quantity": 6
+      }
+    ]
   }
 };
 
@@ -3542,7 +4168,11 @@ export const CITIES: CityDefinition[] = [
       "forge_guardian_mail",
       "forge_ironhold_axe_40",
       "forge_ironhold_plate_40",
-      "forge_crystal_white_amulet"
+      "forge_crystal_white_amulet",
+      "forge_shield_wooden",
+      "forge_shield_buckler",
+      "forge_shield_round",
+      "forge_shield_bone"
     ],
     "huntLocationIds": [
       "ironhold_ember_mines",
@@ -3623,7 +4253,11 @@ export const CITIES: CityDefinition[] = [
       "forge_valfria_scale_50",
       "forge_valfria_sunblade_70",
       "forge_valfria_sandmail_70",
-      "forge_celtic_magenta_amulet"
+      "forge_celtic_magenta_amulet",
+      "forge_shield_iron",
+      "forge_shield_kite",
+      "forge_shield_fire",
+      "forge_shield_frost"
     ],
     "huntLocationIds": [
       "valfria_orc_marsh",
@@ -3807,7 +4441,11 @@ export const CITIES: CityDefinition[] = [
       "forge_morthaly_boneplate_80",
       "forge_morthaly_voidblade_100",
       "forge_morthaly_voidarmor_100",
-      "forge_celtic_cyan_amulet"
+      "forge_celtic_cyan_amulet",
+      "forge_shield_steel_tower",
+      "forge_shield_holy",
+      "forge_shield_cursed",
+      "forge_shield_crystal"
     ],
     "huntLocationIds": [
       "morthaly_black_docks",

@@ -1,8 +1,8 @@
 export type AttributeKey = "strength" | "constitution" | "agility";
 
-export type EquipmentSlot = "weapon" | "armor" | "amulet";
+export type EquipmentSlot = "weapon" | "armor" | "amulet" | "offhand";
 
-export type ItemKind = "weapon" | "armor" | "amulet" | "potion" | "material" | "scroll" | "ticket" | "misc";
+export type ItemKind = "weapon" | "armor" | "amulet" | "shield" | "potion" | "material" | "scroll" | "ticket" | "misc";
 
 export type BattleMode = "pve" | "pvp" | "dungeon" | "monarch";
 
@@ -72,6 +72,7 @@ export interface EquipmentState {
   weapon: string | null;
   armor: string | null;
   amulet: string | null;
+  offhand: string | null;
 }
 
 export interface Character {
@@ -1158,8 +1159,11 @@ export const ATTRIBUTE_LABEL: Record<AttributeKey, string> = {
   agility: "AGILIDADE"
 };
 
+export const EQUIPMENT_SLOT_ORDER: EquipmentSlot[] = ["weapon", "armor", "amulet", "offhand"];
+
 export const EQUIPMENT_LABEL: Record<EquipmentSlot, string> = {
   weapon: "Arma",
   armor: "Armadura",
-  amulet: "Amuleto"
+  amulet: "Amuleto",
+  offhand: "Segunda mão"
 };

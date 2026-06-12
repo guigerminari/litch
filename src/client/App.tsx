@@ -62,6 +62,7 @@ import type {
   ClanSummary,
   Currency,
   DungeonCompletionPayload,
+  EquipmentSlot,
   GameState,
   InventoryItem,
   ItemTradeBundle,
@@ -93,7 +94,7 @@ import {
   getCraftRarityChances
 } from "../shared/rarity";
 import { experienceForNextLevel } from "../shared/progression";
-import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL, MONARCH_BATTLE_ATTACK_LIMIT } from "../shared/types";
+import { ATTRIBUTE_LABEL, EQUIPMENT_LABEL, EQUIPMENT_SLOT_ORDER, MONARCH_BATTLE_ATTACK_LIMIT } from "../shared/types";
 import {
   ENHANCEMENT_CREATION_STONE_BONUS,
   ENHANCEMENT_GOLD_STEP,
@@ -325,6 +326,7 @@ const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   weapon: "Arma",
   armor: "Armadura",
   amulet: "Amuleto",
+  shield: "Escudo",
   potion: "Poção",
   material: "Material",
   scroll: "Pergaminho",
@@ -336,11 +338,19 @@ const ITEM_KIND_EMOJI: Record<ItemKind, string> = {
   weapon: "⚔️",
   armor: "🛡️",
   amulet: "📿",
+  shield: "🛡️",
   potion: "🧪",
   material: "📦",
   scroll: "📜",
   ticket: "Ticket",
   misc: "✦"
+};
+
+const EQUIPMENT_SLOT_EMOJI: Record<EquipmentSlot, string> = {
+  weapon: ITEM_KIND_EMOJI.weapon,
+  armor: ITEM_KIND_EMOJI.armor,
+  amulet: ITEM_KIND_EMOJI.amulet,
+  offhand: ITEM_KIND_EMOJI.shield
 };
 
 const RARITY_LABELS: Record<Rarity, string> = {
@@ -1176,7 +1186,7 @@ function PlayerActionModal({
                     {definition ? (
                       <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={item?.enhancementLevel} rarity={item?.rarity} />
                     ) : (
-                      <span className="equip-emoji equip-item-visual">{slot === "weapon" ? ITEM_KIND_EMOJI.weapon : slot === "armor" ? ITEM_KIND_EMOJI.armor : ITEM_KIND_EMOJI.amulet}</span>
+                      <span className="equip-emoji equip-item-visual">{EQUIPMENT_SLOT_EMOJI[slot]}</span>
                     )}
                     <div className="equip-info">
                       <small>{EQUIPMENT_LABEL[slot]}</small>
@@ -1802,7 +1812,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
     const term = itemFilter.trim().toLowerCase();
     const matchesTerm = !term || item.name.toLowerCase().includes(term) || ITEM_KIND_LABELS[item.kind].toLowerCase().includes(term);
     return matchesKind && matchesLevel && matchesTerm;
-  });
+  }).sort((a, b) => a.price - b.price);
   const selectedItem = selectedItemId ? game.itemCatalog[selectedItemId] ?? null : null;
   const allMonsters = Object.values(game.monsterCatalog).sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
   const filteredMonsters = allMonsters.filter((monster) => {
@@ -3302,11 +3312,10 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
       <section className="compact-section">
         <h3>Equipamentos</h3>
         <div className="equipment-visual">
-          {(["weapon", "armor", "amulet"] as const).map((slot) => {
+          {EQUIPMENT_SLOT_ORDER.map((slot) => {
             const instanceId = game.character.equipment[slot];
             const inventoryItem = instanceId ? game.character.inventory.find((item) => item.instanceId === instanceId) : null;
             const definition = inventoryItem ? game.itemCatalog[inventoryItem.itemId] : null;
-            const slotEmoji = { weapon: "⚔️", armor: "🛡️", amulet: "📿" };
             return (
               <button
                 type="button"
@@ -3319,7 +3328,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
                 {definition ? (
                   <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={inventoryItem?.enhancementLevel} rarity={inventoryItem?.rarity} />
                 ) : (
-                  <span className="equip-emoji">{slotEmoji[slot]}</span>
+                  <span className="equip-emoji">{EQUIPMENT_SLOT_EMOJI[slot]}</span>
                 )}
                 <div className="equip-info">
                   <small>{EQUIPMENT_LABEL[slot]}</small>

@@ -30,6 +30,7 @@ import type {
   DungeonRoomState,
   DungeonStartPayload,
   DungeonTrapType,
+  EquipmentState,
   EnhancePayload,
   ForgotPasswordPayload,
   EquipPayload,
@@ -78,6 +79,7 @@ import type {
   WorkServiceDefinition,
   WorkStartPayload
 } from "../shared/types";
+import { EQUIPMENT_SLOT_ORDER } from "../shared/types";
 import { RARITY_PRICE_MULTIPLIER, getCraftRarityFromRoll, getRarityFromRoll } from "../shared/rarity";
 import {
   ENHANCEMENT_CREATION_STONE_BONUS,
@@ -494,6 +496,20 @@ type AuthedSocket = Parameters<Parameters<typeof io.on>[1]>[0] & {
   data: { playerId?: string; sessionToken?: string };
 };
 
+function createEmptyEquipmentState(): EquipmentState {
+  return { weapon: null, armor: null, amulet: null, offhand: null };
+}
+
+function normalizeEquipmentState(character: Character) {
+  const equipment = character.equipment ?? createEmptyEquipmentState();
+  character.equipment = {
+    weapon: equipment.weapon ?? null,
+    armor: equipment.armor ?? null,
+    amulet: equipment.amulet ?? null,
+    offhand: equipment.offhand ?? null
+  };
+}
+
 function createCharacter(player: Player): Character {
   const character: Character = {
     id: randomUUID(),
@@ -508,7 +524,7 @@ function createCharacter(player: Player): Character {
     cityId: STARTING_CITY_ID,
     attributes: { strength: 1, constitution: 1, agility: 1 },
     unspentAttributePoints: 0,
-    equipment: { weapon: null, armor: null, amulet: null },
+    equipment: createEmptyEquipmentState(),
     inventory: [],
     activeBattleId: null,
     questProgress: createQuestProgress(),
@@ -558,7 +574,7 @@ function currentCharacter(playerId: string) {
   character.talentAllocations ??= {};
   character.clanId ??= null;
   syncClanBenefits(character);
-  character.equipment ??= { weapon: null, armor: null, amulet: null };
+  normalizeEquipmentState(character);
   normalizeInventory(character, ITEM_CATALOG);
   character.arenaWins ??= 0;
   character.arenaLosses ??= 0;
@@ -1902,7 +1918,10 @@ function buildPlayerPublicProfile(playerId: string): PlayerPublicProfile | null 
   const country = COUNTRIES.find((entry) => entry.id === city.countryId) ?? COUNTRIES[0];
   const clan = character?.clanId ? store.clans.get(character.clanId) : null;
   const clanView = clan ? decorateClan(clan) : null;
-  const equipment = (["weapon", "armor", "amulet"] as const).map((slot) => {
+  if (character) {
+    normalizeEquipmentState(character);
+  }
+  const equipment = EQUIPMENT_SLOT_ORDER.map((slot) => {
     const instanceId = character?.equipment[slot];
     const item = instanceId ? character?.inventory.find((entry) => entry.instanceId === instanceId) ?? null : null;
     return { slot, item };
@@ -2696,11 +2715,11 @@ function buildDungeonChestRewards(countryId: string, floor: number, roomIndex: n
   const minLevelForFloor = Math.max(1, maxLevelForFloor - 35);
 
   const equipmentPool = Object.values(ITEM_CATALOG)
-    .filter((item) => Boolean(item.slot))
+    .filter((item) => Boolean(item.slot) && item.kind !== "shield")
     .filter((item) => item.minLevel >= minLevelForFloor && item.minLevel <= maxLevelForFloor);
 
   const fallbackEquipmentPool = Object.values(ITEM_CATALOG)
-    .filter((item) => Boolean(item.slot))
+    .filter((item) => Boolean(item.slot) && item.kind !== "shield")
     .filter((item) => item.minLevel <= maxLevelForFloor);
 
   const craftMaterialIds = new Set(
