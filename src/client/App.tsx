@@ -353,6 +353,13 @@ const EQUIPMENT_SLOT_EMOJI: Record<EquipmentSlot, string> = {
   offhand: ITEM_KIND_EMOJI.shield
 };
 
+const EQUIPMENT_SLOT_EMPTY_IMAGE: Record<EquipmentSlot, string> = {
+  weapon: "/assets/items/backslot/weapon.png",
+  armor: "/assets/items/backslot/armor.png",
+  amulet: "/assets/items/backslot/amulet.png",
+  offhand: "/assets/items/backslot/shield.png"
+};
+
 const RARITY_LABELS: Record<Rarity, string> = {
   common: "Comum",
   uncommon: "Incomum",
@@ -1179,22 +1186,21 @@ function PlayerActionModal({
             </div>
             <section className="player-public-equipment">
               <h3>Equipamentos</h3>
-              {profile.equipment.map(({ slot, item }) => {
-                const definition = item ? itemCatalog[item.itemId] : null;
-                return (
-                  <article className={definition ? "equip-slot has-item" : "equip-slot"} key={slot}>
-                    {definition ? (
-                      <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={item?.enhancementLevel} rarity={item?.rarity} />
-                    ) : (
-                      <span className="equip-emoji equip-item-visual">{EQUIPMENT_SLOT_EMOJI[slot]}</span>
-                    )}
-                    <div className="equip-info">
-                      <small>{EQUIPMENT_LABEL[slot]}</small>
-                      <strong>{definition ? formatInventoryItemName(definition, item ?? undefined) : "Vazio"}</strong>
-                    </div>
-                  </article>
-                );
-              })}
+              <div className="equipment-cross">
+                {profile.equipment.map(({ slot, item }) => {
+                  const definition = item ? itemCatalog[item.itemId] : null;
+                  const slotTitle = definition ? formatInventoryItemName(definition, item ?? undefined) : EQUIPMENT_LABEL[slot];
+                  return (
+                    <article className={`equip-slot equipment-cross-slot equipment-cross-slot-${slot}${definition ? " has-item" : ""}`} key={slot} title={slotTitle} aria-label={slotTitle}>
+                      {definition ? (
+                        <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={item?.enhancementLevel} rarity={item?.rarity} />
+                      ) : (
+                        <EquipmentSlotPlaceholder slot={slot} />
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
             </section>
           </>
         )}
@@ -3311,30 +3317,27 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
 
       <section className="compact-section">
         <h3>Equipamentos</h3>
-        <div className="equipment-visual">
+        <div className="equipment-visual equipment-cross">
           {EQUIPMENT_SLOT_ORDER.map((slot) => {
             const instanceId = game.character.equipment[slot];
             const inventoryItem = instanceId ? game.character.inventory.find((item) => item.instanceId === instanceId) : null;
             const definition = inventoryItem ? game.itemCatalog[inventoryItem.itemId] : null;
+            const slotTitle = definition ? `Ver detalhes de ${formatInventoryItemName(definition, inventoryItem)}` : EQUIPMENT_LABEL[slot];
             return (
               <button
                 type="button"
-                className={`equip-slot${definition ? " has-item" : ""}`}
+                className={`equip-slot equipment-cross-slot equipment-cross-slot-${slot}${definition ? " has-item" : ""}`}
                 key={slot}
                 disabled={!definition || !inventoryItem}
                 onClick={() => inventoryItem && setSelectedEquipmentInstanceId(inventoryItem.instanceId)}
-                title={definition ? `Ver detalhes de ${formatInventoryItemName(definition, inventoryItem)}` : EQUIPMENT_LABEL[slot]}
+                title={slotTitle}
+                aria-label={slotTitle}
               >
                 {definition ? (
                   <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={inventoryItem?.enhancementLevel} rarity={inventoryItem?.rarity} />
                 ) : (
-                  <span className="equip-emoji">{EQUIPMENT_SLOT_EMOJI[slot]}</span>
+                  <EquipmentSlotPlaceholder slot={slot} />
                 )}
-                <div className="equip-info">
-                  <small>{EQUIPMENT_LABEL[slot]}</small>
-                  <strong>{definition?.name ?? "—"}</strong>
-                  {definition && <span className="equip-desc">{definition.description}</span>}
-                </div>
               </button>
             );
           })}
@@ -10345,6 +10348,14 @@ function AssetImage({ src, alt, fallback, style }: { src?: string; alt: string; 
         setFailed(true);
       }}
     />
+  );
+}
+
+function EquipmentSlotPlaceholder({ slot }: { slot: EquipmentSlot }) {
+  return (
+    <span className="asset-frame item-visual equip-item-visual equipment-empty-visual" aria-hidden="true">
+      <AssetImage src={EQUIPMENT_SLOT_EMPTY_IMAGE[slot]} alt="" fallback={EQUIPMENT_SLOT_EMOJI[slot]} />
+    </span>
   );
 }
 

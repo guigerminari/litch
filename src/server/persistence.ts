@@ -46,8 +46,8 @@ const TRADE_INTERACTION_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_DATA_FILE = join(process.cwd(), "data", "game-state.json");
 const DATA_FILE = process.env.LITCH_DATA_FILE ?? DEFAULT_DATA_FILE;
-const MYSQL_URL = process.env.MYSQL_DATABASE_URL ?? (process.env.DATABASE_URL?.startsWith("mysql") ? process.env.DATABASE_URL : undefined);
-const MYSQL_DATABASE = process.env.MYSQL_DATABASE;
+const MYSQL_URL = process.env.LITCH_MYSQL_DATABASE_URL ?? (process.env.DATABASE_URL?.startsWith("mysql") ? process.env.DATABASE_URL : undefined);
+const MYSQL_DATABASE = process.env.LITCH_MYSQL_DATABASE;
 const MYSQL_DRIVER_DEFAULT = MYSQL_URL || MYSQL_DATABASE ? "mysql" : "json";
 const PERSISTENCE_DRIVER = (process.env.LITCH_PERSISTENCE ?? MYSQL_DRIVER_DEFAULT).toLowerCase();
 const MYSQL_TABLE_PREFIX = sanitizeIdentifier(process.env.LITCH_MYSQL_TABLE_PREFIX ?? "litch");
@@ -106,23 +106,23 @@ function createMysqlPool() {
     return createPool({
       uri: MYSQL_URL,
       waitForConnections: true,
-      connectionLimit: Number(process.env.MYSQL_CONNECTION_LIMIT ?? 10)
+      connectionLimit: Number(process.env.LITCH_MYSQL_CONNECTION_LIMIT ?? 10)
     });
   }
 
-  const database = process.env.MYSQL_DATABASE;
+  const database = process.env.LITCH_MYSQL_DATABASE;
   if (!database) {
     throw new Error("MySQL persistence requires MYSQL_DATABASE_URL, DATABASE_URL or MYSQL_DATABASE.");
   }
 
   return createPool({
-    host: process.env.MYSQL_HOST ?? "127.0.0.1",
-    port: Number(process.env.MYSQL_PORT ?? 3306),
-    user: process.env.MYSQL_USER ?? "root",
-    password: process.env.MYSQL_PASSWORD ?? "",
+    host: process.env.LITCH_MYSQL_HOST ?? "127.0.0.1",
+    port: Number(process.env.LITCH_MYSQL_PORT ?? 3306),
+    user: process.env.LITCH_MYSQL_USER ?? "root",
+    password: process.env.LITCH_MYSQL_PASSWORD ?? "",
     database,
     waitForConnections: true,
-    connectionLimit: Number(process.env.MYSQL_CONNECTION_LIMIT ?? 10)
+    connectionLimit: Number(process.env.LITCH_MYSQL_CONNECTION_LIMIT ?? 10)
   });
 }
 
