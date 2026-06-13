@@ -783,6 +783,9 @@ export function App() {
             <button type="button" className={authMode === "register" ? "active" : ""} onClick={() => setAuthMode("register")}>
               <UserPlus size={15} /> Registrar
             </button>
+            <button type="button" className={authMode === "forgot" ? "active" : ""} onClick={() => setAuthMode("forgot")}>
+              <KeyRound size={15} /> Recuperar
+            </button>
             {authMode === "reset" && (
               <button type="button" className="active">
                 <Lock size={15} /> Redefinir
@@ -826,7 +829,7 @@ export function App() {
             </label>
           )}
           {authMode === "forgot" ? (
-            <p className="auth-hint">A recuperação de senha por e-mail está temporariamente desabilitada. Se necessário, peça suporte ao desenvolvedor até esse recurso voltar.</p>
+            <p className="auth-hint">Informe seu e-mail e enviaremos um link para redefinir a senha.</p>
           ) : authMode === "reset" ? (
             <>
               <label>
@@ -855,7 +858,7 @@ export function App() {
             </label>
           )}
           <button className="primary-button" type="submit" disabled={!canSubmitAuth}>
-            {authMode === "login" ? "Entrar" : authMode === "register" ? "Criar conta" : authMode === "forgot" ? "Entendi" : "Redefinir senha"}
+            {authMode === "login" ? "Entrar" : authMode === "register" ? "Criar conta" : authMode === "forgot" ? "Enviar link" : "Redefinir senha"}
           </button>
           <span className={connected ? "status-dot online" : "status-dot"}>{connected ? "Online" : "Conectando"}</span>
         </form>
