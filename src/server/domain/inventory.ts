@@ -8,8 +8,12 @@ function isProsperitySuperActive(character: Character) {
   return benefits.length > 0 && benefits.every((benefit) => (clanRanks[benefit.id] ?? 0) >= benefit.maxRank);
 }
 
+export function isEquipped(character: Character, instanceId: string) {
+  return Object.values(character.equipment).includes(instanceId);
+}
+
 export function inventoryUsed(character: Character) {
-  return character.inventory.length; // 1 slot per unique stack entry
+  return character.inventory.filter((item) => !isEquipped(character, item.instanceId)).length; // equipped items do not occupy bag slots
 }
 
 export function getInventoryCapacity(character: Character) {
@@ -24,15 +28,11 @@ export function getInventoryCapacity(character: Character) {
 }
 
 export function hasCapacity(character: Character, quantity = 1) {
-  return character.inventory.length + quantity <= getInventoryCapacity(character);
+  return inventoryUsed(character) + quantity <= getInventoryCapacity(character);
 }
 
 export function findInventoryItem(character: Character, instanceId: string) {
   return character.inventory.find((item) => item.instanceId === instanceId) ?? null;
-}
-
-export function isEquipped(character: Character, instanceId: string) {
-  return Object.values(character.equipment).includes(instanceId);
 }
 
 function isVisibleInventoryItem(character: Character, item: InventoryItem, itemCatalog: Record<string, ItemDefinition>) {

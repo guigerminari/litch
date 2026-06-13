@@ -181,6 +181,8 @@ type InventorySlotEntry = {
   rarity?: Rarity;
 };
 
+type InventoryItemFilter = "all" | "equipment" | "materials" | "consumables";
+
 type FirstClickNoticeKey = "exchange" | "diamonds" | "ranking" | "guide";
 
 const BATTLE_CUE_DURATION_MS = 680;
@@ -333,6 +335,15 @@ const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   ticket: "Ticket",
   misc: "Diverso"
 };
+
+const INVENTORY_FILTER_LABELS: Record<InventoryItemFilter, string> = {
+  all: "Todos",
+  equipment: "Equipamentos",
+  materials: "Materiais",
+  consumables: "Consumiveis"
+};
+
+const INVENTORY_CURRENCY_ITEM_IDS = new Set<string>([ARENA_ITEM_IDS.arenaCoin, ARENA_ITEM_IDS.blueCoin]);
 
 const ITEM_KIND_EMOJI: Record<ItemKind, string> = {
   weapon: "⚔️",
@@ -2299,7 +2310,7 @@ function GuideModal({ game, onClose }: { game: GameState; onClose: () => void })
 
 function CommunityInvite({ game, context }: { game: GameState; context: "guide" | "more" }) {
   const whatsappUrl = game.communityLinks?.whatsappUrl?.trim() || game.gameShopContact.whatsappUrl?.trim() || "";
-  const instagramUrl = game.communityLinks?.instagramUrl?.trim() ?? "";
+  const instagramUrl = game.communityLinks?.instagramUrl?.trim() ?? "https://www.instagram.com/litch.rpg";
   const sectionClassName = context === "guide" ? "community-invite guide-community-invite" : "more-section community-invite";
 
   return (
@@ -3347,6 +3358,7 @@ function CharacterPanel({ game, locked = false }: { game: GameState; locked?: bo
             item={selectedEquipmentItem}
             inventoryItem={selectedEquipmentEntry}
             locked={locked}
+            inventoryFull={game.inventoryUsed >= game.inventoryCapacity}
             onClose={() => setSelectedEquipmentInstanceId(null)}
           />
         )}
@@ -3428,15 +3440,25 @@ function EquippedItemDetailModal({
   item,
   inventoryItem,
   locked,
+  inventoryFull,
   onClose
 }: {
   item: ItemDefinition;
   inventoryItem: InventoryItem;
   locked: boolean;
+  inventoryFull: boolean;
   onClose: () => void;
 }) {
   const stats = getEnhancedItemStats(item, inventoryItem);
   const rarity = getItemRarity(item, inventoryItem);
+  const destroyEquippedItem = () => {
+    const confirmed = window.confirm(`Deseja destruir ${formatInventoryItemName(item, inventoryItem)}? Esta acao nao pode ser desfeita.`);
+    if (!confirmed) {
+      return;
+    }
+    socket.emit("inventory:destroy", { instanceId: inventoryItem.instanceId });
+    onClose();
+  };
 
   return (
     <div className="drawer-backdrop inventory-item-backdrop" role="presentation" onClick={onClose}>
@@ -3473,13 +3495,17 @@ function EquippedItemDetailModal({
           <span className="equipped-label">Equipado</span>
           <button
             className="primary-button"
-            disabled={locked}
+            disabled={locked || inventoryFull}
+            title={inventoryFull ? "Inventario cheio" : undefined}
             onClick={() => {
               socket.emit("inventory:unequip", { instanceId: inventoryItem.instanceId });
               onClose();
             }}
           >
             Desequipar
+          </button>
+          <button className="danger-button" disabled={locked} onClick={destroyEquippedItem}>
+            Destruir item
           </button>
           <button className="ghost-button" onClick={onClose}>
             Fechar
@@ -7233,8 +7259,10 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
   const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null);
   const [draggedInstanceId, setDraggedInstanceId] = useState<string | null>(null);
   const [dropSlotIndex, setDropSlotIndex] = useState<number | null>(null);
+  const [inventoryFilter, setInventoryFilter] = useState<InventoryItemFilter>("all");
   const { preferences, setPreference } = useQuickPotionSettings();
   const battleLocked = game.activeBattle?.status === "active";
+  const inventoryFull = game.inventoryUsed >= game.inventoryCapacity;
 
   // Build flat slot list: unequipped equipment (1 slot each) + stackable items (1 slot per unique itemId)
   const equipmentItems = game.character.inventory.filter((inv) => {
@@ -7283,7 +7311,7 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
     slots[openSlot] = entry;
   }
 
-  const selectedEntry = selectedInstanceId ? filledSlots.find((s) => s.instanceId === selectedInstanceId) ?? null : null;
+  const selectedEntry = selectedInstanceId ? game.character.inventory.find((s) => s.instanceId === selectedInstanceId) ?? null : null;
   const selectedItem = selectedEntry ? game.itemCatalog[selectedEntry.itemId] : null;
   const selectedEquipped = selectedEntry ? isItemEquipped(game, selectedEntry.instanceId) : false;
   const selectedStats = selectedItem && selectedEntry ? getEnhancedItemStats(selectedItem, selectedEntry) : null;
@@ -7339,6 +7367,50 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
         </button>
       )}
       <QuickPotionSelector game={game} />
+      <div className="inventory-filter-tabs" role="tablist" aria-label="Filtro do inventario">
+        {(Object.entries(INVENTORY_FILTER_LABELS) as Array<[InventoryItemFilter, string]>).map(([filter, label]) => (
+          <button
+            type="button"
+            key={filter}
+            className={`mini-tab${inventoryFilter === filter ? " active" : ""}`}
+            onClick={() => setInventoryFilter(filter)}
+            role="tab"
+            aria-selected={inventoryFilter === filter}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {(inventoryFilter === "all" || inventoryFilter === "equipment") && (
+        <section className="inventory-equipped-panel" aria-label="Equipamentos equipados">
+          <h3>Equipados</h3>
+          <div className="equipment-visual equipment-cross inventory-equipment-cross">
+            {EQUIPMENT_SLOT_ORDER.map((slot) => {
+              const instanceId = game.character.equipment[slot];
+              const inventoryItem = instanceId ? game.character.inventory.find((item) => item.instanceId === instanceId) : null;
+              const definition = inventoryItem ? game.itemCatalog[inventoryItem.itemId] : null;
+              const slotTitle = definition ? `Ver detalhes de ${formatInventoryItemName(definition, inventoryItem)}` : EQUIPMENT_LABEL[slot];
+              return (
+                <button
+                  type="button"
+                  className={`equip-slot equipment-cross-slot equipment-cross-slot-${slot}${definition ? " has-item" : ""}`}
+                  key={slot}
+                  disabled={!definition || !inventoryItem}
+                  onClick={() => inventoryItem && setSelectedInstanceId(inventoryItem.instanceId)}
+                  title={slotTitle}
+                  aria-label={slotTitle}
+                >
+                  {definition ? (
+                    <ItemVisual item={definition} className="equip-item-visual" enhancementLevel={inventoryItem?.enhancementLevel} rarity={inventoryItem?.rarity} />
+                  ) : (
+                    <EquipmentSlotPlaceholder slot={slot} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
       <div className="inventory-grid">
         {slots.map((slot, index) => {
           const dropHandlers = getDropHandlers(index);
@@ -7352,6 +7424,9 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
             );
           }
           const item = game.itemCatalog[slot.itemId];
+          if (!item || !matchesInventoryFilter(item, inventoryFilter)) {
+            return <div key={`filtered-${index}`} className="inv-slot empty filtered-out" title="Oculto pelo filtro" />;
+          }
           const equipped = isItemEquipped(game, slot.instanceId);
           const selected = selectedInstanceId === slot.instanceId;
           const rarityColor = getEquipmentRarityColor(item, slot.rarity);
@@ -7485,11 +7560,23 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
             {selectedEquipped && (
               <span className="equipped-label">Equipado</span>
             )}
-            {!selectedEquipped && (
+            {selectedItem.slot && selectedEquipped && (
               <button
-                className="danger-button"
-                disabled={battleLocked}
+                className="primary-button"
+                disabled={battleLocked || inventoryFull}
+                title={inventoryFull ? "Inventario cheio" : undefined}
                 onClick={() => {
+                  socket.emit("inventory:unequip", { instanceId: selectedEntry.instanceId });
+                  setSelectedInstanceId(null);
+                }}
+              >
+                Desequipar
+              </button>
+            )}
+            <button
+              className="danger-button"
+              disabled={battleLocked}
+              onClick={() => {
                   const isEquipment = Boolean(selectedItem.slot);
                   const destroyLabel = isEquipment
                     ? formatInventoryItemName(selectedItem, selectedEntry)
@@ -7504,11 +7591,10 @@ function InventoryPanel({ game, onBackToBattle }: { game: GameState; onBackToBat
                   }
                   socket.emit("inventory:destroy", { instanceId: selectedEntry.instanceId });
                   setSelectedInstanceId(null);
-                }}
-              >
-                {selectedItem.slot ? "Destruir item" : "Destruir todos"}
-              </button>
-            )}
+              }}
+            >
+              {selectedItem.slot ? "Destruir item" : "Destruir todos"}
+            </button>
             <button className="ghost-button" onClick={() => setSelectedInstanceId(null)}>
               Fechar
             </button>
@@ -10619,6 +10705,25 @@ function Toast({ message, kind = "error" }: { message: string; kind?: "error" | 
 
 function isItemEquipped(game: GameState, instanceId: string) {
   return Object.values(game.character.equipment).includes(instanceId);
+}
+
+function matchesInventoryFilter(item: ItemDefinition, filter: InventoryItemFilter) {
+  if (filter === "all") {
+    return true;
+  }
+  if (filter === "equipment") {
+    return Boolean(item.slot);
+  }
+  if (filter === "materials") {
+    return item.kind === "material" && !INVENTORY_CURRENCY_ITEM_IDS.has(item.id);
+  }
+  return (
+    item.kind === "potion" ||
+    item.kind === "scroll" ||
+    item.kind === "ticket" ||
+    item.kind === "misc" ||
+    INVENTORY_CURRENCY_ITEM_IDS.has(item.id)
+  );
 }
 
 function getBattleMonsterId(battle: NonNullable<GameState["activeBattle"]>) {

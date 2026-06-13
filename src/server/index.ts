@@ -143,15 +143,23 @@ const TRADE_INTERACTION_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL?.trim() || undefined;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? RENDER_EXTERNAL_URL ?? "http://127.0.0.1:5173";
 const PUBLIC_APP_URL = process.env.PUBLIC_APP_URL ?? RENDER_EXTERNAL_URL ?? CLIENT_ORIGIN;
-const GAME_SHOP_ADMIN_EMAIL = (process.env.GAME_SHOP_ADMIN_EMAIL ?? "gags.guilherme@gmail.com").trim().toLowerCase();
+const DEFAULT_GAME_SHOP_ADMIN_EMAIL = "litch.faq@gmail.com";
+const DEFAULT_GAME_SHOP_ADMIN_USERNAME = "Kalibahn";
 const GAME_SHOP_PIX_HASH = (
   process.env.GAME_SHOP_PIX_HASH ??
   "00020101021126580014br.gov.bcb.pix01364f57dcbb-2df9-4171-8d60-ed74b1e525d55204000053039865802BR592352 3 6 G A G DOS SANTOS6013SAO JOAO DA B62070503***630400BC"
 ).trim();
 const GAME_SHOP_WHATSAPP_URL = (process.env.GAME_SHOP_WHATSAPP_URL ?? "https://wa.me/5535984652456").trim();
-const GAME_SHOP_CONTACT_EMAIL = (process.env.GAME_SHOP_CONTACT_EMAIL ?? "gags.guilherme@gmail.com").trim();
-const COMMUNITY_WHATSAPP_URL = (process.env.LITCH_COMMUNITY_WHATSAPP_URL ?? GAME_SHOP_WHATSAPP_URL).trim();
-const COMMUNITY_INSTAGRAM_URL = (process.env.LITCH_INSTAGRAM_URL ?? "").trim();
+const GAME_SHOP_CONTACT_EMAIL = (process.env.GAME_SHOP_CONTACT_EMAIL ?? "litch.faq@gmail.com").trim();
+const COMMUNITY_WHATSAPP_URL = (process.env.LITCH_COMMUNITY_WHATSAPP_URL ?? "https://chat.whatsapp.com/GvOJhtUfB9MJT4xUcVSuWE").trim();
+const COMMUNITY_INSTAGRAM_URL = (process.env.LITCH_INSTAGRAM_URL ?? "https://www.instagram.com/litch.rpg").trim();
+const GAME_SHOP_ADMIN_EMAILS = parseAdminIdentifiers(process.env.GAME_SHOP_ADMIN_EMAILS ?? process.env.GAME_SHOP_ADMIN_EMAIL, [
+  DEFAULT_GAME_SHOP_ADMIN_EMAIL
+]);
+const GAME_SHOP_ADMIN_USERNAMES = parseAdminIdentifiers(
+  process.env.GAME_SHOP_ADMIN_USERNAMES ?? process.env.GAME_SHOP_ADMIN_USERNAME,
+  [DEFAULT_GAME_SHOP_ADMIN_USERNAME]
+);
 const PASSWORD_MIN_LENGTH = 6;
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
@@ -191,6 +199,24 @@ const STATIC_MIME_TYPES: Record<string, string> = {
   ".webmanifest": "application/manifest+json; charset=utf-8",
   ".webp": "image/webp"
 };
+
+function parseAdminIdentifiers(value: string | undefined, fallback: string[]) {
+  const entries = (value ?? fallback.join(","))
+    .split(/[;,]/)
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+  return new Set(entries.length > 0 ? entries : fallback.map((entry) => entry.trim().toLowerCase()).filter(Boolean));
+}
+
+function hasGameShopAdminConfigured() {
+  return GAME_SHOP_ADMIN_EMAILS.size > 0 || GAME_SHOP_ADMIN_USERNAMES.size > 0;
+}
+
+function isGameShopAdmin(player: Player) {
+  const email = (player.email ?? "").trim().toLowerCase();
+  const username = (player.username ?? "").trim().toLowerCase();
+  return (email.length > 0 && GAME_SHOP_ADMIN_EMAILS.has(email)) || (username.length > 0 && GAME_SHOP_ADMIN_USERNAMES.has(username));
+}
 
 function getStaticMimeType(filePath: string) {
   return STATIC_MIME_TYPES[extname(filePath).toLowerCase()] ?? "application/octet-stream";
@@ -765,7 +791,7 @@ function serializeGameState(playerId: string): GameState {
     diamondPurchaseHistory: [...(character.diamondPurchaseHistory ?? [])].sort((a, b) => b.grantedAt - a.grantedAt).slice(0, 50),
     gameShopContact: gameShopContactInfo(),
     communityLinks: communityLinks(),
-    gameShopCanManualGrant: Boolean(GAME_SHOP_ADMIN_EMAIL) && (player.email ?? "").toLowerCase() === GAME_SHOP_ADMIN_EMAIL,
+    gameShopCanManualGrant: isGameShopAdmin(player),
     availableCraftingRecipes: availableRecipes,
     rankings: buildRankings(),
     onlineCount: store.socketsByPlayer.size,
@@ -3461,7 +3487,8 @@ function canReceiveItemAfterRemoval(character: Character, item: InventoryItem, r
   if (!definition.slot && character.inventory.some((entry) => entry.itemId === item.itemId && entry.instanceId !== removedInstanceId)) {
     return true;
   }
-  const usedAfterRemoval = inventoryUsed(character) - (removedInstanceId ? 1 : 0);
+  const removedItemFreesSlot = removedInstanceId ? !isEquipped(character, removedInstanceId) : false;
+  const usedAfterRemoval = inventoryUsed(character) - (removedItemFreesSlot ? 1 : 0);
   return usedAfterRemoval + 1 <= getInventoryCapacity(character);
 }
 
@@ -4411,7 +4438,12 @@ io.on("connection", (socket: AuthedSocket) => {
         throw new Error("Este item nÃ£o estÃ¡ equipado.");
       }
 
+      if (!hasCapacity(character, 1)) {
+        throw new Error("Inventario cheio. Libere espaco para desequipar.");
+      }
+
       character.equipment[definition.slot] = null;
+      normalizeInventory(character, ITEM_CATALOG);
       normalizeVitals(character);
       emitState(playerId);
     } catch (error) {
@@ -4511,10 +4543,9 @@ io.on("connection", (socket: AuthedSocket) => {
 
       const definition = ITEM_CATALOG[item.itemId];
       if (definition?.slot) {
-        if (isEquipped(character, item.instanceId)) {
-          throw new Error("Desequipe o item antes de destruir.");
-        }
         removeItem(character, item.instanceId, item.quantity);
+        normalizeInventory(character, ITEM_CATALOG);
+        normalizeVitals(character);
         emitState(playerId);
         return;
       }
@@ -4621,10 +4652,10 @@ io.on("connection", (socket: AuthedSocket) => {
     try {
       const adminPlayerId = requirePlayer(socket);
       const adminPlayer = currentPlayer(adminPlayerId);
-      if (!GAME_SHOP_ADMIN_EMAIL) {
-        throw new Error("Configure GAME_SHOP_ADMIN_EMAIL no servidor para liberar a inclusão manual de compras.");
+      if (!hasGameShopAdminConfigured()) {
+        throw new Error("Configure GAME_SHOP_ADMIN_EMAILS ou GAME_SHOP_ADMIN_USERNAMES no servidor para liberar a inclusao manual de compras.");
       }
-      if ((adminPlayer.email ?? "").toLowerCase() !== GAME_SHOP_ADMIN_EMAIL) {
+      if (!isGameShopAdmin(adminPlayer)) {
         throw new Error("Apenas o desenvolvedor pode incluir compras manualmente.");
       }
 
@@ -5703,7 +5734,7 @@ io.on("connection", (socket: AuthedSocket) => {
       }
 
       const kalibahn = Array.from(store.players.values()).find(
-        (entry) => entry.username.toLowerCase() === "kalibahn"
+        (entry) => entry.username.toLowerCase() === DEFAULT_GAME_SHOP_ADMIN_USERNAME.toLowerCase()
       );
       if (kalibahn && kalibahn.id !== playerId) {
         const targetCharacter = store.characters.get(kalibahn.id);

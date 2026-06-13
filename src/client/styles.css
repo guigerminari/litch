@@ -1960,7 +1960,7 @@ button:disabled {
 
 .topbar-content {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
+  grid-template-columns: min(120px, 20%) minmax(0, 1fr);
   gap: 14px;
   max-width: 1000px;
   margin: 0 auto;
@@ -4372,6 +4372,38 @@ button:disabled .game-icon {
   margin: 0 auto 12px;
 }
 
+.inventory-equipped-panel {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  margin: 4px auto 12px;
+}
+
+.inventory-equipped-panel h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.inventory-equipment-cross {
+  width: min-content;
+}
+
+.inventory-filter-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.inventory-filter-tabs .mini-tab {
+  min-height: 34px;
+  padding: 7px 11px;
+}
+
 .inv-slot {
   width: 100%;
   height: auto;
@@ -4396,6 +4428,10 @@ button:disabled .game-icon {
   background: rgba(255, 255, 255, 0.02);
   border-style: dashed;
   cursor: default;
+}
+
+.inv-slot.filtered-out {
+  opacity: 0.34;
 }
 
 .inv-slot.equipped {
@@ -5268,6 +5304,7 @@ button:disabled .game-icon {
 .game-shop-grid .diamond-pack {
   position: relative;
   grid-template-rows: auto 1fr auto;
+  grid-template-columns: 100%;
   gap: 14px;
   padding: 14px;
   overflow: visible;
@@ -5369,8 +5406,7 @@ button:disabled .game-icon {
 .diamond-pack-footer {
   display: flex !important;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px !important;
+  justify-content: center;
 }
 
 .diamond-pack-price {
