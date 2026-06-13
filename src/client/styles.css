@@ -1041,6 +1041,7 @@ button:disabled {
 }
 
 .invite-panel,
+.pwa-install-panel,
 .guide-copy,
 .guide-list article,
 .guide-work-country,
@@ -1052,6 +1053,41 @@ button:disabled {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: rgba(33, 27, 49, 0.7);
+}
+
+.pwa-install-panel {
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+}
+
+.pwa-install-icon {
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(220, 203, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(16, 13, 26, 0.72);
+  object-fit: cover;
+}
+
+.pwa-install-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.pwa-install-copy h3,
+.pwa-install-copy p {
+  margin: 0;
+}
+
+.pwa-install-copy p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.pwa-install-button {
+  white-space: nowrap;
 }
 
 .history-guide-copy {
@@ -13320,6 +13356,8 @@ button:disabled {
   .guide-catalog.split,
   .guide-filters,
   .arena-guide-summary,
+  .pwa-install-panel,
+  .pwa-install-copy,
   .invite-header,
   .invite-code-row,
   .referral-row {

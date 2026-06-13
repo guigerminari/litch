@@ -13,6 +13,7 @@ import {
   BriefcaseBusiness,
   ChevronDown,
   ChevronRight,
+  Download,
   Flame,
   FlaskConical,
   Gavel,
@@ -141,6 +142,11 @@ type View =
   | "moreInfo";
 
 type AuthMode = "login" | "register" | "forgot" | "reset";
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
 
 type BattleAnimationCue = {
   kind: "damage" | "dodge";
@@ -396,6 +402,7 @@ const ATTRIBUTE_RESET_DIAMOND_COST = 20;
 const TALENT_RESET_DIAMOND_COST = 25;
 const AVATAR_OPTIONS_SEEN_STORAGE_PREFIX = "litch:avatar-options-seen";
 const BRAND_WORDMARK_URL = "/assets/brand/litch-1500x1500.png";
+const APP_ICON_URL = "/assets/brand/litch-logo-square-512x512.png";
 const EQUIPMENT_STAT_LABELS: Partial<Record<keyof ItemStats, string>> = {
   strength: "Força",
   constitution: "Constituição",
@@ -519,6 +526,8 @@ export function App() {
   const [playerProfiles, setPlayerProfiles] = useState<Record<string, PlayerPublicProfile>>({});
   const [loadingPlayerProfileId, setLoadingPlayerProfileId] = useState<string | null>(null);
   const [regenMs, setRegenMs] = useState(0);
+  const [pwaPromptEvent, setPwaPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [pwaInstalled, setPwaInstalled] = useState(false);
 
   const setViewSafely = useCallback((nextView: View) => {
     if (game?.character.dungeonProgress?.activeRun && nextView !== "dungeon") {
@@ -664,6 +673,33 @@ export function App() {
   }, [quickPotionPreferences]);
 
   useEffect(() => {
+    const displayModeQuery = window.matchMedia("(display-mode: standalone)");
+    const isStandalone = () =>
+      displayModeQuery.matches || Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
+    const updateInstalled = () => setPwaInstalled(isStandalone());
+    const onBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setPwaPromptEvent(event as BeforeInstallPromptEvent);
+    };
+    const onAppInstalled = () => {
+      setPwaPromptEvent(null);
+      setPwaInstalled(true);
+      setNotice("App instalado.");
+      window.setTimeout(() => setNotice(null), 3200);
+    };
+
+    updateInstalled();
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    window.addEventListener("appinstalled", onAppInstalled);
+    displayModeQuery.addEventListener("change", updateInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", onAppInstalled);
+      displayModeQuery.removeEventListener("change", updateInstalled);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!game) {
       return;
     }
@@ -702,6 +738,30 @@ export function App() {
 
   const setQuickPotionPreference = (slot: QuickPotionSlot, itemId: string) => {
     setQuickPotionPreferences((current) => ({ ...current, [slot]: itemId }));
+  };
+
+  const requestPwaInstall = async () => {
+    if (pwaInstalled) {
+      setNotice("O app ja esta instalado.");
+      window.setTimeout(() => setNotice(null), 3200);
+      return;
+    }
+    if (!pwaPromptEvent) {
+      setNotice("O navegador ainda não liberou uma nova tentativa de instalação.");
+      window.setTimeout(() => setNotice(null), 4200);
+      return;
+    }
+
+    const promptEvent = pwaPromptEvent;
+    setPwaPromptEvent(null);
+    try {
+      await promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+      setNotice(choice.outcome === "accepted" ? "Instalação iniciada." : "Instalação cancelada.");
+    } catch {
+      setNotice("Não foi possível abrir a instalação agora.");
+    }
+    window.setTimeout(() => setNotice(null), 4200);
   };
 
   const canSubmitAuth =
@@ -899,7 +959,15 @@ export function App() {
             onClose={() => setDungeonCompletion(null)}
           />
         )}
-        {utilityModal === "settings" && <SettingsModal game={game} onClose={() => setUtilityModal(null)} />}
+        {utilityModal === "settings" && (
+          <SettingsModal
+            game={game}
+            pwaInstallAvailable={Boolean(pwaPromptEvent)}
+            pwaInstalled={pwaInstalled}
+            onInstallApp={requestPwaInstall}
+            onClose={() => setUtilityModal(null)}
+          />
+        )}
         {utilityModal === "guide" && <GuideModal game={game} onClose={() => setUtilityModal(null)} />}
         {selectedPlayer && (
           <PlayerActionModal
@@ -1563,7 +1631,19 @@ function CharacterDrawer({ game, onClose }: { game: GameState; onClose: () => vo
   );
 }
 
-function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void }) {
+function SettingsModal({
+  game,
+  pwaInstallAvailable,
+  pwaInstalled,
+  onInstallApp,
+  onClose
+}: {
+  game: GameState;
+  pwaInstallAvailable: boolean;
+  pwaInstalled: boolean;
+  onInstallApp: () => void;
+  onClose: () => void;
+}) {
   const [tab, setTab] = useState<"account" | "password">("account");
   const [currentPassword, setCurrentPassword] = useState("");
   const [nextPassword, setNextPassword] = useState("");
@@ -1623,6 +1703,26 @@ function SettingsModal({ game, onClose }: { game: GameState; onClose: () => void
               <div>
                 <span>Conta criada</span>
                 <strong>{new Date(game.player.createdAt).toLocaleDateString("pt-BR")}</strong>
+              </div>
+            </section>
+
+            <section className="pwa-install-panel">
+              <img className="pwa-install-icon" src={APP_ICON_URL} alt="Icone do Litch" />
+              <div className="pwa-install-copy">
+                <div>
+                  <span className="eyebrow">Aplicativo</span>
+                  <h3>Litch na tela inicial</h3>
+                  <p>
+                    {pwaInstalled
+                      ? "Este dispositivo já está usando o app instalado."
+                      : pwaInstallAvailable
+                        ? "O navegador liberou uma nova tentativa de instalação."
+                        : "Aguardando o navegador liberar a instalação novamente."}
+                  </p>
+                </div>
+                <button className="ghost-button pwa-install-button" type="button" disabled={pwaInstalled} onClick={onInstallApp}>
+                  <Download size={15} /> {pwaInstalled ? "Instalado" : pwaInstallAvailable ? "Instalar app" : "Tentar instalar"}
+                </button>
               </div>
             </section>
 
@@ -3452,7 +3552,7 @@ function EquippedItemDetailModal({
   const stats = getEnhancedItemStats(item, inventoryItem);
   const rarity = getItemRarity(item, inventoryItem);
   const destroyEquippedItem = () => {
-    const confirmed = window.confirm(`Deseja destruir ${formatInventoryItemName(item, inventoryItem)}? Esta acao nao pode ser desfeita.`);
+    const confirmed = window.confirm(`Deseja destruir ${formatInventoryItemName(item, inventoryItem)}? Esta ação não pode ser desfeita.`);
     if (!confirmed) {
       return;
     }
@@ -5874,7 +5974,7 @@ function GameShopPanel({ game }: { game: GameState }) {
               </select>
             </label>
             <label>
-              Observacao (comprovante / referencia)
+              Observação (comprovante / referência)
               <input
                 type="text"
                 value={adminReceiptNote}

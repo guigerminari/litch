@@ -1921,7 +1921,7 @@ const ITEM_CATALOG_VISUAL_OVERRIDES: Record<string, ItemCatalogVisualOverride> =
     kind: "material"
   },
   "misc_herb_rustic": {
-    name: "Funil de Pocao",
+    name: "Funil de Poção",
     imageUrl: "/assets/items/materials/new/potion-funnel-001@512.png",
     kind: "material"
   },
@@ -2249,18 +2249,18 @@ function describeVisualItem(item: ItemDefinition, name: string) {
 
     const lowerName = name.toLowerCase();
     if (/(lingote|minerio|barra|rebite|metal|adamantita|aco|cobre|prata|ouro)/.test(lowerName)) {
-      return `${name} usado em forja, criacao e fortalecimento de equipamentos.`;
+      return `${name} usado em forja, criação e fortalecimento de equipamentos.`;
     }
     if (/(frasco|oleo|extrato|erva|cogumelo|polen|funil|sal|po de enxofre)/.test(lowerName)) {
-      return `${name} usado em alquimia, pocoes e receitas de criacao.`;
+      return `${name} usado em alquimia, poções e receitas de criação.`;
     }
     if (/(couro|pele|escama|osso|chifre|costela|pena|seda|fio|linha|cola)/.test(lowerName)) {
-      return `${name} usado como componente de criacao em equipamentos e melhorias.`;
+      return `${name} usado como componente de criação em equipamentos e melhorias.`;
     }
     if (/(gema|cristal|fragmento)/.test(lowerName)) {
-      return `${name} usado para catalisar criacoes, refinos e aprimoramentos.`;
+      return `${name} usado para catalisar criações, refinos e aprimoramentos.`;
     }
-    return `${name} usado em receitas de criacao e fortalecimento.`;
+    return `${name} usado em receitas de criação e fortalecimento.`;
   }
 
   const statLabels = ITEM_CATALOG_EQUIPMENT_STAT_KEYS
